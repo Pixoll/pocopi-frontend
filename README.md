@@ -1,2 +1,2 @@
 # PoCoPI
-Proof of Concept of Psyco-Informatics
+Proof of Concept of Psycho-Informatics
