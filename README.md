@@ -127,10 +127,10 @@ Para añadir dependencias a un proyecto específico:
 
 ```bash
 # Añadir una dependencia al frontend
-pnpm --filter @pocopi/frontend add nombre-del-paquete
+pnpm --filter ./apps/frontend add nombre-del-paquete
 
 # Añadir una dependencia de desarrollo al backend
-pnpm --filter @pocopi/backend add -D nombre-del-paquete
+pnpm --filter ./apps/backend add -D nombre-del-paquete
 ```
 
 ## 🤝 Contribuir al proyecto
