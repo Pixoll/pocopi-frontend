@@ -1,31 +1,50 @@
 {
   "compilerOptions": {
     "target": "ES2024",
-    "module": "Preserve",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "noEmit": true,
-    "verbatimModuleSyntax": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "baseUrl": ".",
+    "module": "CommonJS",
+    "baseUrl": "./",
+    "outDir": "./dist",
     "paths": {
-      "@/*": ["src/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@services/*": ["src/services/*"],
-      "@utils/*": ["src/utils/*"],
-      "@middlewares/*": ["src/middlewares/*"],
-      "@models/*": ["src/models/*"],
-      "@types/*": ["src/types/*"],
-      "@config/*": ["src/config/*"],
-      "@routes/*": ["src/routes/*"]
-    }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+      "@/*": [
+        "src/*"
+      ],
+      "@decorators": [
+        "./src/decorators/index"
+      ],
+      "@exceptions": [
+        "./src/exceptions/index"
+      ],
+      "@modules/*": [
+        "./src/modules/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ]
+    },
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "noErrorTruncation": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveWatchOutput": true,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true
+  }
 }
