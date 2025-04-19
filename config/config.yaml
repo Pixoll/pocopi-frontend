@@ -1,0 +1,31 @@
+# $schema: ./config-yaml-schema.json
+
+groups:
+  control:
+    probability: 0.8
+    protocol: control
+
+protocols:
+  control:
+    phases:
+      - img:
+          src: control1.png
+          alt: question image
+        correct: 3
+        options:
+          - src: control1_option1.png
+            alt: option 1
+          - src: control1_option2.png
+            alt: option 2
+          - src: control1_option3.png
+            alt: option 3
+          - src: control1_option4.png
+            alt: option 4
+          - src: control1_option5.png
+            alt: option 5
+          - src: control1_option6.png
+            alt: option 6
+          - src: control1_option7.png
+            alt: option 7
+          - src: control1_option8.png
+            alt: option 8

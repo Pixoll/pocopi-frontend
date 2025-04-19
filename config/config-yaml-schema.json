@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JSON schema for PoCoPI's configuration file",
+  "type": "object",
+  "properties": {
+    "groups": {
+      "type": "object",
+      "description": "List of test groups",
+      "patternProperties": {
+        "^\\w+$": {
+          "$ref": "#/$defs/group"
+        }
+      },
+      "minProperties": 1
+    },
+    "protocols": {
+      "type": "object",
+      "description": "List of protocols the test groups will use",
+      "patternProperties": {
+        "^\\w+$": {
+          "$ref": "#/$defs/protocol"
+        }
+      },
+      "minProperties": 1
+    }
+  },
+  "required": [
+    "groups"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "group": {
+      "type": "object",
+      "description": "A test group",
+      "properties": {
+        "probability": {
+          "type": "number",
+          "description": "The chance of this group to be selected. The sum of all the probabilities of all the groups should be 1.",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "protocol": {
+          "type": "string",
+          "description": "Name of the protocol to use",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "probability",
+        "protocol"
+      ],
+      "additionalProperties": false
+    },
+    "image": {
+      "type": "object",
+      "description": "An image",
+      "properties": {
+        "src": {
+          "type": "string",
+          "description": "Where the image is located",
+          "format": "uri-reference",
+          "minLength": 1
+        },
+        "alt": {
+          "type": "string",
+          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)"
+        }
+      },
+      "required": [
+        "src",
+        "alt"
+      ]
+    },
+    "phase": {
+      "type": "object",
+      "description": "Phase of a testing protocol",
+      "properties": {
+        "img": {
+          "$ref": "#/$defs/image"
+        },
+        "options": {
+          "type": "array",
+          "description": "List of options",
+          "items": {
+            "$ref": "#/$defs/image"
+          },
+          "minLength": 8,
+          "maxLength": 8
+        },
+        "correct": {
+          "type": "integer",
+          "description": "The correct option",
+          "minimum": 1,
+          "maximum": 8
+        }
+      },
+      "required": [
+        "img",
+        "options",
+        "correct"
+      ]
+    },
+    "protocol": {
+      "type": "object",
+      "description": "A testing protocol",
+      "properties": {
+        "phases": {
+          "type": "array",
+          "description": "Phases of the testing protocol",
+          "items": {
+            "$ref": "#/$defs/phase"
+          },
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
