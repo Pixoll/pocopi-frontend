@@ -2,7 +2,11 @@ packages:
   - apps/*
 
 ignoredBuiltDependencies:
+  - '@nestjs/core'
+  - '@scarf/scarf'
   - '@swc/core'
+  - fibers
+  - ts-test
 
 onlyBuiltDependencies:
   - esbuild

@@ -19,7 +19,7 @@ npm install -g pnpm
 
 ```bash
 git clone https://github.com/Pixoll/PoCoPI.git
-cd mi-monorepo
+cd PoCoPI
 ```
 
 ### Instalar dependencias
@@ -40,13 +40,50 @@ mi-monorepo/
     ├── frontend/               # Aplicación React/TypeScript con Vite
     │   ├── index.html
     │   ├── package.json
-    │   ├── src/
-    │   └── ... otros archivos
+    │   ├── tsconfig.json
+    │   ├── vite.config.ts
+    │   └── src/
+    │       ├── App.tsx                 # Componente raíz de la aplicación
+    │       ├── main.tsx                # Punto de entrada que renderiza App.tsx
+    │       ├── index.css               # Estilos globales
+    │       ├── assets/                 # Imágenes, íconos, logos, etc.
+    │       ├── components/             # Componentes reutilizables (ej: botones, cards)
+    │       ├── pages/                  # Vistas principales (ej: Home, Dashboard)
+    │       ├── contexts/               # Contextos globales usando React Context API
+    │       │   └── AuthContext.tsx     # Ejemplo: manejo de autenticación global
+    │       ├── hooks/                  # Hooks personalizados (ej: useFetch, useAuth)
+    │       ├── routes/                 # Definición de rutas de la app (React Router)
+    │       ├── services/               # Lógica para llamadas HTTP a APIs (ej: authService, userService)
+    │       ├── types/                  # Archivos de definición de tipos TypeScript
+    │       └── utils/                  # Funciones auxiliares, helpers, formatters
     └── backend/                # API con Node.js/Express/TypeScript
         ├── package.json
-        ├── src/
-        └── ... otros archivos
+        ├── tsconfig.json
+        └── src/
 ```
+
+### 🧭 Flujo de datos en el frontend
+
+- **`main.tsx`**: es el archivo donde se monta la aplicación React usando `ReactDOM.createRoot`. Aquí también se pueden envolver los componentes globales, como `AuthProvider` o `BrowserRouter`.
+
+- **`App.tsx`**: define la estructura principal de la aplicación, donde se incluyen las rutas (`<Routes>`) y componentes base.
+
+- **`contexts/`**: contiene estados compartidos globalmente, como la sesión de usuario, tema o configuraciones generales.
+
+- **`pages/`**: contiene las pantallas o páginas de la aplicación que se renderizan desde las rutas, como el Home, Login o Dashboard.
+
+- **`components/`**: aquí se almacenan componentes reutilizables, como botones personalizados, inputs, modales, etc.
+
+- **`hooks/`**: almacena lógica reutilizable en forma de hooks personalizados (`useAuth`, `useTheme`, `useFetch`, etc).
+
+- **`routes/`**: configura las rutas de la app (React Router), conectando componentes con URLs específicas.
+- `services/`: Contiene módulos responsables de conectarse con el backend o servicios externos. Aquí se define la lógica para obtener, enviar y actualizar datos a través de HTTP. Ejemplos: `authService.ts`, `userService.ts`, `productionService.ts`, etc.
+
+- **`types/`**: aquí defines tipos TypeScript comunes que se usan en múltiples archivos, como interfaces para usuarios, datos de API, etc.
+
+- **`utils/`**: contiene funciones auxiliares como `formatearFecha`, `validarEmail`, etc.
+
+---
 
 ## 💻 Comandos disponibles
 
@@ -116,7 +153,7 @@ pnpm lint
 
 #### Backend (.env)
 
-```
+```env
 PORT=3000
 NODE_ENV=development
 ```
@@ -138,7 +175,7 @@ pnpm --filter ./apps/backend add -D nombre-del-paquete
 1. Crea una nueva rama desde `main`:
 
    ```bash
-   git checkout -b feature/nombre-caracteristica
+   git switch -c feature/nombre-caracteristica
    ```
 
 2. Realiza tus cambios y haz commit:
@@ -153,17 +190,8 @@ pnpm --filter ./apps/backend add -D nombre-del-paquete
    git push origin feature/nombre-caracteristica
    ```
 
-4. Abre un Pull Request en GitHub.
-
-## ⚠️ Solución de problemas comunes
-
-```
-
 ## 📝 Notas adicionales
 
 - Este monorepo utiliza pnpm workspaces para gestionar múltiples paquetes
 - El frontend está construido con Vite para un desarrollo más rápido
-- El backend utiliza pkgroll para la compilación
 - Todas las aplicaciones usan TypeScript para type-safety
-
-```
