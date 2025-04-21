@@ -7,45 +7,54 @@ import { CatchEverythingFilter } from "./filters";
 import { LoggingInterceptor } from "./interceptors";
 import { LowercaseQueryKeysPipe } from "./pipes";
 
-void async function () {
-    const app = await NestFactory.create(AppModule, {
-        cors: true,
-        logger: ["debug"],
-    });
+void (async function () {
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    logger: ["debug"],
+  });
 
-    const logger = new Logger("PoCoPIApp");
+  const logger = new Logger("PoCoPIApp");
 
-    const globalPrefix = "api";
+  const globalPrefix = "api";
 
-    app.getHttpAdapter().getInstance().disable("x-powered-by");
+  app.getHttpAdapter().getInstance().disable("x-powered-by");
 
-    app.setGlobalPrefix(globalPrefix)
-        .useGlobalFilters(new CatchEverythingFilter())
-        .useGlobalInterceptors(new LoggingInterceptor())
-        .useGlobalPipes(
-            new LowercaseQueryKeysPipe(),
-            new ValidationPipe({
-                exceptionFactory,
-                forbidNonWhitelisted: true,
-                stopAtFirstError: true,
-                transform: true,
-                whitelist: true,
-            })
-        );
+  app
+    .setGlobalPrefix(globalPrefix)
+    .useGlobalFilters(new CatchEverythingFilter())
+    .useGlobalInterceptors(new LoggingInterceptor())
+    .useGlobalPipes(
+      new LowercaseQueryKeysPipe(),
+      new ValidationPipe({
+        exceptionFactory,
+        forbidNonWhitelisted: true,
+        stopAtFirstError: true,
+        transform: true,
+        whitelist: true,
+      })
+    );
 
-    const swaggerConfig = new DocumentBuilder()
-        .setTitle("PoCoPI - Proof of Concept Psycho-Informatics - API")
-        .addServer(globalPrefix)
-        .build();
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle("PoCoPI - Proof of Concept Psycho-Informatics - API")
+    .addServer(globalPrefix)
+    .build();
 
-    SwaggerModule.setup(globalPrefix, app, () => SwaggerModule.createDocument(app, swaggerConfig, {
-        ignoreGlobalPrefix: true,
-    }));
+  SwaggerModule.setup(globalPrefix, app, () =>
+    SwaggerModule.createDocument(app, swaggerConfig, {
+      ignoreGlobalPrefix: true,
+    })
+  );
 
-    await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000);
 
-    const appUrl = await app.getUrl()
-        .then(url => url.replace("[::1]", "localhost").replace(/\/$/, "") + "/" + globalPrefix);
+  const appUrl = await app
+    .getUrl()
+    .then(
+      (url) =>
+        url.replace("[::1]", "localhost").replace(/\/$/, "") +
+        "/" +
+        globalPrefix
+    );
 
-    logger.log(`Application is running at ${appUrl}`);
-}();
+  logger.log(`Application is running at ${appUrl}`);
+})();

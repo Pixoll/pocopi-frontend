@@ -1,0 +1,80 @@
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.userName {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text-primary);
+  transition: color var(--transition-normal);
+}
+
+.userEmail {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.userEmail svg {
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+  transition: transform var(--transition-fast);
+}
+
+.card:hover .userEmail svg {
+  transform: scale(1.2);
+}
+
+/* Efecto al hacer hover */
+.card:hover .userName {
+  color: var(--color-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    background-color: #2a2a2a;
+    border-color: #444;
+  }
+
+  .userName {
+    color: #e0e0e0;
+  }
+
+  .userEmail {
+    color: #b0b0b0;
+  }
+}
