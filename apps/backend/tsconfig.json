@@ -14,9 +14,6 @@
       "@exceptions": [
         "./src/exceptions/index"
       ],
-      "@modules/*": [
-        "./src/modules/*"
-      ],
       "@utils/*": [
         "./src/utils/*"
       ]

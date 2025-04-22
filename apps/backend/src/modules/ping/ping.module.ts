@@ -1,4 +1,4 @@
-import { PingController } from "@modules/ping/ping.controller";
+import { PingController } from "./ping.controller";
 import { Module } from "@nestjs/common";
 
 @Module({
