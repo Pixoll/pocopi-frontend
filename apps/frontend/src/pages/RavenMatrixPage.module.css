@@ -1,9 +1,13 @@
+.ravenMatrixPage {
+  align-content: center;
+  height: 100vh;
+  width: 100%;
+}
+
 .ravenMatrixContainer {
   justify-items: center;
-  left: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  justify-self: center;
+  max-width: 90%;
   user-select: none;
 }
 
@@ -19,7 +23,6 @@
   grid-template-rows: repeat(2, 1fr);
   justify-items: center;
   user-select: none;
-  width: 100%;
 }
 
 .oddRavenOption {
@@ -41,4 +44,30 @@
 
 .selectedRavenOption {
   background-color: gold;
+}
+
+.phaseButtonsRow {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 20px;
+  width: 100%;
+}
+
+.testButtonsRow {
+  bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+}
+
+.previousButton {
+  left: 20px;
+  position: relative;
+}
+
+.nextButton {
+  position: relative;
+  right: 20px;
 }

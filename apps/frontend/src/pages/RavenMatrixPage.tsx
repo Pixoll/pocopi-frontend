@@ -2,11 +2,13 @@ import { config } from "@pocopi/config";
 import { useState } from "react";
 import styles from "./RavenMatrixPage.module.css";
 
+const PROTOCOL = "control";
+
 export function RavenMatrixPage() {
   const [selected, setSelected] = useState<string>("");
 
   // TODO should be props
-  const { img, options: tempOptions } = config.protocols.control.phases[0];
+  const { img, options: tempOptions } = config.protocols[PROTOCOL].phases[0];
   const options = tempOptions.map(option => {
     const base64 = option.src.split(";")[1].slice(7);
     const half = Math.round(base64.length / 2);
@@ -21,7 +23,7 @@ export function RavenMatrixPage() {
     return () => setSelected(v => v === id ? "" : id);
   };
 
-  return (
+  return <div className={styles.ravenMatrixPage}>
     <div className={styles.ravenMatrixContainer} draggable={false}>
       <img className={styles.ravenMatrix} src={img.src} alt={img.alt} draggable={false}/>
       <div
@@ -45,5 +47,13 @@ export function RavenMatrixPage() {
         ))}
       </div>
     </div>
-  );
+    <div className={styles.phaseButtonsRow}>
+      <button className={styles.previousButton}>Previous phase</button>
+      <button className={styles.nextButton}>Next phase</button>
+    </div>
+    <div className={styles.testButtonsRow}>
+      <button className={styles.previousButton}>Previous test</button>
+      <button className={styles.nextButton}>Next test</button>
+    </div>
+  </div>;
 }
