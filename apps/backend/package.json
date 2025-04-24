@@ -64,6 +64,7 @@
     "typescript-eslint": "^8.24.1"
   },
   "dependencies": {
+    "@pocopi/config": "workspace:*",
     "@nestjs/common": "^11.0.16",
     "@nestjs/core": "^11.0.16",
     "@nestjs/platform-express": "^11.0.16",

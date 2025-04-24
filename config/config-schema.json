@@ -11,7 +11,8 @@
           "$ref": "#/$defs/group"
         }
       },
-      "minProperties": 1
+      "minProperties": 1,
+      "additionalProperties": false
     },
     "protocols": {
       "type": "object",
@@ -21,7 +22,8 @@
           "$ref": "#/$defs/protocol"
         }
       },
-      "minProperties": 1
+      "minProperties": 1,
+      "additionalProperties": false
     }
   },
   "required": [
@@ -69,7 +71,34 @@
       "required": [
         "src",
         "alt"
-      ]
+      ],
+      "additionalProperties": false
+    },
+    "option": {
+      "type": "object",
+      "description": "An option",
+      "properties": {
+        "src": {
+          "type": "string",
+          "description": "Where the image is located",
+          "format": "uri-reference",
+          "minLength": 1
+        },
+        "alt": {
+          "type": "string",
+          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)"
+        },
+        "correct": {
+          "type": "boolean",
+          "description": "Whether it's the correct option or not. Only one option should be marked as correct.",
+          "default": false
+        }
+      },
+      "required": [
+        "src",
+        "alt"
+      ],
+      "additionalProperties": false
     },
     "phase": {
       "type": "object",
@@ -82,23 +111,16 @@
           "type": "array",
           "description": "List of options",
           "items": {
-            "$ref": "#/$defs/image"
+            "$ref": "#/$defs/option"
           },
-          "minLength": 8,
-          "maxLength": 8
-        },
-        "correct": {
-          "type": "integer",
-          "description": "The correct option",
-          "minimum": 1,
-          "maximum": 8
+          "minLength": 2
         }
       },
       "required": [
         "img",
-        "options",
-        "correct"
-      ]
+        "options"
+      ],
+      "additionalProperties": false
     },
     "protocol": {
       "type": "object",
