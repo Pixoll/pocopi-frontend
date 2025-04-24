@@ -2,20 +2,19 @@ export type PoCoPIConfig = {
     readonly groups: Record<string, Group>;
     readonly protocols: Record<string, Protocol>;
 };
-type Group = {
+export type Group = {
     readonly probability: number;
     readonly protocol: string;
 };
-type Protocol = {
+export type Protocol = {
     readonly phases: readonly ProtocolPhase[];
 };
-type ProtocolPhase = {
+export type ProtocolPhase = {
     readonly img: Image;
     readonly options: readonly Image[];
 };
-type Image = {
+export type Image = {
     readonly src: string;
     readonly alt: string;
     readonly correct?: boolean;
 };
-export {};

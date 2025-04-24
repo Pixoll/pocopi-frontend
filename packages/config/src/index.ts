@@ -12,6 +12,8 @@ const IMAGES_DIR = path.join(CONFIG_DIR, "images");
 
 export const config = getConfig();
 
+export * from "./types";
+
 function getConfig(): PoCoPIConfig {
     const imageNameToPath = new Map(readdirSync(IMAGES_DIR).map(filename =>
         [filename, path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep)]
