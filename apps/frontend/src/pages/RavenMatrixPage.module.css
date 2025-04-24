@@ -1,0 +1,33 @@
+.ravenMatrixContainer {
+  justify-items: center;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ravenMatrix {
+  margin-bottom: 25px;
+}
+
+.ravenOptionsContainer {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, 1fr);
+  justify-items: center;
+  width: min-content;
+}
+
+.oddRavenOption {
+  transform: translateX(50%);
+}
+
+.ravenOption:hover {
+  cursor: pointer;
+}
+
+.selectedRavenOption {
+  border: 5px solid gold;
+}
