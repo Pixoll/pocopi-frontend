@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import { readdirSync, readFileSync } from "fs";
 import { Validator } from "jsonschema";
 import path from "path";
@@ -26,7 +27,7 @@ function getConfig(): PoCoPIConfig {
     const config = yamlConfig as PoCoPIConfig;
 
     const usedProtocols = new Map<string, string>();
-    let probabilitySum = 0;
+    let probabilitySum = new Decimal(0);
 
     for (const [label, { protocol, probability }] of Object.entries(config.groups)) {
         const protocolUsedAt = usedProtocols.get(protocol);
@@ -35,7 +36,7 @@ function getConfig(): PoCoPIConfig {
             throw new Error(`Protocol '${protocol}' already used at ${protocolUsedAt}.`);
         }
 
-        probabilitySum += probability;
+        probabilitySum = probabilitySum.add(probability);
 
         if (!(protocol in config.protocols)) {
             throw new Error(`Protocol '${protocol}' does not exist in protocols list.`);
@@ -44,7 +45,7 @@ function getConfig(): PoCoPIConfig {
         usedProtocols.set(protocol, `groups.${label}`);
     }
 
-    if (probabilitySum !== 1) {
+    if (!probabilitySum.equals(1)) {
         throw new Error("The sum of all the group probabilities should be 1.");
     }
 
