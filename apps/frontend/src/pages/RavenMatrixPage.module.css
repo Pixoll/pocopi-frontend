@@ -4,19 +4,20 @@
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
+  user-select: none;
 }
 
 .ravenMatrix {
   margin-bottom: 25px;
+  user-select: none;
 }
 
 .ravenOptionsContainer {
   align-items: center;
   display: grid;
-  gap: 10px;
-  grid-auto-flow: column;
   grid-template-rows: repeat(2, 1fr);
   justify-items: center;
+  user-select: none;
   width: min-content;
 }
 
@@ -24,10 +25,18 @@
   transform: translateX(50%);
 }
 
+.ravenOption {
+  border-radius: 3px;
+  box-sizing: content-box;
+  margin: 5px;
+  padding: 3px;
+  user-select: none;
+}
+
 .ravenOption:hover {
   cursor: pointer;
 }
 
 .selectedRavenOption {
-  border: 5px solid gold;
+  background-color: gold;
 }

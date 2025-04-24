@@ -14,28 +14,36 @@ export function RavenMatrixPage() {
 
     return { id, ...option };
   });
-  const isOdd = options.length % 2 === 1;
+  const optionsColumns = Math.ceil(options.length / 2);
+  const isOptionsOdd = options.length % 2 === 1;
 
   const handleRavenOptionClick = (id: string) => {
     return () => setSelected(v => v === id ? "" : id);
   };
 
-  return <div className={styles.ravenMatrixContainer}>
-    <img className={styles.ravenMatrix} src={img.src} alt={img.alt}></img>
-    <div className={styles.ravenOptionsContainer}>
-      {options.map((option, i) => (
-        <img
-          className={[
-            styles.ravenOption,
-            isOdd && i % 2 === 1 ? styles.oddRavenOption : "",
-            option.id === selected ? styles.selectedRavenOption : "",
-          ].join(" ")}
-          key={option.id}
-          src={option.src}
-          alt={option.alt}
-          onClick={handleRavenOptionClick(option.id)}
-        />
-      ))}
+  return (
+    <div className={styles.ravenMatrixContainer} draggable={false}>
+      <img className={styles.ravenMatrix} src={img.src} alt={img.alt} draggable={false}/>
+      <div
+        className={styles.ravenOptionsContainer}
+        draggable={false}
+        style={{ gridTemplateColumns: `repeat(${optionsColumns}, ${100 / optionsColumns}%)` }}
+      >
+        {options.map((option, i) => (
+          <img
+            className={[
+              styles.ravenOption,
+              isOptionsOdd && i % 2 === 1 ? styles.oddRavenOption : "",
+              option.id === selected ? styles.selectedRavenOption : "",
+            ].join(" ")}
+            key={option.id}
+            src={option.src}
+            alt={option.alt}
+            onClick={handleRavenOptionClick(option.id)}
+            draggable={false}
+          />
+        ))}
+      </div>
     </div>
-  </div>;
+  );
 }
