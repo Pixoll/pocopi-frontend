@@ -10,6 +10,7 @@
 .ravenMatrix {
   margin-bottom: 25px;
   user-select: none;
+  width: 100%;
 }
 
 .ravenOptionsContainer {
@@ -18,7 +19,7 @@
   grid-template-rows: repeat(2, 1fr);
   justify-items: center;
   user-select: none;
-  width: min-content;
+  width: 100%;
 }
 
 .oddRavenOption {
@@ -31,6 +32,7 @@
   margin: 5px;
   padding: 3px;
   user-select: none;
+  width: calc(100% - 8px);
 }
 
 .ravenOption:hover {
