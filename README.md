@@ -4,7 +4,7 @@ Proof of Concept of Psycho-Informatics
 
 ## 📋 Requisitos previos
 
-- Node.js >= 20.0.0
+- Node.js >= 22.0.0
 - PNPM >= 8.0.0
 
 Para instalar PNPM:
