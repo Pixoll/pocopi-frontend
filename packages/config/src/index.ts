@@ -4,7 +4,7 @@ import { Validator } from "jsonschema";
 import mime from "mime";
 import path from "path";
 import yaml from "yaml";
-import { PoCoPIConfig } from "./types";
+import { Image, PoCoPIConfig } from "./types";
 
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
@@ -34,14 +34,13 @@ function exportConfigForBrowser(config: PoCoPIConfig): void {
 
     for (const protocol of Object.values(configCopy.protocols)) {
         for (const phase of protocol.phases) {
-            // @ts-expect-error: config is readonly only outside of this module
-            // noinspection JSConstantReassignment
-            phase.img.src = getBase64Image(phase.img.src);
+            for (const question of phase.questions) {
+                (question.img as Mutable<Image>).src = getBase64Image(question.img.src);
 
-            for (const option of phase.options) {
-                // @ts-expect-error: config is readonly only outside of this module
-                // noinspection JSConstantReassignment
-                option.src = getBase64Image(option.src);
+                // eslint-disable-next-line max-depth
+                for (const option of question.options) {
+                    (option as Mutable<Image>).src = getBase64Image(option.src);
+                }
             }
         }
     }
@@ -87,7 +86,13 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
             for (const [label, protocol] of Object.entries(config.protocols)) {
                 for (let i = 0; i < protocol.phases.length; i++) {
                     const phase = protocol.phases[i]!;
-                    yield { label, i, phase };
+
+                    for (let j = 0; j < phase.questions.length; j++) {
+                        const question = phase.questions[j]!;
+                        const path = `protocols.${label}.phases[${i}].questions[${j}]`;
+
+                        yield { path, question };
+                    }
                 }
             }
         },
@@ -95,28 +100,26 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
 
     const usedImages = new Map<string, string>();
 
-    for (const { label, i, phase } of iterator) {
-        const phaseImage = phase.img.src;
-        const usedPhaseImageAt = usedImages.get(phaseImage);
+    for (const { path, question } of iterator) {
+        const questionImage = question.img.src;
+        const usedQuestionImageAt = usedImages.get(questionImage);
 
-        if (usedPhaseImageAt) {
-            throw new Error(`Image '${phaseImage}' already used at ${usedPhaseImageAt}.`);
+        if (usedQuestionImageAt) {
+            throw new Error(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
         }
 
-        const phaseImagePath = imageNameToPath.get(phaseImage);
-        if (!phaseImagePath) {
-            throw new Error(`Image '${phaseImage}' not found in images directory.`);
+        const questionImagePath = imageNameToPath.get(questionImage);
+        if (!questionImagePath) {
+            throw new Error(`Image '${questionImage}' not found in images directory.`);
         }
 
-        // @ts-expect-error: config is readonly only outside of this module
-        // noinspection JSConstantReassignment
-        phase.img.src = phaseImagePath;
-        usedImages.set(phaseImage, `protocols.${label}.phases[${i}].img`);
+        (question.img as Mutable<Image>).src = questionImagePath;
+        usedImages.set(questionImage, `${path}.img`);
 
         let foundCorrect = -1;
 
-        for (let j = 0; j < phase.options.length; j++) {
-            const option = phase.options[j]!;
+        for (let k = 0; k < question.options.length; k++) {
+            const option = question.options[k]!;
             const optionImage = option.src;
             const usedOptionImageAt = usedImages.get(optionImage);
 
@@ -129,26 +132,22 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
                 throw new Error(`Image '${optionImage}' not found in images directory.`);
             }
 
-            // @ts-expect-error: config is readonly only outside of this module
-            // noinspection JSConstantReassignment
-            option.src = optionImagePath;
-            usedImages.set(optionImage, `protocols.${label}.phases[${i}].options[${j}]`);
+            (option as Mutable<Image>).src = optionImagePath;
+            usedImages.set(optionImage, `${path}.options[${k}]`);
 
             if (!option.correct) {
                 continue;
             }
 
             if (foundCorrect !== -1) {
-                throw new Error(
-                    `protocols.${label}.phases[${i}].options[${foundCorrect}] was already marked as correct.`
-                );
+                throw new Error(`${path}.options[${foundCorrect}] was already marked as correct.`);
             }
 
-            foundCorrect = j;
+            foundCorrect = k;
         }
 
         if (foundCorrect === -1) {
-            throw new Error(`Could not find an option marked as correct in protocols.${label}.phases[${i}].`);
+            throw new Error(`Could not find an option marked as correct in ${path}.`);
         }
     }
 
@@ -158,3 +157,7 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
 function getBase64Image(filePath: string): string {
     return `data:${mime.getType(filePath)};base64,${readFileSync(filePath, "base64")}`;
 }
+
+type Mutable<T> = {
+    -readonly [K in keyof T]: T[K];
+};

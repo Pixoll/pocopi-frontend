@@ -104,6 +104,39 @@
       "type": "object",
       "description": "Phase of a testing protocol",
       "properties": {
+        "questions": {
+          "type": "array",
+          "description": "List of questions",
+          "items": {
+            "$ref": "#/$defs/question"
+          },
+          "minLength": 2
+        }
+      },
+      "required": [
+        "questions"
+      ],
+      "additionalProperties": false
+    },
+    "protocol": {
+      "type": "object",
+      "description": "A testing protocol",
+      "properties": {
+        "phases": {
+          "type": "array",
+          "description": "Phases of the testing protocol",
+          "items": {
+            "$ref": "#/$defs/phase"
+          },
+          "minLength": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "question": {
+      "type": "object",
+      "description": "Test question",
+      "properties": {
         "img": {
           "$ref": "#/$defs/image"
         },
@@ -120,21 +153,6 @@
         "img",
         "options"
       ],
-      "additionalProperties": false
-    },
-    "protocol": {
-      "type": "object",
-      "description": "A testing protocol",
-      "properties": {
-        "phases": {
-          "type": "array",
-          "description": "Phases of the testing protocol",
-          "items": {
-            "$ref": "#/$defs/phase"
-          },
-          "minLength": 1
-        }
-      },
       "additionalProperties": false
     }
   }
