@@ -13,6 +13,10 @@ export type Protocol = {
 };
 
 export type ProtocolPhase = {
+    readonly questions: readonly PhaseQuestion[];
+};
+
+export type PhaseQuestion = {
     readonly img: Image;
     readonly options: readonly Image[];
 };
