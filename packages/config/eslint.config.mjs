@@ -84,7 +84,7 @@ export default defineConfig([
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/explicit-module-boundary-types": "error",
             "@stylistic/ts/member-delimiter-style": "error",
-            "@stylistic/ts/semi": "error"
+            "@stylistic/ts/semi": "error",
         },
-    }
+    },
 ]);

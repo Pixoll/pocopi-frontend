@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
-import { readdirSync, readFileSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { Validator } from "jsonschema";
+import mime from "mime";
 import path from "path";
 import yaml from "yaml";
 import { PoCoPIConfig } from "./types";
@@ -15,10 +16,6 @@ export const config = getConfig();
 export * from "./types";
 
 function getConfig(): PoCoPIConfig {
-    const imageNameToPath = new Map(readdirSync(IMAGES_DIR).map(filename =>
-        [filename, path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep)]
-    ));
-
     const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
     const jsonSchema = JSON.parse(readFileSync(CONFIG_JSON_SCHEMA_PATH, "utf-8"));
 
@@ -26,7 +23,41 @@ function getConfig(): PoCoPIConfig {
         throwFirst: true,
     });
 
-    const config = yamlConfig as PoCoPIConfig;
+    const config = validateConfig(yamlConfig);
+    exportConfigForBrowser(config);
+
+    return config;
+}
+
+function exportConfigForBrowser(config: PoCoPIConfig): void {
+    const configCopy = JSON.parse(JSON.stringify(config)) as PoCoPIConfig;
+
+    for (const protocol of Object.values(configCopy.protocols)) {
+        for (const phase of protocol.phases) {
+            // @ts-expect-error: config is readonly only outside of this module
+            // noinspection JSConstantReassignment
+            phase.img.src = getBase64Image(phase.img.src);
+
+            for (const option of phase.options) {
+                // @ts-expect-error: config is readonly only outside of this module
+                // noinspection JSConstantReassignment
+                option.src = getBase64Image(option.src);
+            }
+        }
+    }
+
+    const esmScriptPath = path.join(__dirname, "../esm/index.js");
+    const configJson = JSON.stringify(configCopy, null, 4);
+
+    const newScript = `export const config = ${configJson};\n`;
+
+    writeFileSync(esmScriptPath, newScript, "utf-8");
+}
+
+function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
+    const imageNameToPath = new Map(readdirSync(IMAGES_DIR).map(filename =>
+        [filename, path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep)]
+    ));
 
     const usedProtocols = new Map<string, string>();
     let probabilitySum = new Decimal(0);
@@ -122,4 +153,8 @@ function getConfig(): PoCoPIConfig {
     }
 
     return config;
+}
+
+function getBase64Image(filePath: string): string {
+    return `data:${mime.getType(filePath)};base64,${readFileSync(filePath, "base64")}`;
 }

@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./types/index.d.ts",
+  "exports": {
+    "types": "./types/index.d.ts",
+    "import": "./esm/index.js",
+    "require": "./cjs/index.js"
+  },
   "scripts": {
-    "prestart": "tsc",
+    "prestart": "tsc -b ./tsconfig.json ./tsconfig.cjs.json ./tsconfig.esm.json",
     "start": "node ."
   },
   "devDependencies": {
@@ -20,6 +25,7 @@
     "decimal.js": "^10.5.0",
     "fast-xml-parser": "^5.2.1",
     "jsonschema": "^1.5.0",
+    "mime": "^4.0.7",
     "yaml": "^2.7.1"
   }
 }

@@ -183,6 +183,9 @@ importers:
       jsonschema:
         specifier: ^1.5.0
         version: 1.5.0
+      mime:
+        specifier: ^4.0.7
+        version: 4.0.7
       yaml:
         specifier: ^2.7.1
         version: 2.7.1
@@ -3025,6 +3028,11 @@ packages:
   mime@2.6.0:
     resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
     engines: {node: '>=4.0.0'}
+    hasBin: true
+
+  mime@4.0.7:
+    resolution: {integrity: sha512-2OfDPL+e03E0LrXaGYOtTFIYhiuzep94NSsuhrNULq+stylcJedcHdzHtz0atMUuGwJfFYs0YL5xeC/Ca2x0eQ==}
+    engines: {node: '>=16'}
     hasBin: true
 
   mimic-fn@2.1.0:
@@ -7214,6 +7222,8 @@ snapshots:
       mime-db: 1.54.0
 
   mime@2.6.0: {}
+
+  mime@4.0.7: {}
 
   mimic-fn@2.1.0: {}
 
