@@ -2,14 +2,17 @@ import { config } from "@pocopi/config";
 import { useState } from "react";
 import styles from "./RavenMatrixPage.module.css";
 
-const PROTOCOL = "control";
+type RavenMatrixPageProps = {
+  protocol: string;
+  goToNextPage: () => void;
+};
 
-export function RavenMatrixPage() {
+export function RavenMatrixPage({ protocol, goToNextPage }: RavenMatrixPageProps) {
   const [phase, setPhase] = useState<number>(0);
   const [question, setQuestion] = useState<number>(0);
   const [selected, setSelected] = useState<string>("");
 
-  const { phases } = config.protocols[PROTOCOL];
+  const { phases } = config.protocols[protocol];
   const { questions } = phases[phase];
   const { img, options: tempOptions } = questions[question];
 
@@ -30,8 +33,13 @@ export function RavenMatrixPage() {
   };
 
   const handleNextPhaseClick = () => {
-    setQuestion(0);
-    setPhase(phase + 1);
+    if (phase < phases.length - 1) {
+      setQuestion(0);
+      setPhase(phase + 1);
+      return;
+    }
+
+    goToNextPage();
   };
 
   const handlePreviousQuestionClick = () => {
@@ -44,12 +52,12 @@ export function RavenMatrixPage() {
   };
 
   const handleNextQuestionClick = () => {
-    if (question >= questions.length - 1) {
-      handleNextPhaseClick();
+    if (question < questions.length - 1) {
+      setQuestion(question + 1);
       return;
     }
 
-    setQuestion(question + 1);
+    handleNextPhaseClick();
   };
 
   const handleRavenOptionClick = (id: string) => {
