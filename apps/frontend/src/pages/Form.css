@@ -1,0 +1,106 @@
+.general-form {
+    width: 100vw;
+    height: 100vh;
+    background-color: #1c7e95;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #4b443a;
+}
+
+.content-form{
+    width: 100vw;
+    height: 93vh;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+.information-form {
+    width: 40vw;
+    height: 100%;
+    background: linear-gradient(to bottom right,
+    #1c7e95 0%,
+    #1c7e95 20%,
+    #d5b8a7 100%
+    );
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.information-form h1 {
+    font-size: 4rem;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.information-form h2 {
+    font-size: 1rem;
+    font-weight: 100;
+    text-align: center;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.data-form {
+    width: 60vw;
+    height: 100%;
+    background-color: #f8ede2;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.data-form button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #5abfd3;
+    color: #ffffff;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.data-form button:hover {
+    background-color: #1c7e95;
+}
+
+.data-form button:active {
+    background-color: #1c7e95;
+}
+
+.data-form button:focus {
+    outline: none;
+}
+
+.data-container-form {
+    width: 70%;
+    height: 80%;
+    padding: 2rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    background-color: #ffffff;
+    border-radius: 20px;
+    color: #333;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5%;
+}
+.data-container-form div{
+    height: 7%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5%;
+}

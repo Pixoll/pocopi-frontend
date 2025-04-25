@@ -1,20 +1,23 @@
-// apps/frontend/src/App.tsx
 import { RavenMatrixPage } from "@/pages/RavenMatrixPage";
 import AnalyticsDashboard from "@/pages/AnalyticsDashboard";
 import { JSX, useState, useEffect } from "react";
 import { config } from "@pocopi/config";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
+import Welcome from "@/pages/Welcome";
+import Form from "@/pages/Form";
 
 enum Page {
-  START,
-  RAVEN_MATRIX,
-  END,
-  ADMIN_DASHBOARD,
+    WELCOME,
+    FORM,
+    START,
+    RAVEN_MATRIX,
+    END,
+    ADMIN_DASHBOARD,
 }
 
 export default function App(): JSX.Element {
   // State for navigation and group assignment
-  const [page, setPage] = useState<Page>(Page.START);
+    const [page, setPage] = useState<Page>(Page.WELCOME);
   const [group, setGroup] = useState<string | null>(null);
   const [protocol, setProtocol] = useState<string | null>(null);
 
@@ -22,6 +25,14 @@ export default function App(): JSX.Element {
   const [showAdminPrompt, setShowAdminPrompt] = useState<boolean>(false);
   const [adminPassword, setAdminPassword] = useState<string>("");
   const ADMIN_PASSWORD = "admin123"; // Admin password (should be more secure in production)
+
+    const goToFormPage = () => {
+        setPage(Page.FORM);
+    };
+
+    const goToStartPage = () => {
+        setPage(Page.START);
+    };
 
   // Debug logging
   useEffect(() => {
@@ -110,15 +121,22 @@ export default function App(): JSX.Element {
     );
 
     switch (page) {
+        case Page.WELCOME:
+            return <Welcome goToFormPage={goToFormPage} />;
+
+        case Page.FORM:
+            return <Form goToStartPage={goToStartPage}  />;
+
       case Page.START:
         return (
           <div
             style={{
+                height: "100vh",
+                width: "100vw",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              height: "100vh",
               textAlign: "center",
               padding: "20px",
             }}
