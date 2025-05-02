@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "JSON schema for PoCoPI's configuration file",
+  "title": "JSON schema for PoCoPI's configuration file.",
   "type": "object",
   "properties": {
     "groups": {
       "type": "object",
-      "description": "List of test groups",
+      "description": "List of test groups.",
       "patternProperties": {
         "^\\w+$": {
           "$ref": "#/$defs/group"
@@ -16,7 +16,7 @@
     },
     "protocols": {
       "type": "object",
-      "description": "List of protocols the test groups will use",
+      "description": "List of protocols the test groups will use.",
       "patternProperties": {
         "^\\w+$": {
           "$ref": "#/$defs/protocol"
@@ -27,13 +27,14 @@
     }
   },
   "required": [
-    "groups"
+    "groups",
+    "protocols"
   ],
   "additionalProperties": false,
   "$defs": {
     "group": {
       "type": "object",
-      "description": "A test group",
+      "description": "A test group.",
       "properties": {
         "probability": {
           "type": "number",
@@ -43,7 +44,7 @@
         },
         "protocol": {
           "type": "string",
-          "description": "Name of the protocol to use",
+          "description": "Name of the protocol to use.",
           "minLength": 1
         }
       },
@@ -55,17 +56,17 @@
     },
     "image": {
       "type": "object",
-      "description": "An image",
+      "description": "An image.",
       "properties": {
         "src": {
           "type": "string",
-          "description": "Where the image is located",
+          "description": "Where the image is located.",
           "format": "uri-reference",
           "minLength": 1
         },
         "alt": {
           "type": "string",
-          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)"
+          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)."
         }
       },
       "required": [
@@ -76,21 +77,21 @@
     },
     "option": {
       "type": "object",
-      "description": "An option",
+      "description": "An option.",
       "properties": {
         "src": {
           "type": "string",
-          "description": "Where the image is located",
+          "description": "Where the image is located.",
           "format": "uri-reference",
           "minLength": 1
         },
         "alt": {
           "type": "string",
-          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)"
+          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)."
         },
         "correct": {
           "type": "boolean",
-          "description": "Whether it's the correct option or not. Only one option should be marked as correct.",
+          "description": "Whether it's the correct option or not.",
           "default": false
         }
       },
@@ -102,26 +103,26 @@
     },
     "phase": {
       "type": "object",
-      "description": "Phase of a testing protocol",
+      "description": "Phase of a testing protocol.",
       "properties": {
         "allowPreviousQuestion": {
           "type": "boolean",
-          "description": "Whether to allow going to the previous question or not",
+          "description": "Whether to allow going to the previous question or not.",
           "default": true
         },
         "allowSkipQuestion": {
           "type": "boolean",
-          "description": "Whether to allow skipping the current question without answering it or not",
+          "description": "Whether to allow skipping the current question without answering it or not.",
           "default": true
         },
         "randomize": {
           "type": "boolean",
-          "description": "Whether to randomize the order of the questions or not",
+          "description": "Whether to randomize the order of the questions or not.",
           "default": false
         },
         "questions": {
           "type": "array",
-          "description": "List of questions",
+          "description": "List of questions.",
           "items": {
             "$ref": "#/$defs/question"
           },
@@ -135,41 +136,44 @@
     },
     "protocol": {
       "type": "object",
-      "description": "A testing protocol",
+      "description": "A testing protocol.",
       "properties": {
         "allowPreviousPhase": {
           "type": "boolean",
-          "description": "Whether to allow going to the previous phase or not",
+          "description": "Whether to allow going to the previous phase or not.",
           "default": true
         },
         "allowSkipPhase": {
           "type": "boolean",
-          "description": "Whether to allow skipping the current phase without completing it or not",
+          "description": "Whether to allow skipping the current phase without completing it or not.",
           "default": true
         },
         "randomize": {
           "type": "boolean",
-          "description": "Whether to randomize the order of the phases or not",
+          "description": "Whether to randomize the order of the phases or not.",
           "default": false
         },
         "phases": {
           "type": "array",
-          "description": "Phases of the testing protocol",
+          "description": "Phases of the testing protocol.",
           "items": {
             "$ref": "#/$defs/phase"
           },
           "minLength": 2
         }
       },
+      "required": [
+        "phases"
+      ],
       "additionalProperties": false
     },
     "question": {
       "type": "object",
-      "description": "Test question",
+      "description": "A test question.",
       "properties": {
         "randomize": {
           "type": "boolean",
-          "description": "Whether to randomize the order of the options or not",
+          "description": "Whether to randomize the order of the options or not.",
           "default": false
         },
         "img": {
@@ -177,7 +181,7 @@
         },
         "options": {
           "type": "array",
-          "description": "List of options",
+          "description": "List of options.",
           "items": {
             "$ref": "#/$defs/option"
           },
