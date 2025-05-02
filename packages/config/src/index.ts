@@ -65,7 +65,7 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
         const protocolUsedAt = usedProtocols.get(protocol);
 
         if (protocolUsedAt) {
-            throw new Error(`Protocol '${protocol}' already used at ${protocolUsedAt}.`);
+            console.warn(`Protocol '${protocol}' already used at ${protocolUsedAt}.`);
         }
 
         probabilitySum = probabilitySum.add(probability);
@@ -105,7 +105,7 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
         const usedQuestionImageAt = usedImages.get(questionImage);
 
         if (usedQuestionImageAt) {
-            throw new Error(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
+            console.warn(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
         }
 
         const questionImagePath = imageNameToPath.get(questionImage);
@@ -124,7 +124,7 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
             const usedOptionImageAt = usedImages.get(optionImage);
 
             if (usedOptionImageAt) {
-                throw new Error(`Image '${optionImage}' already used at ${usedOptionImageAt}.`);
+                console.warn(`Image '${optionImage}' already used at ${usedOptionImageAt}.`);
             }
 
             const optionImagePath = imageNameToPath.get(optionImage);
@@ -140,14 +140,14 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
             }
 
             if (foundCorrect !== -1) {
-                throw new Error(`${path}.options[${foundCorrect}] was already marked as correct.`);
+                console.warn(`${path}.options[${foundCorrect}] was already marked as correct.`);
             }
 
             foundCorrect = k;
         }
 
         if (foundCorrect === -1) {
-            throw new Error(`Could not find an option marked as correct in ${path}.`);
+            console.warn(`Could not find an option marked as correct in ${path}.`);
         }
     }
 
