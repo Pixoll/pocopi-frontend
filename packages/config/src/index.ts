@@ -48,16 +48,11 @@ function getConfig(): PoCoPIConfig {
 function exportConfigForBrowser(config: PoCoPIConfig): void {
     const configCopy = JSON.parse(JSON.stringify(config)) as PoCoPIConfig;
 
-    for (const protocol of Object.values(configCopy.protocols)) {
-        for (const phase of protocol.phases) {
-            for (const question of phase.questions) {
-                (question.img as Mutable<Image>).src = getBase64Image(question.img.src);
+    for (const { question } of createQuestionsIterator(configCopy)) {
+        (question.img as Mutable<Image>).src = getBase64Image(question.img.src);
 
-                // eslint-disable-next-line max-depth
-                for (const option of question.options) {
-                    (option as Mutable<Image>).src = getBase64Image(option.src);
-                }
-            }
+        for (const option of question.options) {
+            (option as Mutable<Image>).src = getBase64Image(option.src);
         }
     }
 
@@ -97,32 +92,9 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
         throw new Error("The sum of all the group probabilities should be 1.");
     }
 
-    const iterator = {
-        * [Symbol.iterator]() {
-            for (const [label, protocol] of Object.entries(config.protocols)) {
-                Object.assign(protocol, { ...defaults.protocol, ...protocol });
-
-                for (let i = 0; i < protocol.phases.length; i++) {
-                    const phase = protocol.phases[i]!;
-
-                    Object.assign(phase, { ...defaults.phase, ...phase });
-
-                    for (let j = 0; j < phase.questions.length; j++) {
-                        const question = phase.questions[j]!;
-                        const path = `protocols.${label}.phases[${i}].questions[${j}]`;
-
-                        Object.assign(question, { ...defaults.question, ...question });
-
-                        yield { path, question };
-                    }
-                }
-            }
-        },
-    };
-
     const usedImages = new Map<string, string>();
 
-    for (const { path, question } of iterator) {
+    for (const { path, question } of createQuestionsIterator(config)) {
         const questionImage = question.img.src;
         const usedQuestionImageAt = usedImages.get(questionImage);
 
@@ -176,9 +148,35 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
     return config;
 }
 
+function* createQuestionsIterator(config: PoCoPIConfig): QuestionsIterator {
+    for (const [label, protocol] of Object.entries(config.protocols)) {
+        Object.assign(protocol, { ...defaults.protocol, ...protocol });
+
+        for (let i = 0; i < protocol.phases.length; i++) {
+            const phase = protocol.phases[i]!;
+
+            Object.assign(phase, { ...defaults.phase, ...phase });
+
+            for (let j = 0; j < phase.questions.length; j++) {
+                const question = phase.questions[j]!;
+                const path = `protocols.${label}.phases[${i}].questions[${j}]`;
+
+                Object.assign(question, { ...defaults.question, ...question });
+
+                yield { path, question };
+            }
+        }
+    }
+}
+
 function getBase64Image(filePath: string): string {
     return `data:${mime.getType(filePath)};base64,${readFileSync(filePath, "base64")}`;
 }
+
+type QuestionsIterator = Generator<{
+    path: string;
+    question: PhaseQuestion;
+}, void, unknown>;
 
 type Mutable<T> = {
     -readonly [K in keyof T]: T[K];
