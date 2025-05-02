@@ -39,7 +39,8 @@ function getConfig(): PoCoPIConfig {
         throwFirst: true,
     });
 
-    const config = validateConfig(yamlConfig);
+    const configWithDefaults = applyDefaults(yamlConfig);
+    const config = validateConfig(configWithDefaults);
     exportConfigForBrowser(config);
 
     return config;
@@ -148,20 +149,30 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
     return config;
 }
 
-function* createQuestionsIterator(config: PoCoPIConfig): QuestionsIterator {
-    for (const [label, protocol] of Object.entries(config.protocols)) {
+function applyDefaults(config: PoCoPIConfig): PoCoPIConfig {
+    for (const protocol of Object.values(config.protocols)) {
         Object.assign(protocol, { ...defaults.protocol, ...protocol });
 
+        for (const phase of protocol.phases) {
+            Object.assign(phase, { ...defaults.phase, ...phase });
+
+            for (const question of phase.questions) {
+                Object.assign(question, { ...defaults.question, ...question });
+            }
+        }
+    }
+
+    return config;
+}
+
+function* createQuestionsIterator(config: PoCoPIConfig): QuestionsIterator {
+    for (const [label, protocol] of Object.entries(config.protocols)) {
         for (let i = 0; i < protocol.phases.length; i++) {
             const phase = protocol.phases[i]!;
-
-            Object.assign(phase, { ...defaults.phase, ...phase });
 
             for (let j = 0; j < phase.questions.length; j++) {
                 const question = phase.questions[j]!;
                 const path = `protocols.${label}.phases[${i}].questions[${j}]`;
-
-                Object.assign(question, { ...defaults.question, ...question });
 
                 yield { path, question };
             }
