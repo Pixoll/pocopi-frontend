@@ -1,35 +1,38 @@
-export type PoCoPIConfig = {
-    readonly groups: Readonly<Record<string, Group>>;
-    readonly protocols: Readonly<Record<string, Protocol>>;
+export type RawConfig = {
+    groups: Record<string, RawGroup>;
+    protocols: Record<string, RawProtocol>;
 };
 
-export type Group = {
-    readonly probability: number;
-    readonly protocol: string;
+export type RawGroup = {
+    probability: number;
+    protocol: string;
 };
 
-export type Protocol = {
-    readonly allowPreviousPhase: boolean;
-    readonly allowSkipPhase: boolean;
-    readonly randomize: boolean;
-    readonly phases: readonly ProtocolPhase[];
+export type RawProtocol = {
+    allowPreviousPhase?: boolean;
+    allowSkipPhase?: boolean;
+    randomize?: boolean;
+    phases: RawPhase[];
 };
 
-export type ProtocolPhase = {
-    readonly allowPreviousQuestion: boolean;
-    readonly allowSkipQuestion: boolean;
-    readonly randomize: boolean;
-    readonly questions: readonly PhaseQuestion[];
+export type RawPhase = {
+    allowPreviousQuestion?: boolean;
+    allowSkipQuestion?: boolean;
+    randomize?: boolean;
+    questions: RawQuestion[];
 };
 
-export type PhaseQuestion = {
-    readonly randomize: boolean;
-    readonly img: Image;
-    readonly options: readonly Image[];
+export type RawQuestion = {
+    randomize?: boolean;
+    img: RawImage;
+    options: RawOption[];
 };
 
-export type Image = {
-    readonly src: string;
-    readonly alt: string;
-    readonly correct?: boolean;
+export type RawOption = RawImage & {
+    correct?: boolean;
+};
+
+export type RawImage = {
+    src: string;
+    alt: string;
 };

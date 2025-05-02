@@ -2,13 +2,13 @@
 
 groups:
   control:
-    probability: 0.4
+    probability: 0.3
     protocol: control
   groupA:
-    probability: 0.3
+    probability: 0.5
     protocol: groupA
   groupB:
-    probability: 0.3
+    probability: 0.2
     protocol: groupB
 
 protocols:

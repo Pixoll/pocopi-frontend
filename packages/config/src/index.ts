@@ -4,34 +4,22 @@ import { Validator } from "jsonschema";
 import mime from "mime";
 import path from "path";
 import yaml from "yaml";
-import { Image, PhaseQuestion, PoCoPIConfig, Protocol, ProtocolPhase } from "./types";
+import { Config } from "./config";
+import { RawConfig, RawQuestion } from "./types";
 
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
-
-const defaults = Object.freeze({
-    protocol: Object.freeze({
-        allowPreviousPhase: true,
-        allowSkipPhase: true,
-        randomize: false,
-    } satisfies Partial<Protocol>),
-    phase: Object.freeze({
-        allowPreviousQuestion: true,
-        allowSkipQuestion: true,
-        randomize: false,
-    } satisfies Partial<ProtocolPhase>),
-    question: Object.freeze({
-        randomize: false,
-    } satisfies Partial<PhaseQuestion>),
-});
+const IMAGE_NAME_TO_BASE64 = new Map(readdirSync(IMAGES_DIR).map(filename =>
+    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep))]
+));
 
 export const config = getConfig();
 
-export * from "./types";
+export * from "./config";
 
-function getConfig(): PoCoPIConfig {
+function getConfig(): Config {
     const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
     const jsonSchema = JSON.parse(readFileSync(CONFIG_JSON_SCHEMA_PATH, "utf-8"));
 
@@ -39,37 +27,26 @@ function getConfig(): PoCoPIConfig {
         throwFirst: true,
     });
 
-    const configWithDefaults = applyDefaults(yamlConfig);
-    const config = validateConfig(configWithDefaults);
+    const config = validateConfig(yamlConfig);
     exportConfigForBrowser(config);
 
-    return config;
+    return new Config(config);
 }
 
-function exportConfigForBrowser(config: PoCoPIConfig): void {
-    const configCopy = JSON.parse(JSON.stringify(config)) as PoCoPIConfig;
-
-    for (const { question } of createQuestionsIterator(configCopy)) {
-        (question.img as Mutable<Image>).src = getBase64Image(question.img.src);
-
-        for (const option of question.options) {
-            (option as Mutable<Image>).src = getBase64Image(option.src);
-        }
-    }
-
+function exportConfigForBrowser(config: RawConfig): void {
     const esmScriptPath = path.join(__dirname, "../esm/index.js");
-    const configJson = JSON.stringify(configCopy, null, 4);
+    const configJson = JSON.stringify(config, null, 4);
 
-    const newScript = `export const config = ${configJson};\n`;
+    const newScript = `
+        import { Config } from "./config";
+
+        export const config = new Config(${configJson});
+    `.trim().replace(/^ {8}/m, "") + "\n";
 
     writeFileSync(esmScriptPath, newScript, "utf-8");
 }
 
-function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
-    const imageNameToPath = new Map(readdirSync(IMAGES_DIR).map(filename =>
-        [filename, path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep)]
-    ));
-
+function validateConfig(config: RawConfig): RawConfig {
     const usedProtocols = new Map<string, string>();
     let probabilitySum = new Decimal(0);
 
@@ -103,12 +80,12 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
             console.warn(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
         }
 
-        const questionImagePath = imageNameToPath.get(questionImage);
+        const questionImagePath = IMAGE_NAME_TO_BASE64.get(questionImage);
         if (!questionImagePath) {
             throw new Error(`Image '${questionImage}' not found in images directory.`);
         }
 
-        (question.img as Mutable<Image>).src = questionImagePath;
+        question.img.src = questionImagePath;
         usedImages.set(questionImage, `${path}.img`);
 
         let foundCorrect = -1;
@@ -122,12 +99,12 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
                 console.warn(`Image '${optionImage}' already used at ${usedOptionImageAt}.`);
             }
 
-            const optionImagePath = imageNameToPath.get(optionImage);
+            const optionImagePath = IMAGE_NAME_TO_BASE64.get(optionImage);
             if (!optionImagePath) {
                 throw new Error(`Image '${optionImage}' not found in images directory.`);
             }
 
-            (option as Mutable<Image>).src = optionImagePath;
+            option.src = optionImagePath;
             usedImages.set(optionImage, `${path}.options[${k}]`);
 
             if (!option.correct) {
@@ -149,23 +126,7 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
     return config;
 }
 
-function applyDefaults(config: PoCoPIConfig): PoCoPIConfig {
-    for (const protocol of Object.values(config.protocols)) {
-        Object.assign(protocol, { ...defaults.protocol, ...protocol });
-
-        for (const phase of protocol.phases) {
-            Object.assign(phase, { ...defaults.phase, ...phase });
-
-            for (const question of phase.questions) {
-                Object.assign(question, { ...defaults.question, ...question });
-            }
-        }
-    }
-
-    return config;
-}
-
-function* createQuestionsIterator(config: PoCoPIConfig): QuestionsIterator {
+function* createQuestionsIterator(config: RawConfig): QuestionsIterator {
     for (const [label, protocol] of Object.entries(config.protocols)) {
         for (let i = 0; i < protocol.phases.length; i++) {
             const phase = protocol.phases[i]!;
@@ -186,9 +147,5 @@ function getBase64Image(filePath: string): string {
 
 type QuestionsIterator = Generator<{
     path: string;
-    question: PhaseQuestion;
+    question: RawQuestion;
 }, void, unknown>;
-
-type Mutable<T> = {
-    -readonly [K in keyof T]: T[K];
-};
