@@ -4,12 +4,28 @@ import { Validator } from "jsonschema";
 import mime from "mime";
 import path from "path";
 import yaml from "yaml";
-import { Image, PoCoPIConfig } from "./types";
+import { Image, PhaseQuestion, PoCoPIConfig, Protocol, ProtocolPhase } from "./types";
 
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
+
+const defaults = Object.freeze({
+    protocol: Object.freeze({
+        allowPreviousPhase: true,
+        allowSkipPhase: true,
+        randomize: false,
+    } satisfies Partial<Protocol>),
+    phase: Object.freeze({
+        allowPreviousQuestion: true,
+        allowSkipQuestion: true,
+        randomize: false,
+    } satisfies Partial<ProtocolPhase>),
+    question: Object.freeze({
+        randomize: false,
+    } satisfies Partial<PhaseQuestion>),
+});
 
 export const config = getConfig();
 
@@ -84,12 +100,18 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
     const iterator = {
         * [Symbol.iterator]() {
             for (const [label, protocol] of Object.entries(config.protocols)) {
+                Object.assign(protocol, { ...defaults.protocol, ...protocol });
+
                 for (let i = 0; i < protocol.phases.length; i++) {
                     const phase = protocol.phases[i]!;
+
+                    Object.assign(phase, { ...defaults.phase, ...phase });
 
                     for (let j = 0; j < phase.questions.length; j++) {
                         const question = phase.questions[j]!;
                         const path = `protocols.${label}.phases[${i}].questions[${j}]`;
+
+                        Object.assign(question, { ...defaults.question, ...question });
 
                         yield { path, question };
                     }

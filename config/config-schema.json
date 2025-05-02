@@ -104,6 +104,21 @@
       "type": "object",
       "description": "Phase of a testing protocol",
       "properties": {
+        "allowPreviousQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow going to the previous question or not",
+          "default": true
+        },
+        "allowSkipQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow skipping the current question without answering it or not",
+          "default": true
+        },
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the questions or not",
+          "default": false
+        },
         "questions": {
           "type": "array",
           "description": "List of questions",
@@ -122,6 +137,21 @@
       "type": "object",
       "description": "A testing protocol",
       "properties": {
+        "allowPreviousPhase": {
+          "type": "boolean",
+          "description": "Whether to allow going to the previous phase or not",
+          "default": true
+        },
+        "allowSkipPhase": {
+          "type": "boolean",
+          "description": "Whether to allow skipping the current phase without completing it or not",
+          "default": true
+        },
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the phases or not",
+          "default": false
+        },
         "phases": {
           "type": "array",
           "description": "Phases of the testing protocol",
@@ -137,6 +167,11 @@
       "type": "object",
       "description": "Test question",
       "properties": {
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the options or not",
+          "default": false
+        },
         "img": {
           "$ref": "#/$defs/image"
         },
