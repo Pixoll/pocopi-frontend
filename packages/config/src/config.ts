@@ -43,7 +43,7 @@ export class Config {
 
     public sampleGroup(): Group {
         const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
-        const targetProbability = new Decimal(randomValue.toString().replace(/^\d(\d+)$/, "0.$1"));
+        const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
 
         const n = this.probabilitySums.length;
         let left = 0, right = n - 1;
