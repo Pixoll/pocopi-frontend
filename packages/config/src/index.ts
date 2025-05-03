@@ -130,9 +130,8 @@ function flattenConfig(config: RawConfig): FlatRawConfig {
 
 function validateConfig(config: FlatRawConfig): FlatRawConfig {
     const probabilitySum = Object.values(config.groups).reduce((a, b) => a.add(b.probability), new Decimal(0));
-    console.log(probabilitySum.toString());
     if (probabilitySum.lessThan(1)) {
-        throw new Error("The sum of all the group probabilities should be 1.");
+        throw new Error(`The sum of all the group probabilities should be 1. Got ${probabilitySum.toString()}`);
     }
 
     const usedImages = new Map<string, string>();
