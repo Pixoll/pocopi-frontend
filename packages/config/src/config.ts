@@ -1,18 +1,18 @@
 import Decimal from "decimal.js";
 import { shuffle } from "./shuffle";
-import { RawConfig, RawGroup, RawOption, RawPhase, RawProtocol, RawQuestion } from "./types";
+import { FlatRawConfig, FlatRawGroup, FlatRawPhase, FlatRawProtocol, RawOption, RawQuestion } from "./types";
 
 const defaults = Object.freeze({
     protocol: Object.freeze({
         allowPreviousPhase: true,
         allowSkipPhase: true,
         randomize: false,
-    } satisfies Partial<RawProtocol>),
+    } satisfies Partial<FlatRawProtocol>),
     phase: Object.freeze({
         allowPreviousQuestion: true,
         allowSkipQuestion: true,
         randomize: false,
-    } satisfies Partial<RawPhase>),
+    } satisfies Partial<FlatRawPhase>),
     question: Object.freeze({
         randomize: false,
     } satisfies Partial<RawQuestion>),
@@ -25,8 +25,8 @@ export class Config {
     private readonly groups: readonly Group[];
     private readonly probabilitySums: readonly Decimal[];
 
-    public constructor(rawConfig: RawConfig) {
-        this.groups = Object.freeze(this.parseGroups(rawConfig));
+    public constructor(config: FlatRawConfig) {
+        this.groups = Object.freeze(this.parseGroups(config));
 
         const probabilitySums: Decimal[] = [];
         let lastProbability = new Decimal(0);
@@ -64,14 +64,9 @@ export class Config {
         return this.groups[index]!;
     }
 
-    private parseGroups(rawConfig: RawConfig): Group[] {
-        const groups: Group[] = [];
-
-        for (const [groupLabel, rawGroup] of Object.entries(rawConfig.groups)) {
-            const rawProtocol = rawConfig.protocols[rawGroup.protocol]!;
-            const group = new Group(groupLabel, rawGroup, rawProtocol);
-            groups.push(group);
-        }
+    private parseGroups(config: FlatRawConfig): Group[] {
+        const groups = Object.entries(config.groups)
+            .map(([label, group]) => new Group(label, group));
 
         return groups.sort((a, b) => a.probability.comparedTo(b.probability));
     }
@@ -82,28 +77,26 @@ export class Group {
     public readonly probability: Decimal;
     public readonly protocol: Protocol;
 
-    public constructor(label: string, rawGroup: RawGroup, rawProtocol: RawProtocol) {
+    public constructor(label: string, group: FlatRawGroup) {
         this.label = label;
-        this.probability = new Decimal(rawGroup.probability);
-        this.protocol = new Protocol(rawGroup.protocol, rawProtocol);
+        this.probability = new Decimal(group.probability);
+        this.protocol = new Protocol(group.protocol);
         Object.freeze(this);
     }
 }
 
 export class Protocol {
-    public readonly label: string;
     public readonly allowPreviousPhase: boolean;
     public readonly allowSkipPhase: boolean;
 
     private readonly randomize: boolean;
     private readonly phases: readonly Phase[];
 
-    public constructor(label: string, rawProtocol: RawProtocol) {
-        this.label = label;
-        this.phases = Object.freeze(rawProtocol.phases.map(p => new Phase(p)));
-        this.randomize = rawProtocol.randomize ?? defaults.protocol.randomize;
-        this.allowPreviousPhase = rawProtocol.allowPreviousPhase ?? defaults.protocol.allowPreviousPhase;
-        this.allowSkipPhase = rawProtocol.allowSkipPhase ?? defaults.protocol.allowSkipPhase;
+    public constructor(protocol: FlatRawProtocol) {
+        this.phases = Object.freeze(protocol.phases.map(p => new Phase(p)));
+        this.randomize = protocol.randomize ?? defaults.protocol.randomize;
+        this.allowPreviousPhase = protocol.allowPreviousPhase ?? defaults.protocol.allowPreviousPhase;
+        this.allowSkipPhase = protocol.allowSkipPhase ?? defaults.protocol.allowSkipPhase;
         Object.freeze(this);
     }
 
@@ -121,11 +114,11 @@ export class Phase {
     private readonly randomize: boolean;
     private readonly questions: readonly Question[];
 
-    public constructor(rawPhase: RawPhase) {
-        this.questions = Object.freeze(rawPhase.questions.map(q => new Question(q)));
-        this.randomize = rawPhase.randomize ?? defaults.phase.randomize;
-        this.allowPreviousQuestion = rawPhase.allowPreviousQuestion ?? defaults.phase.allowPreviousQuestion;
-        this.allowSkipQuestion = rawPhase.allowSkipQuestion ?? defaults.phase.allowSkipQuestion;
+    public constructor(phase: FlatRawPhase) {
+        this.questions = Object.freeze(phase.questions.map(q => new Question(q)));
+        this.randomize = phase.randomize ?? defaults.phase.randomize;
+        this.allowPreviousQuestion = phase.allowPreviousQuestion ?? defaults.phase.allowPreviousQuestion;
+        this.allowSkipQuestion = phase.allowSkipQuestion ?? defaults.phase.allowSkipQuestion;
         Object.freeze(this);
     }
 
@@ -142,13 +135,13 @@ export class Question {
     private readonly randomize: boolean;
     private readonly options: readonly Option[];
 
-    public constructor(rawQuestion: RawQuestion) {
-        this.image = Object.freeze(rawQuestion.img);
-        this.options = Object.freeze(rawQuestion.options.map(o => Object.freeze<Option>({
+    public constructor(question: RawQuestion) {
+        this.image = Object.freeze(question.img);
+        this.options = Object.freeze(question.options.map(o => Object.freeze<Option>({
             ...defaults.option,
             ...o,
         })));
-        this.randomize = rawQuestion.randomize ?? defaults.question.randomize;
+        this.randomize = question.randomize ?? defaults.question.randomize;
         Object.freeze(this);
     }
 

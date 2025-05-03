@@ -7,7 +7,7 @@
       "type": "object",
       "description": "List of test groups.",
       "patternProperties": {
-        "^\\w+$": {
+        "^([\\w-]+)$": {
           "$ref": "#/$defs/group"
         }
       },
@@ -18,8 +18,30 @@
       "type": "object",
       "description": "List of protocols the test groups will use.",
       "patternProperties": {
-        "^\\w+$": {
+        "^([\\w-]+)$": {
           "$ref": "#/$defs/protocol"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "phases": {
+      "type": "object",
+      "description": "List of phases the test protocols will use.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/phase"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "questions": {
+      "type": "object",
+      "description": "List of questions the test phases will use.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/question"
         }
       },
       "minProperties": 1,
@@ -43,9 +65,16 @@
           "maximum": 1
         },
         "protocol": {
-          "type": "string",
-          "description": "Name of the protocol to use.",
-          "minLength": 1
+          "oneOf": [
+            {
+              "$ref": "#/$defs/protocol"
+            },
+            {
+              "type": "string",
+              "description": "Name of the protocol to use.",
+              "minLength": 1
+            }
+          ]
         }
       },
       "required": [
@@ -124,9 +153,18 @@
           "type": "array",
           "description": "List of questions.",
           "items": {
-            "$ref": "#/$defs/question"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/question"
+              },
+              {
+                "type": "string",
+                "description": "Name of the test question to use.",
+                "minLength": 1
+              }
+            ]
           },
-          "minLength": 2
+          "minLength": 1
         }
       },
       "required": [
@@ -157,9 +195,18 @@
           "type": "array",
           "description": "Phases of the testing protocol.",
           "items": {
-            "$ref": "#/$defs/phase"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/phase"
+              },
+              {
+                "type": "string",
+                "description": "Name of the test phase to use.",
+                "minLength": 1
+              }
+            ]
           },
-          "minLength": 2
+          "minLength": 1
         }
       },
       "required": [
@@ -185,7 +232,7 @@
           "items": {
             "$ref": "#/$defs/option"
           },
-          "minLength": 2
+          "minLength": 1
         }
       },
       "required": [

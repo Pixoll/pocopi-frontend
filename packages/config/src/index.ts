@@ -5,7 +5,7 @@ import mime from "mime";
 import path from "path";
 import yaml from "yaml";
 import { Config } from "./config";
-import { RawConfig, RawQuestion } from "./types";
+import { FlatRawConfig, RawConfig, RawPhase, RawProtocol, RawQuestion } from "./types";
 
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
@@ -24,16 +24,17 @@ function getConfig(): Config {
     const jsonSchema = JSON.parse(readFileSync(CONFIG_JSON_SCHEMA_PATH, "utf-8"));
 
     new Validator().validate(yamlConfig, jsonSchema, {
-        throwFirst: true,
+        throwAll: true,
     });
 
-    const config = validateConfig(yamlConfig);
+    const flatConfig = flattenConfig(yamlConfig);
+    const config = validateConfig(flatConfig);
     exportConfigForBrowser(config);
 
     return new Config(config);
 }
 
-function exportConfigForBrowser(config: RawConfig): void {
+function exportConfigForBrowser(config: FlatRawConfig): void {
     const esmScriptPath = path.join(__dirname, "../esm/index.js");
     const configJson = JSON.stringify(config, null, 4);
 
@@ -46,27 +47,91 @@ function exportConfigForBrowser(config: RawConfig): void {
     writeFileSync(esmScriptPath, newScript, "utf-8");
 }
 
-function validateConfig(config: RawConfig): RawConfig {
-    const usedProtocols = new Map<string, string>();
-    let probabilitySum = new Decimal(0);
+function flattenConfig(config: RawConfig): FlatRawConfig {
+    const allProtocols: RawProtocol[] = [];
+    const allPhases: RawPhase[] = [];
+    const usedProtocols = new Set<string>();
+    const usedPhases = new Set<string>();
+    const usedQuestions = new Set<string>();
 
-    for (const [label, { protocol, probability }] of Object.entries(config.groups)) {
-        const protocolUsedAt = usedProtocols.get(protocol);
-
-        if (protocolUsedAt) {
-            console.warn(`Protocol '${protocol}' already used at ${protocolUsedAt}.`);
+    for (const group of Object.values(config.groups)) {
+        if (typeof group.protocol === "object") {
+            allProtocols.push(group.protocol);
+            continue;
         }
 
-        probabilitySum = probabilitySum.add(probability);
-
-        if (!(protocol in config.protocols)) {
-            throw new Error(`Protocol '${protocol}' does not exist in protocols list.`);
+        if (usedProtocols.has(group.protocol)) {
+            console.warn(`Protocol '${group.protocol}' already used.`);
         }
 
-        usedProtocols.set(protocol, `groups.${label}`);
+        usedProtocols.add(group.protocol);
+
+        const protocolObject = config.protocols?.[group.protocol];
+        if (!protocolObject) {
+            throw new Error(`Protocol '${group.protocol}' does not exist in protocols list.`);
+        }
+
+        group.protocol = JSON.parse(JSON.stringify(protocolObject)) as RawProtocol;
+        allProtocols.push(group.protocol);
     }
 
-    if (!probabilitySum.equals(1)) {
+    for (const { phases } of allProtocols) {
+        for (let i = 0; i < phases.length; i++) {
+            const phase = phases[i]!;
+            if (typeof phase === "object") {
+                allPhases.push(phase);
+                continue;
+            }
+
+            if (usedPhases.has(phase)) {
+                console.warn(`Phase '${phase}' already used.`);
+            }
+
+            usedPhases.add(phase);
+
+            const phaseObject = config.phases?.[phase];
+            if (!phaseObject) {
+                throw new Error(`Phase '${phase}' does not exist in phases list.`);
+            }
+
+            phases[i] = JSON.parse(JSON.stringify(phaseObject)) as RawPhase;
+            allPhases.push(phases[i] as RawPhase);
+        }
+    }
+
+    for (const { questions } of allPhases) {
+        for (let i = 0; i < questions.length; i++) {
+            const question = questions[i]!;
+            if (typeof question === "object") {
+                continue;
+            }
+
+            if (usedQuestions.has(question)) {
+                console.warn(`Question '${question}' already used.`);
+            }
+
+            usedQuestions.add(question);
+
+            const questionObject = config.questions?.[question];
+            if (!questionObject) {
+                throw new Error(`Question '${question}' does not exist in questions list.`);
+            }
+
+            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawQuestion;
+        }
+    }
+
+    delete config.protocols;
+    delete config.phases;
+    delete config.questions;
+
+    return config as unknown as FlatRawConfig;
+}
+
+function validateConfig(config: FlatRawConfig): FlatRawConfig {
+    const probabilitySum = Object.values(config.groups).reduce((a, b) => a.add(b.probability), new Decimal(0));
+    console.log(probabilitySum.toString());
+    if (probabilitySum.lessThan(1)) {
         throw new Error("The sum of all the group probabilities should be 1.");
     }
 
@@ -126,8 +191,8 @@ function validateConfig(config: RawConfig): RawConfig {
     return config;
 }
 
-function* createQuestionsIterator(config: RawConfig): QuestionsIterator {
-    for (const [label, protocol] of Object.entries(config.protocols)) {
+function* createQuestionsIterator(config: FlatRawConfig): QuestionsIterator {
+    for (const [label, { protocol }] of Object.entries(config.groups)) {
         for (let i = 0; i < protocol.phases.length; i++) {
             const phase = protocol.phases[i]!;
 
