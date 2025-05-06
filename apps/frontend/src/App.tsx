@@ -4,11 +4,9 @@ import { JSX, useState, useEffect } from "react";
 import { config } from "@pocopi/config";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import Welcome from "@/pages/Welcome";
-import Form from "@/pages/Form";
 
 enum Page {
     WELCOME,
-    FORM,
     START,
     RAVEN_MATRIX,
     END,
@@ -17,7 +15,7 @@ enum Page {
 
 export default function App(): JSX.Element {
   // State for navigation and group assignment
-    const [page, setPage] = useState<Page>(Page.WELCOME);
+  const [page, setPage] = useState<Page>(Page.WELCOME);
   const [group, setGroup] = useState<string | null>(null);
   const [protocol, setProtocol] = useState<string | null>(null);
 
@@ -26,13 +24,7 @@ export default function App(): JSX.Element {
   const [adminPassword, setAdminPassword] = useState<string>("");
   const ADMIN_PASSWORD = "admin123"; // Admin password (should be more secure in production)
 
-    const goToFormPage = () => {
-        setPage(Page.FORM);
-    };
-
-    const goToStartPage = () => {
-        setPage(Page.START);
-    };
+  // Removed unused goToStartPage function
 
   // Debug logging
   useEffect(() => {
@@ -121,18 +113,20 @@ export default function App(): JSX.Element {
     );
 
     switch (page) {
-        case Page.WELCOME:
-            return <Welcome goToFormPage={goToFormPage} />;
-
-        case Page.FORM:
-            return <Form goToStartPage={goToStartPage}  />;
+      case Page.WELCOME:
+        // Welcome ahora incluye Form y navega directamente a START
+        return (
+          <Welcome
+            goToStartPage={() => setPage(Page.START)} // Cambia a START desde Welcome
+          />
+        );
 
       case Page.START:
         return (
           <div
             style={{
-                height: "100vh",
-                width: "100vw",
+              height: "100vh",
+              width: "100vw",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
