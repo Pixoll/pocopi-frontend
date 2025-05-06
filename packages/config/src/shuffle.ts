@@ -14,7 +14,7 @@ export function shuffle<T>(array: T[]): T[] {
 function randomIndex(max: number): number {
     const { bytesNeeded, mask } = calculateParameters(max);
     const randomBytes = new Uint8Array(bytesNeeded);
-    let randomValue = 0;
+    let randomValue = max + 1;
 
     while (randomValue > max) {
         randomValue = 0;
