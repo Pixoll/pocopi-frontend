@@ -5,7 +5,6 @@ export declare class Config {
     private readonly probabilitySums;
     constructor(config: FlatRawConfig);
     sampleGroup(): Group;
-    private parseGroups;
 }
 export type Group = {
     readonly label: string;

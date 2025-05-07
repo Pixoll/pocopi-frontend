@@ -33,7 +33,7 @@ export class Config {
     private readonly probabilitySums: readonly Decimal[];
 
     public constructor(config: FlatRawConfig) {
-        this.groups = Object.freeze(this.parseGroups(config));
+        this.groups = Object.freeze(parseGroups(config));
 
         const probabilitySums: Decimal[] = [];
         let lastProbability = new Decimal(0);
@@ -70,16 +70,16 @@ export class Config {
 
         return makeGroup(this.groups[index]!);
     }
+}
 
-    private parseGroups(config: FlatRawConfig): readonly FlatRawGroupWithLabel[] {
-        const groups = Object.entries(config.groups)
-            .map<FlatRawGroupWithLabel>(([label, group]) => ({
-                ...group,
-                label,
-            }));
+function parseGroups(config: FlatRawConfig): readonly FlatRawGroupWithLabel[] {
+    const groups = Object.entries(config.groups)
+        .map<FlatRawGroupWithLabel>(([label, group]) => ({
+            ...group,
+            label,
+        }));
 
-        return groups.sort((a, b) => new Decimal(a.probability).comparedTo(b.probability));
-    }
+    return groups.sort((a, b) => new Decimal(a.probability).comparedTo(b.probability));
 }
 
 function makeGroup(group: FlatRawGroupWithLabel): Group {
