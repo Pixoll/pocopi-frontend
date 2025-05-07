@@ -52,8 +52,8 @@ export class Config {
         const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
         const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
 
-        const n = this.probabilitySums.length;
-        let left = 0, right = n - 1;
+        let left = 0;
+        let right = this.probabilitySums.length - 1;
         let index = 0;
 
         while (left <= right) {
