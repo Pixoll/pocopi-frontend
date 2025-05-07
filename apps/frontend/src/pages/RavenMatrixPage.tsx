@@ -1,20 +1,20 @@
-import { config } from "@pocopi/config";
+import { Group } from "@pocopi/config";
 import { useState } from "react";
 import styles from "./RavenMatrixPage.module.css";
 
 type RavenMatrixPageProps = {
-  protocol: string;
+  group: Group;
   goToNextPage: () => void;
 };
 
-export function RavenMatrixPage({ protocol, goToNextPage }: RavenMatrixPageProps) {
+export function RavenMatrixPage({ group, goToNextPage }: RavenMatrixPageProps) {
   const [phase, setPhase] = useState<number>(0);
   const [question, setQuestion] = useState<number>(0);
   const [selected, setSelected] = useState<string>("");
 
-  const { phases } = config.protocols[protocol];
+  const { phases } = group.protocol;
   const { questions } = phases[phase];
-  const { img, options: tempOptions } = questions[question];
+  const { image, options: tempOptions } = questions[question];
 
   const options = tempOptions.map(option => {
     const base64 = option.src.split(";")[1].slice(7);
@@ -66,7 +66,7 @@ export function RavenMatrixPage({ protocol, goToNextPage }: RavenMatrixPageProps
 
   return <div className={styles.ravenMatrixPage}>
     <div className={styles.ravenMatrixContainer} draggable={false}>
-      <img className={styles.ravenMatrix} src={img.src} alt={img.alt} draggable={false}/>
+      <img className={styles.ravenMatrix} src={image.src} alt={image.alt} draggable={false}/>
       <div
         className={styles.ravenOptionsContainer}
         draggable={false}
