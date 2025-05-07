@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { FlatRawConfig, FlatRawGroup, FlatRawPhase, FlatRawProtocol, RawQuestion } from "./types";
+import { FlatRawConfig } from "./raw-types";
 export declare class Config {
     private readonly groups;
     private readonly probabilitySums;
@@ -7,35 +7,25 @@ export declare class Config {
     sampleGroup(): Group;
     private parseGroups;
 }
-export declare class Group {
+export type Group = {
     readonly label: string;
     readonly probability: Decimal;
     readonly protocol: Protocol;
-    constructor(label: string, group: FlatRawGroup);
-}
-export declare class Protocol {
+};
+export type Protocol = {
     readonly allowPreviousPhase: boolean;
     readonly allowSkipPhase: boolean;
-    private readonly randomize;
-    private readonly phases;
-    constructor(protocol: FlatRawProtocol);
-    getPhases(): readonly Phase[];
-}
-export declare class Phase {
+    readonly phases: readonly Phase[];
+};
+export type Phase = {
     readonly allowPreviousQuestion: boolean;
     readonly allowSkipQuestion: boolean;
-    private readonly randomize;
-    private readonly questions;
-    constructor(phase: FlatRawPhase);
-    getQuestions(): readonly Question[];
-}
-export declare class Question {
+    readonly questions: readonly Question[];
+};
+export type Question = {
     readonly image: Image;
-    private readonly randomize;
-    private readonly options;
-    constructor(question: RawQuestion);
-    getOptions(): readonly Option[];
-}
+    readonly options: readonly Option[];
+};
 export type Option = Image & {
     readonly correct: boolean;
 };

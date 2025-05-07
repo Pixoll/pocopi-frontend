@@ -1,6 +1,13 @@
 import Decimal from "decimal.js";
+import {
+    FlatRawConfig,
+    FlatRawGroupWithLabel,
+    FlatRawPhase,
+    FlatRawProtocol,
+    RawOption,
+    RawQuestion,
+} from "./raw-types";
 import { shuffle } from "./shuffle";
-import { FlatRawConfig, FlatRawGroup, FlatRawPhase, FlatRawProtocol, RawOption, RawQuestion } from "./types";
 
 const defaults = Object.freeze({
     protocol: Object.freeze({
@@ -22,7 +29,7 @@ const defaults = Object.freeze({
 });
 
 export class Config {
-    private readonly groups: readonly Group[];
+    private readonly groups: readonly FlatRawGroupWithLabel[];
     private readonly probabilitySums: readonly Decimal[];
 
     public constructor(config: FlatRawConfig) {
@@ -31,7 +38,7 @@ export class Config {
         const probabilitySums: Decimal[] = [];
         let lastProbability = new Decimal(0);
 
-        for (const { probability } of this.groups) {
+        for (const { probability } of Object.values(this.groups)) {
             lastProbability = lastProbability.add(probability);
             probabilitySums.push(lastProbability);
         }
@@ -61,96 +68,89 @@ export class Config {
             }
         }
 
-        return this.groups[index]!;
+        return makeGroup(this.groups[index]!);
     }
 
-    private parseGroups(config: FlatRawConfig): Group[] {
+    private parseGroups(config: FlatRawConfig): readonly FlatRawGroupWithLabel[] {
         const groups = Object.entries(config.groups)
-            .map(([label, group]) => new Group(label, group));
+            .map<FlatRawGroupWithLabel>(([label, group]) => ({
+                ...group,
+                label,
+            }));
 
-        return groups.sort((a, b) => a.probability.comparedTo(b.probability));
+        return groups.sort((a, b) => new Decimal(a.probability).comparedTo(b.probability));
     }
 }
 
-export class Group {
-    public readonly label: string;
-    public readonly probability: Decimal;
-    public readonly protocol: Protocol;
-
-    public constructor(label: string, group: FlatRawGroup) {
-        this.label = label;
-        this.probability = new Decimal(group.probability);
-        this.protocol = new Protocol(group.protocol);
-        Object.freeze(this);
-    }
+function makeGroup(group: FlatRawGroupWithLabel): Group {
+    return Object.freeze({
+        label: group.label,
+        probability: new Decimal(group.probability),
+        protocol: makeProtocol(group.protocol),
+    });
 }
 
-export class Protocol {
-    public readonly allowPreviousPhase: boolean;
-    public readonly allowSkipPhase: boolean;
+function makeProtocol(protocol: FlatRawProtocol): Protocol {
+    const randomize = protocol.randomize ?? defaults.protocol.randomize;
+    const phases = protocol.phases.map(makePhase);
 
-    private readonly randomize: boolean;
-    private readonly phases: readonly Phase[];
-
-    public constructor(protocol: FlatRawProtocol) {
-        this.phases = Object.freeze(protocol.phases.map(p => new Phase(p)));
-        this.randomize = protocol.randomize ?? defaults.protocol.randomize;
-        this.allowPreviousPhase = protocol.allowPreviousPhase ?? defaults.protocol.allowPreviousPhase;
-        this.allowSkipPhase = protocol.allowSkipPhase ?? defaults.protocol.allowSkipPhase;
-        Object.freeze(this);
-    }
-
-    public getPhases(): readonly Phase[] {
-        return this.randomize
-            ? Object.freeze(shuffle(this.phases.map(o => o)))
-            : this.phases;
-    }
+    return Object.freeze({
+        allowPreviousPhase: protocol.allowPreviousPhase ?? defaults.protocol.allowPreviousPhase,
+        allowSkipPhase: protocol.allowSkipPhase ?? defaults.protocol.allowSkipPhase,
+        phases: Object.freeze(randomize ? shuffle(phases) : phases),
+    });
 }
 
-export class Phase {
-    public readonly allowPreviousQuestion: boolean;
-    public readonly allowSkipQuestion: boolean;
+function makePhase(phase: FlatRawPhase): Phase {
+    const randomize = phase.randomize ?? defaults.phase.randomize;
+    const questions = phase.questions.map(makeQuestion);
 
-    private readonly randomize: boolean;
-    private readonly questions: readonly Question[];
-
-    public constructor(phase: FlatRawPhase) {
-        this.questions = Object.freeze(phase.questions.map(q => new Question(q)));
-        this.randomize = phase.randomize ?? defaults.phase.randomize;
-        this.allowPreviousQuestion = phase.allowPreviousQuestion ?? defaults.phase.allowPreviousQuestion;
-        this.allowSkipQuestion = phase.allowSkipQuestion ?? defaults.phase.allowSkipQuestion;
-        Object.freeze(this);
-    }
-
-    public getQuestions(): readonly Question[] {
-        return this.randomize
-            ? Object.freeze(shuffle(this.questions.map(o => o)))
-            : this.questions;
-    }
+    return Object.freeze({
+        allowPreviousQuestion: phase.allowPreviousQuestion ?? defaults.phase.allowPreviousQuestion,
+        allowSkipQuestion: phase.allowSkipQuestion ?? defaults.phase.allowSkipQuestion,
+        questions: Object.freeze(randomize ? shuffle(questions) : questions),
+    });
 }
 
-export class Question {
-    public readonly image: Image;
+function makeQuestion(question: RawQuestion): Question {
+    const randomize = question.randomize ?? defaults.question.randomize;
+    const options = question.options.map(makeOption);
 
-    private readonly randomize: boolean;
-    private readonly options: readonly Option[];
-
-    public constructor(question: RawQuestion) {
-        this.image = Object.freeze(question.img);
-        this.options = Object.freeze(question.options.map(o => Object.freeze<Option>({
-            ...defaults.option,
-            ...o,
-        })));
-        this.randomize = question.randomize ?? defaults.question.randomize;
-        Object.freeze(this);
-    }
-
-    public getOptions(): readonly Option[] {
-        return this.randomize
-            ? Object.freeze(shuffle(this.options.map(o => o)))
-            : this.options;
-    }
+    return Object.freeze({
+        image: Object.freeze(question.img),
+        options: Object.freeze(randomize ? shuffle(options) : options),
+    });
 }
+
+function makeOption(option: RawOption): Option {
+    return Object.freeze({
+        ...defaults.option,
+        ...option,
+    });
+}
+
+export type Group = {
+    readonly label: string;
+    readonly probability: Decimal;
+    readonly protocol: Protocol;
+};
+
+export type Protocol = {
+    readonly allowPreviousPhase: boolean;
+    readonly allowSkipPhase: boolean;
+    readonly phases: readonly Phase[];
+};
+
+export type Phase = {
+    readonly allowPreviousQuestion: boolean;
+    readonly allowSkipQuestion: boolean;
+    readonly questions: readonly Question[];
+};
+
+export type Question = {
+    readonly image: Image;
+    readonly options: readonly Option[];
+};
 
 export type Option = Image & {
     readonly correct: boolean;

@@ -5,7 +5,7 @@ import mime from "mime";
 import path from "path";
 import yaml from "yaml";
 import { Config } from "./config";
-import { FlatRawConfig, RawConfig, RawPhase, RawProtocol, RawQuestion } from "./types";
+import { FlatRawConfig, RawConfig, RawPhase, RawProtocol, RawQuestion } from "./raw-types";
 
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
