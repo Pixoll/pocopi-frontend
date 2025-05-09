@@ -4,116 +4,152 @@ import { Validator } from "jsonschema";
 import mime from "mime";
 import path from "path";
 import yaml from "yaml";
-import { Image, PoCoPIConfig } from "./types";
+import { Config } from "./config";
+import { FlatRawConfig, RawConfig, RawPhase, RawProtocol, RawQuestion } from "./raw-types";
 
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
+const IMAGE_NAME_TO_BASE64 = new Map(readdirSync(IMAGES_DIR).map(filename =>
+    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep))]
+));
 
 export const config = getConfig();
 
-export * from "./types";
+export * from "./config";
 
-function getConfig(): PoCoPIConfig {
+function getConfig(): Config {
     const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
     const jsonSchema = JSON.parse(readFileSync(CONFIG_JSON_SCHEMA_PATH, "utf-8"));
 
     new Validator().validate(yamlConfig, jsonSchema, {
-        throwFirst: true,
+        throwAll: true,
     });
 
-    const config = validateConfig(yamlConfig);
+    const flatConfig = flattenConfig(yamlConfig);
+    const config = validateConfig(flatConfig);
     exportConfigForBrowser(config);
 
-    return config;
+    return new Config(config);
 }
 
-function exportConfigForBrowser(config: PoCoPIConfig): void {
-    const configCopy = JSON.parse(JSON.stringify(config)) as PoCoPIConfig;
-
-    for (const protocol of Object.values(configCopy.protocols)) {
-        for (const phase of protocol.phases) {
-            for (const question of phase.questions) {
-                (question.img as Mutable<Image>).src = getBase64Image(question.img.src);
-
-                // eslint-disable-next-line max-depth
-                for (const option of question.options) {
-                    (option as Mutable<Image>).src = getBase64Image(option.src);
-                }
-            }
-        }
-    }
-
+function exportConfigForBrowser(config: FlatRawConfig): void {
     const esmScriptPath = path.join(__dirname, "../esm/index.js");
-    const configJson = JSON.stringify(configCopy, null, 4);
+    const configJson = JSON.stringify(config, null, 4);
 
-    const newScript = `export const config = ${configJson};\n`;
+    const newScript = `
+        import { Config } from "./config";
+
+        export const config = new Config(${configJson});
+    `.trim().replace(/^ {8}/m, "") + "\n";
 
     writeFileSync(esmScriptPath, newScript, "utf-8");
 }
 
-function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
-    const imageNameToPath = new Map(readdirSync(IMAGES_DIR).map(filename =>
-        [filename, path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep)]
-    ));
+function flattenConfig(config: RawConfig): FlatRawConfig {
+    const allProtocols: RawProtocol[] = [];
+    const allPhases: RawPhase[] = [];
+    const usedProtocols = new Set<string>();
+    const usedPhases = new Set<string>();
+    const usedQuestions = new Set<string>();
 
-    const usedProtocols = new Map<string, string>();
-    let probabilitySum = new Decimal(0);
-
-    for (const [label, { protocol, probability }] of Object.entries(config.groups)) {
-        const protocolUsedAt = usedProtocols.get(protocol);
-
-        if (protocolUsedAt) {
-            throw new Error(`Protocol '${protocol}' already used at ${protocolUsedAt}.`);
+    for (const group of Object.values(config.groups)) {
+        if (typeof group.protocol === "object") {
+            allProtocols.push(group.protocol);
+            continue;
         }
 
-        probabilitySum = probabilitySum.add(probability);
-
-        if (!(protocol in config.protocols)) {
-            throw new Error(`Protocol '${protocol}' does not exist in protocols list.`);
+        if (usedProtocols.has(group.protocol)) {
+            console.warn(`Protocol '${group.protocol}' already used.`);
         }
 
-        usedProtocols.set(protocol, `groups.${label}`);
+        usedProtocols.add(group.protocol);
+
+        const protocolObject = config.protocols?.[group.protocol];
+        if (!protocolObject) {
+            throw new Error(`Protocol '${group.protocol}' does not exist in protocols list.`);
+        }
+
+        group.protocol = JSON.parse(JSON.stringify(protocolObject)) as RawProtocol;
+        allProtocols.push(group.protocol);
     }
 
-    if (!probabilitySum.equals(1)) {
-        throw new Error("The sum of all the group probabilities should be 1.");
-    }
-
-    const iterator = {
-        * [Symbol.iterator]() {
-            for (const [label, protocol] of Object.entries(config.protocols)) {
-                for (let i = 0; i < protocol.phases.length; i++) {
-                    const phase = protocol.phases[i]!;
-
-                    for (let j = 0; j < phase.questions.length; j++) {
-                        const question = phase.questions[j]!;
-                        const path = `protocols.${label}.phases[${i}].questions[${j}]`;
-
-                        yield { path, question };
-                    }
-                }
+    for (const { phases } of allProtocols) {
+        for (let i = 0; i < phases.length; i++) {
+            const phase = phases[i]!;
+            if (typeof phase === "object") {
+                allPhases.push(phase);
+                continue;
             }
-        },
-    };
+
+            if (usedPhases.has(phase)) {
+                console.warn(`Phase '${phase}' already used.`);
+            }
+
+            usedPhases.add(phase);
+
+            const phaseObject = config.phases?.[phase];
+            if (!phaseObject) {
+                throw new Error(`Phase '${phase}' does not exist in phases list.`);
+            }
+
+            phases[i] = JSON.parse(JSON.stringify(phaseObject)) as RawPhase;
+            allPhases.push(phases[i] as RawPhase);
+        }
+    }
+
+    for (const { questions } of allPhases) {
+        for (let i = 0; i < questions.length; i++) {
+            const question = questions[i]!;
+            if (typeof question === "object") {
+                continue;
+            }
+
+            if (usedQuestions.has(question)) {
+                console.warn(`Question '${question}' already used.`);
+            }
+
+            usedQuestions.add(question);
+
+            const questionObject = config.questions?.[question];
+            if (!questionObject) {
+                throw new Error(`Question '${question}' does not exist in questions list.`);
+            }
+
+            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawQuestion;
+        }
+    }
+
+    delete config.protocols;
+    delete config.phases;
+    delete config.questions;
+
+    return config as unknown as FlatRawConfig;
+}
+
+function validateConfig(config: FlatRawConfig): FlatRawConfig {
+    const probabilitySum = Object.values(config.groups).reduce((a, b) => a.add(b.probability), new Decimal(0));
+    if (probabilitySum.lessThan(1)) {
+        throw new Error(`The sum of all the group probabilities should be 1. Got ${probabilitySum.toString()}`);
+    }
 
     const usedImages = new Map<string, string>();
 
-    for (const { path, question } of iterator) {
+    for (const { path, question } of createQuestionsIterator(config)) {
         const questionImage = question.img.src;
         const usedQuestionImageAt = usedImages.get(questionImage);
 
         if (usedQuestionImageAt) {
-            throw new Error(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
+            console.warn(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
         }
 
-        const questionImagePath = imageNameToPath.get(questionImage);
+        const questionImagePath = IMAGE_NAME_TO_BASE64.get(questionImage);
         if (!questionImagePath) {
             throw new Error(`Image '${questionImage}' not found in images directory.`);
         }
 
-        (question.img as Mutable<Image>).src = questionImagePath;
+        question.img.src = questionImagePath;
         usedImages.set(questionImage, `${path}.img`);
 
         let foundCorrect = -1;
@@ -124,15 +160,15 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
             const usedOptionImageAt = usedImages.get(optionImage);
 
             if (usedOptionImageAt) {
-                throw new Error(`Image '${optionImage}' already used at ${usedOptionImageAt}.`);
+                console.warn(`Image '${optionImage}' already used at ${usedOptionImageAt}.`);
             }
 
-            const optionImagePath = imageNameToPath.get(optionImage);
+            const optionImagePath = IMAGE_NAME_TO_BASE64.get(optionImage);
             if (!optionImagePath) {
                 throw new Error(`Image '${optionImage}' not found in images directory.`);
             }
 
-            (option as Mutable<Image>).src = optionImagePath;
+            option.src = optionImagePath;
             usedImages.set(optionImage, `${path}.options[${k}]`);
 
             if (!option.correct) {
@@ -140,24 +176,40 @@ function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
             }
 
             if (foundCorrect !== -1) {
-                throw new Error(`${path}.options[${foundCorrect}] was already marked as correct.`);
+                console.warn(`${path}.options[${foundCorrect}] was already marked as correct.`);
             }
 
             foundCorrect = k;
         }
 
         if (foundCorrect === -1) {
-            throw new Error(`Could not find an option marked as correct in ${path}.`);
+            console.warn(`Could not find an option marked as correct in ${path}.`);
         }
     }
 
     return config;
 }
 
+function* createQuestionsIterator(config: FlatRawConfig): QuestionsIterator {
+    for (const [label, { protocol }] of Object.entries(config.groups)) {
+        for (let i = 0; i < protocol.phases.length; i++) {
+            const phase = protocol.phases[i]!;
+
+            for (let j = 0; j < phase.questions.length; j++) {
+                const question = phase.questions[j]!;
+                const path = `protocols.${label}.phases[${i}].questions[${j}]`;
+
+                yield { path, question };
+            }
+        }
+    }
+}
+
 function getBase64Image(filePath: string): string {
     return `data:${mime.getType(filePath)};base64,${readFileSync(filePath, "base64")}`;
 }
 
-type Mutable<T> = {
-    -readonly [K in keyof T]: T[K];
-};
+type QuestionsIterator = Generator<{
+    path: string;
+    question: RawQuestion;
+}, void, unknown>;

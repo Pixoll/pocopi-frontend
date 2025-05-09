@@ -1,4 +1,5 @@
 import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
+import { config } from "@pocopi/config";
 import { JSX, useState } from "react";
 
 enum Page {
@@ -7,12 +8,12 @@ enum Page {
 }
 
 export default function App(): JSX.Element {
-  const [protocol] = useState<string>("control");
+  const [group] = useState(config.sampleGroup());
   const [page, setPage] = useState<Page>(Page.RAVEN_MATRIX);
 
   switch (page) {
     case Page.RAVEN_MATRIX:
-      return <RavenMatrixPage protocol={protocol} goToNextPage={() => setPage(Page.END)}/>;
+      return <RavenMatrixPage group={group} goToNextPage={() => setPage(Page.END)}/>;
     case Page.END:
       return <span>Thanks!</span>;
   }
