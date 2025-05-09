@@ -77,7 +77,7 @@ function Form({ goToStartPage }: { goToStartPage: () => void }) {
                             <button onClick={goToStartPage}>Continuar</button>
                         </div>
                     </div>
-                </div>
+                </div>  
                 <Footer />
             </div>
         </div>

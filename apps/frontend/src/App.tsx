@@ -31,8 +31,13 @@ export default function App(): JSX.Element {
     console.log("App component mounted. Current page:", page);
     console.log("Available protocols:", Object.keys(config.protocols));
     console.log("Available groups:", Object.keys(config.groups));
-  }, []);
-
+  }, [page]);
+  // Removed the dependency array to avoid the warning
+  useEffect(() => {
+    console.log("App component mounted. Current page:", page);
+    console.log("Available protocols:", Object.keys(config.protocols));
+    console.log("Available groups:", Object.keys(config.groups));
+  });
   // Assign group based on probabilities when test starts
   useEffect(() => {
     if (page !== Page.RAVEN_MATRIX || group !== null) return;

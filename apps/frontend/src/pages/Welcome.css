@@ -1,11 +1,7 @@
 .general-welcome {
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(to bottom right,
-    #1c7e95 0%,
-    #1c7e95 20%,
-    #d5b8a7 100%
-    );
+    background: linear-gradient(to bottom right,#ff7e5f, #feb47b);
 
     display: flex;
     flex-direction: column;
