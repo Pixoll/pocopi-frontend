@@ -5,11 +5,9 @@ const Footer: React.FC = () => {
     return (
         <div className="footer">
             <div className="footer-left">
-                &copy; {new Date().getFullYear()} LMAO. Poner informacion que se estime conveniente.
+                    Estás colaborando con una investigación en Psicología UdeC ¡Gracias por tu apoyo!
             </div>
             <div className="footer-right">
-                <a>Términos</a>
-                <a>Privacidad</a>
             </div>
         </div>
     );
