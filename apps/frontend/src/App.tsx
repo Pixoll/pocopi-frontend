@@ -2,6 +2,7 @@ import { JSX, useState, useEffect } from "react";
 import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
 import HomePage from "@/pages/HomePage";
 import CompletionModal from "@/components/CompletionModal";
+import AnalyticsDashboard from "@/pages/AnalyticsDashboard";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { useTheme } from "@/hooks/useTheme";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,6 +11,7 @@ enum Page {
   HOME,
   RAVEN_MATRIX,
   END,
+  DASHBOARD,
 }
 
 interface StudentData {
@@ -45,21 +47,28 @@ export default function App(): JSX.Element {
     setPage(Page.HOME);
   };
 
+  const goToDashboard = () => {
+    setPage(Page.DASHBOARD);
+  };
+
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
-        return <HomePage onStartTest={startTest} />;
+        return <HomePage onStartTest={startTest} onDashboard={goToDashboard} />;
       case Page.RAVEN_MATRIX:
         return (
           <RavenMatrixPage
             protocol={protocol}
             goToNextPage={() => setPage(Page.END)}
+            studentData={studentData}
           />
         );
       case Page.END:
         return (
           <CompletionModal studentData={studentData} onBackToHome={goToHome} />
         );
+      case Page.DASHBOARD:
+        return <AnalyticsDashboard onBack={goToHome} />;
     }
   };
 

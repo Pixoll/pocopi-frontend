@@ -15,6 +15,7 @@ import {
   faFileSignature,
   faArrowRight,
   faBrain,
+  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import StudentFormModal from "@/components/StudentFormModal";
@@ -29,9 +30,10 @@ interface StudentData {
 
 interface HomePageProps {
   onStartTest: (data: StudentData) => void;
+  onDashboard: () => void;
 }
 
-const HomePage = ({ onStartTest }: HomePageProps) => {
+const HomePage = ({ onStartTest, onDashboard }: HomePageProps) => {
   const [showModal, setShowModal] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [studentData, setStudentData] = useState<StudentData | null>(null);
@@ -123,12 +125,11 @@ const HomePage = ({ onStartTest }: HomePageProps) => {
               <h2 className="h4 mb-4">About this test</h2>
 
               <p className="mb-4">
-                Raven's Progressive Matrices Test is one of the most widely
-                used tools for assessing non-verbal intelligence and reasoning.
-                In this test, you will be presented with a series of matrices
-                or designs with a missing part. Your task will be to select,
-                from several options, the one that correctly completes the
-                pattern.
+                Raven's Progressive Matrices Test is one of the most widely used
+                tools for assessing non-verbal intelligence and reasoning. In
+                this test, you will be presented with a series of matrices or
+                designs with a missing part. Your task will be to select, from
+                several options, the one that correctly completes the pattern.
               </p>
 
               <Row className="gx-4 mb-4">
@@ -174,8 +175,8 @@ const HomePage = ({ onStartTest }: HomePageProps) => {
                     <div>
                       <h5 className="h6 mb-2">Voluntary participation</h5>
                       <p className="small text-secondary mb-0">
-                        Your participation is completely voluntary, and the
-                        data will be treated confidentially.
+                        Your participation is completely voluntary, and the data
+                        will be treated confidentially.
                       </p>
                     </div>
                   </div>
@@ -195,18 +196,15 @@ const HomePage = ({ onStartTest }: HomePageProps) => {
                       The data provided will be treated with confidentiality.
                     </li>
                     <li>
-                      The information collected will be used solely for
-                      academic purposes.
+                      The information collected will be used solely for academic
+                      purposes.
                     </li>
-                    <li>
-                      You can leave the test at any time if you wish.
-                    </li>
+                    <li>You can leave the test at any time if you wish.</li>
                   </ul>
                   <p>
                     The test has no time limit, but it is recommended to
-                    complete it without interruptions. If you have any
-                    questions about the study, you can contact the research
-                    team at{" "}
+                    complete it without interruptions. If you have any questions
+                    about the study, you can contact the research team at{" "}
                     <a href="mailto:research@example.com">
                       research@example.com
                     </a>
@@ -274,9 +272,7 @@ const HomePage = ({ onStartTest }: HomePageProps) => {
                       </p>
                     </Col>
                     <Col md={6}>
-                      <h5 className="h6 fw-bold">
-                        How will my data be used?
-                      </h5>
+                      <h5 className="h6 fw-bold">How will my data be used?</h5>
                       <p className="small text-secondary mb-3">
                         The data will be used solely for academic purposes and
                         will be presented anonymously.
@@ -301,6 +297,25 @@ const HomePage = ({ onStartTest }: HomePageProps) => {
           />
         </Col>
       </Row>
+
+      {/* Dashboard Access Button */}
+      <Button
+        variant={isDarkMode ? "dark" : "light"}
+        onClick={onDashboard}
+        className="position-fixed bottom-0 start-0 m-4 rounded-circle d-flex align-items-center justify-content-center p-0 shadow"
+        style={{
+          width: "48px",
+          height: "48px",
+          zIndex: 1050,
+        }}
+        title="Admin Dashboard"
+      >
+        <FontAwesomeIcon
+          icon={faChartLine}
+          className={isDarkMode ? "text-primary" : "text-primary"}
+        />
+      </Button>
+
       <ThemeSwitcher />
     </Container>
   );

@@ -1,5 +1,5 @@
 import { config } from "@pocopi/config";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Button, ProgressBar } from "react-bootstrap";
 import { useTheme } from "@/hooks/useTheme";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,22 +10,64 @@ import {
   faAngleLeft,
   faAngleRight,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  RavenAnalytics,
+  saveResultsToStorage,
+  saveStudentDataToStorage,
+} from "@/utils/RavenAnalytics";
 import styles from "./RavenMatrixPage.module.css";
 
 type RavenMatrixPageProps = {
   protocol: string;
   goToNextPage: () => void;
+  studentData?: {
+    name: string;
+    id: string;
+    email: string;
+    age: string;
+  } | null;
 };
 
 export function RavenMatrixPage({
   protocol,
   goToNextPage,
+  studentData,
 }: RavenMatrixPageProps) {
   const [phase, setPhase] = useState<number>(0);
   const [question, setQuestion] = useState<number>(0);
   const [selected, setSelected] = useState<string>("");
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+
+  // Create a ref to store the analytics instance
+  const analyticsRef = useRef<RavenAnalytics | null>(null);
+
+  // Initialize analytics on component mount
+  useEffect(() => {
+    // Create new analytics instance
+    analyticsRef.current = new RavenAnalytics("default_group", protocol);
+
+    // If student data exists, set the participant ID
+    if (studentData && studentData.id) {
+      analyticsRef.current.setParticipantId(studentData.id);
+
+      // Save student data to localStorage
+      saveStudentDataToStorage(studentData.id, {
+        name: studentData.name,
+        email: studentData.email,
+        age: studentData.age,
+      });
+    }
+
+    // Start tracking the first question
+    analyticsRef.current.startQuestion(phase, question);
+
+    // Cleanup on unmount
+    return () => {
+      // If analytics exists and user leaves without completing,
+      // we can optionally save partial results here
+    };
+  });
 
   const { phases } = config.protocols[protocol];
   const { questions } = phases[phase];
@@ -36,7 +78,13 @@ export function RavenMatrixPage({
     const half = Math.round(base64.length / 2);
     const id = base64.substring(half - 10, half + 10);
 
-    return { id, ...option };
+    return {
+      id,
+      ...option,
+      isCorrect:
+        String(option.correct).toLowerCase() === "true" ||
+        option.correct === true,
+    };
   });
 
   const optionsColumns = Math.ceil(options.length / 2);
@@ -56,32 +104,112 @@ export function RavenMatrixPage({
   const progressPercentage = (currentQuestionNumber / totalQuestions) * 100;
 
   const handlePreviousPhaseClick = () => {
+    if (phase <= 0) return;
+
+    // Complete current question if selected
+    if (selected && analyticsRef.current) {
+      const selectedOption = options.find((o) => o.id === selected);
+      if (selectedOption) {
+        analyticsRef.current.completeQuestion(
+          selected,
+          !!selectedOption.isCorrect
+        );
+      }
+    }
+
+    // Reset selection
+    setSelected("");
     setQuestion(0);
     setPhase(phase - 1);
+
+    // Start tracking the new question
+    if (analyticsRef.current) {
+      analyticsRef.current.startQuestion(phase - 1, 0);
+    }
   };
 
   const handleNextPhaseClick = () => {
+    // Complete current question if selected
+    if (selected && analyticsRef.current) {
+      const selectedOption = options.find((o) => o.id === selected);
+      if (selectedOption) {
+        analyticsRef.current.completeQuestion(
+          selected,
+          !!selectedOption.isCorrect
+        );
+      }
+    }
+
     if (phase < phases.length - 1) {
+      // Reset selection
+      setSelected("");
       setQuestion(0);
       setPhase(phase + 1);
+
+      // Start tracking the new question
+      if (analyticsRef.current) {
+        analyticsRef.current.startQuestion(phase + 1, 0);
+      }
       return;
+    }
+
+    // Complete the test and save results
+    if (analyticsRef.current) {
+      const results = analyticsRef.current.completeTest();
+      saveResultsToStorage(results);
     }
 
     goToNextPage();
   };
 
   const handlePreviousQuestionClick = () => {
+    // Complete current question if selected
+    if (selected && analyticsRef.current) {
+      const selectedOption = options.find((o) => o.id === selected);
+      if (selectedOption) {
+        analyticsRef.current.completeQuestion(
+          selected,
+          !!selectedOption.isCorrect
+        );
+      }
+    }
+
     if (question <= 0) {
       handlePreviousPhaseClick();
       return;
     }
 
+    // Reset selection
+    setSelected("");
     setQuestion(question - 1);
+
+    // Start tracking the new question
+    if (analyticsRef.current) {
+      analyticsRef.current.startQuestion(phase, question - 1);
+    }
   };
 
   const handleNextQuestionClick = () => {
+    // Complete current question if selected
+    if (selected && analyticsRef.current) {
+      const selectedOption = options.find((o) => o.id === selected);
+      if (selectedOption) {
+        analyticsRef.current.completeQuestion(
+          selected,
+          !!selectedOption.isCorrect
+        );
+      }
+    }
+
     if (question < questions.length - 1) {
+      // Reset selection
+      setSelected("");
       setQuestion(question + 1);
+
+      // Start tracking the new question
+      if (analyticsRef.current) {
+        analyticsRef.current.startQuestion(phase, question + 1);
+      }
       return;
     }
 
@@ -89,7 +217,14 @@ export function RavenMatrixPage({
   };
 
   const handleRavenOptionClick = (id: string) => {
-    return () => setSelected((v) => (v === id ? "" : id));
+    return () => {
+      if (analyticsRef.current && id !== selected) {
+        // Record option change in analytics
+        analyticsRef.current.recordOptionChange();
+      }
+
+      setSelected((v) => (v === id ? "" : id));
+    };
   };
 
   return (
@@ -271,17 +406,19 @@ export function RavenMatrixPage({
       </div>
 
       {/* Add some custom CSS for the selected option */}
-      <style>{`
-        .selected-option img {
-          border-color: ${
-            isDarkMode ? "#ffc107 !important" : "#ffc107 !important"
-          };
-          box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
-        }
-        .cursor-pointer {
-          cursor: pointer;
-        }
-      `}</style>
+      <style>
+        {`
+          .selected-option img {
+            border-color: ${
+              isDarkMode ? "#ffc107 !important" : "#ffc107 !important"
+            };
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+          }
+          .cursor-pointer {
+            cursor: pointer;
+          }
+        `}
+      </style>
     </Container>
   );
 }
