@@ -6,7 +6,6 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  // Intentar obtener el tema del localStorage, si no hay valor, usar el tema del sistema
   const getInitialTheme = (): Theme => {
     if (typeof window === "undefined") return "light"; // SSR safety
 
@@ -24,9 +23,22 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    // Aplicar el tema al documento y guardar en localStorage
-    document.documentElement.setAttribute("data-theme", theme);
+    // Apply theme using Bootstrap's data-bs-theme attribute
+    document.documentElement.setAttribute("data-bs-theme", theme);
     localStorage.setItem("theme", theme);
+
+    // Add some basic body classes for consistency
+    if (theme === "dark") {
+      document.body.classList.add("bg-dark");
+      document.body.classList.add("text-light");
+      document.body.classList.remove("bg-light");
+      document.body.classList.remove("text-dark");
+    } else {
+      document.body.classList.add("bg-light");
+      document.body.classList.add("text-dark");
+      document.body.classList.remove("bg-dark");
+      document.body.classList.remove("text-light");
+    }
   }, [theme]);
 
   const toggleTheme = () => {
