@@ -38,20 +38,14 @@ export function RavenMatrixPage({
   const [selected, setSelected] = useState<string>("");
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
-
-  // Create a ref to store the analytics instance
   const analyticsRef = useRef<RavenAnalytics | null>(null);
 
-  // Initialize analytics on component mount
+  // Inicializar analytics solo una vez al montar
   useEffect(() => {
-    // Create new analytics instance
     analyticsRef.current = new RavenAnalytics("default_group", protocol);
 
-    // If student data exists, set the participant ID
-    if (studentData && studentData.id) {
+    if (studentData?.id) {
       analyticsRef.current.setParticipantId(studentData.id);
-
-      // Save student data to localStorage
       saveStudentDataToStorage(studentData.id, {
         name: studentData.name,
         email: studentData.email,
@@ -59,20 +53,15 @@ export function RavenMatrixPage({
       });
     }
 
-    // Start tracking the first question
     analyticsRef.current.startQuestion(phase, question);
+  }, []);
 
-    // Cleanup on unmount
-    return () => {
-      // If analytics exists and user leaves without completing,
-      // we can optionally save partial results here
-    };
-  });
-
+  // Obtener datos de la pregunta actual
   const { phases } = config.protocols[protocol];
   const { questions } = phases[phase];
   const { img, options: tempOptions } = questions[question];
 
+  // Procesar opciones y detectar respuesta correcta del YAML
   const options = tempOptions.map((option) => {
     const base64 = option.src.split(";")[1].slice(7);
     const half = Math.round(base64.length / 2);
@@ -82,15 +71,16 @@ export function RavenMatrixPage({
       id,
       ...option,
       isCorrect:
-        String(option.correct).toLowerCase() === "true" ||
-        option.correct === true,
+        option.correct === true ||
+        String(option.correct).toLowerCase() === "true",
     };
   });
 
+  // Cálculos de layout
   const optionsColumns = Math.ceil(options.length / 2);
   const isOptionsOdd = options.length % 2 === 1;
 
-  // Calculate progress percentage
+  // Calcular progreso
   const totalQuestions = phases.reduce(
     (acc, phase) => acc + phase.questions.length,
     0
@@ -103,57 +93,43 @@ export function RavenMatrixPage({
     1;
   const progressPercentage = (currentQuestionNumber / totalQuestions) * 100;
 
+  // Función reutilizable para registrar respuesta y actualizar analíticas
+  const completeCurrentQuestion = () => {
+    if (!selected || !analyticsRef.current) return;
+
+    const selectedOption = options.find((o) => o.id === selected);
+    if (selectedOption) {
+      analyticsRef.current.completeQuestion(
+        selected,
+        !!selectedOption.isCorrect
+      );
+    }
+  };
+
+  // Manejadores de navegación
   const handlePreviousPhaseClick = () => {
     if (phase <= 0) return;
 
-    // Complete current question if selected
-    if (selected && analyticsRef.current) {
-      const selectedOption = options.find((o) => o.id === selected);
-      if (selectedOption) {
-        analyticsRef.current.completeQuestion(
-          selected,
-          !!selectedOption.isCorrect
-        );
-      }
-    }
-
-    // Reset selection
+    completeCurrentQuestion();
     setSelected("");
     setQuestion(0);
     setPhase(phase - 1);
 
-    // Start tracking the new question
-    if (analyticsRef.current) {
-      analyticsRef.current.startQuestion(phase - 1, 0);
-    }
+    analyticsRef.current?.startQuestion(phase - 1, 0);
   };
 
   const handleNextPhaseClick = () => {
-    // Complete current question if selected
-    if (selected && analyticsRef.current) {
-      const selectedOption = options.find((o) => o.id === selected);
-      if (selectedOption) {
-        analyticsRef.current.completeQuestion(
-          selected,
-          !!selectedOption.isCorrect
-        );
-      }
-    }
+    completeCurrentQuestion();
 
     if (phase < phases.length - 1) {
-      // Reset selection
       setSelected("");
       setQuestion(0);
       setPhase(phase + 1);
-
-      // Start tracking the new question
-      if (analyticsRef.current) {
-        analyticsRef.current.startQuestion(phase + 1, 0);
-      }
+      analyticsRef.current?.startQuestion(phase + 1, 0);
       return;
     }
 
-    // Complete the test and save results
+    // Completar el test
     if (analyticsRef.current) {
       const results = analyticsRef.current.completeTest();
       saveResultsToStorage(results);
@@ -163,53 +139,25 @@ export function RavenMatrixPage({
   };
 
   const handlePreviousQuestionClick = () => {
-    // Complete current question if selected
-    if (selected && analyticsRef.current) {
-      const selectedOption = options.find((o) => o.id === selected);
-      if (selectedOption) {
-        analyticsRef.current.completeQuestion(
-          selected,
-          !!selectedOption.isCorrect
-        );
-      }
-    }
+    completeCurrentQuestion();
 
     if (question <= 0) {
       handlePreviousPhaseClick();
       return;
     }
 
-    // Reset selection
     setSelected("");
     setQuestion(question - 1);
-
-    // Start tracking the new question
-    if (analyticsRef.current) {
-      analyticsRef.current.startQuestion(phase, question - 1);
-    }
+    analyticsRef.current?.startQuestion(phase, question - 1);
   };
 
   const handleNextQuestionClick = () => {
-    // Complete current question if selected
-    if (selected && analyticsRef.current) {
-      const selectedOption = options.find((o) => o.id === selected);
-      if (selectedOption) {
-        analyticsRef.current.completeQuestion(
-          selected,
-          !!selectedOption.isCorrect
-        );
-      }
-    }
+    completeCurrentQuestion();
 
     if (question < questions.length - 1) {
-      // Reset selection
       setSelected("");
       setQuestion(question + 1);
-
-      // Start tracking the new question
-      if (analyticsRef.current) {
-        analyticsRef.current.startQuestion(phase, question + 1);
-      }
+      analyticsRef.current?.startQuestion(phase, question + 1);
       return;
     }
 
@@ -219,7 +167,6 @@ export function RavenMatrixPage({
   const handleRavenOptionClick = (id: string) => {
     return () => {
       if (analyticsRef.current && id !== selected) {
-        // Record option change in analytics
         analyticsRef.current.recordOptionChange();
       }
 
@@ -232,7 +179,7 @@ export function RavenMatrixPage({
       fluid
       className="p-0 min-vh-100 position-relative d-flex flex-column"
     >
-      {/* Header with progress */}
+      {/* Header con barra de progreso */}
       <div
         className={`py-3 px-4 ${
           isDarkMode ? "bg-dark" : "bg-light"
@@ -269,8 +216,9 @@ export function RavenMatrixPage({
         </Row>
       </div>
 
-      {/* Main content */}
+      {/* Contenido principal */}
       <Container className="py-4 flex-grow-1 d-flex flex-column justify-content-center">
+        {/* Imagen de la pregunta */}
         <Row className="justify-content-center mb-3">
           <Col md={10} lg={8} className="text-center">
             <div
@@ -290,6 +238,7 @@ export function RavenMatrixPage({
           </Col>
         </Row>
 
+        {/* Opciones */}
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
             <div
@@ -303,11 +252,9 @@ export function RavenMatrixPage({
               {options.map((option, i) => (
                 <div
                   key={option.id}
-                  className={`
-                    p-2 text-center ${
-                      option.id === selected ? "selected-option" : ""
-                    }
-                  `}
+                  className={`p-2 text-center ${
+                    option.id === selected ? "selected-option" : ""
+                  }`}
                   style={{
                     transform:
                       isOptionsOdd && i % 2 === 1 ? "translateX(50%)" : "none",
@@ -343,7 +290,7 @@ export function RavenMatrixPage({
         </Row>
       </Container>
 
-      {/* Bottom navigation */}
+      {/* Navegación inferior */}
       <div
         className={`py-3 px-4 ${
           isDarkMode ? "bg-dark" : "bg-light"
@@ -351,6 +298,7 @@ export function RavenMatrixPage({
       >
         <Row>
           <Col className="d-flex justify-content-between">
+            {/* Botón fase anterior */}
             <div>
               <Button
                 variant="outline-secondary"
@@ -363,6 +311,7 @@ export function RavenMatrixPage({
               </Button>
             </div>
 
+            {/* Botones anterior/siguiente */}
             <div>
               <Button
                 variant="outline-primary"
@@ -390,6 +339,7 @@ export function RavenMatrixPage({
               </Button>
             </div>
 
+            {/* Botón siguiente fase */}
             <div>
               <Button
                 variant="outline-secondary"
@@ -405,7 +355,7 @@ export function RavenMatrixPage({
         </Row>
       </div>
 
-      {/* Add some custom CSS for the selected option */}
+      {/* Estilos CSS personalizados */}
       <style>
         {`
           .selected-option img {
