@@ -224,6 +224,64 @@ protocols:
                 alt: option 5
               - src: groupB1_option6.webp
                 alt: option 6
+          - randomize: true
+            img:
+              src: groupB2.webp
+              alt: question image
+            options:
+              - src: groupB2_option1.webp
+                alt: option 1
+                correct: true
+              - src: groupB2_option2.webp
+                alt: option 2
+              - src: groupB2_option3.webp
+                alt: option 3
+              - src: groupB2_option4.webp
+                alt: option 4
+              - src: groupB2_option5.webp
+                alt: option 5
+              - src: groupB2_option6.webp
+                alt: option 6
+      - allowPreviousQuestion: true
+        allowSkipQuestion: true
+        randomize: true
+        questions:
+          - randomize: true
+            img:
+              src: groupA1.webp
+              alt: question image
+            options:
+              - src: groupA1_option1.webp
+                alt: option 1
+                correct: true
+              - src: groupA1_option2.webp
+                alt: option 2
+              - src: groupA1_option3.webp
+                alt: option 3
+              - src: groupA1_option4.webp
+                alt: option 4
+              - src: groupA1_option5.webp
+                alt: option 5
+              - src: groupA1_option6.webp
+                alt: option 6
+          - randomize: true
+            img:
+              src: groupA2.webp
+              alt: question image
+            options:
+              - src: groupA2_option1.webp
+                alt: option 1
+                correct: true
+              - src: groupA2_option2.webp
+                alt: option 2
+              - src: groupA2_option3.webp
+                alt: option 3
+              - src: groupA2_option4.webp
+                alt: option 4
+              - src: groupA2_option5.webp
+                alt: option 5
+              - src: groupA2_option6.webp
+                alt: option 6
       - control-phase1
 
 phases:
