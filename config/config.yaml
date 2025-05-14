@@ -1,5 +1,92 @@
 # $schema: ./config-schema.json
 
+title: PoCoPI
+description: Proof of Concept of Psycho-Informatics.
+
+preTestForm:
+  questions:
+    - text: Multiple selection question
+      type: select-multiple
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+      min: 1
+      max: 3
+    - text: Single choice question
+      type: select-one
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+    - text: Number input
+      type: number
+      placeholder: Answer here
+      min: 1
+      max: 2
+      step: 0.1
+    - text: Slider question
+      type: slider
+      min: 1
+      max: 10
+      step: 1
+    - text: Short text question
+      type: text-short
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 50
+    - text: Long text question
+      type: text-long
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 400
+
+postTestForm:
+  questions:
+    - text: Multiple selection question
+      type: select-multiple
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+      min: 1
+      max: 3
+    - text: Single choice question
+      type: select-one
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+    - text: Number input
+      type: number
+      placeholder: Answer here
+      min: 1
+      max: 2
+      step: 0.1
+    - text: Slider question
+      type: slider
+      min: 1
+      max: 10
+      step: 1
+    - text: Short text question
+      type: text-short
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 50
+    - text: Long text question
+      type: text-long
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 400
+
 groups:
   control:
     probability: 0.3
@@ -19,7 +106,7 @@ protocols:
     phases:
       - control-phase1
       - questions:
-        - img:
+        - image:
             src: control3.webp
             alt: question image
           options:
@@ -36,7 +123,7 @@ protocols:
               alt: option 5
             - src: control3_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: control4.webp
             alt: question image
           options:
@@ -56,7 +143,7 @@ protocols:
   groupA:
     phases:
       - questions:
-        - img:
+        - image:
             src: groupA1.webp
             alt: question image
           options:
@@ -73,7 +160,7 @@ protocols:
               alt: option 5
             - src: groupA1_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupA2.webp
             alt: question image
           options:
@@ -91,7 +178,7 @@ protocols:
             - src: groupA2_option6.webp
               alt: option 6
       - questions:
-        - img:
+        - image:
             src: groupA3.webp
             alt: question image
           options:
@@ -108,7 +195,7 @@ protocols:
               alt: option 5
             - src: groupA3_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupA4.webp
             alt: question image
           options:
@@ -128,7 +215,7 @@ protocols:
   groupB:
     phases:
       - questions:
-        - img:
+        - image:
             src: groupB1.webp
             alt: question image
           options:
@@ -145,7 +232,7 @@ protocols:
               alt: option 5
             - src: groupB1_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupB2.webp
             alt: question image
           options:
@@ -163,7 +250,7 @@ protocols:
             - src: groupB2_option6.webp
               alt: option 6
       - questions:
-        - img:
+        - image:
             src: groupB3.webp
             alt: question image
           options:
@@ -180,7 +267,7 @@ protocols:
               alt: option 5
             - src: groupB3_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupB4.webp
             alt: question image
           options:
@@ -207,7 +294,7 @@ protocols:
         randomize: true
         questions:
           - randomize: true
-            img:
+            image:
               src: groupB1.webp
               alt: question image
             options:
@@ -225,7 +312,7 @@ protocols:
               - src: groupB1_option6.webp
                 alt: option 6
           - randomize: true
-            img:
+            image:
               src: groupB2.webp
               alt: question image
             options:
@@ -247,7 +334,7 @@ protocols:
         randomize: true
         questions:
           - randomize: true
-            img:
+            image:
               src: groupA1.webp
               alt: question image
             options:
@@ -265,7 +352,7 @@ protocols:
               - src: groupA1_option6.webp
                 alt: option 6
           - randomize: true
-            img:
+            image:
               src: groupA2.webp
               alt: question image
             options:
@@ -288,7 +375,7 @@ phases:
   control-phase1:
     questions:
       - control-phase1-question1
-      - img:
+      - image:
           src: control2.webp
           alt: question image
         options:
@@ -308,7 +395,7 @@ phases:
 
 questions:
   control-phase1-question1:
-    img:
+    image:
       src: control1.webp
       alt: question image
     options:

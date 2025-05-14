@@ -5,19 +5,31 @@ import mime from "mime";
 import path from "path";
 import yaml from "yaml";
 import { Config } from "./config";
-import { FlatRawConfig, RawConfig, RawPhase, RawProtocol, RawQuestion } from "./raw-types";
+import {
+    FlatRawConfig,
+    FormQuestionType,
+    RawConfig,
+    RawForm,
+    RawFormQuestion,
+    RawImage,
+    RawPhase,
+    RawPhaseQuestion,
+    RawProtocol,
+} from "./raw-types";
 
+const ESM_SCRIPT_PATH = path.join(__dirname, "../esm/index.js");
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
 const IMAGE_NAME_TO_BASE64 = new Map(readdirSync(IMAGES_DIR).map(filename =>
-    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep))]
+    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replace(/\\/g, "/"))]
 ));
 
 export const config = getConfig();
 
 export * from "./config";
+export { FormQuestionType } from "./raw-types";
 
 function getConfig(): Config {
     const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
@@ -34,17 +46,19 @@ function getConfig(): Config {
     return new Config(config);
 }
 
-function exportConfigForBrowser(config: FlatRawConfig): void {
-    const esmScriptPath = path.join(__dirname, "../esm/index.js");
+function exportConfigForBrowser(_config: FlatRawConfig): void {
     const configJson = JSON.stringify(config, null, 4);
 
     const newScript = `
         import { Config } from "./config";
 
         export const config = new Config(${configJson});
-    `.trim().replace(/^ {8}/m, "") + "\n";
 
-    writeFileSync(esmScriptPath, newScript, "utf-8");
+        export { Config } from "./config";
+        export { FormQuestionType } from "./raw-types";
+    `.trim().replace(/^ {8}/gm, "") + "\n";
+
+    writeFileSync(ESM_SCRIPT_PATH, newScript, "utf-8");
 }
 
 function flattenConfig(config: RawConfig): FlatRawConfig {
@@ -117,7 +131,7 @@ function flattenConfig(config: RawConfig): FlatRawConfig {
                 throw new Error(`Question '${question}' does not exist in questions list.`);
             }
 
-            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawQuestion;
+            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawPhaseQuestion;
         }
     }
 
@@ -136,70 +150,116 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
 
     const usedImages = new Map<string, string>();
 
-    for (const { path, question } of createQuestionsIterator(config)) {
-        const questionImage = question.img.src;
-        const usedQuestionImageAt = usedImages.get(questionImage);
+    if (config.preTestForm) {
+        valideForm(config.preTestForm, "preTestForm", usedImages);
+    }
+    if (config.postTestForm) {
+        valideForm(config.postTestForm, "postTestForm", usedImages);
+    }
 
-        if (usedQuestionImageAt) {
-            console.warn(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
-        }
+    for (const { yamlPath, question } of createPhaseQuestionsIterator(config)) {
+        validateImage(question.image, `${yamlPath}.image`, usedImages);
 
-        const questionImagePath = IMAGE_NAME_TO_BASE64.get(questionImage);
-        if (!questionImagePath) {
-            throw new Error(`Image '${questionImage}' not found in images directory.`);
-        }
-
-        question.img.src = questionImagePath;
-        usedImages.set(questionImage, `${path}.img`);
-
-        let foundCorrect = -1;
+        let correctOptionIndex = -1;
 
         for (let k = 0; k < question.options.length; k++) {
             const option = question.options[k]!;
-            const optionImage = option.src;
-            const usedOptionImageAt = usedImages.get(optionImage);
 
-            if (usedOptionImageAt) {
-                console.warn(`Image '${optionImage}' already used at ${usedOptionImageAt}.`);
-            }
-
-            const optionImagePath = IMAGE_NAME_TO_BASE64.get(optionImage);
-            if (!optionImagePath) {
-                throw new Error(`Image '${optionImage}' not found in images directory.`);
-            }
-
-            option.src = optionImagePath;
-            usedImages.set(optionImage, `${path}.options[${k}]`);
+            validateImage(option, `${yamlPath}.options[${k}]`, usedImages);
 
             if (!option.correct) {
                 continue;
             }
 
-            if (foundCorrect !== -1) {
-                console.warn(`${path}.options[${foundCorrect}] was already marked as correct.`);
+            if (correctOptionIndex !== -1) {
+                console.warn(`${yamlPath}.options[${correctOptionIndex}] was already marked as correct.`);
             }
 
-            foundCorrect = k;
+            correctOptionIndex = k;
         }
 
-        if (foundCorrect === -1) {
-            console.warn(`Could not find an option marked as correct in ${path}.`);
+        if (correctOptionIndex === -1) {
+            console.warn(`Could not find an option marked as correct in ${yamlPath}.`);
         }
     }
 
     return config;
 }
 
-function* createQuestionsIterator(config: FlatRawConfig): QuestionsIterator {
+function valideForm(form: RawForm, key: string, usedImages: Map<string, string>): void {
+    const questions = form.questions ?? [];
+
+    for (let i = 0; i < questions.length; i++) {
+        const question = questions[i]!;
+        const yamlPath = `${key}.questions[${i}]`;
+
+        if (question.image) {
+            validateImage(question.image, `${yamlPath}.image`, usedImages);
+        }
+
+        validateFormQuestion(question, yamlPath, usedImages);
+    }
+}
+
+function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedImages: Map<string, string>): void {
+    switch (question.type) {
+        case FormQuestionType.SELECT_ONE:
+        case FormQuestionType.SELECT_MULTIPLE: {
+            for (let j = 0; j < question.options.length; j++) {
+                const option = question.options[j]!;
+                if (option.image) {
+                    validateImage(option.image, `${yamlPath}.options[${j}].image`, usedImages);
+                }
+            }
+            break;
+        }
+        case FormQuestionType.NUMBER:
+        case FormQuestionType.SLIDER: {
+            if (question.min >= question.max) {
+                throw new Error(`'min' should be less than 'max' in ${yamlPath}`);
+            }
+            break;
+        }
+        case FormQuestionType.TEXT_SHORT:
+        case FormQuestionType.TEXT_LONG: {
+            if (question.minLength >= question.maxLength) {
+                throw new Error(`'minLength' should be less than 'maxLength' in ${yamlPath}`);
+            }
+            break;
+        }
+        default:
+            // @ts-expect-error: safe, will not compile if a new type is added
+            throw new Error(`Unknown question type ${question.type}`);
+    }
+}
+
+function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string, string>): void {
+    const { src } = image;
+    const usedImageAt = usedImages.get(src);
+
+    if (usedImageAt) {
+        console.warn(`Image '${src}' already used at ${usedImageAt}.`);
+    }
+
+    const imagePath = IMAGE_NAME_TO_BASE64.get(src);
+    if (!imagePath) {
+        throw new Error(`Image '${src}' not found in images directory.`);
+    }
+
+    image.src = imagePath;
+    usedImages.set(src, yamlPath);
+}
+
+function* createPhaseQuestionsIterator(config: FlatRawConfig): QuestionsIterator {
     for (const [label, { protocol }] of Object.entries(config.groups)) {
         for (let i = 0; i < protocol.phases.length; i++) {
             const phase = protocol.phases[i]!;
 
             for (let j = 0; j < phase.questions.length; j++) {
                 const question = phase.questions[j]!;
-                const path = `protocols.${label}.phases[${i}].questions[${j}]`;
+                const yamlPath = `protocols.${label}.phases[${i}].questions[${j}]`;
 
-                yield { path, question };
+                yield { yamlPath, question };
             }
         }
     }
@@ -210,6 +270,6 @@ function getBase64Image(filePath: string): string {
 }
 
 type QuestionsIterator = Generator<{
-    path: string;
-    question: RawQuestion;
+    yamlPath: string;
+    question: RawPhaseQuestion;
 }, void, unknown>;
