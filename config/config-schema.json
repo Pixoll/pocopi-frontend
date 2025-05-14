@@ -478,9 +478,13 @@
           "description": "List of questions.",
           "items": {
             "$ref": "#/$defs/form-question"
-          }
+          },
+          "minItems": 1
         }
-      }
+      },
+      "required": [
+        "questions"
+      ]
     },
     "form-question": {
       "type": "object",

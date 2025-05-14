@@ -154,7 +154,7 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
         }
 
         question.image.src = questionImagePath;
-        usedImages.set(questionImage, `${path}.img`);
+        usedImages.set(questionImage, `${path}.image`);
 
         let foundCorrect = -1;
 
