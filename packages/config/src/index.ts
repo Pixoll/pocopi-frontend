@@ -46,7 +46,7 @@ function getConfig(): Config {
     return new Config(config);
 }
 
-function exportConfigForBrowser(_config: FlatRawConfig): void {
+function exportConfigForBrowser(config: FlatRawConfig): void {
     const configJson = JSON.stringify(config, null, 4);
 
     const newScript = `
