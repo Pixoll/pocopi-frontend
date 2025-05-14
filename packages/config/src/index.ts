@@ -5,19 +5,20 @@ import mime from "mime";
 import path from "path";
 import yaml from "yaml";
 import { Config } from "./config";
-import { FlatRawConfig, RawConfig, RawPhase, RawProtocol, RawQuestion } from "./raw-types";
+import { FlatRawConfig, RawConfig, RawPhase, RawProtocol, RawPhaseQuestion } from "./raw-types";
 
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
 const IMAGE_NAME_TO_BASE64 = new Map(readdirSync(IMAGES_DIR).map(filename =>
-    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep))]
+    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replace(/\\/g, "/"))]
 ));
 
 export const config = getConfig();
 
 export * from "./config";
+export { FormQuestionType } from "./raw-types";
 
 function getConfig(): Config {
     const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
@@ -34,7 +35,7 @@ function getConfig(): Config {
     return new Config(config);
 }
 
-function exportConfigForBrowser(config: FlatRawConfig): void {
+function exportConfigForBrowser(_config: FlatRawConfig): void {
     const esmScriptPath = path.join(__dirname, "../esm/index.js");
     const configJson = JSON.stringify(config, null, 4);
 
@@ -42,7 +43,10 @@ function exportConfigForBrowser(config: FlatRawConfig): void {
         import { Config } from "./config";
 
         export const config = new Config(${configJson});
-    `.trim().replace(/^ {8}/m, "") + "\n";
+
+        export { Config } from "./config";
+        export { FormQuestionType } from "./raw-types";
+    `.trim().replace(/^ {8}/gm, "") + "\n";
 
     writeFileSync(esmScriptPath, newScript, "utf-8");
 }
@@ -117,7 +121,7 @@ function flattenConfig(config: RawConfig): FlatRawConfig {
                 throw new Error(`Question '${question}' does not exist in questions list.`);
             }
 
-            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawQuestion;
+            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawPhaseQuestion;
         }
     }
 
@@ -137,7 +141,7 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
     const usedImages = new Map<string, string>();
 
     for (const { path, question } of createQuestionsIterator(config)) {
-        const questionImage = question.img.src;
+        const questionImage = question.image.src;
         const usedQuestionImageAt = usedImages.get(questionImage);
 
         if (usedQuestionImageAt) {
@@ -149,7 +153,7 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
             throw new Error(`Image '${questionImage}' not found in images directory.`);
         }
 
-        question.img.src = questionImagePath;
+        question.image.src = questionImagePath;
         usedImages.set(questionImage, `${path}.img`);
 
         let foundCorrect = -1;
@@ -211,5 +215,5 @@ function getBase64Image(filePath: string): string {
 
 type QuestionsIterator = Generator<{
     path: string;
-    question: RawQuestion;
+    question: RawPhaseQuestion;
 }, void, unknown>;

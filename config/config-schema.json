@@ -13,6 +13,12 @@
       "description": "The description of the web app.",
       "minLength": 1
     },
+    "preTestForm": {
+      "$ref": "#/$defs/form"
+    },
+    "postTestForm": {
+      "$ref": "#/$defs/form"
+    },
     "groups": {
       "type": "object",
       "description": "List of test groups.",
@@ -51,7 +57,7 @@
       "description": "List of questions the test phases will use.",
       "patternProperties": {
         "^([\\w-]+)$": {
-          "$ref": "#/$defs/question"
+          "$ref": "#/$defs/phase-question"
         }
       },
       "minProperties": 1,
@@ -61,8 +67,7 @@
   "required": [
     "title",
     "description",
-    "groups",
-    "protocols"
+    "groups"
   ],
   "additionalProperties": false,
   "$defs": {
@@ -167,7 +172,7 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/$defs/question"
+                "$ref": "#/$defs/phase-question"
               },
               {
                 "type": "string",
@@ -226,7 +231,7 @@
       ],
       "additionalProperties": false
     },
-    "question": {
+    "phase-question": {
       "type": "object",
       "description": "A test question.",
       "properties": {
@@ -235,7 +240,7 @@
           "description": "Whether to randomize the order of the options or not.",
           "default": false
         },
-        "img": {
+        "image": {
           "$ref": "#/$defs/image"
         },
         "options": {
@@ -248,10 +253,277 @@
         }
       },
       "required": [
-        "img",
+        "image",
         "options"
       ],
       "additionalProperties": false
+    },
+    "question-select-multiple": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "select-multiple"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "description": "The list of options.",
+          "items": {
+            "type": "object",
+            "description": "An option.",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The options's text.",
+                "minLength": 1
+              },
+              "image": {
+                "$ref": "#/$defs/image"
+              }
+            },
+            "minProperties": 1,
+            "additionalProperties": false
+          },
+          "minItems": 2
+        },
+        "min": {
+          "type": "integer",
+          "description": "The minimum number of options to select.",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "description": "The maximum number of options to select."
+        }
+      },
+      "required": [
+        "type",
+        "options",
+        "min",
+        "max"
+      ]
+    },
+    "question-select-one": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "select-one"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "description": "The list of options.",
+          "items": {
+            "type": "object",
+            "description": "An option.",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The options's text.",
+                "minLength": 1
+              },
+              "image": {
+                "$ref": "#/$defs/image"
+              }
+            },
+            "minProperties": 1,
+            "additionalProperties": false
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "type",
+        "options"
+      ]
+    },
+    "question-number": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "number"
+          ]
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text to be shown when the question hasn't been answered yet.",
+          "minLength": 1
+        },
+        "min": {
+          "type": "number",
+          "description": "The minimum number allowed."
+        },
+        "max": {
+          "type": "number",
+          "description": "The maximum number allowed."
+        },
+        "step": {
+          "type": "number",
+          "description": "The increment interval when using the arrow buttons/keys.",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "type",
+        "placeholder",
+        "min",
+        "max",
+        "step"
+      ]
+    },
+    "question-slider": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "slider"
+          ]
+        },
+        "min": {
+          "type": "number",
+          "description": "The minimum number allowed."
+        },
+        "max": {
+          "type": "number",
+          "description": "The maximum number allowed."
+        },
+        "step": {
+          "type": "number",
+          "description": "The increment interval for the slider.",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "type",
+        "min",
+        "max",
+        "step"
+      ]
+    },
+    "question-text-short": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "text-short"
+          ]
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text to be shown when the question hasn't been answered yet.",
+          "minLength": 1
+        },
+        "minLength": {
+          "type": "integer",
+          "description": "The minimum length of the answer.",
+          "minimum": 1
+        },
+        "maxLength": {
+          "type": "integer",
+          "description": "The maximum length of the answer."
+        }
+      },
+      "required": [
+        "type",
+        "placeholder",
+        "minLength",
+        "maxLength"
+      ]
+    },
+    "question-text-long": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "text-long"
+          ]
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text to be shown when the question hasn't been answered yet.",
+          "minLength": 1
+        },
+        "minLength": {
+          "type": "integer",
+          "description": "The minimum length of the answer.",
+          "minimum": 1
+        },
+        "maxLength": {
+          "type": "integer",
+          "description": "The maximum length of the answer."
+        }
+      },
+      "required": [
+        "type",
+        "placeholder",
+        "minLength",
+        "maxLength"
+      ]
+    },
+    "form": {
+      "type": "object",
+      "description": "Structure of the form.",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "description": "List of questions.",
+          "items": {
+            "$ref": "#/$defs/form-question"
+          }
+        }
+      }
+    },
+    "form-question": {
+      "type": "object",
+      "description": "A form question.",
+      "allOf": [
+        {
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "The question's text.",
+              "minLength": 1
+            },
+            "image": {
+              "$ref": "#/$defs/image"
+            }
+          },
+          "required": [
+            "text"
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/question-select-multiple"
+            },
+            {
+              "$ref": "#/$defs/question-select-one"
+            },
+            {
+              "$ref": "#/$defs/question-number"
+            },
+            {
+              "$ref": "#/$defs/question-slider"
+            },
+            {
+              "$ref": "#/$defs/question-text-short"
+            },
+            {
+              "$ref": "#/$defs/question-text-long"
+            }
+          ]
+        }
+      ]
     }
   }
 }
