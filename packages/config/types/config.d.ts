@@ -1,6 +1,8 @@
 import Decimal from "decimal.js";
 import { FlatRawConfig } from "./raw-types";
 export declare class Config {
+    readonly title: string;
+    readonly description: string;
     private readonly groups;
     private readonly probabilitySums;
     constructor(config: FlatRawConfig);

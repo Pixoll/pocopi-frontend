@@ -1,5 +1,8 @@
 # $schema: ./config-schema.json
 
+title: PoCoPI
+description: Proof of Concept of Psycho-Informatics.
+
 groups:
   control:
     probability: 0.3

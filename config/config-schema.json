@@ -3,6 +3,16 @@
   "title": "JSON schema for PoCoPI's configuration file.",
   "type": "object",
   "properties": {
+    "title": {
+      "type": "string",
+      "description": "The tile of the web app.",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the web app.",
+      "minLength": 1
+    },
     "groups": {
       "type": "object",
       "description": "List of test groups.",
@@ -49,6 +59,8 @@
     }
   },
   "required": [
+    "title",
+    "description",
     "groups",
     "protocols"
   ],

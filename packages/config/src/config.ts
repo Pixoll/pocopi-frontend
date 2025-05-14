@@ -29,10 +29,15 @@ const defaults = Object.freeze({
 });
 
 export class Config {
+    public readonly title: string;
+    public readonly description: string;
+
     private readonly groups: readonly FlatRawGroupWithLabel[];
     private readonly probabilitySums: readonly Decimal[];
 
     public constructor(config: FlatRawConfig) {
+        this.title = config.title;
+        this.description = config.description;
         this.groups = Object.freeze(parseGroups(config));
 
         const probabilitySums: Decimal[] = [];

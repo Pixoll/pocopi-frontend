@@ -1,8 +1,12 @@
 export type FlatRawConfig = {
+    title: string;
+    description: string;
     groups: Record<string, FlatRawGroup>;
 };
 
 export type RawConfig = {
+    title: string;
+    description: string;
     groups: Record<string, RawGroup>;
     protocols?: Record<string, RawProtocol>;
     phases?: Record<string, RawPhase>;
