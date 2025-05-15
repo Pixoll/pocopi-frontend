@@ -19,7 +19,6 @@ export interface QuestionMetrics {
 export interface TestResults {
   participantId: string;
   groupName: string;
-  protocolName: string;
   startTime: number;
   endTime?: number;
   totalTime?: number;
@@ -38,19 +37,16 @@ export class RavenAnalytics {
   private currentPhase: number = 0;
   private currentQuestion: number = 0;
 
-  constructor(groupName: string, protocolName: string) {
+  constructor(groupName: string) {
     const now = Date.now();
     console.log(
       "Initializing simplified RavenAnalytics with group:",
-      groupName,
-      "protocol:",
-      protocolName
+      groupName
     );
 
     this.results = {
       participantId: `user_${now.toString().slice(-6)}`,
       groupName,
-      protocolName,
       startTime: now,
       questions: [],
       totalCorrect: 0,

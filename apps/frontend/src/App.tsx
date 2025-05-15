@@ -1,10 +1,11 @@
-import { JSX, useState, useEffect } from "react";
-import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
-import HomePage from "@/pages/HomePage";
 import CompletionModal from "@/components/CompletionModal";
-import AnalyticsDashboard from "@/pages/AnalyticsDashboard";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { useTheme } from "@/hooks/useTheme";
+import AnalyticsDashboard from "@/pages/AnalyticsDashboard";
+import HomePage from "@/pages/HomePage";
+import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
+import { config } from "@pocopi/config";
+import { JSX, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 enum Page {
@@ -34,7 +35,7 @@ const ThemeHandler = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function App(): JSX.Element {
-  const [protocol] = useState<string>("control");
+  const [group] = useState(config.sampleGroup());
   const [page, setPage] = useState<Page>(Page.HOME);
   const [studentData, setStudentData] = useState<StudentData | null>(null);
 
@@ -54,21 +55,21 @@ export default function App(): JSX.Element {
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
-        return <HomePage onStartTest={startTest} onDashboard={goToDashboard} />;
+        return <HomePage onStartTest={startTest} onDashboard={goToDashboard}/>;
       case Page.RAVEN_MATRIX:
         return (
           <RavenMatrixPage
-            protocol={protocol}
+            group={group}
             goToNextPage={() => setPage(Page.END)}
             studentData={studentData}
           />
         );
       case Page.END:
         return (
-          <CompletionModal studentData={studentData} onBackToHome={goToHome} />
+          <CompletionModal studentData={studentData} onBackToHome={goToHome}/>
         );
       case Page.DASHBOARD:
-        return <AnalyticsDashboard onBack={goToHome} />;
+        return <AnalyticsDashboard onBack={goToHome}/>;
     }
   };
 

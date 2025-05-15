@@ -1,24 +1,14 @@
-import { config } from "@pocopi/config";
-import { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, Button, ProgressBar } from "react-bootstrap";
 import { useTheme } from "@/hooks/useTheme";
+import { RavenAnalytics, saveResultsToStorage, saveStudentDataToStorage, } from "@/utils/RavenAnalytics";
+import { faAngleLeft, faAngleRight, faArrowLeft, faArrowRight, faLayerGroup, } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faArrowRight,
-  faLayerGroup,
-  faAngleLeft,
-  faAngleRight,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  RavenAnalytics,
-  saveResultsToStorage,
-  saveStudentDataToStorage,
-} from "@/utils/RavenAnalytics";
+import { Group } from "@pocopi/config";
+import { useEffect, useRef, useState } from "react";
+import { Button, Col, Container, ProgressBar, Row } from "react-bootstrap";
 import styles from "./RavenMatrixPage.module.css";
 
 type RavenMatrixPageProps = {
-  protocol: string;
+  group: Group;
   goToNextPage: () => void;
   studentData?: {
     name: string;
@@ -29,7 +19,7 @@ type RavenMatrixPageProps = {
 };
 
 export function RavenMatrixPage({
-  protocol,
+  group,
   goToNextPage,
   studentData,
 }: RavenMatrixPageProps) {
@@ -42,7 +32,7 @@ export function RavenMatrixPage({
 
   // Inicializar analytics solo una vez al montar
   useEffect(() => {
-    analyticsRef.current = new RavenAnalytics("default_group", protocol);
+    analyticsRef.current = new RavenAnalytics(group.label);
 
     if (studentData?.id) {
       analyticsRef.current.setParticipantId(studentData.id);
@@ -57,9 +47,9 @@ export function RavenMatrixPage({
   }, []);
 
   // Obtener datos de la pregunta actual
-  const { phases } = config.protocols[protocol];
+  const { phases } = group.protocol;
   const { questions } = phases[phase];
-  const { img, options: tempOptions } = questions[question];
+  const { image, options: tempOptions } = questions[question];
 
   // Procesar opciones y detectar respuesta correcta del YAML
   const options = tempOptions.map((option) => {
@@ -71,7 +61,7 @@ export function RavenMatrixPage({
       id,
       ...option,
       isCorrect:
-        option.correct === true ||
+        option.correct ||
         String(option.correct).toLowerCase() === "true",
     };
   });
@@ -101,7 +91,7 @@ export function RavenMatrixPage({
     if (selectedOption) {
       analyticsRef.current.completeQuestion(
         selected,
-        !!selectedOption.isCorrect
+        selectedOption.isCorrect
       );
     }
   };
@@ -228,8 +218,8 @@ export function RavenMatrixPage({
               style={{ userSelect: "none" }}
             >
               <img
-                src={img.src}
-                alt={img.alt}
+                src={image.src}
+                alt={image.alt}
                 className="img-fluid"
                 style={{ maxWidth: "100%", pointerEvents: "none" }}
                 draggable={false}
@@ -264,12 +254,12 @@ export function RavenMatrixPage({
                     className={`
                       img-fluid rounded border p-1 cursor-pointer
                       ${
-                        option.id === selected
-                          ? "border-warning bg-warning bg-opacity-25"
-                          : isDarkMode
+                      option.id === selected
+                        ? "border-warning bg-warning bg-opacity-25"
+                        : isDarkMode
                           ? "border-secondary"
                           : "border-light"
-                      }
+                    }
                     `}
                     src={option.src}
                     alt={option.alt}
@@ -306,7 +296,7 @@ export function RavenMatrixPage({
                 onClick={handlePreviousPhaseClick}
                 disabled={phase === 0}
               >
-                <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
+                <FontAwesomeIcon icon={faArrowLeft} className="me-2"/>
                 Previous Phase
               </Button>
             </div>
@@ -319,7 +309,7 @@ export function RavenMatrixPage({
                 onClick={handlePreviousQuestionClick}
                 disabled={question === 0 && phase === 0}
               >
-                <FontAwesomeIcon icon={faAngleLeft} className="me-1" />
+                <FontAwesomeIcon icon={faAngleLeft} className="me-1"/>
                 Previous
               </Button>
 
@@ -328,12 +318,12 @@ export function RavenMatrixPage({
                 phase < phases.length - 1 ? (
                   <>
                     Next
-                    <FontAwesomeIcon icon={faAngleRight} className="ms-1" />
+                    <FontAwesomeIcon icon={faAngleRight} className="ms-1"/>
                   </>
                 ) : (
                   <>
                     Finish Test
-                    <FontAwesomeIcon icon={faArrowRight} className="ms-1" />
+                    <FontAwesomeIcon icon={faArrowRight} className="ms-1"/>
                   </>
                 )}
               </Button>
@@ -348,7 +338,7 @@ export function RavenMatrixPage({
                 disabled={phase >= phases.length - 1}
               >
                 Next Phase
-                <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+                <FontAwesomeIcon icon={faArrowRight} className="ms-2"/>
               </Button>
             </div>
           </Col>
@@ -359,9 +349,7 @@ export function RavenMatrixPage({
       <style>
         {`
           .selected-option img {
-            border-color: ${
-              isDarkMode ? "#ffc107 !important" : "#ffc107 !important"
-            };
+            border-color: #ffc107 !important;
             box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
           }
           .cursor-pointer {
