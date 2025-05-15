@@ -1,56 +1,112 @@
 # $schema: ./config-schema.json
 
+title: PoCoPI
+description: Proof of Concept of Psycho-Informatics.
+
+preTestForm:
+  questions:
+    - text: Multiple selection question
+      type: select-multiple
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+      min: 1
+      max: 3
+    - text: Single choice question
+      type: select-one
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+    - text: Number input
+      type: number
+      placeholder: Answer here
+      min: 1
+      max: 2
+      step: 0.1
+    - text: Slider question
+      type: slider
+      min: 1
+      max: 10
+      step: 1
+    - text: Short text question
+      type: text-short
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 50
+    - text: Long text question
+      type: text-long
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 400
+
+postTestForm:
+  questions:
+    - text: Multiple selection question
+      type: select-multiple
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+      min: 1
+      max: 3
+    - text: Single choice question
+      type: select-one
+      options:
+        - text: Option 1
+        - text: Option 2
+        - text: Option 3
+        - text: Option 4
+        - text: Option 5
+    - text: Number input
+      type: number
+      placeholder: Answer here
+      min: 1
+      max: 2
+      step: 0.1
+    - text: Slider question
+      type: slider
+      min: 1
+      max: 10
+      step: 1
+    - text: Short text question
+      type: text-short
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 50
+    - text: Long text question
+      type: text-long
+      placeholder: Answer here
+      minLength: 1
+      maxLength: 400
+
 groups:
   control:
-    probability: 0.4
+    probability: 0.3
     protocol: control
   groupA:
-    probability: 0.3
+    probability: 0.5
     protocol: groupA
   groupB:
-    probability: 0.3
+    probability: 0.15
     protocol: groupB
+  groupC:
+    probability: 0.05
+    protocol: groupC
 
 protocols:
   control:
     phases:
+      - control-phase1
       - questions:
-        - img:
-            src: control1.webp
-            alt: question image
-          options:
-            - src: control1_option1.webp
-              alt: option 1
-              correct: true
-            - src: control1_option2.webp
-              alt: option 2
-            - src: control1_option3.webp
-              alt: option 3
-            - src: control1_option4.webp
-              alt: option 4
-            - src: control1_option5.webp
-              alt: option 5
-            - src: control1_option6.webp
-              alt: option 6
-        - img:
-            src: control2.webp
-            alt: question image
-          options:
-            - src: control2_option1.webp
-              alt: option 1
-            - src: control2_option2.webp
-              alt: option 2
-              correct: true
-            - src: control2_option3.webp
-              alt: option 3
-            - src: control2_option4.webp
-              alt: option 4
-            - src: control2_option5.webp
-              alt: option 5
-            - src: control2_option6.webp
-              alt: option 6
-      - questions:
-        - img:
+        - image:
             src: control3.webp
             alt: question image
           options:
@@ -67,7 +123,7 @@ protocols:
               alt: option 5
             - src: control3_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: control4.webp
             alt: question image
           options:
@@ -87,7 +143,7 @@ protocols:
   groupA:
     phases:
       - questions:
-        - img:
+        - image:
             src: groupA1.webp
             alt: question image
           options:
@@ -104,7 +160,7 @@ protocols:
               alt: option 5
             - src: groupA1_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupA2.webp
             alt: question image
           options:
@@ -122,7 +178,7 @@ protocols:
             - src: groupA2_option6.webp
               alt: option 6
       - questions:
-        - img:
+        - image:
             src: groupA3.webp
             alt: question image
           options:
@@ -139,7 +195,7 @@ protocols:
               alt: option 5
             - src: groupA3_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupA4.webp
             alt: question image
           options:
@@ -159,7 +215,7 @@ protocols:
   groupB:
     phases:
       - questions:
-        - img:
+        - image:
             src: groupB1.webp
             alt: question image
           options:
@@ -176,7 +232,7 @@ protocols:
               alt: option 5
             - src: groupB1_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupB2.webp
             alt: question image
           options:
@@ -194,7 +250,7 @@ protocols:
             - src: groupB2_option6.webp
               alt: option 6
       - questions:
-        - img:
+        - image:
             src: groupB3.webp
             alt: question image
           options:
@@ -211,7 +267,7 @@ protocols:
               alt: option 5
             - src: groupB3_option6.webp
               alt: option 6
-        - img:
+        - image:
             src: groupB4.webp
             alt: question image
           options:
@@ -228,3 +284,131 @@ protocols:
               alt: option 5
             - src: groupB4_option6.webp
               alt: option 6
+  groupC:
+    allowPreviousPhase: false
+    allowSkipPhase: false
+    randomize: true
+    phases:
+      - allowPreviousQuestion: false
+        allowSkipQuestion: false
+        randomize: true
+        questions:
+          - randomize: true
+            image:
+              src: groupB1.webp
+              alt: question image
+            options:
+              - src: groupB1_option1.webp
+                alt: option 1
+                correct: true
+              - src: groupB1_option2.webp
+                alt: option 2
+              - src: groupB1_option3.webp
+                alt: option 3
+              - src: groupB1_option4.webp
+                alt: option 4
+              - src: groupB1_option5.webp
+                alt: option 5
+              - src: groupB1_option6.webp
+                alt: option 6
+          - randomize: true
+            image:
+              src: groupB2.webp
+              alt: question image
+            options:
+              - src: groupB2_option1.webp
+                alt: option 1
+                correct: true
+              - src: groupB2_option2.webp
+                alt: option 2
+              - src: groupB2_option3.webp
+                alt: option 3
+              - src: groupB2_option4.webp
+                alt: option 4
+              - src: groupB2_option5.webp
+                alt: option 5
+              - src: groupB2_option6.webp
+                alt: option 6
+      - allowPreviousQuestion: true
+        allowSkipQuestion: true
+        randomize: true
+        questions:
+          - randomize: true
+            image:
+              src: groupA1.webp
+              alt: question image
+            options:
+              - src: groupA1_option1.webp
+                alt: option 1
+                correct: true
+              - src: groupA1_option2.webp
+                alt: option 2
+              - src: groupA1_option3.webp
+                alt: option 3
+              - src: groupA1_option4.webp
+                alt: option 4
+              - src: groupA1_option5.webp
+                alt: option 5
+              - src: groupA1_option6.webp
+                alt: option 6
+          - randomize: true
+            image:
+              src: groupA2.webp
+              alt: question image
+            options:
+              - src: groupA2_option1.webp
+                alt: option 1
+                correct: true
+              - src: groupA2_option2.webp
+                alt: option 2
+              - src: groupA2_option3.webp
+                alt: option 3
+              - src: groupA2_option4.webp
+                alt: option 4
+              - src: groupA2_option5.webp
+                alt: option 5
+              - src: groupA2_option6.webp
+                alt: option 6
+      - control-phase1
+
+phases:
+  control-phase1:
+    questions:
+      - control-phase1-question1
+      - image:
+          src: control2.webp
+          alt: question image
+        options:
+          - src: control2_option1.webp
+            alt: option 1
+          - src: control2_option2.webp
+            alt: option 2
+            correct: true
+          - src: control2_option3.webp
+            alt: option 3
+          - src: control2_option4.webp
+            alt: option 4
+          - src: control2_option5.webp
+            alt: option 5
+          - src: control2_option6.webp
+            alt: option 6
+
+questions:
+  control-phase1-question1:
+    image:
+      src: control1.webp
+      alt: question image
+    options:
+      - src: control1_option1.webp
+        alt: option 1
+        correct: true
+      - src: control1_option2.webp
+        alt: option 2
+      - src: control1_option3.webp
+        alt: option 3
+      - src: control1_option4.webp
+        alt: option 4
+      - src: control1_option5.webp
+        alt: option 5
+      - src: control1_option6.webp
+        alt: option 6
