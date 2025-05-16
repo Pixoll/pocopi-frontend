@@ -1,3 +1,5 @@
+// Modal para ingresar los datos del participante antes de iniciar el test
+
 import { useState } from "react";
 import {
   Button,
@@ -20,6 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "@/hooks/useTheme";
 
+// Datos del estudiante
 interface StudentData {
   name: string;
   id: string;
@@ -27,12 +30,14 @@ interface StudentData {
   age: string;
 }
 
+// Props del modal
 interface StudentFormModalProps {
   show: boolean;
   onHide: () => void;
   onSubmit: (data: StudentData) => void;
 }
 
+// Props para el input con ícono
 interface InputWithIconProps {
   icon: IconDefinition;
   label: string;
@@ -46,6 +51,7 @@ interface InputWithIconProps {
   isDarkMode: boolean;
 }
 
+// Componente reutilizable para inputs con ícono
 const InputWithIcon = ({
   icon,
   label,
@@ -75,6 +81,7 @@ const InputWithIcon = ({
         className={`${isDarkMode ? "bg-dark text-light border-secondary" : ""}`}
         style={{ paddingLeft: "2.5rem" }}
       />
+      {/* Ícono a la izquierda del input */}
       <div
         className="position-absolute"
         style={{
@@ -101,6 +108,7 @@ const InputWithIcon = ({
   </div>
 );
 
+// Modal principal para el formulario del estudiante
 const StudentFormModal = ({
   show,
   onHide,
@@ -110,6 +118,7 @@ const StudentFormModal = ({
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
+  // Estado local para los datos del formulario
   const [formData, setFormData] = useState<StudentData>({
     name: "",
     id: "",
@@ -117,6 +126,7 @@ const StudentFormModal = ({
     age: "",
   });
 
+  // Maneja cambios en los inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -125,16 +135,15 @@ const StudentFormModal = ({
     }));
   };
 
+  // Maneja el submit del formulario
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidated(true);
       return;
     }
-
     setValidated(true);
     onSubmit(formData);
   };
@@ -150,6 +159,7 @@ const StudentFormModal = ({
         isDarkMode ? "bg-dark" : ""
       }`}
     >
+      {/* Header del modal */}
       <Modal.Header className="bg-primary border-0 text-white">
         <h5 className="modal-title d-flex align-items-center m-0 fw-bold">
           <FontAwesomeIcon icon={faUser} className="me-2" />
@@ -164,6 +174,7 @@ const StudentFormModal = ({
         </Button>
       </Modal.Header>
       <Modal.Body className={`p-4 ${isDarkMode ? "bg-dark text-light" : ""}`}>
+        {/* Alerta de confidencialidad */}
         <Alert
           variant={isDarkMode ? "primary" : "info"}
           className="d-flex align-items-center mb-4"
@@ -174,7 +185,7 @@ const StudentFormModal = ({
             academic purposes.
           </div>
         </Alert>
-
+        {/* Formulario de datos */}
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <InputWithIcon
             icon={faUser}
@@ -185,7 +196,6 @@ const StudentFormModal = ({
             required
             isDarkMode={isDarkMode}
           />
-
           <Row className="g-3">
             <Col md={6}>
               <InputWithIcon
@@ -213,7 +223,6 @@ const StudentFormModal = ({
               />
             </Col>
           </Row>
-
           <InputWithIcon
             icon={faEnvelope}
             label="Email Address"
@@ -224,7 +233,6 @@ const StudentFormModal = ({
             required
             isDarkMode={isDarkMode}
           />
-
           <div className="d-flex justify-content-end gap-3 mt-4">
             <Button
               variant={isDarkMode ? "outline-light" : "outline-secondary"}
