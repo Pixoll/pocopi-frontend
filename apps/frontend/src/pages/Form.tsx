@@ -2,14 +2,15 @@ import './Form.css';
 import Footer from '../components/Footer';
 import CustomTextField from '../components/CustomTextField';
 
-function Form({ goToStartPage }: { goToStartPage: () => void }) {    return (
+function Form({ goToStartPage }: { goToStartPage: () => void }) {
+    return (
         <div>
             <div className="general-form">
                 <div className="content-form">
                     <div className="information-form">
                         <h1>
                             Ingrese sus
-                            <br/>
+                            <br />
                             Datos
                         </h1>
                         <h2>
@@ -76,8 +77,8 @@ function Form({ goToStartPage }: { goToStartPage: () => void }) {    return (
                             <button onClick={goToStartPage}>Continuar</button>
                         </div>
                     </div>
-                </div>
-                <Footer/>
+                </div>  
+                <Footer />
             </div>
         </div>
     );
