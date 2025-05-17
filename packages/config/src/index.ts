@@ -4,160 +4,272 @@ import { Validator } from "jsonschema";
 import mime from "mime";
 import path from "path";
 import yaml from "yaml";
-import { Image, PoCoPIConfig } from "./types";
+import { Config } from "./config";
+import {
+    FlatRawConfig,
+    FormQuestionType,
+    RawConfig,
+    RawForm,
+    RawFormQuestion,
+    RawImage,
+    RawPhase,
+    RawPhaseQuestion,
+    RawProtocol,
+} from "./raw-types";
 
+const ESM_SCRIPT_PATH = path.join(__dirname, "../esm/index.js");
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
+const IMAGE_NAME_TO_BASE64 = new Map(readdirSync(IMAGES_DIR).map(filename =>
+    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replace(/\\/g, "/"))]
+));
 
 export const config = getConfig();
 
-export * from "./types";
+export * from "./config";
+export { FormQuestionType } from "./raw-types";
 
-function getConfig(): PoCoPIConfig {
+function getConfig(): Config {
     const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
     const jsonSchema = JSON.parse(readFileSync(CONFIG_JSON_SCHEMA_PATH, "utf-8"));
 
     new Validator().validate(yamlConfig, jsonSchema, {
-        throwFirst: true,
+        throwAll: true,
     });
 
-    const config = validateConfig(yamlConfig);
+    const flatConfig = flattenConfig(yamlConfig);
+    const config = validateConfig(flatConfig);
     exportConfigForBrowser(config);
 
-    return config;
+    return new Config(config);
 }
 
-function exportConfigForBrowser(config: PoCoPIConfig): void {
-    const configCopy = JSON.parse(JSON.stringify(config)) as PoCoPIConfig;
+function exportConfigForBrowser(config: FlatRawConfig): void {
+    const configJson = JSON.stringify(config, null, 4);
 
-    for (const protocol of Object.values(configCopy.protocols)) {
-        for (const phase of protocol.phases) {
-            for (const question of phase.questions) {
-                (question.img as Mutable<Image>).src = getBase64Image(question.img.src);
+    const newScript = `
+        import { Config } from "./config";
 
-                // eslint-disable-next-line max-depth
-                for (const option of question.options) {
-                    (option as Mutable<Image>).src = getBase64Image(option.src);
-                }
-            }
-        }
-    }
+        export const config = new Config(${configJson});
 
-    const esmScriptPath = path.join(__dirname, "../esm/index.js");
-    const configJson = JSON.stringify(configCopy, null, 4);
+        export { Config } from "./config";
+        export { FormQuestionType } from "./raw-types";
+    `.trim().replace(/^ {8}/gm, "") + "\n";
 
-    const newScript = `export const config = ${configJson};\n`;
-
-    writeFileSync(esmScriptPath, newScript, "utf-8");
+    writeFileSync(ESM_SCRIPT_PATH, newScript, "utf-8");
 }
 
-function validateConfig(config: PoCoPIConfig): PoCoPIConfig {
-    const imageNameToPath = new Map(readdirSync(IMAGES_DIR).map(filename =>
-        [filename, path.join(IMAGES_DIR, filename).replaceAll(path.win32.sep, path.posix.sep)]
-    ));
+function flattenConfig(config: RawConfig): FlatRawConfig {
+    const allProtocols: RawProtocol[] = [];
+    const allPhases: RawPhase[] = [];
+    const usedProtocols = new Set<string>();
+    const usedPhases = new Set<string>();
+    const usedQuestions = new Set<string>();
 
-    const usedProtocols = new Map<string, string>();
-    let probabilitySum = new Decimal(0);
-
-    for (const [label, { protocol, probability }] of Object.entries(config.groups)) {
-        const protocolUsedAt = usedProtocols.get(protocol);
-
-        if (protocolUsedAt) {
-            throw new Error(`Protocol '${protocol}' already used at ${protocolUsedAt}.`);
+    for (const group of Object.values(config.groups)) {
+        if (typeof group.protocol === "object") {
+            allProtocols.push(group.protocol);
+            continue;
         }
 
-        probabilitySum = probabilitySum.add(probability);
-
-        if (!(protocol in config.protocols)) {
-            throw new Error(`Protocol '${protocol}' does not exist in protocols list.`);
+        if (usedProtocols.has(group.protocol)) {
+            console.warn(`Protocol '${group.protocol}' already used.`);
         }
 
-        usedProtocols.set(protocol, `groups.${label}`);
+        usedProtocols.add(group.protocol);
+
+        const protocolObject = config.protocols?.[group.protocol];
+        if (!protocolObject) {
+            throw new Error(`Protocol '${group.protocol}' does not exist in protocols list.`);
+        }
+
+        group.protocol = JSON.parse(JSON.stringify(protocolObject)) as RawProtocol;
+        allProtocols.push(group.protocol);
     }
 
-    if (!probabilitySum.equals(1)) {
-        throw new Error("The sum of all the group probabilities should be 1.");
-    }
-
-    const iterator = {
-        * [Symbol.iterator]() {
-            for (const [label, protocol] of Object.entries(config.protocols)) {
-                for (let i = 0; i < protocol.phases.length; i++) {
-                    const phase = protocol.phases[i]!;
-
-                    for (let j = 0; j < phase.questions.length; j++) {
-                        const question = phase.questions[j]!;
-                        const path = `protocols.${label}.phases[${i}].questions[${j}]`;
-
-                        yield { path, question };
-                    }
-                }
+    for (const { phases } of allProtocols) {
+        for (let i = 0; i < phases.length; i++) {
+            const phase = phases[i]!;
+            if (typeof phase === "object") {
+                allPhases.push(phase);
+                continue;
             }
-        },
-    };
+
+            if (usedPhases.has(phase)) {
+                console.warn(`Phase '${phase}' already used.`);
+            }
+
+            usedPhases.add(phase);
+
+            const phaseObject = config.phases?.[phase];
+            if (!phaseObject) {
+                throw new Error(`Phase '${phase}' does not exist in phases list.`);
+            }
+
+            phases[i] = JSON.parse(JSON.stringify(phaseObject)) as RawPhase;
+            allPhases.push(phases[i] as RawPhase);
+        }
+    }
+
+    for (const { questions } of allPhases) {
+        for (let i = 0; i < questions.length; i++) {
+            const question = questions[i]!;
+            if (typeof question === "object") {
+                continue;
+            }
+
+            if (usedQuestions.has(question)) {
+                console.warn(`Question '${question}' already used.`);
+            }
+
+            usedQuestions.add(question);
+
+            const questionObject = config.questions?.[question];
+            if (!questionObject) {
+                throw new Error(`Question '${question}' does not exist in questions list.`);
+            }
+
+            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawPhaseQuestion;
+        }
+    }
+
+    delete config.protocols;
+    delete config.phases;
+    delete config.questions;
+
+    return config as unknown as FlatRawConfig;
+}
+
+function validateConfig(config: FlatRawConfig): FlatRawConfig {
+    const probabilitySum = Object.values(config.groups).reduce((a, b) => a.add(b.probability), new Decimal(0));
+    if (probabilitySum.lessThan(1)) {
+        throw new Error(`The sum of all the group probabilities should be 1. Got ${probabilitySum.toString()}`);
+    }
 
     const usedImages = new Map<string, string>();
 
-    for (const { path, question } of iterator) {
-        const questionImage = question.img.src;
-        const usedQuestionImageAt = usedImages.get(questionImage);
+    if (config.preTestForm) {
+        valideForm(config.preTestForm, "preTestForm", usedImages);
+    }
+    if (config.postTestForm) {
+        valideForm(config.postTestForm, "postTestForm", usedImages);
+    }
 
-        if (usedQuestionImageAt) {
-            throw new Error(`Image '${questionImage}' already used at ${usedQuestionImageAt}.`);
-        }
+    for (const { yamlPath, question } of createPhaseQuestionsIterator(config)) {
+        validateImage(question.image, `${yamlPath}.image`, usedImages);
 
-        const questionImagePath = imageNameToPath.get(questionImage);
-        if (!questionImagePath) {
-            throw new Error(`Image '${questionImage}' not found in images directory.`);
-        }
-
-        (question.img as Mutable<Image>).src = questionImagePath;
-        usedImages.set(questionImage, `${path}.img`);
-
-        let foundCorrect = -1;
+        let correctOptionIndex = -1;
 
         for (let k = 0; k < question.options.length; k++) {
             const option = question.options[k]!;
-            const optionImage = option.src;
-            const usedOptionImageAt = usedImages.get(optionImage);
 
-            if (usedOptionImageAt) {
-                throw new Error(`Image '${optionImage}' already used at ${usedOptionImageAt}.`);
-            }
-
-            const optionImagePath = imageNameToPath.get(optionImage);
-            if (!optionImagePath) {
-                throw new Error(`Image '${optionImage}' not found in images directory.`);
-            }
-
-            (option as Mutable<Image>).src = optionImagePath;
-            usedImages.set(optionImage, `${path}.options[${k}]`);
+            validateImage(option, `${yamlPath}.options[${k}]`, usedImages);
 
             if (!option.correct) {
                 continue;
             }
 
-            if (foundCorrect !== -1) {
-                throw new Error(`${path}.options[${foundCorrect}] was already marked as correct.`);
+            if (correctOptionIndex !== -1) {
+                console.warn(`${yamlPath}.options[${correctOptionIndex}] was already marked as correct.`);
             }
 
-            foundCorrect = k;
+            correctOptionIndex = k;
         }
 
-        if (foundCorrect === -1) {
-            throw new Error(`Could not find an option marked as correct in ${path}.`);
+        if (correctOptionIndex === -1) {
+            console.warn(`Could not find an option marked as correct in ${yamlPath}.`);
         }
     }
 
     return config;
+}
+
+function valideForm(form: RawForm, key: string, usedImages: Map<string, string>): void {
+    const questions = form.questions ?? [];
+
+    for (let i = 0; i < questions.length; i++) {
+        const question = questions[i]!;
+        const yamlPath = `${key}.questions[${i}]`;
+
+        if (question.image) {
+            validateImage(question.image, `${yamlPath}.image`, usedImages);
+        }
+
+        validateFormQuestion(question, yamlPath, usedImages);
+    }
+}
+
+function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedImages: Map<string, string>): void {
+    switch (question.type) {
+        case FormQuestionType.SELECT_ONE:
+        case FormQuestionType.SELECT_MULTIPLE: {
+            for (let j = 0; j < question.options.length; j++) {
+                const option = question.options[j]!;
+                if (option.image) {
+                    validateImage(option.image, `${yamlPath}.options[${j}].image`, usedImages);
+                }
+            }
+            break;
+        }
+        case FormQuestionType.NUMBER:
+        case FormQuestionType.SLIDER: {
+            if (question.min >= question.max) {
+                throw new Error(`'min' should be less than 'max' in ${yamlPath}`);
+            }
+            break;
+        }
+        case FormQuestionType.TEXT_SHORT:
+        case FormQuestionType.TEXT_LONG: {
+            if (question.minLength >= question.maxLength) {
+                throw new Error(`'minLength' should be less than 'maxLength' in ${yamlPath}`);
+            }
+            break;
+        }
+        default:
+            // @ts-expect-error: safe, will not compile if a new type is added
+            throw new Error(`Unknown question type ${question.type}`);
+    }
+}
+
+function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string, string>): void {
+    const { src } = image;
+    const usedImageAt = usedImages.get(src);
+
+    if (usedImageAt) {
+        console.warn(`Image '${src}' already used at ${usedImageAt}.`);
+    }
+
+    const imagePath = IMAGE_NAME_TO_BASE64.get(src);
+    if (!imagePath) {
+        throw new Error(`Image '${src}' not found in images directory.`);
+    }
+
+    image.src = imagePath;
+    usedImages.set(src, yamlPath);
+}
+
+function* createPhaseQuestionsIterator(config: FlatRawConfig): QuestionsIterator {
+    for (const [label, { protocol }] of Object.entries(config.groups)) {
+        for (let i = 0; i < protocol.phases.length; i++) {
+            const phase = protocol.phases[i]!;
+
+            for (let j = 0; j < phase.questions.length; j++) {
+                const question = phase.questions[j]!;
+                const yamlPath = `protocols.${label}.phases[${i}].questions[${j}]`;
+
+                yield { yamlPath, question };
+            }
+        }
+    }
 }
 
 function getBase64Image(filePath: string): string {
     return `data:${mime.getType(filePath)};base64,${readFileSync(filePath, "base64")}`;
 }
 
-type Mutable<T> = {
-    -readonly [K in keyof T]: T[K];
-};
+type QuestionsIterator = Generator<{
+    yamlPath: string;
+    question: RawPhaseQuestion;
+}, void, unknown>;

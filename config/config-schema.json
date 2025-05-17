@@ -1,13 +1,29 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "JSON schema for PoCoPI's configuration file",
+  "title": "JSON schema for PoCoPI's configuration file.",
   "type": "object",
   "properties": {
+    "title": {
+      "type": "string",
+      "description": "The tile of the web app.",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the web app.",
+      "minLength": 1
+    },
+    "preTestForm": {
+      "$ref": "#/$defs/form"
+    },
+    "postTestForm": {
+      "$ref": "#/$defs/form"
+    },
     "groups": {
       "type": "object",
-      "description": "List of test groups",
+      "description": "List of test groups.",
       "patternProperties": {
-        "^\\w+$": {
+        "^([\\w-]+)$": {
           "$ref": "#/$defs/group"
         }
       },
@@ -16,10 +32,32 @@
     },
     "protocols": {
       "type": "object",
-      "description": "List of protocols the test groups will use",
+      "description": "List of protocols the test groups will use.",
       "patternProperties": {
-        "^\\w+$": {
+        "^([\\w-]+)$": {
           "$ref": "#/$defs/protocol"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "phases": {
+      "type": "object",
+      "description": "List of phases the test protocols will use.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/phase"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "questions": {
+      "type": "object",
+      "description": "List of questions the test phases will use.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/phase-question"
         }
       },
       "minProperties": 1,
@@ -27,13 +65,15 @@
     }
   },
   "required": [
+    "title",
+    "description",
     "groups"
   ],
   "additionalProperties": false,
   "$defs": {
     "group": {
       "type": "object",
-      "description": "A test group",
+      "description": "A test group.",
       "properties": {
         "probability": {
           "type": "number",
@@ -42,9 +82,16 @@
           "maximum": 1
         },
         "protocol": {
-          "type": "string",
-          "description": "Name of the protocol to use",
-          "minLength": 1
+          "oneOf": [
+            {
+              "$ref": "#/$defs/protocol"
+            },
+            {
+              "type": "string",
+              "description": "Name of the protocol to use.",
+              "minLength": 1
+            }
+          ]
         }
       },
       "required": [
@@ -55,17 +102,17 @@
     },
     "image": {
       "type": "object",
-      "description": "An image",
+      "description": "An image.",
       "properties": {
         "src": {
           "type": "string",
-          "description": "Where the image is located",
+          "description": "Where the image is located.",
           "format": "uri-reference",
           "minLength": 1
         },
         "alt": {
           "type": "string",
-          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)"
+          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)."
         }
       },
       "required": [
@@ -76,21 +123,21 @@
     },
     "option": {
       "type": "object",
-      "description": "An option",
+      "description": "An option.",
       "properties": {
         "src": {
           "type": "string",
-          "description": "Where the image is located",
+          "description": "Where the image is located.",
           "format": "uri-reference",
           "minLength": 1
         },
         "alt": {
           "type": "string",
-          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)"
+          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)."
         },
         "correct": {
           "type": "boolean",
-          "description": "Whether it's the correct option or not. Only one option should be marked as correct.",
+          "description": "Whether it's the correct option or not.",
           "default": false
         }
       },
@@ -102,15 +149,39 @@
     },
     "phase": {
       "type": "object",
-      "description": "Phase of a testing protocol",
+      "description": "Phase of a testing protocol.",
       "properties": {
+        "allowPreviousQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow going to the previous question or not.",
+          "default": true
+        },
+        "allowSkipQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow skipping the current question without answering it or not.",
+          "default": true
+        },
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the questions or not.",
+          "default": false
+        },
         "questions": {
           "type": "array",
-          "description": "List of questions",
+          "description": "List of questions.",
           "items": {
-            "$ref": "#/$defs/question"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/phase-question"
+              },
+              {
+                "type": "string",
+                "description": "Name of the test question to use.",
+                "minLength": 1
+              }
+            ]
           },
-          "minLength": 2
+          "minLength": 1
         }
       },
       "required": [
@@ -120,40 +191,343 @@
     },
     "protocol": {
       "type": "object",
-      "description": "A testing protocol",
+      "description": "A testing protocol.",
       "properties": {
+        "allowPreviousPhase": {
+          "type": "boolean",
+          "description": "Whether to allow going to the previous phase or not.",
+          "default": true
+        },
+        "allowSkipPhase": {
+          "type": "boolean",
+          "description": "Whether to allow skipping the current phase without completing it or not.",
+          "default": true
+        },
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the phases or not.",
+          "default": false
+        },
         "phases": {
           "type": "array",
-          "description": "Phases of the testing protocol",
+          "description": "Phases of the testing protocol.",
           "items": {
-            "$ref": "#/$defs/phase"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/phase"
+              },
+              {
+                "type": "string",
+                "description": "Name of the test phase to use.",
+                "minLength": 1
+              }
+            ]
           },
-          "minLength": 2
+          "minLength": 1
         }
       },
+      "required": [
+        "phases"
+      ],
       "additionalProperties": false
     },
-    "question": {
+    "phase-question": {
       "type": "object",
-      "description": "Test question",
+      "description": "A test question.",
       "properties": {
-        "img": {
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the options or not.",
+          "default": false
+        },
+        "image": {
           "$ref": "#/$defs/image"
         },
         "options": {
           "type": "array",
-          "description": "List of options",
+          "description": "List of options.",
           "items": {
             "$ref": "#/$defs/option"
           },
-          "minLength": 2
+          "minLength": 1
         }
       },
       "required": [
-        "img",
+        "image",
         "options"
       ],
       "additionalProperties": false
+    },
+    "question-select-multiple": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "select-multiple"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "description": "The list of options.",
+          "items": {
+            "type": "object",
+            "description": "An option.",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The options's text.",
+                "minLength": 1
+              },
+              "image": {
+                "$ref": "#/$defs/image"
+              }
+            },
+            "minProperties": 1,
+            "additionalProperties": false
+          },
+          "minItems": 2
+        },
+        "min": {
+          "type": "integer",
+          "description": "The minimum number of options to select.",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "description": "The maximum number of options to select."
+        }
+      },
+      "required": [
+        "type",
+        "options",
+        "min",
+        "max"
+      ]
+    },
+    "question-select-one": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "select-one"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "description": "The list of options.",
+          "items": {
+            "type": "object",
+            "description": "An option.",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The options's text.",
+                "minLength": 1
+              },
+              "image": {
+                "$ref": "#/$defs/image"
+              }
+            },
+            "minProperties": 1,
+            "additionalProperties": false
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "type",
+        "options"
+      ]
+    },
+    "question-number": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "number"
+          ]
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text to be shown when the question hasn't been answered yet.",
+          "minLength": 1
+        },
+        "min": {
+          "type": "number",
+          "description": "The minimum number allowed."
+        },
+        "max": {
+          "type": "number",
+          "description": "The maximum number allowed."
+        },
+        "step": {
+          "type": "number",
+          "description": "The increment interval when using the arrow buttons/keys.",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "type",
+        "placeholder",
+        "min",
+        "max",
+        "step"
+      ]
+    },
+    "question-slider": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "slider"
+          ]
+        },
+        "min": {
+          "type": "number",
+          "description": "The minimum number allowed."
+        },
+        "max": {
+          "type": "number",
+          "description": "The maximum number allowed."
+        },
+        "step": {
+          "type": "number",
+          "description": "The increment interval for the slider.",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "type",
+        "min",
+        "max",
+        "step"
+      ]
+    },
+    "question-text-short": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "text-short"
+          ]
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text to be shown when the question hasn't been answered yet.",
+          "minLength": 1
+        },
+        "minLength": {
+          "type": "integer",
+          "description": "The minimum length of the answer.",
+          "minimum": 1
+        },
+        "maxLength": {
+          "type": "integer",
+          "description": "The maximum length of the answer."
+        }
+      },
+      "required": [
+        "type",
+        "placeholder",
+        "minLength",
+        "maxLength"
+      ]
+    },
+    "question-text-long": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The question type.",
+          "enum": [
+            "text-long"
+          ]
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text to be shown when the question hasn't been answered yet.",
+          "minLength": 1
+        },
+        "minLength": {
+          "type": "integer",
+          "description": "The minimum length of the answer.",
+          "minimum": 1
+        },
+        "maxLength": {
+          "type": "integer",
+          "description": "The maximum length of the answer."
+        }
+      },
+      "required": [
+        "type",
+        "placeholder",
+        "minLength",
+        "maxLength"
+      ]
+    },
+    "form": {
+      "type": "object",
+      "description": "Structure of the form.",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "description": "List of questions.",
+          "items": {
+            "$ref": "#/$defs/form-question"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "questions"
+      ]
+    },
+    "form-question": {
+      "type": "object",
+      "description": "A form question.",
+      "allOf": [
+        {
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "The question's text.",
+              "minLength": 1
+            },
+            "image": {
+              "$ref": "#/$defs/image"
+            }
+          },
+          "required": [
+            "text"
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/question-select-multiple"
+            },
+            {
+              "$ref": "#/$defs/question-select-one"
+            },
+            {
+              "$ref": "#/$defs/question-number"
+            },
+            {
+              "$ref": "#/$defs/question-slider"
+            },
+            {
+              "$ref": "#/$defs/question-text-short"
+            },
+            {
+              "$ref": "#/$defs/question-text-long"
+            }
+          ]
+        }
+      ]
     }
   }
 }

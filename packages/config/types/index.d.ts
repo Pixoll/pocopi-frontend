@@ -1,3 +1,4 @@
-import { PoCoPIConfig } from "./types";
-export declare const config: PoCoPIConfig;
-export * from "./types";
+import { Config } from "./config";
+export declare const config: Config;
+export * from "./config";
+export { FormQuestionType } from "./raw-types";
