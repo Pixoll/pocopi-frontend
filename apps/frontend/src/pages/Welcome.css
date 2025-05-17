@@ -1,0 +1,62 @@
+.general-welcome {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(to bottom right,
+    #1c7e95 0%,
+    #1c7e95 20%,
+    #d5b8a7 100%
+    );
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    color: white;
+}
+
+.welcome-container {
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0%);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    color: white;
+}
+
+.welcome-container > * {
+    margin: 20px;
+}
+
+.welcome-container h1 {
+    font-size: 4rem;
+    font-weight: 350;
+}
+.welcome-container h2 {
+    font-size: 1rem;
+    font-weight: 100;
+}
+.welcome-container button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #e6ddd4;
+    color: #333333;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.welcome-container button:hover {
+    background-color: #d49a8b;
+}
+
+.welcome-container button:active {
+    background-color: #c18777;
+}
+
+.welcome-container button:focus {
+    outline: none;
+}
+
+

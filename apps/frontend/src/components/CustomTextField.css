@@ -1,0 +1,19 @@
+.custom-text-field {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.custom-text-field::placeholder {
+    color: #a0a0a0;
+}
+
+    .custom-text-field:focus {
+    border-color: #a77c5a;
+}
