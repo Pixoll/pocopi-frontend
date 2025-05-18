@@ -1,6 +1,7 @@
 // Punto de entrada principal para la aplicación frontend de la Prueba de Raven.
 // Gestiona la navegación global, el theming y el estado de nivel superior.
 
+import { config } from "@pocopi/config";
 import { JSX, useState, useEffect } from "react";
 import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
 import HomePage from "@/pages/HomePage";
@@ -50,8 +51,8 @@ const ThemeHandler = ({ children }: { children: React.ReactNode }) => {
  * Utiliza páginas y componentes modularizados para claridad y mantenibilidad.
  */
 export default function App(): JSX.Element {
-  // Protocolo para la prueba (puede extenderse para A/B testing, etc.)
-  const [protocol] = useState<string>("control");
+  // Grupo para la prueba (puede extenderse para A/B testing, etc.)
+  const [group] = useState(config.sampleGroup());
   // Página actual (estado de navegación)
   const [page, setPage] = useState<Page>(Page.HOME);
   // Datos del estudiante recogidos del formulario (null si no ha comenzado)
@@ -93,7 +94,7 @@ export default function App(): JSX.Element {
         // Página de la prueba Raven: lógica principal y UI de la prueba
         return (
           <RavenMatrixPage
-            protocol={protocol}
+            group={group}
             goToNextPage={() => setPage(Page.END)}
             studentData={studentData}
           />

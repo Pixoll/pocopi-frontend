@@ -7,7 +7,7 @@ import {
   saveResultsToStorage,
   saveStudentDataToStorage,
 } from "@/utils/RavenAnalytics";
-import { config } from "@pocopi/config";
+import { Group } from "@pocopi/config";
 
 // Tipos para los datos del estudiante y opciones
 interface StudentData {
@@ -16,22 +16,9 @@ interface StudentData {
   email: string;
   age: string;
 }
-interface RavenOption {
-  id: string;
-  src: string;
-  alt: string;
-  correct?: boolean;
-  isCorrect: boolean;
-}
-interface RavenPhase {
-  questions: Array<{
-    img: { src: string; alt: string };
-    options: RavenOption[];
-  }>;
-}
 
 export function useRavenMatrixTest(
-  protocol: string,
+  group: Group,
   studentData: StudentData | null
 ) {
   // Estado para fase, pregunta y opción seleccionada
@@ -42,7 +29,7 @@ export function useRavenMatrixTest(
 
   // Inicializa la analítica y el primer tracking al montar
   useEffect(() => {
-    analyticsRef.current = new RavenAnalytics("default_group", protocol);
+    analyticsRef.current = new RavenAnalytics(group.label);
     if (studentData?.id) {
       analyticsRef.current.setParticipantId(studentData.id);
       saveStudentDataToStorage(studentData.id, {
@@ -52,24 +39,22 @@ export function useRavenMatrixTest(
       });
     }
     analyticsRef.current.startQuestion(0, 0);
-  }, [protocol, studentData]);
+  }, [group, studentData]);
 
   // Obtiene la estructura de preguntas y opciones
-  const { phases } = config.protocols[protocol] as { phases: RavenPhase[] };
+  const { phases } = group.protocol;
   const { questions } = phases[phase];
-  const { img, options: tempOptions } = questions[question];
+  const { image, options: tempOptions } = questions[question];
 
   // Procesa las opciones para agregar id y detectar la correcta
-  const options: RavenOption[] = tempOptions.map((option) => {
+  const options = tempOptions.map((option) => {
     const base64 = option.src.split(";")[1]?.slice(7) || option.src;
     const half = Math.round(base64.length / 2);
     const id = base64.substring(half - 10, half + 10);
     return {
       ...option,
       id,
-      isCorrect:
-        option.correct === true ||
-        String(option.correct).toLowerCase() === "true",
+      isCorrect: option.correct,
     };
   });
 
@@ -78,14 +63,14 @@ export function useRavenMatrixTest(
 
   // Progreso
   const totalQuestions = phases.reduce(
-    (acc: number, phase: RavenPhase) => acc + phase.questions.length,
+    (acc, phase) => acc + phase.questions.length,
     0
   );
   const currentQuestionNumber =
     phases
       .slice(0, phase)
       .reduce(
-        (acc: number, phase: RavenPhase) => acc + phase.questions.length,
+        (acc, phase) => acc + phase.questions.length,
         0
       ) +
     question +
@@ -95,11 +80,11 @@ export function useRavenMatrixTest(
   // Completa la pregunta actual en la analítica
   const completeCurrentQuestion = () => {
     if (!selected || !analyticsRef.current) return;
-    const selectedOption = options.find((o: RavenOption) => o.id === selected);
+    const selectedOption = options.find(o => o.id === selected);
     if (selectedOption) {
       analyticsRef.current.completeQuestion(
         selected,
-        !!selectedOption.isCorrect
+        selectedOption.correct
       );
     }
   };
@@ -168,7 +153,7 @@ export function useRavenMatrixTest(
     setQuestion,
     selected,
     setSelected,
-    img,
+    image,
     options,
     optionsColumns,
     progressPercentage,

@@ -10,13 +10,13 @@ import { ravenAnalyticsService } from "@/services/ravenAnalyticsService";
  * @param groupName Nombre del grupo experimental
  * @param protocolName Nombre del protocolo
  */
-export function useRavenAnalytics(groupName: string, protocolName: string) {
+export function useRavenAnalytics(groupName: string) {
   // Usamos useRef para mantener la instancia entre renders
   const analyticsRef = useRef<RavenAnalytics | null>(null);
 
   // Inicializa la instancia solo una vez
   if (!analyticsRef.current) {
-    analyticsRef.current = new RavenAnalytics(groupName, protocolName);
+    analyticsRef.current = new RavenAnalytics(groupName);
   }
 
   // Métodos expuestos del hook

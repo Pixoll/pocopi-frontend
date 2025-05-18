@@ -1,7 +1,7 @@
 // Página del test de matrices de Raven modularizada y comentada
 // Usa hooks y componentes presentacionales para separar lógica y UI
 
-import { config } from "@pocopi/config";
+import { Group } from "@pocopi/config";
 import { Container, Row, Col } from "react-bootstrap";
 import { useTheme } from "@/hooks/useTheme";
 import { useRavenMatrixTest } from "@/hooks/useRavenMatrixTest";
@@ -11,7 +11,7 @@ import RavenMatrixNavigation from "@/components/RavenMatrix/RavenMatrixNavigatio
 
 // Props del componente principal
 type RavenMatrixPageProps = {
-  protocol: string;
+  group: Group;
   goToNextPage: () => void;
   studentData?: {
     name: string;
@@ -22,7 +22,7 @@ type RavenMatrixPageProps = {
 };
 
 export function RavenMatrixPage({
-  protocol,
+  group,
   goToNextPage,
   studentData,
 }: RavenMatrixPageProps) {
@@ -35,7 +35,7 @@ export function RavenMatrixPage({
     phase,
     question,
     selected,
-    img,
+    image,
     options,
     optionsColumns,
     progressPercentage,
@@ -45,7 +45,7 @@ export function RavenMatrixPage({
     goToPreviousQuestion,
     goToNextQuestion,
     handleOptionClick,
-  } = useRavenMatrixTest(protocol, studentData ?? null);
+  } = useRavenMatrixTest(group, studentData ?? null);
 
   // Render principal
   return (
@@ -57,7 +57,7 @@ export function RavenMatrixPage({
       <RavenMatrixHeader
         isDarkMode={isDarkMode}
         phase={phase}
-        phasesCount={config.protocols[protocol].phases.length}
+        phasesCount={group.protocol.phases.length}
         question={question}
         questionsCount={questions.length}
         progressPercentage={progressPercentage}
@@ -75,8 +75,8 @@ export function RavenMatrixPage({
               style={{ userSelect: "none" }}
             >
               <img
-                src={img.src}
-                alt={img.alt}
+                src={image.src}
+                alt={image.alt}
                 className="img-fluid"
                 style={{ maxWidth: "100%", pointerEvents: "none" }}
                 draggable={false}
@@ -101,7 +101,7 @@ export function RavenMatrixPage({
       {/* Navegación inferior */}
       <RavenMatrixNavigation
         phase={phase}
-        phasesCount={config.protocols[protocol].phases.length}
+        phasesCount={group.protocol.phases.length}
         question={question}
         questionsCount={questions.length}
         onPreviousPhase={goToPreviousPhase}
@@ -109,7 +109,7 @@ export function RavenMatrixPage({
         onPreviousQuestion={goToPreviousQuestion}
         onNextQuestion={() => goToNextQuestion(goToNextPage)}
         disablePrevious={phase === 0 && question === 0}
-        disableNextPhase={phase >= config.protocols[protocol].phases.length - 1}
+        disableNextPhase={phase >= group.protocol.phases.length - 1}
         isDarkMode={isDarkMode}
       />
 
