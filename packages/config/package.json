@@ -11,7 +11,7 @@
   "scripts": {
     "prestart": "tsc -b ./tsconfig.json ./tsconfig.cjs.json ./tsconfig.esm.json",
     "start": "node .",
-    "build": "tsc -b ./tsconfig.json ./tsconfig.cjs.json ./tsconfig.esm.json"
+    "build": "npm start"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
