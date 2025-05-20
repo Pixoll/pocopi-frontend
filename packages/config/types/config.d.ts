@@ -23,12 +23,12 @@ export type FormQuestionSelectMultiple = {
     readonly options: readonly FormOption[];
     readonly min: number;
     readonly max: number;
-    readonly other?: boolean;
+    readonly other: boolean;
 };
 export type FormQuestionSelectOne = {
     readonly type: FormQuestionType.SELECT_ONE;
     readonly options: readonly FormOption[];
-    readonly other?: boolean;
+    readonly other: boolean;
 };
 export type FormQuestionNumber = {
     readonly type: FormQuestionType.NUMBER;
@@ -42,7 +42,7 @@ export type FormQuestionSlider = {
     readonly min: number;
     readonly max: number;
     readonly step: number;
-    readonly labels?: readonly SliderLabel[];
+    readonly labels: readonly SliderLabel[];
 };
 export type FormQuestionTextShort = {
     readonly type: FormQuestionType.TEXT_SHORT;

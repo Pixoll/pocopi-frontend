@@ -5,9 +5,13 @@ import {
     FlatRawPhase,
     FlatRawProtocol,
     FormQuestionType,
-    RawForm, RawFormOption, RawFormQuestion,
-    RawTestOption,
+    RawForm,
+    RawFormOption,
+    RawFormQuestion,
+    RawFormQuestionSelectMultiple,
+    RawFormQuestionSelectOne,
     RawPhaseQuestion,
+    RawTestOption,
 } from "./raw-types";
 import { shuffle } from "./shuffle";
 
@@ -22,12 +26,18 @@ const defaults = Object.freeze({
         allowSkipQuestion: true,
         randomize: false,
     } satisfies Partial<FlatRawPhase>),
-    question: Object.freeze({
+    phaseQuestion: Object.freeze({
         randomize: false,
     } satisfies Partial<RawPhaseQuestion>),
-    option: Object.freeze({
+    testOption: Object.freeze({
         correct: false,
     } satisfies Partial<RawTestOption>),
+    formQuestionSelectMultiple: Object.freeze({
+        other: false,
+    } satisfies Partial<RawFormQuestionSelectMultiple>),
+    formQuestionSelectOne: Object.freeze({
+        other: false,
+    } satisfies Partial<RawFormQuestionSelectOne>),
 });
 
 /**
@@ -138,7 +148,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
                 options: Object.freeze(question.options.map(makeFormOption)),
                 min: question.min,
                 max: question.max,
-                ...typeof question.other !== "undefined" && { other: question.other },
+                other: question.other ?? defaults.formQuestionSelectMultiple.other,
             });
         case FormQuestionType.SELECT_ONE:
             return Object.freeze({
@@ -147,7 +157,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
                 options: Object.freeze(question.options.map(makeFormOption)),
-                ...typeof question.other !== "undefined" && { other: question.other },
+                other: question.other ?? defaults.formQuestionSelectOne.other,
             });
         case FormQuestionType.NUMBER:
             return Object.freeze({
@@ -169,7 +179,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
                 min: question.min,
                 max: question.max,
                 step: question.step,
-                ...question.labels && { labels: Object.freeze(makeSliderLabels(question.labels)) },
+                labels: Object.freeze(makeSliderLabels(question.labels ?? {})),
             });
         case FormQuestionType.TEXT_SHORT:
             return Object.freeze({
@@ -210,9 +220,9 @@ function makeFormOption(option: RawFormOption): FormOption {
 
 /**
  * Converts slider labels from the raw configuration format to an array of immutable {@link SliderLabel} objects.
- * 
+ *
  * @param labels - Object mapping numeric positions to label text
- * 
+ *
  * @returns Array of immutable {@link SliderLabel} objects
  */
 function makeSliderLabels(labels: Record<`${number}`, string>): SliderLabel[] {
@@ -298,7 +308,7 @@ function makePhase(phase: FlatRawPhase): Phase {
  * @returns An immutable {@link PhaseQuestion} object
  */
 function makePhaseQuestion(question: RawPhaseQuestion): PhaseQuestion {
-    const randomize = question.randomize ?? defaults.question.randomize;
+    const randomize = question.randomize ?? defaults.phaseQuestion.randomize;
     const options = question.options.map(makeTestOption);
 
     return Object.freeze({
@@ -319,7 +329,7 @@ function makeTestOption(option: RawTestOption): TestOption {
     return Object.freeze({
         ...option.text && { text: option.text },
         ...option.image && { image: Object.freeze(option.image) },
-        correct: option.correct ?? defaults.option.correct,
+        correct: option.correct ?? defaults.testOption.correct,
     });
 }
 
@@ -345,13 +355,13 @@ export type FormQuestionSelectMultiple = {
     readonly options: readonly FormOption[];
     readonly min: number;
     readonly max: number;
-    readonly other?: boolean;
+    readonly other: boolean;
 };
 
 export type FormQuestionSelectOne = {
     readonly type: FormQuestionType.SELECT_ONE;
     readonly options: readonly FormOption[];
-    readonly other?: boolean;
+    readonly other: boolean;
 };
 
 export type FormQuestionNumber = {
@@ -367,7 +377,7 @@ export type FormQuestionSlider = {
     readonly min: number;
     readonly max: number;
     readonly step: number;
-    readonly labels?: readonly SliderLabel[];
+    readonly labels: readonly SliderLabel[];
 };
 
 export type FormQuestionTextShort = {
