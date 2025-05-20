@@ -228,14 +228,17 @@ function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedI
         case FormQuestionType.NUMBER:
         case FormQuestionType.SLIDER: {
             if (question.min >= question.max) {
-                throw new Error(`'min' should be less than 'max' in ${yamlPath}`);
+                throw new Error(`min=${question.min} should be less than max=${question.max} in ${yamlPath}`);
             }
             break;
         }
         case FormQuestionType.TEXT_SHORT:
         case FormQuestionType.TEXT_LONG: {
             if (question.minLength >= question.maxLength) {
-                throw new Error(`'minLength' should be less than 'maxLength' in ${yamlPath}`);
+                throw new Error(
+                    `minLength=${question.minLength} should be less than maxLength=${question.maxLength} `
+                    + `in ${yamlPath}`
+                );
             }
             break;
         }
