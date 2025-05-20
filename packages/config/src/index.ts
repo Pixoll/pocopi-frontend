@@ -244,6 +244,10 @@ function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedI
                         + `(inclusive) in ${yamlPath}.labels`
                     );
                 }
+
+                if (new Decimal(label).modulo(question.step).greaterThan(0)) {
+                    throw new Error(`label=${label} must be divisible by step=${question.step} in ${yamlPath}`);
+                }
             }
 
             break;

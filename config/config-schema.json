@@ -521,7 +521,7 @@
       "type": "object",
       "description": "Labels for different points in a numeric range.",
       "patternProperties": {
-        "^\\d+$": {
+        "^\\d+(\\.\\d+)?$": {
           "type": "string",
           "description": "The label for that number.",
           "minLength": 1
