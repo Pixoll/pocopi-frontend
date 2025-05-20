@@ -137,6 +137,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
                 min: question.min,
                 max: question.max,
                 step: question.step,
+                ...question.labels && { labels: Object.freeze(question.labels) },
             });
         case FormQuestionType.TEXT_SHORT:
             return Object.freeze({
@@ -271,6 +272,7 @@ export type FormQuestionSlider = {
     readonly min: number;
     readonly max: number;
     readonly step: number;
+    readonly labels?: Readonly<Record<`${number}`, string>>;
 };
 
 export type FormQuestionTextShort = {

@@ -70,6 +70,7 @@ export type RawFormQuestionSlider = {
     min: number;
     max: number;
     step: number;
+    labels?: Record<`${number}`, string>;
 };
 
 export type RawFormQuestionTextShort = {

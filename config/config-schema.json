@@ -443,6 +443,9 @@
           "type": "number",
           "description": "The increment interval for the slider.",
           "exclusiveMinimum": 0
+        },
+        "labels": {
+          "$ref": "#/$defs/range-labels"
         }
       },
       "required": [
@@ -513,6 +516,19 @@
         "minLength",
         "maxLength"
       ]
+    },
+    "range-labels": {
+      "type": "object",
+      "description": "Labels for different points in a numeric range.",
+      "patternProperties": {
+        "^\\d+$": {
+          "type": "string",
+          "description": "The label for that number.",
+          "minLength": 1
+        }
+      },
+      "minProperties": 2,
+      "additionalProperties": false
     },
     "test-option": {
       "type": "object",

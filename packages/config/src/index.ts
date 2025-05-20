@@ -225,11 +225,27 @@ function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedI
             }
             break;
         }
-        case FormQuestionType.NUMBER:
+        case FormQuestionType.NUMBER: {
+            if (question.min >= question.max) {
+                throw new Error(`min=${question.min} should be less than max=${question.max} in ${yamlPath}`);
+            }
+            break;
+        }
         case FormQuestionType.SLIDER: {
             if (question.min >= question.max) {
                 throw new Error(`min=${question.min} should be less than max=${question.max} in ${yamlPath}`);
             }
+
+            for (const label of Object.keys(question.labels ?? {})) {
+                const n = +label;
+                if (n < question.min || n > question.max) {
+                    throw new Error(
+                        `label=${label} should be between min=${question.min} and max=${question.max} `
+                        + `(inclusive) in ${yamlPath}.labels`
+                    );
+                }
+            }
+
             break;
         }
         case FormQuestionType.TEXT_SHORT:
