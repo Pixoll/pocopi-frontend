@@ -7,7 +7,7 @@
     "dev": "pnpm --parallel dev",
     "dev:backend": "pnpm run predev && pnpm --filter ./apps/backend dev",
     "dev:frontend": "pnpm run predev && pnpm --filter ./apps/frontend dev",
-    "build": "pnpm --filter ./packages/config build && pnpm -r build",
+    "build": "pnpm --filter ./packages/config build && pnpm --filter \"...^@pocopi/config\" -r build",
     "build:backend": "pnpm --filter ./apps/backend build",
     "build:frontend": "pnpm --filter ./apps/frontend build",
     "prestart": "pnpm --filter ./packages/config start",
