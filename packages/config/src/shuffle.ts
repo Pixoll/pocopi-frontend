@@ -1,4 +1,13 @@
-// Adapted from https://github.com/dhessler/crypto-secure-shuffle
+/**
+ * Adapted from https://github.com/dhessler/crypto-secure-shuffle
+ *
+ * Shuffles an array using a cryptographically secure random number generator. Implements the Fisher-Yates (Knuth)
+ * shuffle algorithm with secure random values. This function modifies the original array and returns it.
+ *
+ * @param array - The array to shuffle
+ *
+ * @returns The shuffled array (same reference as input)
+ */
 export function shuffle<T>(array: T[]): T[] {
     for (let i = array.length - 1; i > 0; i--) {
         const j = randomIndex(array.length - 1);
@@ -10,7 +19,16 @@ export function shuffle<T>(array: T[]): T[] {
     return array;
 }
 
-// Adapted from https://www.npmjs.com/package/random-number-csprng
+/**
+ * Adapted from https://www.npmjs.com/package/random-number-csprng
+ *
+ * Generates a cryptographically secure random integer between 0 and max (inclusive). Uses Web Crypto API to generate
+ * secure random values with uniform distribution.
+ *
+ * @param max - The maximum value (inclusive) for the random number
+ *
+ * @returns A random integer between 0 and max (inclusive)
+ */
 function randomIndex(max: number): number {
     const { bytesNeeded, mask } = calculateParameters(max);
     const randomBytes = new Uint8Array(bytesNeeded);
@@ -30,6 +48,13 @@ function randomIndex(max: number): number {
     return randomValue;
 }
 
+/**
+ * Calculates the number of bytes required and creates a bitmask for the desired range.
+ *
+ * @param range - The upper limit of the range
+ *
+ * @returns Object containing bytesNeeded and mask parameters
+ */
 function calculateParameters(range: number): {
     bytesNeeded: number;
     mask: number;

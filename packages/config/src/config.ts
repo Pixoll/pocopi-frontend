@@ -30,6 +30,9 @@ const defaults = Object.freeze({
     } satisfies Partial<RawTestOption>),
 });
 
+/**
+ * Main configuration class that processes and provides access to experiment configuration.
+ */
 export class Config {
     public readonly title: string;
     public readonly description: string;
@@ -39,6 +42,14 @@ export class Config {
     private readonly groups: readonly FlatRawGroupWithLabel[];
     private readonly probabilitySums: readonly Decimal[];
 
+    /**
+     * Main configuration class that processes and provides access to experiment configuration.
+     *
+     * Processes forms and groups and freezes all objects for immutability, including the {@link Config} instance
+     * itself.
+     *
+     * @param config - The flattened configuration object
+     */
     public constructor(config: FlatRawConfig) {
         this.title = config.title;
         this.description = config.description;
@@ -65,6 +76,12 @@ export class Config {
         Object.freeze(this);
     }
 
+    /**
+     * Samples a group based on the defined probabilities. Uses weighted random sampling to select a group according to
+     * its probability. Time complexity is `O(log(n))` as binary search is used to find the appropriate group to use.
+     *
+     * @returns The randomly selected group
+     */
     public sampleGroup(): Group {
         const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
         const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
@@ -89,12 +106,27 @@ export class Config {
     }
 }
 
+/**
+ * Creates a {@link Form} object from raw form data.
+ *
+ * @param form - The raw form data
+ *
+ * @returns An immutable {@link Form} object
+ */
 function makeForm(form: RawForm): Form {
     return Object.freeze({
         questions: Object.freeze(form.questions.map(makeFormQuestion)),
     });
 }
 
+/**
+ * Creates a {@link FormQuestion} object from raw question data. Handles different question types with their specific
+ * properties.
+ *
+ * @param question - The raw form question
+ *
+ * @returns An immutable {@link FormQuestion} object
+ */
 function makeFormQuestion(question: RawFormQuestion): FormQuestion {
     switch (question.type) {
         case FormQuestionType.SELECT_MULTIPLE:
@@ -162,6 +194,13 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
     }
 }
 
+/**
+ * Creates a {@link FormOption} object from raw option data.
+ *
+ * @param option - The raw form option
+ *
+ * @returns An immutable {@link FormOption} object
+ */
 function makeFormOption(option: RawFormOption): FormOption {
     return Object.freeze({
         ...option.text && { text: option.text },
@@ -169,6 +208,13 @@ function makeFormOption(option: RawFormOption): FormOption {
     });
 }
 
+/**
+ * Parses and sorts groups from the configuration by probability (low to high).
+ *
+ * @param config - The flattened configuration
+ *
+ * @returns Array of groups with labels, sorted by probability
+ */
 function parseGroups(config: FlatRawConfig): readonly FlatRawGroupWithLabel[] {
     const groups = Object.entries(config.groups)
         .map<FlatRawGroupWithLabel>(([label, group]) => ({
@@ -179,6 +225,13 @@ function parseGroups(config: FlatRawConfig): readonly FlatRawGroupWithLabel[] {
     return groups.sort((a, b) => new Decimal(a.probability).comparedTo(b.probability));
 }
 
+/**
+ * Creates a {@link Group} object from a raw group with label.
+ *
+ * @param group - The raw group with label
+ *
+ * @returns An immutable {@link Group} object
+ */
 function makeGroup(group: FlatRawGroupWithLabel): Group {
     return Object.freeze({
         label: group.label,
@@ -187,6 +240,13 @@ function makeGroup(group: FlatRawGroupWithLabel): Group {
     });
 }
 
+/**
+ * Creates a {@link Protocol} object from a raw protocol.
+ *
+ * @param protocol - The raw protocol data
+ *
+ * @returns An immutable {@link Protocol} object
+ */
 function makeProtocol(protocol: FlatRawProtocol): Protocol {
     const randomize = protocol.randomize ?? defaults.protocol.randomize;
     const phases = protocol.phases.map(makePhase);
@@ -198,6 +258,13 @@ function makeProtocol(protocol: FlatRawProtocol): Protocol {
     });
 }
 
+/**
+ * Creates a {@link Phase} object from a raw phase.
+ *
+ * @param phase - The raw phase data
+ *
+ * @returns An immutable {@link Phase} object
+ */
 function makePhase(phase: FlatRawPhase): Phase {
     const randomize = phase.randomize ?? defaults.phase.randomize;
     const questions = phase.questions.map(makePhaseQuestion);
@@ -209,6 +276,13 @@ function makePhase(phase: FlatRawPhase): Phase {
     });
 }
 
+/**
+ * Creates a {@link PhaseQuestion} object from raw question data.
+ *
+ * @param question - The raw phase question
+ *
+ * @returns An immutable {@link PhaseQuestion} object
+ */
 function makePhaseQuestion(question: RawPhaseQuestion): PhaseQuestion {
     const randomize = question.randomize ?? defaults.question.randomize;
     const options = question.options.map(makeTestOption);
@@ -220,6 +294,13 @@ function makePhaseQuestion(question: RawPhaseQuestion): PhaseQuestion {
     });
 }
 
+/**
+ * Creates a {@link TestOption} object from raw option data.
+ *
+ * @param option - The raw test option
+ *
+ * @returns An immutable {@link TestOption} object
+ */
 function makeTestOption(option: RawTestOption): TestOption {
     return Object.freeze({
         ...option.text && { text: option.text },
