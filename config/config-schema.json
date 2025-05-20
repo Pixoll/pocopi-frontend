@@ -121,32 +121,6 @@
       ],
       "additionalProperties": false
     },
-    "option": {
-      "type": "object",
-      "description": "An option.",
-      "properties": {
-        "src": {
-          "type": "string",
-          "description": "Where the image is located.",
-          "format": "uri-reference",
-          "minLength": 1
-        },
-        "alt": {
-          "type": "string",
-          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)."
-        },
-        "correct": {
-          "type": "boolean",
-          "description": "Whether it's the correct option or not.",
-          "default": false
-        }
-      },
-      "required": [
-        "src",
-        "alt"
-      ],
-      "additionalProperties": false
-    },
     "phase": {
       "type": "object",
       "description": "Phase of a testing protocol.",
@@ -233,12 +207,17 @@
     },
     "phase-question": {
       "type": "object",
-      "description": "A test question.",
+      "description": "A test question. Must have either text, image, or both.",
       "properties": {
         "randomize": {
           "type": "boolean",
           "description": "Whether to randomize the order of the options or not.",
           "default": false
+        },
+        "text": {
+          "type": "string",
+          "description": "The question's text.",
+          "minLength": 1
         },
         "image": {
           "$ref": "#/$defs/image"
@@ -247,15 +226,15 @@
           "type": "array",
           "description": "List of options.",
           "items": {
-            "$ref": "#/$defs/option"
+            "$ref": "#/$defs/test-option"
           },
           "minLength": 1
         }
       },
       "required": [
-        "image",
         "options"
       ],
+      "minProperties": 2,
       "additionalProperties": false
     },
     "question-select-multiple": {
@@ -271,20 +250,7 @@
           "type": "array",
           "description": "The list of options.",
           "items": {
-            "type": "object",
-            "description": "An option.",
-            "properties": {
-              "text": {
-                "type": "string",
-                "description": "The options's text.",
-                "minLength": 1
-              },
-              "image": {
-                "$ref": "#/$defs/image"
-              }
-            },
-            "minProperties": 1,
-            "additionalProperties": false
+            "$ref": "#/$defs/form-option"
           },
           "minItems": 2
         },
@@ -318,20 +284,7 @@
           "type": "array",
           "description": "The list of options.",
           "items": {
-            "type": "object",
-            "description": "An option.",
-            "properties": {
-              "text": {
-                "type": "string",
-                "description": "The options's text.",
-                "minLength": 1
-              },
-              "image": {
-                "$ref": "#/$defs/image"
-              }
-            },
-            "minProperties": 1,
-            "additionalProperties": false
+            "$ref": "#/$defs/form-option"
           },
           "minItems": 2
         }
@@ -486,6 +439,22 @@
         "questions"
       ]
     },
+    "form-option": {
+      "type": "object",
+      "description": "An option.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The options's text.",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/$defs/image"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
     "form-question": {
       "type": "object",
       "description": "A form question.",
@@ -528,6 +497,27 @@
           ]
         }
       ]
+    },
+    "test-option": {
+      "type": "object",
+      "description": "An option. Must have either text, image, or both.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The options's text.",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/$defs/image"
+        },
+        "correct": {
+          "type": "boolean",
+          "description": "Whether it's the correct option or not.",
+          "default": false
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
     }
   }
 }

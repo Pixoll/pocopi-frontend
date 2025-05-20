@@ -99,10 +99,13 @@ export type RawPhase = {
 };
 export type RawPhaseQuestion = {
     randomize?: boolean;
-    image: RawImage;
+    text?: string;
+    image?: RawImage;
     options: RawOption[];
 };
-export type RawOption = RawImage & {
+export type RawOption = {
+    text?: string;
+    image?: RawImage;
     correct?: boolean;
 };
 export type RawImage = {

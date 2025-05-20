@@ -158,14 +158,26 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
     }
 
     for (const { yamlPath, question } of createPhaseQuestionsIterator(config)) {
-        validateImage(question.image, `${yamlPath}.image`, usedImages);
+        if (!question.text && !question.image) {
+            throw new Error(`Question ${yamlPath} must have either text, image, or both.`);
+        }
+
+        if (question.image) {
+            validateImage(question.image, `${yamlPath}.image`, usedImages);
+        }
 
         let correctOptionIndex = -1;
 
         for (let k = 0; k < question.options.length; k++) {
             const option = question.options[k]!;
 
-            validateImage(option, `${yamlPath}.options[${k}]`, usedImages);
+            if (!option.text && !option.image) {
+                throw new Error(`Option ${yamlPath}.options[${k}] must have either text, image, or both.`);
+            }
+
+            if (option.image) {
+                validateImage(option.image, `${yamlPath}.options[${k}].image`, usedImages);
+            }
 
             if (!option.correct) {
                 continue;

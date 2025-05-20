@@ -72,10 +72,13 @@ export type Phase = {
     readonly questions: readonly Question[];
 };
 export type Question = {
-    readonly image: Image;
+    readonly text?: string;
+    readonly image?: Image;
     readonly options: readonly Option[];
 };
-export type Option = Image & {
+export type Option = {
+    readonly text?: string;
+    readonly image?: Image;
     readonly correct: boolean;
 };
 export type Image = {

@@ -205,15 +205,16 @@ function makePhaseQuestion(question: RawPhaseQuestion): Question {
     const options = question.options.map(makeOption);
 
     return Object.freeze({
-        image: Object.freeze(question.image),
+        ...question.text && { text: question.text },
+        ...question.image && { image: Object.freeze(question.image) },
         options: Object.freeze(randomize ? shuffle(options) : options),
     });
 }
 
 function makeOption(option: RawOption): Option {
     return Object.freeze({
-        src: option.src,
-        alt: option.alt,
+        ...option.text && { text: option.text },
+        ...option.image && { image: Object.freeze(option.image) },
         correct: option.correct ?? defaults.option.correct,
     });
 }
@@ -299,11 +300,14 @@ export type Phase = {
 };
 
 export type Question = {
-    readonly image: Image;
+    readonly text?: string;
+    readonly image?: Image;
     readonly options: readonly Option[];
 };
 
-export type Option = Image & {
+export type Option = {
+    readonly text?: string;
+    readonly image?: Image;
     readonly correct: boolean;
 };
 
