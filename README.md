@@ -2,196 +2,137 @@
 
 Proof of Concept of Psycho-Informatics
 
-## 📋 Requisitos previos
+## Requirements
 
-- Node.js >= 22.0.0
-- PNPM >= 8.0.0
+- Node.js >= `22.0.0`
+- pnpm >= `10.8.0`. Install with `npm install -g pnpm`.
 
-Para instalar PNPM:
-
-```bash
-npm install -g pnpm
-```
-
-## 🚀 Primeros pasos
-
-### Clonar el repositorio
-
-```bash
-git clone https://github.com/Pixoll/PoCoPI.git
-cd PoCoPI
-```
-
-### Instalar dependencias
+Install dependencies with:
 
 ```bash
 pnpm install
 ```
 
-Este comando instalará todas las dependencias para todos los proyectos en el monorepo.
+## Project structure
 
-## 📦 Estructura del proyecto
-
+```yaml
+PoCoPI/
+├─ config/
+│  ├─ config.yaml           # PoCoPI's configuration file
+│  ├─ README.md             # document explaining the structure of the config file
+│  └─ images/               # directory with all the images the config references
+├─ packages/
+│  └─ config/               # package that processes PoCoPI's configuration files
+└─ apps/
+.  ├─ frontend/             # Web app built with React and Vite
+.  │  └─ src/
+.  │     ├─ App.tsx         # app's root component
+.  │     ├─ main.tsx        # React app entry point
+.  │     ├─ assets/         # images, iconos, logos, etc.
+.  │     ├─ config/         # configuration files like .env
+.  │     ├─ components/     # buttons, cards, modals, etc.
+.  │     ├─ contexts/       # global contexts
+.  │     ├─ hooks/          # custom hooks
+.  │     ├─ pages/          # home, dashboard, tests, etc.
+.  │     ├─ services/       # handle HTTP requests
+.  │     ├─ types/          # TypeScript types
+.  │     └─ utils/          # auxiliary functions, helpers, formatters, etc.
+.  │
+.  └─ backend/              # API build with Nest.js
+.     └─ src/
+.        ├─ main.ts         # Nest.js entry point
+.        ├─ app.module.ts   # API's root module
+.        ├─ exceptions/     # exceptions factory and structure
+.        ├─ filters/        # custom exception filters
+.        ├─ interceptors/   # custom logging, AOP, etc.
+.        ├─ modules/        # API modules like time-log, dashboard, users, etc.
+.        └─ pipes/          # custom transformers and validators
 ```
-mi-monorepo/
-├── package.json                # Configuración principal del monorepo
-├── pnpm-workspace.yaml         # Configuración de PNPM Workspaces
-└── apps/
-    ├── frontend/               # Aplicación React/TypeScript con Vite
-    │   ├── index.html
-    │   ├── package.json
-    │   ├── tsconfig.json
-    │   ├── vite.config.ts
-    │   └── src/
-    │       ├── App.tsx                 # Componente raíz de la aplicación
-    │       ├── main.tsx                # Punto de entrada que renderiza App.tsx
-    │       ├── index.css               # Estilos globales
-    │       ├── assets/                 # Imágenes, íconos, logos, etc.
-    │       ├── components/             # Componentes reutilizables (ej: botones, cards)
-    │       ├── pages/                  # Vistas principales (ej: Home, Dashboard)
-    │       ├── contexts/               # Contextos globales usando React Context API
-    │       │   └── AuthContext.tsx     # Ejemplo: manejo de autenticación global
-    │       ├── hooks/                  # Hooks personalizados (ej: useFetch, useAuth)
-    │       ├── routes/                 # Definición de rutas de la app (React Router)
-    │       ├── services/               # Lógica para llamadas HTTP a APIs (ej: authService, userService)
-    │       ├── types/                  # Archivos de definición de tipos TypeScript
-    │       └── utils/                  # Funciones auxiliares, helpers, formatters
-    └── backend/                # API con Node.js/Express/TypeScript
-        ├── package.json
-        ├── tsconfig.json
-        └── src/
-```
 
-### 🧭 Flujo de datos en el frontend
+## Configuration
 
-- **`main.tsx`**: es el archivo donde se monta la aplicación React usando `ReactDOM.createRoot`. Aquí también se pueden envolver los componentes globales, como `AuthProvider` o `BrowserRouter`.
+### Main PoCoPI configuration
 
-- **`App.tsx`**: define la estructura principal de la aplicación, donde se incluyen las rutas (`<Routes>`) y componentes base.
+Go to [PoCoPI Configuration Documentation](config/README.md) to learn how to configure PoCoPI.
 
-- **`contexts/`**: contiene estados compartidos globalmente, como la sesión de usuario, tema o configuraciones generales.
+### Environment variables
 
-- **`pages/`**: contiene las pantallas o páginas de la aplicación que se renderizan desde las rutas, como el Home, Login o Dashboard.
+To modify the environment variables for each app, you should modify `apps/frontend/.env` or `apps/backend/.env`, using
+both [apps/frontend/.env.example](apps/frontend/.env.example) and [apps/backend/.env.example](apps/backend/.env.example)
+as examples respectively.
 
-- **`components/`**: aquí se almacenan componentes reutilizables, como botones personalizados, inputs, modales, etc.
+## Commands
 
-- **`hooks/`**: almacena lógica reutilizable en forma de hooks personalizados (`useAuth`, `useTheme`, `useFetch`, etc).
-
-- **`routes/`**: configura las rutas de la app (React Router), conectando componentes con URLs específicas.
-- `services/`: Contiene módulos responsables de conectarse con el backend o servicios externos. Aquí se define la lógica para obtener, enviar y actualizar datos a través de HTTP. Ejemplos: `authService.ts`, `userService.ts`, `productionService.ts`, etc.
-
-- **`types/`**: aquí defines tipos TypeScript comunes que se usan en múltiples archivos, como interfaces para usuarios, datos de API, etc.
-
-- **`utils/`**: contiene funciones auxiliares como `formatearFecha`, `validarEmail`, etc.
-
----
-
-## 💻 Comandos disponibles
-
-### Desarrollo
-
-Para ejecutar ambos proyectos en modo desarrollo:
+Run the project while watching for live changes (ideal for development environments):
 
 ```bash
+# run all projects at once
 pnpm dev
-```
 
-Para ejecutar solo el frontend:
-
-```bash
+# run only the frontend
 pnpm dev:frontend
-```
 
-Para ejecutar solo el backend:
-
-```bash
+# run only the backend
 pnpm dev:backend
 ```
 
-### Construcción
-
-Para construir ambos proyectos:
+Build the projects for production:
 
 ```bash
+# build all projects
 pnpm build
-```
 
-Para construir proyectos individualmente:
-
-```bash
-# Frontend
+# build only the frontend
 pnpm build:frontend
 
-# Backend
+# build only the backend
 pnpm build:backend
 ```
 
-### Inicio en producción
-
-Para iniciar el backend en modo producción (después de construirlo):
+Run the projects on production:
 
 ```bash
+# run all projects
+pnpm start
+
+# run only the frontend
+pnpm start:frontend
+
+# run only the backend
 pnpm start:backend
 ```
 
-### Lint
-
-Para ejecutar el linter en todos los proyectos:
+Other commands:
 
 ```bash
+# run all the tests
+pnpm test
+
+# run the linter on all projects
 pnpm lint
+
+# run the linter automatic formatting rules
+pnpm format
+
+# clean the build directories, useful when experiencing cache problems
+pnpm clean
 ```
 
-## 🔗 Conexión entre proyectos
-
-- El frontend se ejecuta en: http://localhost:5173
-- El backend se ejecuta en: http://localhost:3000
-- El frontend está configurado para hacer peticiones a la API mediante proxy a `/api/*`
-
-## 🔧 Configuración del entorno
-
-### Variables de entorno
-
-#### Backend (.env)
-
-```env
-PORT=3000
-NODE_ENV=development
-```
-
-## 🧩 Añadir nuevos paquetes
-
-Para añadir dependencias a un proyecto específico:
+## Add new dependencies
 
 ```bash
-# Añadir una dependencia al frontend
-pnpm --filter ./apps/frontend add nombre-del-paquete
+# add dependency to frontend
+pnpm --filter ./apps/frontend add pkg-name
 
-# Añadir una dependencia de desarrollo al backend
-pnpm --filter ./apps/backend add -D nombre-del-paquete
+# add development dependency to backend
+pnpm --filter ./apps/backend add -D pkg-name
 ```
 
-## 🤝 Contribuir al proyecto
+## Contribute
 
-1. Crea una nueva rama desde `main`:
+1. Create a new branch from `main`, and use `scope/feature-name` as your branch name, where scope is either `config`,
+   `backend` or `frontend`. `feature-name` should be kept as short as possible, and use dashes (`-`) to separate words.
 
-   ```bash
-   git switch -c feature/nombre-caracteristica
-   ```
+2. Commit your changes using the Conventional Commits naming convention.
 
-2. Realiza tus cambios y haz commit:
-
-   ```bash
-   git commit -m "Descripción de los cambios"
-   ```
-
-3. Envía tu rama al repositorio:
-
-   ```bash
-   git push origin feature/nombre-caracteristica
-   ```
-
-## 📝 Notas adicionales
-
-- Este monorepo utiliza pnpm workspaces para gestionar múltiples paquetes
-- El frontend está construido con Vite para un desarrollo más rápido
-- Todas las aplicaciones usan TypeScript para type-safety
+3. Once your changes are published to your branch, create a detailed pull request with your changes.
