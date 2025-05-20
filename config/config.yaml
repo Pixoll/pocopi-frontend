@@ -16,6 +16,7 @@ preTestForm:
         - text: Option 5
       min: 1
       max: 3
+      other: true
     - category: Demographic
       text: Single choice question
       type: select-one
@@ -25,6 +26,7 @@ preTestForm:
         - text: Option 3
         - text: Option 4
         - text: Option 5
+      other: true
     - category: GRIT-S
       text: Number input
       type: number
@@ -38,6 +40,9 @@ preTestForm:
       min: 1
       max: 10
       step: 1
+      labels:
+        1: Low
+        10: High
     - category: SRL
       text: Short text question
       type: text-short
@@ -64,6 +69,7 @@ postTestForm:
         - text: Option 5
       min: 1
       max: 3
+      other: true
     - category: GRIT-S
       text: Single choice question
       type: select-one
@@ -73,6 +79,7 @@ postTestForm:
         - text: Option 3
         - text: Option 4
         - text: Option 5
+      other: true
     - category: SRL
       text: Number input
       type: number
@@ -86,6 +93,9 @@ postTestForm:
       min: 1
       max: 10
       step: 1
+      labels:
+        1: Low
+        10: High
     - category: TPB
       text: Short text question
       type: text-short
@@ -122,46 +132,58 @@ protocols:
               src: control3.webp
               alt: question image
             options:
-              - image:
+              - text: "1"
+                image:
                   src: control3_option1.webp
                   alt: option 1
-              - image:
+              - text: "2"
+                image:
                   src: control3_option2.webp
                   alt: option 2
-              - image:
+              - text: "3"
+                image:
                   src: control3_option3.webp
                   alt: option 3
-              - image:
+              - text: "4"
+                image:
                   src: control3_option4.webp
                   alt: option 4
                 correct: true
-              - image:
+              - text: "5"
+                image:
                   src: control3_option5.webp
                   alt: option 5
-              - image:
+              - text: "6"
+                image:
                   src: control3_option6.webp
                   alt: option 6
           - image:
               src: control4.webp
               alt: question image
             options:
-              - image:
+              - text: "1"
+                image:
                   src: control4_option1.webp
                   alt: option 1
-              - image:
+              - text: "2"
+                image:
                   src: control4_option2.webp
                   alt: option 2
                 correct: true
-              - image:
+              - text: "3"
+                image:
                   src: control4_option3.webp
                   alt: option 3
-              - image:
+              - text: "4"
+                image:
                   src: control4_option4.webp
                   alt: option 4
-              - image:
+              - text: "5"
+                image:
                   src: control4_option5.webp
                   alt: option 5
-              - image:
+              - text: "6"
+                image:
                   src: control4_option6.webp
                   alt: option 6
   groupA:
@@ -1104,23 +1126,29 @@ phases:
           src: control2.webp
           alt: question image
         options:
-          - image:
+          - text: "1"
+            image:
               src: control2_option1.webp
               alt: option 1
-          - image:
+          - text: "2"
+            image:
               src: control2_option2.webp
               alt: option 2
-          - image:
+          - text: "3"
+            image:
               src: control2_option3.webp
               alt: option 3
-          - image:
+          - text: "4"
+            image:
               src: control2_option4.webp
               alt: option 4
-          - image:
+          - text: "5"
+            image:
               src: control2_option5.webp
               alt: option 5
             correct: true
-          - image:
+          - text: "6"
+            image:
               src: control2_option6.webp
               alt: option 6
 
@@ -1130,22 +1158,28 @@ questions:
       src: control1.webp
       alt: question image
     options:
-      - image:
+      - text: "1"
+        image:
           src: control1_option1.webp
           alt: option 1
-      - image:
+      - text: "2"
+        image:
           src: control1_option2.webp
           alt: option 2
-      - image:
+      - text: "3"
+        image:
           src: control1_option3.webp
           alt: option 3
-      - image:
+      - text: "4"
+        image:
           src: control1_option4.webp
           alt: option 4
         correct: true
-      - image:
+      - text: "5"
+        image:
           src: control1_option5.webp
           alt: option 5
-      - image:
+      - text: "6"
+        image:
           src: control1_option6.webp
           alt: option 6
