@@ -6,7 +6,7 @@ import {
     FlatRawProtocol,
     FormQuestionType,
     RawForm, RawFormOption, RawFormQuestion,
-    RawOption,
+    RawTestOption,
     RawPhaseQuestion,
 } from "./raw-types";
 import { shuffle } from "./shuffle";
@@ -27,7 +27,7 @@ const defaults = Object.freeze({
     } satisfies Partial<RawPhaseQuestion>),
     option: Object.freeze({
         correct: false,
-    } satisfies Partial<RawOption>),
+    } satisfies Partial<RawTestOption>),
 });
 
 export class Config {
@@ -105,6 +105,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
                 options: Object.freeze(question.options.map(makeFormOption)),
                 min: question.min,
                 max: question.max,
+                ...typeof question.other !== "undefined" && { other: question.other },
             });
         case FormQuestionType.SELECT_ONE:
             return Object.freeze({
@@ -112,6 +113,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
                 options: Object.freeze(question.options.map(makeFormOption)),
+                ...typeof question.other !== "undefined" && { other: question.other },
             });
         case FormQuestionType.NUMBER:
             return Object.freeze({
@@ -200,9 +202,9 @@ function makePhase(phase: FlatRawPhase): Phase {
     });
 }
 
-function makePhaseQuestion(question: RawPhaseQuestion): Question {
+function makePhaseQuestion(question: RawPhaseQuestion): PhaseQuestion {
     const randomize = question.randomize ?? defaults.question.randomize;
-    const options = question.options.map(makeOption);
+    const options = question.options.map(makeTestOption);
 
     return Object.freeze({
         ...question.text && { text: question.text },
@@ -211,7 +213,7 @@ function makePhaseQuestion(question: RawPhaseQuestion): Question {
     });
 }
 
-function makeOption(option: RawOption): Option {
+function makeTestOption(option: RawTestOption): TestOption {
     return Object.freeze({
         ...option.text && { text: option.text },
         ...option.image && { image: Object.freeze(option.image) },
@@ -240,11 +242,13 @@ export type FormQuestionSelectMultiple = {
     readonly options: readonly FormOption[];
     readonly min: number;
     readonly max: number;
+    readonly other?: boolean;
 };
 
 export type FormQuestionSelectOne = {
     readonly type: FormQuestionType.SELECT_ONE;
     readonly options: readonly FormOption[];
+    readonly other?: boolean;
 };
 
 export type FormQuestionNumber = {
@@ -296,16 +300,16 @@ export type Protocol = {
 export type Phase = {
     readonly allowPreviousQuestion: boolean;
     readonly allowSkipQuestion: boolean;
-    readonly questions: readonly Question[];
+    readonly questions: readonly PhaseQuestion[];
 };
 
-export type Question = {
+export type PhaseQuestion = {
     readonly text?: string;
     readonly image?: Image;
-    readonly options: readonly Option[];
+    readonly options: readonly TestOption[];
 };
 
-export type Option = {
+export type TestOption = {
     readonly text?: string;
     readonly image?: Image;
     readonly correct: boolean;

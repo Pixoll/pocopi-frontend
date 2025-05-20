@@ -22,10 +22,12 @@ export type FormQuestionSelectMultiple = {
     readonly options: readonly FormOption[];
     readonly min: number;
     readonly max: number;
+    readonly other?: boolean;
 };
 export type FormQuestionSelectOne = {
     readonly type: FormQuestionType.SELECT_ONE;
     readonly options: readonly FormOption[];
+    readonly other?: boolean;
 };
 export type FormQuestionNumber = {
     readonly type: FormQuestionType.NUMBER;
@@ -69,14 +71,14 @@ export type Protocol = {
 export type Phase = {
     readonly allowPreviousQuestion: boolean;
     readonly allowSkipQuestion: boolean;
-    readonly questions: readonly Question[];
+    readonly questions: readonly PhaseQuestion[];
 };
-export type Question = {
+export type PhaseQuestion = {
     readonly text?: string;
     readonly image?: Image;
-    readonly options: readonly Option[];
+    readonly options: readonly TestOption[];
 };
-export type Option = {
+export type TestOption = {
     readonly text?: string;
     readonly image?: Image;
     readonly correct: boolean;

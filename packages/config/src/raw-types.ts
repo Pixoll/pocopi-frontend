@@ -47,11 +47,13 @@ export type RawFormQuestionSelectMultiple = {
     options: RawFormOption[];
     min: number;
     max: number;
+    other?: boolean;
 };
 
 export type RawFormQuestionSelectOne = {
     type: FormQuestionType.SELECT_ONE;
     options: RawFormOption[];
+    other?: boolean;
 };
 
 export type RawFormQuestionNumber = {
@@ -127,10 +129,10 @@ export type RawPhaseQuestion = {
     randomize?: boolean;
     text?: string;
     image?: RawImage;
-    options: RawOption[];
+    options: RawTestOption[];
 };
 
-export type RawOption = {
+export type RawTestOption = {
     text?: string;
     image?: RawImage;
     correct?: boolean;
