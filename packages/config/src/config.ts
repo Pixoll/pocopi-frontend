@@ -169,7 +169,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
                 min: question.min,
                 max: question.max,
                 step: question.step,
-                ...question.labels && { labels: Object.freeze(question.labels) },
+                ...question.labels && { labels: Object.freeze(makeSliderLabels(question.labels)) },
             });
         case FormQuestionType.TEXT_SHORT:
             return Object.freeze({
@@ -206,6 +206,20 @@ function makeFormOption(option: RawFormOption): FormOption {
         ...option.text && { text: option.text },
         ...option.image && { image: Object.freeze(option.image) },
     });
+}
+
+/**
+ * Converts slider labels from the raw configuration format to an array of immutable {@link SliderLabel} objects.
+ * 
+ * @param labels - Object mapping numeric positions to label text
+ * 
+ * @returns Array of immutable {@link SliderLabel} objects
+ */
+function makeSliderLabels(labels: Record<`${number}`, string>): SliderLabel[] {
+    return Object.entries(labels).map(([number, label]) => Object.freeze({
+        number: +number,
+        label,
+    }));
 }
 
 /**
@@ -353,7 +367,7 @@ export type FormQuestionSlider = {
     readonly min: number;
     readonly max: number;
     readonly step: number;
-    readonly labels?: Readonly<Record<`${number}`, string>>;
+    readonly labels?: readonly SliderLabel[];
 };
 
 export type FormQuestionTextShort = {
@@ -373,6 +387,11 @@ export type FormQuestionTextLong = {
 export type FormOption = {
     readonly text?: string;
     readonly image?: Image;
+};
+
+export type SliderLabel = {
+    readonly number: number;
+    readonly label: string;
 };
 
 export type Group = {

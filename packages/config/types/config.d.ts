@@ -42,7 +42,7 @@ export type FormQuestionSlider = {
     readonly min: number;
     readonly max: number;
     readonly step: number;
-    readonly labels?: Readonly<Record<`${number}`, string>>;
+    readonly labels?: readonly SliderLabel[];
 };
 export type FormQuestionTextShort = {
     readonly type: FormQuestionType.TEXT_SHORT;
@@ -59,6 +59,10 @@ export type FormQuestionTextLong = {
 export type FormOption = {
     readonly text?: string;
     readonly image?: Image;
+};
+export type SliderLabel = {
+    readonly number: number;
+    readonly label: string;
 };
 export type Group = {
     readonly label: string;
