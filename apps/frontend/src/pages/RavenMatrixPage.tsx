@@ -35,7 +35,8 @@ export function RavenMatrixPage({
     phase,
     question,
     selected,
-    image,
+    // questionText,
+    questionImage,
     options,
     optionsColumns,
     progressPercentage,
@@ -74,13 +75,16 @@ export function RavenMatrixPage({
               } shadow-sm`}
               style={{ userSelect: "none" }}
             >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="img-fluid"
-                style={{ maxWidth: "100%", pointerEvents: "none" }}
-                draggable={false}
-              />
+              {/* TODO add text */}
+              {questionImage && (
+                <img
+                  src={questionImage.src}
+                  alt={questionImage.alt}
+                  className="img-fluid"
+                  style={{ maxWidth: "100%", pointerEvents: "none" }}
+                  draggable={false}
+                />
+              )}
             </div>
           </Col>
         </Row>
@@ -117,8 +121,8 @@ export function RavenMatrixPage({
       <style>{`
         .selected-option img {
           border-color: ${
-            isDarkMode ? "#ffc107 !important" : "#ffc107 !important"
-          };
+        isDarkMode ? "#ffc107 !important" : "#ffc107 !important"
+      };
           box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
         }
         .cursor-pointer {

@@ -44,13 +44,13 @@ export function useRavenMatrixTest(
   // Obtiene la estructura de preguntas y opciones
   const { phases } = group.protocol;
   const { questions } = phases[phase];
-  const { image, options: tempOptions } = questions[question];
+  const { text: questionText, image: questionImage, options: tempOptions } = questions[question];
 
   // Procesa las opciones para agregar id y detectar la correcta
   const options = tempOptions.map((option) => {
-    const base64 = option.src.split(";")[1]?.slice(7) || option.src;
-    const half = Math.round(base64.length / 2);
-    const id = base64.substring(half - 10, half + 10);
+    const text = option.image?.src.split(";")[1]?.slice(7) ?? option.text!;
+    const half = Math.round(text.length / 2);
+    const id = text.substring(half - 10, half + 10);
     return {
       ...option,
       id,
@@ -153,7 +153,8 @@ export function useRavenMatrixTest(
     setQuestion,
     selected,
     setSelected,
-    image,
+    questionText,
+    questionImage,
     options,
     optionsColumns,
     progressPercentage,

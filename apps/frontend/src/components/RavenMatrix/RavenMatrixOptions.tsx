@@ -1,11 +1,12 @@
 // Componente para mostrar las opciones de respuesta de la pregunta actual
 
 import styles from "@/pages/RavenMatrixPage.module.css";
+import { Image } from "@pocopi/config";
 
 interface Option {
   id: string;
-  src: string;
-  alt: string;
+  text?: string;
+  image?: Image;
 }
 
 interface RavenMatrixOptionsProps {
@@ -47,13 +48,16 @@ const RavenMatrixOptions = ({
         role="button"
         aria-pressed={selected === option.id}
       >
-        <img
-          src={option.src}
-          alt={option.alt}
-          className="img-fluid"
-          style={{ maxWidth: "100px", pointerEvents: "none" }}
-          draggable={false}
-        />
+        {/* TODO add text */}
+        {option.image && (
+          <img
+            src={option.image.src}
+            alt={option.image.alt}
+            className="img-fluid"
+            style={{ maxWidth: "100px", pointerEvents: "none" }}
+            draggable={false}
+          />
+        )}
       </div>
     ))}
   </div>
