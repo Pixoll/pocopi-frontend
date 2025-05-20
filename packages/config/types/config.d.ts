@@ -1,5 +1,8 @@
 import Decimal from "decimal.js";
 import { FlatRawConfig, FormQuestionType } from "./raw-types";
+/**
+ * Main configuration class that processes and provides access to experiment configuration.
+ */
 export declare class Config {
     readonly title: string;
     readonly description: string;
@@ -7,7 +10,21 @@ export declare class Config {
     readonly postTestForm?: Form;
     private readonly groups;
     private readonly probabilitySums;
+    /**
+     * Main configuration class that processes and provides access to experiment configuration.
+     *
+     * Processes forms and groups and freezes all objects for immutability, including the {@link Config} instance
+     * itself.
+     *
+     * @param config - The flattened configuration object
+     */
     constructor(config: FlatRawConfig);
+    /**
+     * Samples a group based on the defined probabilities. Uses weighted random sampling to select a group according to
+     * its probability. Time complexity is `O(log(n))` as binary search is used to find the appropriate group to use.
+     *
+     * @returns The randomly selected group
+     */
     sampleGroup(): Group;
 }
 export type Form = {
