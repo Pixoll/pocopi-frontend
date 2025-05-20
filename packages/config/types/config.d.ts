@@ -14,6 +14,7 @@ export type Form = {
     readonly questions: readonly FormQuestion[];
 };
 export type FormQuestion = {
+    readonly category: string;
     readonly text: string;
     readonly image?: Image;
 } & (FormQuestionSelectMultiple | FormQuestionSelectOne | FormQuestionNumber | FormQuestionSlider | FormQuestionTextShort | FormQuestionTextLong);
@@ -22,10 +23,12 @@ export type FormQuestionSelectMultiple = {
     readonly options: readonly FormOption[];
     readonly min: number;
     readonly max: number;
+    readonly other: boolean;
 };
 export type FormQuestionSelectOne = {
     readonly type: FormQuestionType.SELECT_ONE;
     readonly options: readonly FormOption[];
+    readonly other: boolean;
 };
 export type FormQuestionNumber = {
     readonly type: FormQuestionType.NUMBER;
@@ -39,6 +42,7 @@ export type FormQuestionSlider = {
     readonly min: number;
     readonly max: number;
     readonly step: number;
+    readonly labels: readonly SliderLabel[];
 };
 export type FormQuestionTextShort = {
     readonly type: FormQuestionType.TEXT_SHORT;
@@ -56,6 +60,10 @@ export type FormOption = {
     readonly text?: string;
     readonly image?: Image;
 };
+export type SliderLabel = {
+    readonly number: number;
+    readonly label: string;
+};
 export type Group = {
     readonly label: string;
     readonly probability: Decimal;
@@ -69,13 +77,16 @@ export type Protocol = {
 export type Phase = {
     readonly allowPreviousQuestion: boolean;
     readonly allowSkipQuestion: boolean;
-    readonly questions: readonly Question[];
+    readonly questions: readonly PhaseQuestion[];
 };
-export type Question = {
-    readonly image: Image;
-    readonly options: readonly Option[];
+export type PhaseQuestion = {
+    readonly text?: string;
+    readonly image?: Image;
+    readonly options: readonly TestOption[];
 };
-export type Option = Image & {
+export type TestOption = {
+    readonly text?: string;
+    readonly image?: Image;
     readonly correct: boolean;
 };
 export type Image = {

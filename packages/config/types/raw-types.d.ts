@@ -27,6 +27,7 @@ export declare enum FormQuestionType {
     TEXT_LONG = "text-long"
 }
 export type RawFormQuestion = {
+    category: string;
     text: string;
     image?: RawImage;
 } & (RawFormQuestionSelectMultiple | RawFormQuestionSelectOne | RawFormQuestionNumber | RawFormQuestionSlider | RawFormQuestionTextShort | RawFormQuestionTextLong);
@@ -35,10 +36,12 @@ export type RawFormQuestionSelectMultiple = {
     options: RawFormOption[];
     min: number;
     max: number;
+    other?: boolean;
 };
 export type RawFormQuestionSelectOne = {
     type: FormQuestionType.SELECT_ONE;
     options: RawFormOption[];
+    other?: boolean;
 };
 export type RawFormQuestionNumber = {
     type: FormQuestionType.NUMBER;
@@ -52,6 +55,7 @@ export type RawFormQuestionSlider = {
     min: number;
     max: number;
     step: number;
+    labels?: Record<`${number}`, string>;
 };
 export type RawFormQuestionTextShort = {
     type: FormQuestionType.TEXT_SHORT;
@@ -99,10 +103,13 @@ export type RawPhase = {
 };
 export type RawPhaseQuestion = {
     randomize?: boolean;
-    image: RawImage;
-    options: RawOption[];
+    text?: string;
+    image?: RawImage;
+    options: RawTestOption[];
 };
-export type RawOption = RawImage & {
+export type RawTestOption = {
+    text?: string;
+    image?: RawImage;
     correct?: boolean;
 };
 export type RawImage = {
