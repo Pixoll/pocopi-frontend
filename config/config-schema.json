@@ -71,6 +71,88 @@
   ],
   "additionalProperties": false,
   "$defs": {
+    "form": {
+      "type": "object",
+      "description": "Structure of the form.",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "description": "List of questions.",
+          "items": {
+            "$ref": "#/$defs/form-question"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "questions"
+      ]
+    },
+    "form-option": {
+      "type": "object",
+      "description": "An option.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The options's text.",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/$defs/image"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "form-question": {
+      "type": "object",
+      "description": "A form question.",
+      "allOf": [
+        {
+          "properties": {
+            "category": {
+              "type": "string",
+              "description": "The category to which this question belongs to.",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string",
+              "description": "The question's text.",
+              "minLength": 1
+            },
+            "image": {
+              "$ref": "#/$defs/image"
+            }
+          },
+          "required": [
+            "category",
+            "text"
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/question-select-multiple"
+            },
+            {
+              "$ref": "#/$defs/question-select-one"
+            },
+            {
+              "$ref": "#/$defs/question-number"
+            },
+            {
+              "$ref": "#/$defs/question-slider"
+            },
+            {
+              "$ref": "#/$defs/question-text-short"
+            },
+            {
+              "$ref": "#/$defs/question-text-long"
+            }
+          ]
+        }
+      ]
+    },
     "group": {
       "type": "object",
       "description": "A test group.",
@@ -430,88 +512,6 @@
         "placeholder",
         "minLength",
         "maxLength"
-      ]
-    },
-    "form": {
-      "type": "object",
-      "description": "Structure of the form.",
-      "properties": {
-        "questions": {
-          "type": "array",
-          "description": "List of questions.",
-          "items": {
-            "$ref": "#/$defs/form-question"
-          },
-          "minItems": 1
-        }
-      },
-      "required": [
-        "questions"
-      ]
-    },
-    "form-option": {
-      "type": "object",
-      "description": "An option.",
-      "properties": {
-        "text": {
-          "type": "string",
-          "description": "The options's text.",
-          "minLength": 1
-        },
-        "image": {
-          "$ref": "#/$defs/image"
-        }
-      },
-      "minProperties": 1,
-      "additionalProperties": false
-    },
-    "form-question": {
-      "type": "object",
-      "description": "A form question.",
-      "allOf": [
-        {
-          "properties": {
-            "category": {
-              "type": "string",
-              "description": "The category to which this question belongs to.",
-              "minLength": 1
-            },
-            "text": {
-              "type": "string",
-              "description": "The question's text.",
-              "minLength": 1
-            },
-            "image": {
-              "$ref": "#/$defs/image"
-            }
-          },
-          "required": [
-            "category",
-            "text"
-          ]
-        },
-        {
-          "oneOf": [
-            {
-              "$ref": "#/$defs/question-select-multiple"
-            },
-            {
-              "$ref": "#/$defs/question-select-one"
-            },
-            {
-              "$ref": "#/$defs/question-number"
-            },
-            {
-              "$ref": "#/$defs/question-slider"
-            },
-            {
-              "$ref": "#/$defs/question-text-short"
-            },
-            {
-              "$ref": "#/$defs/question-text-long"
-            }
-          ]
-        }
       ]
     },
     "test-option": {
