@@ -14,6 +14,7 @@ export type Form = {
     readonly questions: readonly FormQuestion[];
 };
 export type FormQuestion = {
+    readonly category: string;
     readonly text: string;
     readonly image?: Image;
 } & (FormQuestionSelectMultiple | FormQuestionSelectOne | FormQuestionNumber | FormQuestionSlider | FormQuestionTextShort | FormQuestionTextLong);

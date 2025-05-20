@@ -27,6 +27,7 @@ export declare enum FormQuestionType {
     TEXT_LONG = "text-long"
 }
 export type RawFormQuestion = {
+    category: string;
     text: string;
     image?: RawImage;
 } & (RawFormQuestionSelectMultiple | RawFormQuestionSelectOne | RawFormQuestionNumber | RawFormQuestionSlider | RawFormQuestionTextShort | RawFormQuestionTextLong);

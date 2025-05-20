@@ -5,7 +5,8 @@ description: Proof of Concept of Psycho-Informatics.
 
 preTestForm:
   questions:
-    - text: Multiple selection question
+    - category: Demographic
+      text: Multiple selection question
       type: select-multiple
       options:
         - text: Option 1
@@ -15,7 +16,8 @@ preTestForm:
         - text: Option 5
       min: 1
       max: 3
-    - text: Single choice question
+    - category: Demographic
+      text: Single choice question
       type: select-one
       options:
         - text: Option 1
@@ -23,23 +25,27 @@ preTestForm:
         - text: Option 3
         - text: Option 4
         - text: Option 5
-    - text: Number input
+    - category: GRIT-S
+      text: Number input
       type: number
       placeholder: Answer here
       min: 1
       max: 2
       step: 0.1
-    - text: Slider question
+    - category: GRIT-S
+      text: Slider question
       type: slider
       min: 1
       max: 10
       step: 1
-    - text: Short text question
+    - category: SRL
+      text: Short text question
       type: text-short
       placeholder: Answer here
       minLength: 1
       maxLength: 50
-    - text: Long text question
+    - category: TPB
+      text: Long text question
       type: text-long
       placeholder: Answer here
       minLength: 1
@@ -47,7 +53,8 @@ preTestForm:
 
 postTestForm:
   questions:
-    - text: Multiple selection question
+    - category: GRIT-S
+      text: Multiple selection question
       type: select-multiple
       options:
         - text: Option 1
@@ -57,7 +64,8 @@ postTestForm:
         - text: Option 5
       min: 1
       max: 3
-    - text: Single choice question
+    - category: GRIT-S
+      text: Single choice question
       type: select-one
       options:
         - text: Option 1
@@ -65,23 +73,27 @@ postTestForm:
         - text: Option 3
         - text: Option 4
         - text: Option 5
-    - text: Number input
+    - category: SRL
+      text: Number input
       type: number
       placeholder: Answer here
       min: 1
       max: 2
       step: 0.1
-    - text: Slider question
+    - category: SRL
+      text: Slider question
       type: slider
       min: 1
       max: 10
       step: 1
-    - text: Short text question
+    - category: TPB
+      text: Short text question
       type: text-short
       placeholder: Answer here
       minLength: 1
       maxLength: 50
-    - text: Long text question
+    - category: TPB
+      text: Long text question
       type: text-long
       placeholder: Answer here
       minLength: 1

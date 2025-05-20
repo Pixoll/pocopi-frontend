@@ -99,6 +99,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
     switch (question.type) {
         case FormQuestionType.SELECT_MULTIPLE:
             return Object.freeze({
+                category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
@@ -109,6 +110,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.SELECT_ONE:
             return Object.freeze({
+                category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
@@ -117,6 +119,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.NUMBER:
             return Object.freeze({
+                category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
@@ -127,6 +130,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.SLIDER:
             return Object.freeze({
+                category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
@@ -136,6 +140,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.TEXT_SHORT:
             return Object.freeze({
+                category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
@@ -145,6 +150,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.TEXT_LONG:
             return Object.freeze({
+                category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
                 type: question.type,
@@ -226,6 +232,7 @@ export type Form = {
 };
 
 export type FormQuestion = {
+    readonly category: string;
     readonly text: string;
     readonly image?: Image;
 } & (

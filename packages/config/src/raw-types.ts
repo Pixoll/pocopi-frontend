@@ -31,6 +31,7 @@ export enum FormQuestionType {
 }
 
 export type RawFormQuestion = {
+    category: string;
     text: string;
     image?: RawImage;
 } & (
