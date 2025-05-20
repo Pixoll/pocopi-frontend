@@ -131,10 +131,10 @@ protocols:
               - image:
                   src: control3_option3.webp
                   alt: option 3
-                correct: true
               - image:
                   src: control3_option4.webp
                   alt: option 4
+                correct: true
               - image:
                   src: control3_option5.webp
                   alt: option 5
@@ -151,13 +151,13 @@ protocols:
               - image:
                   src: control4_option2.webp
                   alt: option 2
+                correct: true
               - image:
                   src: control4_option3.webp
                   alt: option 3
               - image:
                   src: control4_option4.webp
                   alt: option 4
-                correct: true
               - image:
                   src: control4_option5.webp
                   alt: option 5
@@ -227,7 +227,6 @@ protocols:
               - image:
                   src: groupA3_option3.webp
                   alt: option 3
-                correct: true
               - image:
                   src: groupA3_option4.webp
                   alt: option 4
@@ -237,6 +236,7 @@ protocols:
               - image:
                   src: groupA3_option6.webp
                   alt: option 6
+                correct: true
           - image:
               src: groupA4.webp
               alt: question image
@@ -247,13 +247,13 @@ protocols:
               - image:
                   src: groupA4_option2.webp
                   alt: option 2
+                correct: true
               - image:
                   src: groupA4_option3.webp
                   alt: option 3
               - image:
                   src: groupA4_option4.webp
                   alt: option 4
-                correct: true
               - image:
                   src: groupA4_option5.webp
                   alt: option 5
@@ -277,7 +277,6 @@ protocols:
               - image:
                   src: groupB1_option1.webp
                   alt: option 1
-                correct: true
               - image:
                   src: groupB1_option2.webp
                   alt: option 2
@@ -293,6 +292,7 @@ protocols:
               - image:
                   src: groupB1_option6.webp
                   alt: option 6
+                correct: true
           - randomize: true
             image:
               src: groupB2.webp
@@ -329,13 +329,13 @@ protocols:
               - image:
                   src: groupB3_option1.webp
                   alt: option 1
+                correct: true
               - image:
                   src: groupB3_option2.webp
                   alt: option 2
               - image:
                   src: groupB3_option3.webp
                   alt: option 3
-                correct: true
               - image:
                   src: groupB3_option4.webp
                   alt: option 4
@@ -359,10 +359,10 @@ protocols:
               - image:
                   src: groupB4_option3.webp
                   alt: option 3
+                correct: true
               - image:
                   src: groupB4_option4.webp
                   alt: option 4
-                correct: true
               - image:
                   src: groupB4_option5.webp
                   alt: option 5
@@ -380,6 +380,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
           - image:
@@ -391,12 +392,14 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
           - image:
               src: groupC_A03.jpg
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -408,6 +411,7 @@ protocols:
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -422,6 +426,7 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
           - image:
               src: groupC_A06.jpg
               alt: question image
@@ -429,6 +434,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -442,12 +448,14 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
           - image:
               src: groupC_A08.jpg
               alt: question image
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -457,6 +465,7 @@ protocols:
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -469,6 +478,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -480,6 +490,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
           - image:
@@ -491,6 +502,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
       - questions:
           - image:
@@ -499,6 +511,7 @@ protocols:
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -513,11 +526,13 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
           - image:
               src: groupC_B03.jpg
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -529,6 +544,7 @@ protocols:
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -538,6 +554,7 @@ protocols:
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -550,6 +567,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -562,6 +580,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
           - image:
               src: groupC_B08.jpg
@@ -573,6 +592,7 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
           - image:
               src: groupC_B09.jpg
               alt: question image
@@ -581,6 +601,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
           - image:
@@ -590,6 +611,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -601,6 +623,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
           - image:
@@ -612,6 +635,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
       - questions:
           - image:
@@ -626,12 +650,14 @@ protocols:
               - text: "6"
               - text: "7"
               - text: "8"
+                correct: true
           - image:
               src: groupC_C02.jpg
               alt: question image
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -645,6 +671,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -662,6 +689,7 @@ protocols:
               - text: "6"
               - text: "7"
               - text: "8"
+                correct: true
           - image:
               src: groupC_C05.jpg
               alt: question image
@@ -673,6 +701,7 @@ protocols:
               - text: "5"
               - text: "6"
               - text: "7"
+                correct: true
               - text: "8"
           - image:
               src: groupC_C06.jpg
@@ -682,6 +711,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
               - text: "7"
@@ -695,6 +725,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
               - text: "7"
               - text: "8"
@@ -703,6 +734,7 @@ protocols:
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -721,6 +753,7 @@ protocols:
               - text: "5"
               - text: "6"
               - text: "7"
+                correct: true
               - text: "8"
           - image:
               src: groupC_C10.jpg
@@ -732,6 +765,7 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
               - text: "7"
               - text: "8"
           - image:
@@ -739,6 +773,7 @@ protocols:
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -752,6 +787,7 @@ protocols:
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -766,6 +802,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -779,6 +816,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
               - text: "7"
@@ -790,6 +828,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -806,6 +845,7 @@ protocols:
               - text: "5"
               - text: "6"
               - text: "7"
+                correct: true
               - text: "8"
           - image:
               src: groupC_D05.jpg
@@ -819,6 +859,7 @@ protocols:
               - text: "6"
               - text: "7"
               - text: "8"
+                correct: true
           - image:
               src: groupC_D06.jpg
               alt: question image
@@ -829,6 +870,7 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
               - text: "7"
               - text: "8"
           - image:
@@ -840,6 +882,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
               - text: "7"
               - text: "8"
@@ -851,6 +894,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
               - text: "7"
@@ -860,6 +904,7 @@ protocols:
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -873,6 +918,7 @@ protocols:
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -888,6 +934,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
               - text: "7"
               - text: "8"
@@ -903,6 +950,7 @@ protocols:
               - text: "5"
               - text: "6"
               - text: "7"
+                correct: true
               - text: "8"
           - image:
               src: groupC_E02.jpg
@@ -914,6 +962,7 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
               - text: "7"
               - text: "8"
           - image:
@@ -928,12 +977,14 @@ protocols:
               - text: "6"
               - text: "7"
               - text: "8"
+                correct: true
           - image:
               src: groupC_E04.jpg
               alt: question image
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -945,6 +996,7 @@ protocols:
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -961,6 +1013,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
               - text: "7"
               - text: "8"
@@ -969,6 +1022,7 @@ protocols:
               alt: question image
             options:
               - text: "1"
+                correct: true
               - text: "2"
               - text: "3"
               - text: "4"
@@ -986,6 +1040,7 @@ protocols:
               - text: "4"
               - text: "5"
               - text: "6"
+                correct: true
               - text: "7"
               - text: "8"
           - image:
@@ -995,6 +1050,7 @@ protocols:
               - text: "1"
               - text: "2"
               - text: "3"
+                correct: true
               - text: "4"
               - text: "5"
               - text: "6"
@@ -1006,6 +1062,7 @@ protocols:
             options:
               - text: "1"
               - text: "2"
+                correct: true
               - text: "3"
               - text: "4"
               - text: "5"
@@ -1020,6 +1077,7 @@ protocols:
               - text: "2"
               - text: "3"
               - text: "4"
+                correct: true
               - text: "5"
               - text: "6"
               - text: "7"
@@ -1033,6 +1091,7 @@ protocols:
               - text: "3"
               - text: "4"
               - text: "5"
+                correct: true
               - text: "6"
               - text: "7"
               - text: "8"
@@ -1051,7 +1110,6 @@ phases:
           - image:
               src: control2_option2.webp
               alt: option 2
-            correct: true
           - image:
               src: control2_option3.webp
               alt: option 3
@@ -1061,6 +1119,7 @@ phases:
           - image:
               src: control2_option5.webp
               alt: option 5
+            correct: true
           - image:
               src: control2_option6.webp
               alt: option 6
@@ -1074,7 +1133,6 @@ questions:
       - image:
           src: control1_option1.webp
           alt: option 1
-        correct: true
       - image:
           src: control1_option2.webp
           alt: option 2
@@ -1084,6 +1142,7 @@ questions:
       - image:
           src: control1_option4.webp
           alt: option 4
+        correct: true
       - image:
           src: control1_option5.webp
           alt: option 5
