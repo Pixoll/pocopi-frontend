@@ -1,6 +1,6 @@
 // Componente para mostrar las opciones de respuesta de la pregunta actual
 
-import styles from "@/pages/RavenMatrixPage.module.css";
+import styles from "@/styles/RavenMatrixPage.module.css";
 import { Image } from "@pocopi/config";
 
 interface Option {
