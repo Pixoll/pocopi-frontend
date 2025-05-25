@@ -47,7 +47,7 @@ const HomePage = ({ onStartTest, onDashboard }: HomePageProps) => {
       style={{ maxWidth: 1200 }} // Limita el ancho máximo del contenido principal
     >
       {/* Header de la página */}
-      <HomeHeader isDarkMode={isDarkMode} />
+      <HomeHeader/>
 
       {/* Tarjeta principal con información, consentimiento y botones */}
       <HomeInfoCard
