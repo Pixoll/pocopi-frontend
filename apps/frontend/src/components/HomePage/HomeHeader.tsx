@@ -1,7 +1,6 @@
 // Header de la página de inicio con título y subtítulo
 // Recibe la prop isDarkMode para ajustar el estilo
 
-import appIcon from "/app_icon.png?url";
 import styles from "@/styles/HomeHeader.module.css";
 import { config } from "@pocopi/config";
 
@@ -19,7 +18,7 @@ export function HomeHeader({ isDarkMode }: HomeHeaderProps) {
           isDarkMode ? styles.iconDark : styles.iconLight,
         ].join(" ")}
       >
-        <img className={styles.appIcon} src={appIcon} alt="App Icon"/>
+        <img className={styles.appIcon} src={config.icon.src} alt={config.icon.alt}/>
       </div>
       {/* Título principal */}
       <h1 className={styles.title}>

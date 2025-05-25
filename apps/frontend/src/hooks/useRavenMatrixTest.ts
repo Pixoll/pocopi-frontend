@@ -48,9 +48,7 @@ export function useRavenMatrixTest(
 
   // Procesa las opciones para agregar id y detectar la correcta
   const options = tempOptions.map((option) => {
-    const text = option.image?.src.split(";")[1]?.slice(7) ?? option.text!;
-    const half = Math.round(text.length / 2);
-    const id = text.substring(half - 10, half + 10);
+    const id = option.image?.src ?? option.text!;
     return {
       ...option,
       id,
