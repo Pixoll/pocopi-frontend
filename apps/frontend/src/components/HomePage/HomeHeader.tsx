@@ -24,7 +24,6 @@ export function HomeHeader({ isDarkMode }: HomeHeaderProps) {
       {/* Título principal */}
       <h1 className={styles.title}>
         {config.title}
-        <span className={styles.highlight}> Matrices Test</span>
       </h1>
       {/* Subtítulo */}
       {config.subtitle && (
