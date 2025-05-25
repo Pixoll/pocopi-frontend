@@ -3,15 +3,44 @@
   "title": "JSON schema for PoCoPI's configuration file.",
   "type": "object",
   "properties": {
+    "icon": {
+      "$ref": "#/$defs/image"
+    },
     "title": {
       "type": "string",
-      "description": "The tile of the web app.",
+      "description": "The title of the web app.",
+      "minLength": 1
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "The subtitle of the web app. Shown in between the title and description.",
       "minLength": 1
     },
     "description": {
       "type": "string",
       "description": "The description of the web app.",
       "minLength": 1
+    },
+    "informationCards": {
+      "type": "array",
+      "description": "List of information cards to be shown below the web app description.",
+      "items": {
+        "$ref": "#/$defs/information-card"
+      },
+      "minItems": 1
+    },
+    "informedConsent": {
+      "type": "string",
+      "description": "The informed consent to be displayed before starting the tests.",
+      "minLength": 1
+    },
+    "faq": {
+      "type": "array",
+      "description": "A list of frequently asked questions.",
+      "items": {
+        "$ref": "#/$defs/faq"
+      },
+      "minItems": 1
     },
     "preTestForm": {
       "$ref": "#/$defs/form"
@@ -65,12 +94,65 @@
     }
   },
   "required": [
+    "icon",
     "title",
     "description",
+    "informedConsent",
     "groups"
   ],
   "additionalProperties": false,
   "$defs": {
+    "color": {
+      "type": "object",
+      "description": "An RGB color.",
+      "properties": {
+        "r": {
+          "type": "integer",
+          "description": "The red part of RGB.",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "g": {
+          "type": "integer",
+          "description": "The green part of RGB.",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "b": {
+          "type": "integer",
+          "description": "The blue part of RGB.",
+          "minimum": 0,
+          "maximum": 255
+        }
+      },
+      "required": [
+        "r",
+        "g",
+        "b"
+      ],
+      "additionalProperties": false
+    },
+    "faq": {
+      "type": "object",
+      "description": "A frequently asked question.",
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The question.",
+          "minItems": 1
+        },
+        "answer": {
+          "type": "string",
+          "description": "The answer.",
+          "minItems": 1
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ],
+      "additionalProperties": false
+    },
     "form": {
       "type": "object",
       "description": "Structure of the form.",
@@ -188,7 +270,7 @@
       "properties": {
         "src": {
           "type": "string",
-          "description": "Where the image is located.",
+          "description": "Filename of the image.",
           "format": "uri-reference",
           "minLength": 1
         },
@@ -200,6 +282,33 @@
       "required": [
         "src",
         "alt"
+      ],
+      "additionalProperties": false
+    },
+    "information-card": {
+      "type": "object",
+      "description": "An information card.",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the card.",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the card.",
+          "minLength": 1
+        },
+        "color": {
+          "$ref": "#/$defs/color"
+        },
+        "icon": {
+          "$ref": "#/$defs/image"
+        }
+      },
+      "required": [
+        "title",
+        "description"
       ],
       "additionalProperties": false
     },

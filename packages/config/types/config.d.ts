@@ -4,8 +4,13 @@ import { FlatRawConfig, FormQuestionType } from "./raw-types";
  * Main configuration class that processes and provides access to experiment configuration.
  */
 export declare class Config {
+    readonly icon: Image;
     readonly title: string;
+    readonly subtitle?: string;
     readonly description: string;
+    readonly informationCards: readonly InformationCard[];
+    readonly informedConsent: string;
+    readonly faq: readonly Faq[];
     readonly preTestForm?: Form;
     readonly postTestForm?: Form;
     private readonly groups;
@@ -27,6 +32,16 @@ export declare class Config {
      */
     sampleGroup(): Group;
 }
+export type InformationCard = {
+    readonly title: string;
+    readonly description: string;
+    readonly color?: Color;
+    readonly icon?: Image;
+};
+export type Faq = {
+    readonly question: string;
+    readonly answer: string;
+};
 export type Form = {
     readonly questions: readonly FormQuestion[];
 };
@@ -109,4 +124,9 @@ export type TestOption = {
 export type Image = {
     readonly src: string;
     readonly alt: string;
+};
+export type Color = {
+    readonly r: number;
+    readonly g: number;
+    readonly b: number;
 };

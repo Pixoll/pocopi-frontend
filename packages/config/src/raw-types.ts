@@ -1,20 +1,42 @@
 export type FlatRawConfig = {
+    icon: RawImage;
     title: string;
+    subtitle?: string;
     description: string;
+    informationCards?: RawInformationCard[];
+    informedConsent: string;
+    faq?: RawFaq[];
     preTestForm?: RawForm;
     postTestForm?: RawForm;
     groups: Record<string, FlatRawGroup>;
 };
 
 export type RawConfig = {
+    icon: RawImage;
     title: string;
+    subtitle?: string;
     description: string;
+    informationCards?: RawInformationCard[];
+    informedConsent: string;
+    faq?: RawFaq[];
     preTestForm?: RawForm;
     postTestForm?: RawForm;
     groups: Record<string, RawGroup>;
     protocols?: Record<string, RawProtocol>;
     phases?: Record<string, RawPhase>;
     questions?: Record<string, RawPhaseQuestion>;
+};
+
+export type RawInformationCard = {
+    title: string;
+    description: string;
+    color?: RawColor;
+    icon?: RawImage;
+};
+
+export type RawFaq = {
+    question: string;
+    answer: string;
 };
 
 export type RawForm = {
@@ -143,4 +165,10 @@ export type RawTestOption = {
 export type RawImage = {
     src: string;
     alt: string;
+};
+
+export type RawColor = {
+    r: number;
+    g: number;
+    b: number;
 };

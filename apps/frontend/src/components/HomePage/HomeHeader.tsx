@@ -1,8 +1,9 @@
 // Header de la página de inicio con título y subtítulo
 // Recibe la prop isDarkMode para ajustar el estilo
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBrain } from "@fortawesome/free-solid-svg-icons";
+import appIcon from "/app_icon.png?url";
+import { config } from "@pocopi/config";
+import "./HomeHeader.css"
 import styles from "./HomeHeader.module.css";
 import classNames from 'classnames';
 
@@ -22,19 +23,16 @@ const HomeHeader = ({ isDarkMode }: HomeHeaderProps) => (
               }
           )}
       >
-          <FontAwesomeIcon
-              icon={faBrain}
-              style={{fontSize: "2.5rem", color: "#0d6efd"}}
-          />
+          <img className="d-inline-block mb-3 app-icon" src={appIcon} alt="App Icon"/>
       </div>
       {/* Título principal */}
       <h1 className={styles.title}>
-          Raven's Progressive
+          {config.title}
           <span className={styles.highlight}> Matrices Test</span>
       </h1>
       {/* Subtítulo */}
       <p className={styles.subtitle}>
-          An assessment to measure analytical reasoning and problem-solving skills
+          {config.subtitle}
       </p>
   </div>
 );
