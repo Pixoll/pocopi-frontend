@@ -8,6 +8,7 @@ import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { HomePage } from "@/pages/HomePage";
 import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
 import { config } from "@pocopi/config";
+import mime from "mime";
 import { JSX, ReactNode, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -60,6 +61,13 @@ export function App(): JSX.Element {
 
   useEffect(() => {
     document.title = config.title;
+
+    const head = document.querySelector("head")!;
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.type = mime.getType(config.icon.src)!;
+    link.href = config.icon.src;
+    head.appendChild(link);
   }, []);
 
   /**
