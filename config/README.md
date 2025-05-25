@@ -1,19 +1,21 @@
 # PoCoPI Configuration Documentation
 
 This document explains how to configure the PoCoPI (Proof of Concept of Psycho-Informatics) application using the
-`config.yaml` file. The configuration defines the experiment structure, including forms, groups, protocols, phases, and
-questions.
+[config.yaml](./config.yaml) file. The configuration defines the experiment structure, including forms, groups,
+protocols, phases, and questions.
 
 ## Table of Contents
 
 1. [Overview](#overview)
 2. [Basic Structure](#basic-structure)
-3. [Forms](#forms)
-4. [Groups and Protocols](#groups-and-protocols)
-5. [Phases](#phases)
-6. [Questions](#questions)
-7. [Images](#images)
-8. [Additional Validation Rules](#additional-validation-rules)
+3. [Information Cards](#information-cards)
+4. [Frequently Asked Questions](#frequently-asked-questions)
+5. [Forms](#forms)
+6. [Groups and Protocols](#groups-and-protocols)
+7. [Phases](#phases)
+8. [Questions](#questions)
+9. [Images](#images)
+10. [Additional Validation Rules](#additional-validation-rules)
 
 ## Overview
 
@@ -25,9 +27,22 @@ JSON schema and through additional runtime checks to ensure correctness.
 The configuration file must include the following top-level properties:
 
 ```yaml
+# The website's icon. See the Images section
+icon: ...
 # Basic information about the experiment
 title: PoCoPI
+# Optional subtitle
+subtitle: The test making & taking platform.
 description: Proof of Concept of Psycho-Informatics.
+
+# Optional information cards
+informationCards:
+
+# Required informed consent form text - allows markdown
+informedConsent:
+
+# Optional frequently asked questions section
+faq:
 
 # Optional pre-test and post-test forms
 preTestForm:
@@ -51,6 +66,39 @@ questions:
 # Reusable questions go here
 ```
 
+## Information Cards
+
+Information cards are placed underneath the description of the website, and they're meant for small bits of information:
+
+```yaml
+informationCards:
+  - title: Scientific purpose                         # Required
+    description: >                                    # Required
+      This test is part of academic research in the
+      field of psychometrics.
+    color: # Optional, must be an RGB color
+      r: 13                                           # RGB value between 0 and 255 (inclusive)
+      g: 110
+      b: 253
+    icon: # Optional icon. See the Images section
+      src: flask.svg
+      alt: Flask Icon
+  # more cards...
+```
+
+## Frequently Asked Questions
+
+These are displayed at the bottom of the website:
+
+```yaml
+faq:
+  - question: Can I pause the test and continue later?   # Required
+    answer: >                                            # Required
+      It is recommended to complete the test without
+       interruptions to obtain more accurate results.
+  # more faqs...
+```
+
 ## Forms
 
 Forms are used for pre-test and post-test questionnaires. They contain a list of questions of various types:
@@ -64,7 +112,7 @@ Forms are used for pre-test and post-test questionnaires. They contain a list of
   text: Multiple selection question   # Required
   image: ...                          # Optional question image. See the Images section
   type: select-multiple               # Required
-  options:                            # Required. At least 2 items
+  options: # Required. At least 2 items
     - text: Option 1                  # An option can have either text, image, or both
     - image: ...
     - text: Option 3
@@ -82,7 +130,7 @@ Forms are used for pre-test and post-test questionnaires. They contain a list of
   text: Single choice question   # Required
   image: ...                     # Optional question image. See the Images section
   type: select-one               # Required
-  options:                       # Required. At least 2 items
+  options: # Required. At least 2 items
     - text: Option 1             # An option can have either text, image, or both
     - image: ...
     - text: Option 3
@@ -114,7 +162,7 @@ Forms are used for pre-test and post-test questionnaires. They contain a list of
   min: 1                  # Minimum value
   max: 10                 # Maximum value
   step: 1                 # Step size. Must be greater than zero
-  labels:                 # Optional labels
+  labels: # Optional labels
     1: Low
     10: High
 ```
@@ -155,7 +203,7 @@ groups:
 
   groupA:
     probability: 0.25
-    protocol:           # Inline protocol definition
+    protocol: # Inline protocol definition
       phases:
         ...
 

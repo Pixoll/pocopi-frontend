@@ -181,6 +181,17 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
 
     const usedImages = new Map<string, string>();
 
+    validateImage(config.icon, "icon", usedImages, {
+        copyToFrontendPublic: true,
+    });
+
+    for (let i = 0; i < (config.informationCards ?? []).length; i++){
+        const infoCard = config.informationCards![i]!;
+        if (infoCard.icon) {
+            validateImage(infoCard.icon, `informationCards[${i}].icon`, usedImages);
+        }
+    }
+
     if (config.preTestForm) {
         valideForm(config.preTestForm, "preTestForm", usedImages);
     }
