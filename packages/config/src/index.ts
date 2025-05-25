@@ -351,7 +351,7 @@ function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string
 
     copyFileSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src));
 
-    image.src = "/images/" + src;
+    image.src = `images/${src}`;
     usedImages.set(src, yamlPath);
 }
 
