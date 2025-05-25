@@ -31,7 +31,9 @@ if (existsSync(FRONTEND_PUBLIC_PATH)) {
     });
 }
 
-mkdirSync(FRONTEND_PUBLIC_PATH);
+mkdirSync(FRONTEND_PUBLIC_PATH, {
+    recursive: true,
+});
 
 export const config = getConfig();
 
