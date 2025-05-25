@@ -1,38 +1,38 @@
 // Modal de finalización del test: muestra agradecimiento, datos del usuario y opciones
 
-import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTheme } from "@/hooks/useTheme";
 import {
-  faHome,
-  faTrophy,
-  faUser,
-  faIdCard,
-  faEnvelope,
+  faChartLine,
   faCheck,
   faDownload,
-  faChartLine,
+  faEnvelope,
+  faHome,
+  faIdCard,
+  faTrophy,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import { useTheme } from "@/hooks/useTheme";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
 
 // Datos del estudiante
-interface StudentData {
+type StudentData = {
   name: string;
   id: string;
   email: string;
   age: string;
-}
+};
 
 // Props del modal de finalización
-interface CompletionModalProps {
+type CompletionModalProps = {
   studentData: StudentData | null;
   onBackToHome: () => void;
-}
+};
 
 // Componente principal del modal de finalización
-const CompletionModal = ({
+export function CompletionModal({
   studentData,
   onBackToHome,
-}: CompletionModalProps) => {
+}: CompletionModalProps) {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
@@ -106,7 +106,7 @@ const CompletionModal = ({
                       : "0 0 20px rgba(76, 201, 162, 0.4)",
                   }}
                 >
-                  <FontAwesomeIcon icon={faTrophy} className="fa-3x" />
+                  <FontAwesomeIcon icon={faTrophy} className="fa-3x"/>
                 </div>
                 <h2 className="h3 mb-0">Test Completed!</h2>
                 <Badge
@@ -119,7 +119,7 @@ const CompletionModal = ({
                       : "0 0 10px rgba(76, 201, 162, 0.3)",
                   }}
                 >
-                  <FontAwesomeIcon icon={faCheck} className="me-1" />
+                  <FontAwesomeIcon icon={faCheck} className="me-1"/>
                   Successfully Submitted
                 </Badge>
               </div>
@@ -170,7 +170,7 @@ const CompletionModal = ({
                           : "bg-light text-secondary"
                       }`}
                     >
-                      <FontAwesomeIcon icon={faUser} className="me-1" />
+                      <FontAwesomeIcon icon={faUser} className="me-1"/>
                       User Info
                     </span>
                     Registration Information
@@ -192,7 +192,7 @@ const CompletionModal = ({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faUser} />
+                          <FontAwesomeIcon icon={faUser}/>
                         </div>
                         <div className="text-start">
                           <div
@@ -225,7 +225,7 @@ const CompletionModal = ({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faIdCard} />
+                          <FontAwesomeIcon icon={faIdCard}/>
                         </div>
                         <div className="text-start">
                           <div
@@ -258,7 +258,7 @@ const CompletionModal = ({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faEnvelope} />
+                          <FontAwesomeIcon icon={faEnvelope}/>
                         </div>
                         <div className="text-start">
                           <div
@@ -307,7 +307,7 @@ const CompletionModal = ({
                         size="sm"
                         disabled
                       >
-                        <FontAwesomeIcon icon={faDownload} className="me-2" />
+                        <FontAwesomeIcon icon={faDownload} className="me-2"/>
                         Download Report
                       </Button>
                     </Col>
@@ -320,7 +320,7 @@ const CompletionModal = ({
                         size="sm"
                         disabled
                       >
-                        <FontAwesomeIcon icon={faChartLine} className="me-2" />
+                        <FontAwesomeIcon icon={faChartLine} className="me-2"/>
                         View Results
                       </Button>
                     </Col>
@@ -354,7 +354,7 @@ const CompletionModal = ({
                     border: "none",
                   }}
                 >
-                  <FontAwesomeIcon icon={faHome} className="me-2" />
+                  <FontAwesomeIcon icon={faHome} className="me-2"/>
                   Back to Home
                 </Button>
               </div>
@@ -364,6 +364,4 @@ const CompletionModal = ({
       </Row>
     </Container>
   );
-};
-
-export default CompletionModal;
+}

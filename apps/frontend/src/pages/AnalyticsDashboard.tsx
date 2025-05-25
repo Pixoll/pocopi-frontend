@@ -1,3 +1,4 @@
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useState, useEffect } from "react";
 import {
   Container,
@@ -26,23 +27,23 @@ import { useTheme } from "@/hooks/useTheme";
 import { TestResults } from "@/utils/RavenAnalytics";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
-interface ParticipantSummary {
+type ParticipantSummary = {
   participantId: string;
   name: string; // Added name field from student data
   date: string; // Date when test was taken
   totalTime: number; // In seconds
   totalCorrect: number;
   correctPercentage: number;
-}
+};
 
-interface AnalyticsDashboardProps {
+type AnalyticsDashboardProps = {
   onBack: () => void;
-}
+};
 
 /**
  * Simple dashboard to view test results
  */
-const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
+export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   const [testResults, setTestResults] = useState<TestResults[]>([]);
   const [participants, setParticipants] = useState<ParticipantSummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -223,7 +224,7 @@ const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
         style={{ minHeight: "80vh" }}
       >
         <div className="text-center">
-          <Spinner animation="border" variant="primary" className="mb-3" />
+          <Spinner animation="border" variant="primary" className="mb-3"/>
           <p>Loading test results...</p>
         </div>
       </Container>
@@ -252,7 +253,7 @@ const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
               onClick={onBack}
               className="d-flex align-items-center"
             >
-              <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
+              <FontAwesomeIcon icon={faArrowLeft} className="me-2"/>
               Back to Home
             </Button>
           </div>
@@ -267,7 +268,7 @@ const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
         <Row className="mb-4">
           <Col>
             <Alert variant="warning" className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+              <FontAwesomeIcon icon={faExclamationTriangle} className="me-2"/>
               {error}
             </Alert>
           </Col>
@@ -297,7 +298,7 @@ const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
                       className="me-2"
                       disabled={participants.length === 0}
                     >
-                      <FontAwesomeIcon icon={faDownload} className="me-2" />
+                      <FontAwesomeIcon icon={faDownload} className="me-2"/>
                       Export CSV
                     </Button>
                     {/* Only show in development environment */}
@@ -322,71 +323,71 @@ const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
                       className={isDarkMode ? "table-dark" : ""}
                     >
                       <thead>
-                        <tr>
-                          <th>Participant</th>
-                          <th>Date</th>
-                          <th>Time (s)</th>
-                          <th>Correct</th>
-                          <th>Accuracy</th>
-                          <th>Actions</th>
-                        </tr>
+                      <tr>
+                        <th>Participant</th>
+                        <th>Date</th>
+                        <th>Time (s)</th>
+                        <th>Correct</th>
+                        <th>Accuracy</th>
+                        <th>Actions</th>
+                      </tr>
                       </thead>
                       <tbody>
-                        {participants.map((participant) => (
-                          <tr key={participant.participantId}>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <div
-                                  className={`p-2 rounded-circle me-2 ${
-                                    isDarkMode
-                                      ? "bg-primary bg-opacity-10"
-                                      : "bg-light"
-                                  }`}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faUser}
-                                    className="text-primary"
-                                  />
-                                </div>
-                                <div>
-                                  <div className="fw-medium">
-                                    {participant.name}
-                                  </div>
-                                  <small className="text-secondary">
-                                    {participant.participantId}
-                                  </small>
-                                </div>
+                      {participants.map((participant) => (
+                        <tr key={participant.participantId}>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <div
+                                className={`p-2 rounded-circle me-2 ${
+                                  isDarkMode
+                                    ? "bg-primary bg-opacity-10"
+                                    : "bg-light"
+                                }`}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faUser}
+                                  className="text-primary"
+                                />
                               </div>
-                            </td>
-                            <td>{participant.date}</td>
-                            <td>{participant.totalTime.toFixed(2)}</td>
-                            <td>{participant.totalCorrect}</td>
-                            <td>
-                              <Badge
-                                bg={getAccuracyBadgeColor(
-                                  participant.correctPercentage
-                                )}
-                                className="px-2 py-1"
-                              >
-                                {participant.correctPercentage.toFixed(1)}%
-                              </Badge>
-                            </td>
-                            <td>
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                onClick={() =>
-                                  exportParticipantData(
-                                    participant.participantId
-                                  )
-                                }
-                                title="Export detailed results"
-                              >
-                                <FontAwesomeIcon icon={faFileExport} />
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
+                              <div>
+                                <div className="fw-medium">
+                                  {participant.name}
+                                </div>
+                                <small className="text-secondary">
+                                  {participant.participantId}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{participant.date}</td>
+                          <td>{participant.totalTime.toFixed(2)}</td>
+                          <td>{participant.totalCorrect}</td>
+                          <td>
+                            <Badge
+                              bg={getAccuracyBadgeColor(
+                                participant.correctPercentage
+                              )}
+                              className="px-2 py-1"
+                            >
+                              {participant.correctPercentage.toFixed(1)}%
+                            </Badge>
+                          </td>
+                          <td>
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() =>
+                                exportParticipantData(
+                                  participant.participantId
+                                )
+                              }
+                              title="Export detailed results"
+                            >
+                              <FontAwesomeIcon icon={faFileExport}/>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
                       </tbody>
                     </Table>
                   )}
@@ -433,65 +434,63 @@ const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
         </Col>
       </Row>
 
-      <ThemeSwitcher />
+      <ThemeSwitcher/>
     </Container>
   );
-};
-
-// Helper component for stat cards
-interface StatCardProps {
-  title: string;
-  value: string;
-  icon: import("@fortawesome/fontawesome-svg-core").IconProp;
-  isDarkMode: boolean;
 }
 
-const StatCard = ({ title, value, icon, isDarkMode }: StatCardProps) => (
-  <Card
-    className={`border-0 h-100 ${
-      isDarkMode ? "bg-dark bg-opacity-50 border-secondary" : "bg-white"
-    }`}
-  >
-    <Card.Body className="d-flex align-items-center">
-      <div
-        className={`me-3 p-3 rounded-circle ${
-          isDarkMode ? "bg-primary bg-opacity-10" : "bg-light"
-        }`}
-      >
-        <FontAwesomeIcon icon={icon} className="text-primary fa-lg" />
-      </div>
-      <div>
-        <h6 className="text-secondary mb-1">{title}</h6>
-        <h4 className="mb-0">{value}</h4>
-      </div>
-    </Card.Body>
-  </Card>
-);
+// Helper component for stat cards
+type StatCardProps = {
+  title: string;
+  value: string;
+  icon: IconProp;
+  isDarkMode: boolean;
+};
+
+function StatCard({ title, value, icon, isDarkMode }: StatCardProps) {
+  return (
+    <Card
+      className={`border-0 h-100 ${
+        isDarkMode ? "bg-dark bg-opacity-50 border-secondary" : "bg-white"
+      }`}
+    >
+      <Card.Body className="d-flex align-items-center">
+        <div
+          className={`me-3 p-3 rounded-circle ${
+            isDarkMode ? "bg-primary bg-opacity-10" : "bg-light"
+          }`}
+        >
+          <FontAwesomeIcon icon={icon} className="text-primary fa-lg"/>
+        </div>
+        <div>
+          <h6 className="text-secondary mb-1">{title}</h6>
+          <h4 className="mb-0">{value}</h4>
+        </div>
+      </Card.Body>
+    </Card>
+  );
+}
 
 // Helper function to determine badge color based on accuracy
-const getAccuracyBadgeColor = (accuracy: number): string => {
+function getAccuracyBadgeColor(accuracy: number): string {
   if (accuracy >= 90) return "success";
   if (accuracy >= 70) return "primary";
   if (accuracy >= 50) return "warning";
   return "danger";
-};
+}
 
 // Helper function to calculate average accuracy
-const calculateAverageAccuracy = (
-  participants: ParticipantSummary[]
-): string => {
+function calculateAverageAccuracy(participants: ParticipantSummary[]): string {
   if (participants.length === 0) return "0.0";
 
   const total = participants.reduce((sum, p) => sum + p.correctPercentage, 0);
   return (total / participants.length).toFixed(1);
-};
+}
 
 // Helper function to calculate average time
-const calculateAverageTime = (participants: ParticipantSummary[]): string => {
+function calculateAverageTime(participants: ParticipantSummary[]): string {
   if (participants.length === 0) return "0.0";
 
   const total = participants.reduce((sum, p) => sum + p.totalTime, 0);
   return (total / participants.length).toFixed(1);
-};
-
-export default AnalyticsDashboard;
+}

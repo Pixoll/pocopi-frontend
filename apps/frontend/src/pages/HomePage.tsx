@@ -1,23 +1,23 @@
 // Página principal del test de matrices progresivas de Raven
 
-import { useTheme } from "@/hooks/useTheme";
-import { useStudentTest } from "@/hooks/useStudentTest";
-import { StudentData } from "@/types/student";
+import { DashboardButton } from "@/components/HomePage/DashboardButton";
+import { HomeHeader } from "@/components/HomePage/HomeHeader";
+import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
+import { StudentFormModal } from "@/components/HomePage/StudentFormModal";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import StudentFormModal from "@/components/HomePage/StudentFormModal";
-import HomeHeader from "@/components/HomePage/HomeHeader";
-import HomeInfoCard from "@/components/HomePage/HomeInfoCard";
-import DashboardButton from "@/components/HomePage/DashboardButton";
-import styles from "@/styles/HomePage.module.css"
+import { useStudentTest } from "@/hooks/useStudentTest";
+import { useTheme } from "@/hooks/useTheme";
+import styles from "@/styles/HomePage.module.css";
+import { StudentData } from "@/types/student";
 
 // Props que recibe el HomePage
-interface HomePageProps {
+type HomePageProps = {
   onStartTest: (data: StudentData) => void;
   onDashboard: () => void;
-}
+};
 
 // Componente principal de la página de inicio
-const HomePage = ({ onStartTest, onDashboard }: HomePageProps) => {
+export function HomePage({ onStartTest, onDashboard }: HomePageProps) {
   // Usamos el hook personalizado para manejar la lógica del test y formulario
   const {
     showModal,
@@ -41,34 +41,32 @@ const HomePage = ({ onStartTest, onDashboard }: HomePageProps) => {
 
   // Renderizado principal del componente
   return (
-      <div className={styles.container}>
-        {/* Header de la página */}
-        <HomeHeader isDarkMode={isDarkMode}/>
+    <div className={styles.container}>
+      {/* Header de la página */}
+      <HomeHeader isDarkMode={isDarkMode}/>
 
-        {/* Tarjeta principal con información, consentimiento y botones */}
-        <HomeInfoCard
-            isDarkMode={isDarkMode}
-            studentData={studentData}
-            consentAccepted={consentAccepted}
-            onConsentChange={handleConsentChange}
-            onStartTest={handleStartTest}
-            onBeginAssessment={startTest}
-        />
+      {/* Tarjeta principal con información, consentimiento y botones */}
+      <HomeInfoCard
+        isDarkMode={isDarkMode}
+        studentData={studentData}
+        consentAccepted={consentAccepted}
+        onConsentChange={handleConsentChange}
+        onStartTest={handleStartTest}
+        onBeginAssessment={startTest}
+      />
 
-        {/* Modal para ingresar datos del estudiante */}
-        <StudentFormModal
-            show={showModal}
-            onHide={handleCloseModal}
-            onSubmit={handleFormSubmit}
-        />
+      {/* Modal para ingresar datos del estudiante */}
+      <StudentFormModal
+        show={showModal}
+        onHide={handleCloseModal}
+        onSubmit={handleFormSubmit}
+      />
 
-        {/* Botón flotante para acceder al dashboard de administración */}
-        <DashboardButton isDarkMode={isDarkMode} onDashboard={onDashboard}/>
+      {/* Botón flotante para acceder al dashboard de administración */}
+      <DashboardButton isDarkMode={isDarkMode} onDashboard={onDashboard}/>
 
-        {/* Switch para cambiar el tema */}
-        <ThemeSwitcher/>
-      </div>
+      {/* Switch para cambiar el tema */}
+      <ThemeSwitcher/>
+    </div>
   );
-};
-
-export default HomePage;
+}

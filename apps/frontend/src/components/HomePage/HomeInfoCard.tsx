@@ -1,38 +1,30 @@
 // Tarjeta principal con información del test, consentimiento y botones de acción
 // Recibe props para controlar el estado y las acciones
 
+import { faArrowRight, faFileSignature } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 import { ChangeEvent } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  Form,
-  Accordion,
-  Alert,
-  Button,
-} from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileSignature, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { Accordion, Alert, Button, Card, Col, Form, Row, } from "react-bootstrap";
 import Markdown from "react-markdown";
 
-interface StudentData {
+type StudentData = {
   name: string;
   id: string;
   email: string;
   age: string;
-}
+};
 
-interface HomeInfoCardProps {
+type HomeInfoCardProps = {
   isDarkMode: boolean;
   studentData: StudentData | null;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onStartTest: () => void;
   onBeginAssessment: () => void;
-}
+};
 
-export default function HomeInfoCard({
+export function HomeInfoCard({
   isDarkMode,
   studentData,
   consentAccepted,

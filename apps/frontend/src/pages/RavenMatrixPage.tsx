@@ -1,13 +1,13 @@
 // Página del test de matrices de Raven modularizada y comentada
 // Usa hooks y componentes presentacionales para separar lógica y UI
 
-import { Group } from "@pocopi/config";
-import { Container, Row, Col } from "react-bootstrap";
-import { useTheme } from "@/hooks/useTheme";
+import { RavenMatrixHeader } from "@/components/RavenMatrix/RavenMatrixHeader";
+import { RavenMatrixNavigation } from "@/components/RavenMatrix/RavenMatrixNavigation";
+import { RavenMatrixOptions } from "@/components/RavenMatrix/RavenMatrixOptions";
 import { useRavenMatrixTest } from "@/hooks/useRavenMatrixTest";
-import RavenMatrixHeader from "@/components/RavenMatrix/RavenMatrixHeader";
-import RavenMatrixOptions from "@/components/RavenMatrix/RavenMatrixOptions";
-import RavenMatrixNavigation from "@/components/RavenMatrix/RavenMatrixNavigation";
+import { useTheme } from "@/hooks/useTheme";
+import { Group } from "@pocopi/config";
+import { Col, Container, Row } from "react-bootstrap";
 
 // Props del componente principal
 type RavenMatrixPageProps = {
@@ -119,15 +119,7 @@ export function RavenMatrixPage({
 
       {/* Estilos CSS personalizados */}
       <style>{`
-        .selected-option img {
-          border-color: ${
-        isDarkMode ? "#ffc107 !important" : "#ffc107 !important"
-      };
-          box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
-        }
-        .cursor-pointer {
-          cursor: pointer;
-        }
+        
       `}</style>
     </Container>
   );

@@ -1,30 +1,26 @@
 // Botón flotante para acceder al dashboard de administración
 // Recibe el tema y la función de navegación como props
 
-import styles from "./DashboardButton.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styles from "@/styles/DashboardButton.module.css";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
-import classNames from 'classnames';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-interface DashboardButtonProps {
+type DashboardButtonProps = {
   isDarkMode: boolean;
   onDashboard: () => void;
-}
+};
 
-const DashboardButton = ({ isDarkMode, onDashboard }: DashboardButtonProps) => (
+export function DashboardButton({ isDarkMode, onDashboard }: DashboardButtonProps) {
+  return (
     <button
-        className={classNames(
-            styles.dashboardButton,
-            {
-              [styles.dark]: isDarkMode,
-              [styles.light]: !isDarkMode,
-            }
-        )}
-        onClick={onDashboard}
-        title="Admin Dashboard"
+      className={[
+        styles.dashboardButton,
+        isDarkMode ? styles.dashboardButtonDark : styles.dashboardButtonLight,
+      ].join(" ")}
+      onClick={onDashboard}
+      title="Admin Dashboard"
     >
       <FontAwesomeIcon icon={faChartLine} className={styles.icon}/>
     </button>
-);
-
-export default DashboardButton;
+  );
+}

@@ -22,8 +22,5 @@
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=10.8.0"
-  },
-  "dependencies": {
-    "classnames": "^2.5.1"
   }
 }

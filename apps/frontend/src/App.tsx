@@ -1,14 +1,14 @@
 // Punto de entrada principal para la aplicación frontend de la Prueba de Raven.
 // Gestiona la navegación global, el theming y el estado de nivel superior.
 
-import { config } from "@pocopi/config";
-import { JSX, useState, useEffect } from "react";
-import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
-import HomePage from "@/pages/HomePage";
-import CompletionModal from "@/components/HomePage/CompletionModal";
-import AnalyticsDashboard from "@/pages/AnalyticsDashboard";
+import { CompletionModal } from "@/components/HomePage/CompletionModal";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { useTheme } from "@/hooks/useTheme";
+import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
+import { HomePage } from "@/pages/HomePage";
+import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
+import { config } from "@pocopi/config";
+import { JSX, ReactNode, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 // Enum para todas las páginas/rutas posibles en la app
@@ -20,21 +20,21 @@ enum Page {
   DASHBOARD,
 }
 
-// Interfaz estrictamente tipada para los datos del estudiante
+// Tipo para los datos del estudiante
 // Usada en toda la app para consistencia y seguridad de tipos
-interface StudentData {
+type StudentData = {
   name: string;
   id: string;
   email: string;
   age: string;
-}
+};
 
 /**
  * ThemeHandler
  * Establece el tema de Bootstrap (claro/oscuro) en el root del documento según el contexto.
  * Esto asegura un theming consistente en todos los componentes.
  */
-const ThemeHandler = ({ children }: { children: React.ReactNode }) => {
+function ThemeHandler({ children }: { children: ReactNode }) {
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -43,14 +43,14 @@ const ThemeHandler = ({ children }: { children: React.ReactNode }) => {
   }, [theme]);
 
   return <>{children}</>;
-};
+}
 
 /**
  * App
  * Componente principal de la aplicación. Gestiona la navegación, el estado global y el theming.
  * Utiliza páginas y componentes modularizados para claridad y mantenibilidad.
  */
-export default function App(): JSX.Element {
+export function App(): JSX.Element {
   // Grupo para la prueba (puede extenderse para A/B testing, etc.)
   const [group] = useState(config.sampleGroup());
   // Página actual (estado de navegación)

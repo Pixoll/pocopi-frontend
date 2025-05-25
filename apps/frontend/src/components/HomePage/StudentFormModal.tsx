@@ -1,58 +1,50 @@
 // Modal para ingresar los datos del participante antes de iniciar el test
 
-import { useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
 import {
-  Button,
-  Form,
-  Modal,
-  FloatingLabel,
-  Row,
-  Col,
-  Alert,
-} from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUser,
-  faIdCard,
-  faEnvelope,
   faCakeCandles,
-  faShield,
+  faEnvelope,
+  faIdCard,
   faSave,
+  faShield,
+  faUser,
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
-import { useTheme } from "@/hooks/useTheme";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ChangeEvent, useState } from "react";
+import { Alert, Button, Col, FloatingLabel, Form, Modal, Row, } from "react-bootstrap";
 
 // Datos del estudiante
-interface StudentData {
+type StudentData = {
   name: string;
   id: string;
   email: string;
   age: string;
-}
+};
 
 // Props del modal
-interface StudentFormModalProps {
+type  StudentFormModalProps = {
   show: boolean;
   onHide: () => void;
   onSubmit: (data: StudentData) => void;
-}
+};
 
 // Props para el input con ícono
-interface InputWithIconProps {
+type InputWithIconProps = {
   icon: IconDefinition;
   label: string;
   name: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   required?: boolean;
   min?: string;
   max?: string;
   isDarkMode: boolean;
-}
+};
 
 // Componente reutilizable para inputs con ícono
-const InputWithIcon = ({
+function InputWithIcon({
   icon,
   label,
   type = "text",
@@ -63,57 +55,59 @@ const InputWithIcon = ({
   min,
   max,
   isDarkMode,
-}: InputWithIconProps) => (
-  <div className="position-relative mb-3">
-    <FloatingLabel
-      controlId={`form${name}`}
-      label={<span style={{ paddingLeft: "1.75rem" }}>{label}</span>}
-    >
-      <Form.Control
-        type={type}
-        placeholder={`Enter your ${name.toLowerCase()}`}
-        name={name}
-        value={value}
-        onChange={onChange}
-        required={required}
-        min={min}
-        max={max}
-        className={`${isDarkMode ? "bg-dark text-light border-secondary" : ""}`}
-        style={{ paddingLeft: "2.5rem" }}
-      />
-      {/* Ícono a la izquierda del input */}
-      <div
-        className="position-absolute"
-        style={{
-          left: "0.75rem",
-          top: "calc(50% - 0.15rem)",
-          transform: "translateY(-50%)",
-          zIndex: 4,
-          color: isDarkMode ? "#7984ff" : "#4361ee",
-          pointerEvents: "none",
-        }}
+}: InputWithIconProps) {
+  return (
+    <div className="position-relative mb-3">
+      <FloatingLabel
+        controlId={`form${name}`}
+        label={<span style={{ paddingLeft: "1.75rem" }}>{label}</span>}
       >
-        <FontAwesomeIcon icon={icon} />
-      </div>
-      <Form.Control.Feedback type="invalid">
-        Please enter{" "}
-        {name === "id"
-          ? "your identification number"
-          : name === "email"
-          ? "a valid email address"
-          : `a valid ${name.toLowerCase()}`}
-        .
-      </Form.Control.Feedback>
-    </FloatingLabel>
-  </div>
-);
+        <Form.Control
+          type={type}
+          placeholder={`Enter your ${name.toLowerCase()}`}
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={required}
+          min={min}
+          max={max}
+          className={`${isDarkMode ? "bg-dark text-light border-secondary" : ""}`}
+          style={{ paddingLeft: "2.5rem" }}
+        />
+        {/* Ícono a la izquierda del input */}
+        <div
+          className="position-absolute"
+          style={{
+            left: "0.75rem",
+            top: "calc(50% - 0.15rem)",
+            transform: "translateY(-50%)",
+            zIndex: 4,
+            color: isDarkMode ? "#7984ff" : "#4361ee",
+            pointerEvents: "none",
+          }}
+        >
+          <FontAwesomeIcon icon={icon}/>
+        </div>
+        <Form.Control.Feedback type="invalid">
+          Please enter{" "}
+          {name === "id"
+            ? "your identification number"
+            : name === "email"
+              ? "a valid email address"
+              : `a valid ${name.toLowerCase()}`}
+          .
+        </Form.Control.Feedback>
+      </FloatingLabel>
+    </div>
+  );
+}
 
 // Modal principal para el formulario del estudiante
-const StudentFormModal = ({
+export function StudentFormModal({
   show,
   onHide,
   onSubmit,
-}: StudentFormModalProps) => {
+}: StudentFormModalProps) {
   const [validated, setValidated] = useState(false);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -162,7 +156,7 @@ const StudentFormModal = ({
       {/* Header del modal */}
       <Modal.Header className="bg-primary border-0 text-white">
         <h5 className="modal-title d-flex align-items-center m-0 fw-bold">
-          <FontAwesomeIcon icon={faUser} className="me-2" />
+          <FontAwesomeIcon icon={faUser} className="me-2"/>
           Participant Information
         </h5>
         <Button
@@ -179,7 +173,7 @@ const StudentFormModal = ({
           variant={isDarkMode ? "primary" : "info"}
           className="d-flex align-items-center mb-4"
         >
-          <FontAwesomeIcon icon={faShield} className="me-3 fs-5" />
+          <FontAwesomeIcon icon={faShield} className="me-3 fs-5"/>
           <div>
             Your data will be treated confidentially and used solely for
             academic purposes.
@@ -242,7 +236,7 @@ const StudentFormModal = ({
               Cancel
             </Button>
             <Button variant="primary" type="submit" className="px-4">
-              <FontAwesomeIcon icon={faSave} className="me-2" />
+              <FontAwesomeIcon icon={faSave} className="me-2"/>
               Save Information
             </Button>
           </div>
@@ -250,6 +244,4 @@ const StudentFormModal = ({
       </Modal.Body>
     </Modal>
   );
-};
-
-export default StudentFormModal;
+}

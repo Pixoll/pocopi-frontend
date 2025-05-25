@@ -5,3 +5,12 @@
   justify-items: center;
   user-select: none;
 }
+
+.selectedOption img {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
