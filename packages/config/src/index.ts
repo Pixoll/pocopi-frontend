@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { copyFileSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { Validator } from "jsonschema";
 import mime from "mime";
 import path from "path";
@@ -21,6 +21,8 @@ const ESM_SCRIPT_PATH = path.join(__dirname, "../esm/index.js");
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
+const FRONTEND_PUBLIC_PATH = path.join(__dirname, "../../../apps/frontend/public");
+const FRONTEND_ASSETS_PATH = path.join(__dirname, "../../../apps/frontend/src/assets");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
 const IMAGE_NAME_TO_BASE64 = new Map(readdirSync(IMAGES_DIR).map(filename =>
     [filename, getBase64Image(path.join(IMAGES_DIR, filename).replace(/\\/g, "/"))]
@@ -318,8 +320,14 @@ function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedI
  * @param image - The image to validate
  * @param yamlPath - The path to the image for error messages
  * @param usedImages - Map of image sources to their usage paths
+ * @param actions - Actions to take after validating the image
  */
-function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string, string>): void {
+function validateImage(
+    image: RawImage,
+    yamlPath: string,
+    usedImages: Map<string, string>,
+    actions: ValidateImageActions = {}
+): void {
     const { src } = image;
     const usedImageAt = usedImages.get(src);
 
@@ -330,6 +338,14 @@ function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string
     const imagePath = IMAGE_NAME_TO_BASE64.get(src);
     if (!imagePath) {
         throw new Error(`Image '${src}' not found in images directory.`);
+    }
+
+    if (actions.copyToFrontendAssets) {
+        copyFileSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_ASSETS_PATH, src));
+    }
+
+    if (actions.copyToFrontendPublic) {
+        copyFileSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src));
     }
 
     image.src = imagePath;
@@ -373,3 +389,8 @@ type QuestionsIterator = Generator<{
     yamlPath: string;
     question: RawPhaseQuestion;
 }, void, unknown>;
+
+type ValidateImageActions = {
+    copyToFrontendAssets?: boolean;
+    copyToFrontendPublic?: boolean;
+};
