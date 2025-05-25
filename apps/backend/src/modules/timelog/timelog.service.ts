@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Timelog } from "./entities/timelog.entity";
-import { existsSync, readFileSync, readdirSync, writeFileSync} from "fs"; //ocupar (sync lista de nombres de arcihvos)
+//import { existsSync, readFileSync, readdirSync, writeFileSync} from "fs"; //ocupar (sync lista de nombres de arcihvos)
 //documentacion json
 
 @Injectable()
