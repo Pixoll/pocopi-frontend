@@ -23,11 +23,11 @@ const HomeHeader = ({ isDarkMode }: HomeHeaderProps) => (
               }
           )}
       >
-          <img className="d-inline-block mb-3 app-icon" src={appIcon} alt="App Icon"/>
+          <img className={styles.appIcon} src={appIcon} alt="App Icon"/>
       </div>
       {/* Título principal */}
       <h1 className={styles.title}>
-          {config.title}
+      {config.title}
           <span className={styles.highlight}> Matrices Test</span>
       </h1>
       {/* Subtítulo */}
