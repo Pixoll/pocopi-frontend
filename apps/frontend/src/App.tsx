@@ -58,6 +58,10 @@ export default function App(): JSX.Element {
   // Datos del estudiante recogidos del formulario (null si no ha comenzado)
   const [studentData, setStudentData] = useState<StudentData | null>(null);
 
+  useEffect(() => {
+    document.title = config.title;
+  }, []);
+
   /**
    * Handler para iniciar la prueba después de recoger los datos del estudiante.
    * @param data - Objeto StudentData del formulario
@@ -89,7 +93,7 @@ export default function App(): JSX.Element {
     switch (page) {
       case Page.HOME:
         // Página de inicio: recoge datos del estudiante y permite acceso al dashboard
-        return <HomePage onStartTest={startTest} onDashboard={goToDashboard} />;
+        return <HomePage onStartTest={startTest} onDashboard={goToDashboard}/>;
       case Page.RAVEN_MATRIX:
         // Página de la prueba Raven: lógica principal y UI de la prueba
         return (
@@ -102,11 +106,11 @@ export default function App(): JSX.Element {
       case Page.END:
         // Modal de finalización: se muestra tras terminar la prueba
         return (
-          <CompletionModal studentData={studentData} onBackToHome={goToHome} />
+          <CompletionModal studentData={studentData} onBackToHome={goToHome}/>
         );
       case Page.DASHBOARD:
         // Dashboard de analíticas: muestra resultados y analíticas
-        return <AnalyticsDashboard onBack={goToHome} />;
+        return <AnalyticsDashboard onBack={goToHome}/>;
       default:
         // Fallback: no renderiza nada (no debería ocurrir)
         return null;

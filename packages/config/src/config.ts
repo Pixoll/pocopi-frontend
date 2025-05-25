@@ -9,7 +9,7 @@ import {
     RawFormOption,
     RawFormQuestion,
     RawFormQuestionSelectMultiple,
-    RawFormQuestionSelectOne,
+    RawFormQuestionSelectOne, RawInformationCard,
     RawPhaseQuestion,
     RawTestOption,
 } from "./raw-types";
@@ -44,8 +44,13 @@ const defaults = Object.freeze({
  * Main configuration class that processes and provides access to experiment configuration.
  */
 export class Config {
+    public readonly icon: Image;
     public readonly title: string;
+    public readonly subtitle?: string;
     public readonly description: string;
+    public readonly informationCards: readonly InformationCard[];
+    public readonly informedConsent: string;
+    public readonly faq: readonly Faq[];
     public readonly preTestForm?: Form;
     public readonly postTestForm?: Form;
 
@@ -61,8 +66,17 @@ export class Config {
      * @param config - The flattened configuration object
      */
     public constructor(config: FlatRawConfig) {
+        this.icon = Object.freeze(config.icon);
         this.title = config.title;
+
+        if (config.subtitle) {
+            this.subtitle = config.subtitle;
+        }
+
         this.description = config.description;
+        this.informationCards = Object.freeze(config.informationCards?.map(makeInformationCard) ?? []);
+        this.informedConsent = config.informedConsent;
+        this.faq = Object.freeze(config.faq?.map(f => Object.freeze(f)) ?? []);
 
         if (config.preTestForm) {
             this.preTestForm = makeForm(config.preTestForm);
@@ -114,6 +128,22 @@ export class Config {
 
         return makeGroup(this.groups[index]!);
     }
+}
+
+/**
+ * Creates a {@link InformationCard} object from raw information card data.
+ *
+ * @param infoCard - The raw information card data
+ *
+ * @returns An immutable {@link InformationCard} object
+ */
+function makeInformationCard(infoCard: RawInformationCard): InformationCard {
+    return Object.freeze({
+        title: infoCard.title,
+        description: infoCard.description,
+        ...infoCard.color && { color: Object.freeze(infoCard.color) },
+        ...infoCard.icon && { icon: Object.freeze(infoCard.icon) },
+    });
 }
 
 /**
@@ -333,6 +363,18 @@ function makeTestOption(option: RawTestOption): TestOption {
     });
 }
 
+export type InformationCard = {
+    readonly title: string;
+    readonly description: string;
+    readonly color?: Color;
+    readonly icon?: Image;
+};
+
+export type Faq = {
+    readonly question: string;
+    readonly answer: string;
+};
+
 export type Form = {
     readonly questions: readonly FormQuestion[];
 };
@@ -437,4 +479,10 @@ export type TestOption = {
 export type Image = {
     readonly src: string;
     readonly alt: string;
+};
+
+export type Color = {
+    readonly r: number;
+    readonly g: number;
+    readonly b: number;
 };
