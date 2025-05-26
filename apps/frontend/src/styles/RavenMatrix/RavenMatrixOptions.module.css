@@ -1,0 +1,31 @@
+.ravenOptionsContainer {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  justify-items: center;
+  align-items: center;
+  user-select: none;
+  gap: 1rem;
+}
+
+.option {
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.optionImage {
+  max-width: 100px;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.selectedOption img {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+}

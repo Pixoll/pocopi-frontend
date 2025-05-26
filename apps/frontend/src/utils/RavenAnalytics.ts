@@ -1,34 +1,33 @@
-// Clase y utilidades para el tracking de analítica del test de matrices de Raven
+export interface OptionMetrics {
+  optionIndex: string;
+  isCorrect: boolean;
+  startTime: number;
+  endTime?: number;
+}
 
-// Tipos para las interacciones y resultados
-export type InteractionType =
-  | "view" // Visualización de una pregunta
-  | "select" // Selección de una opción
-  | "change" // Cambio de selección
-  | "next" // Siguiente pregunta
-  | "previous"; // Pregunta anterior
-
-// Métricas de cada pregunta
 export interface QuestionMetrics {
-  phaseIndex: number;
   questionIndex: number;
   startTime: number;
   endTime?: number;
-  timeTaken?: number;
-  selectedOption?: string;
-  isCorrect?: boolean;
-  optionChanges: number;
+  options: OptionMetrics[];
 }
 
-// Resultados completos del test
+export interface PhaseMetrics {
+  phaseIndex: number;
+  sessionId: string;      // <-- agregado para identificar sesión única de fase
+  startTime: number;
+  endTime?: number;
+  questions: QuestionMetrics[];
+}
+
 export interface TestResults {
   participantId: string;
   groupName: string;
   startTime: number;
   endTime?: number;
   totalTime?: number;
-  questions: QuestionMetrics[];
   totalCorrect: number;
+  phases: PhaseMetrics[];
   metadata: {
     userAgent: string;
     screenWidth: number;
@@ -37,27 +36,42 @@ export interface TestResults {
   };
 }
 
-/**
- * Clase principal para el tracking de analítica del test de Raven.
- * Permite registrar el inicio y fin de preguntas, cambios de opción, y resultados.
- */
+export function printPhaseMetrics(phase: PhaseMetrics): void {
+  console.log(`--- Phase ${phase.phaseIndex} ---`);
+  console.log(`Start Time: ${new Date(phase.startTime).toLocaleString()}`);
+  console.log(`End Time: ${phase.endTime ? new Date(phase.endTime).toLocaleString() : 'Still running'}`);
+  console.log(`Questions:`);
+  
+  phase.questions.forEach((question, qIndex) => {
+    console.log(`  [Q${qIndex}] Question Index: ${question.questionIndex}`);
+    console.log(`    Start Time: ${new Date(question.startTime).toLocaleString()}`);
+    console.log(`    End Time: ${question.endTime ? new Date(question.endTime).toLocaleString() : 'Still running'}`);
+    console.log(`    Options:`);
+    
+    question.options.forEach((option, oIndex) => {
+      console.log(`      [O${oIndex}] Option Index: ${option.optionIndex}`);
+      console.log(`        Is Correct: ${option.isCorrect}`);
+      console.log(`        Start Time: ${new Date(option.startTime).toLocaleString()}`);
+      console.log(`        End Time: ${option.endTime ? new Date(option.endTime).toLocaleString() : 'Still active'}`);
+    });
+  });
+  
+  console.log(`----------------------------`);
+}
+
+
 export class RavenAnalytics {
   private results: TestResults;
   private currentPhase: number = 0;
   private currentQuestion: number = 0;
-
-  /**
-   * Inicializa la analítica para un grupo y protocolo.
-   * @param groupName Nombre del grupo experimental
-   * @param protocolName Nombre del protocolo
-   */
+  private currentPhaseSessionId: string | null = null; // << NUEVO
+  
   constructor(groupName: string) {
     const now = Date.now();
     this.results = {
       participantId: `user_${now.toString().slice(-6)}`,
       groupName,
       startTime: now,
-      questions: [],
       totalCorrect: 0,
       metadata: {
         userAgent: navigator.userAgent,
@@ -65,103 +79,130 @@ export class RavenAnalytics {
         screenHeight: window.innerHeight,
         timestamp: now,
       },
+      phases: [],
     };
   }
-
-  /**
-   * Inicia el tracking de una nueva pregunta.
-   * Si ya existe, actualiza el startTime si no ha sido completada.
-   */
+  
+  startPhase(phaseIndex: number): void {
+    const now = Date.now();
+    const sessionId = `phase_${phaseIndex}_${now}`; // << sesión única
+    this.currentPhase = phaseIndex;
+    this.currentPhaseSessionId = sessionId;
+    
+    const newPhase: PhaseMetrics = {
+      phaseIndex,
+      sessionId,
+      startTime: now,
+      questions: [],
+    };
+    
+    this.results.phases.push(newPhase);
+  }
+  
+  completePhase(phaseIndex: number): void {
+    const now = Date.now();
+    const phase = this.results.phases.find(
+      p => p.phaseIndex === phaseIndex && p.sessionId === this.currentPhaseSessionId
+    );
+    if (phase && !phase.endTime) {
+      phase.endTime = now;
+      printPhaseMetrics(phase);
+    }
+  }
+  
   startQuestion(phaseIndex: number, questionIndex: number): void {
     const now = Date.now();
     this.currentPhase = phaseIndex;
     this.currentQuestion = questionIndex;
-    const existingIndex = this.results.questions.findIndex(
-      (q) => q.phaseIndex === phaseIndex && q.questionIndex === questionIndex
+    
+    const phase = this.results.phases.find(
+      p => p.phaseIndex === phaseIndex && p.sessionId === this.currentPhaseSessionId
     );
-    if (existingIndex >= 0) {
-      const existing = this.results.questions[existingIndex];
-      if (!existing.endTime) {
-        this.results.questions[existingIndex].startTime = now;
-      }
-    } else {
-      this.results.questions.push({
-        phaseIndex,
+    
+    if (!phase) {
+      this.startPhase(phaseIndex);
+      return this.startQuestion(phaseIndex, questionIndex);
+    }
+    
+    let question = phase.questions.find(q => q.questionIndex === questionIndex);
+    if (!question) {
+      question = {
         questionIndex,
         startTime: now,
-        optionChanges: 0,
-      });
+        options: [],
+      };
+      phase.questions.push(question);
+    } else if (!question.startTime) {
+      question.startTime = now;
     }
   }
-
-  /**
-   * Devuelve el objeto de métricas de la pregunta actual.
-   */
-  private getCurrentQuestion(): QuestionMetrics | null {
-    const questionIndex = this.results.questions.findIndex(
-      (q) =>
-        q.phaseIndex === this.currentPhase &&
-        q.questionIndex === this.currentQuestion
-    );
-    if (questionIndex >= 0) {
-      return this.results.questions[questionIndex];
-    }
-    return null;
-  }
-
-  /**
-   * Registra un cambio de opción en la pregunta actual.
-   */
-  recordOptionChange(): void {
-    const currentQuestion = this.getCurrentQuestion();
-    if (currentQuestion) {
-      currentQuestion.optionChanges++;
-    }
-  }
-
-  /**
-   * Completa la pregunta actual y registra el resultado.
-   * @param selectedOption Opción seleccionada
-   * @param isCorrect Si la respuesta es correcta
-   */
-  completeQuestion(selectedOption: string, isCorrect: boolean): void {
+  
+  completeQuestion(): void {
     const now = Date.now();
-    const currentQuestion = this.getCurrentQuestion();
-    if (currentQuestion) {
-      currentQuestion.endTime = now;
-      currentQuestion.timeTaken = now - currentQuestion.startTime;
-      currentQuestion.selectedOption = selectedOption;
-      currentQuestion.isCorrect = isCorrect;
-      if (isCorrect) {
-        this.results.totalCorrect++;
+    const question = this.getCurrentQuestion();
+    if (!question) return;
+    
+    if (!question.endTime) {
+      question.endTime = now;
+    }
+    
+    const lastOption = question.options.length > 0 ? question.options[question.options.length - 1] : null;
+    if (lastOption && !lastOption.endTime) {
+      lastOption.endTime = now;
+    }
+  }
+  
+  recordOptionSelection(optionIndex: string, isCorrect: boolean): void {
+    const now = Date.now();
+    const question = this.getCurrentQuestion();
+    if (!question) return;
+    
+    const lastOption = question.options.length > 0 ? question.options[question.options.length - 1] : null;
+    if (lastOption && !lastOption.endTime) {
+      lastOption.endTime = now;
+    }
+    
+    question.options.push({
+      optionIndex,
+      isCorrect,
+      startTime: now,
+    });
+  }
+  
+  recordOptionDeselection(): void {
+    const now = Date.now();
+    const question = this.getCurrentQuestion();
+    if (!question) return;
+    
+    for (let i = question.options.length - 1; i >= 0; i--) {
+      if (!question.options[i].endTime) {
+        question.options[i].endTime = now;
+        break;
       }
     }
   }
-
-  /**
-   * Marca el test como completado y devuelve los resultados.
-   */
+  
   completeTest(): TestResults {
     const now = Date.now();
     this.results.endTime = now;
     this.results.totalTime = now - this.results.startTime;
-    return this.getResults();
-  }
-
-  /**
-   * Devuelve una copia de los resultados actuales.
-   */
-  getResults(): TestResults {
     return structuredClone(this.results);
   }
-
-  /**
-   * Permite establecer el ID del participante (por ejemplo, desde los datos del estudiante).
-   */
+  
   setParticipantId(id: string): void {
     if (id) {
       this.results.participantId = id;
     }
+  }
+  
+  private getCurrentQuestion(): QuestionMetrics | null {
+    const phase = this.results.phases.find(
+      p => p.phaseIndex === this.currentPhase && p.sessionId === this.currentPhaseSessionId
+    );
+    if (!phase) return null;
+    
+    const question = phase.questions.find(q => q.questionIndex === this.currentQuestion);
+    return question || null;
   }
 }
 

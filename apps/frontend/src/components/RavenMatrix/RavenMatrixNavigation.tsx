@@ -2,7 +2,8 @@
 
 import { faAngleLeft, faArrowLeft, faArrowRight, } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Col, Row } from "react-bootstrap";
+import styles from "@/styles/RavenMatrix/RavenMatrixNavigation.module.css";
+import classNames from "classnames";
 
 type RavenMatrixNavigationProps = {
   phase: number;
@@ -29,52 +30,50 @@ export function RavenMatrixNavigation({
 }: RavenMatrixNavigationProps) {
   return (
     <div
-      className={`py-3 px-4 border-top ${isDarkMode ? "bg-dark" : "bg-light"}`}
+      className={classNames(
+        styles.navigationContainer,
+        isDarkMode ? styles.dark : styles.light
+      )}
     >
-      <Row>
-        <Col className="d-flex justify-content-between">
-          {/* Botón fase anterior */}
-          <div>
-            <Button
-              variant="outline-secondary"
-              className="me-2 d-flex align-items-center"
-              onClick={onPreviousPhase}
-              disabled={disablePrevious}
-            >
-              <FontAwesomeIcon icon={faArrowLeft} className="me-2"/>
-              Previous Phase
-            </Button>
-          </div>
-          {/* Botones anterior/siguiente pregunta */}
-          <div>
-            <Button
-              variant="outline-primary"
-              className="me-2"
-              onClick={onPreviousQuestion}
-              disabled={disablePrevious}
-            >
-              <FontAwesomeIcon icon={faAngleLeft} className="me-1"/>
-              Previous
-            </Button>
-            <Button variant="primary" onClick={onNextQuestion}>
-              Next
-              <FontAwesomeIcon icon={faArrowRight} className="ms-1"/>
-            </Button>
-          </div>
-          {/* Botón siguiente fase */}
-          <div>
-            <Button
-              variant="outline-secondary"
-              className="d-flex align-items-center"
-              onClick={onNextPhase}
-              disabled={disableNextPhase}
-            >
-              Next Phase
-              <FontAwesomeIcon icon={faArrowRight} className="ms-2"/>
-            </Button>
-          </div>
-        </Col>
-      </Row>
+      <div className={styles.navGroup}>
+        <button
+          className={classNames(styles.navButton, styles.secondary)}
+          onClick={onPreviousPhase}
+          disabled={disablePrevious}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} className={styles.iconLeft}/>
+          Previous Phase
+        </button>
+      </div>
+      
+      <div className={styles.navGroup}>
+        <button
+          className={classNames(styles.navButton, styles.primaryOutline)}
+          onClick={onPreviousQuestion}
+          disabled={disablePrevious}
+        >
+          <FontAwesomeIcon icon={faAngleLeft} className={styles.iconLeft}/>
+          Previous
+        </button>
+        <button
+          className={classNames(styles.navButton, styles.primary)}
+          onClick={onNextQuestion}
+        >
+          Next
+          <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
+        </button>
+      </div>
+      
+      <div className={styles.navGroup}>
+        <button
+          className={classNames(styles.navButton, styles.secondary)}
+          onClick={onNextPhase}
+          disabled={disableNextPhase}
+        >
+          Next Phase
+          <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
+        </button>
+      </div>
     </div>
   );
 }

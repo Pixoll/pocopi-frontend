@@ -1,7 +1,7 @@
 // Header de la página de inicio con título y subtítulo
 // Recibe la prop isDarkMode para ajustar el estilo
 
-import styles from "@/styles/HomeHeader.module.css";
+import styles from "@/styles/HomePage/HomeHeader.module.css";
 import { config } from "@pocopi/config";
 
 type HomeHeaderProps = {

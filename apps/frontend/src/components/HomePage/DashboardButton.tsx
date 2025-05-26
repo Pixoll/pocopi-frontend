@@ -1,7 +1,7 @@
 // Botón flotante para acceder al dashboard de administración
 // Recibe el tema y la función de navegación como props
 
-import styles from "@/styles/DashboardButton.module.css";
+import styles from "@/styles/HomePage/DashboardButton.module.css";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
