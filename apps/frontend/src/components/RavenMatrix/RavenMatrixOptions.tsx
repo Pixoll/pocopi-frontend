@@ -1,7 +1,8 @@
 // Componente para mostrar las opciones de respuesta de la pregunta actual
 
-import styles from "@/styles/RavenMatrixOptions.module.css";
+import styles from "@/styles/RavenMatrix/RavenMatrixOptions.module.css";
 import { Image } from "@pocopi/config";
+import classNames from "classnames";
 
 type Option = {
   id: string;
@@ -26,36 +27,26 @@ export function RavenMatrixOptions({
   return (
     <div
       className={styles.ravenOptionsContainer}
-      style={{
-        gridTemplateColumns: `repeat(${optionsColumns}, ${
-          100 / optionsColumns
-        }%)`,
-      }}
+      style={{ gridTemplateColumns: `repeat(${optionsColumns}, 1fr)` }}
     >
       {options.map((option) => (
         <div
           key={option.id}
-          className={`rounded-3 p-2 mb-2 ${styles.cursorPointer} ${
-            selected === option.id ? styles.selectedOption : ""
-          }`}
-          style={{
-            border:
-              selected === option.id
-                ? `2px solid #ffc107`
-                : `2px solid transparent`,
-          }}
+          className={classNames(
+            styles.option,
+            styles.cursorPointer,
+            selected === option.id && styles.selectedOption
+          )}
           onClick={() => onOptionClick(option.id)}
           tabIndex={0}
           role="button"
           aria-pressed={selected === option.id}
         >
-          {/* TODO add text */}
           {option.image && (
             <img
               src={option.image.src}
               alt={option.image.alt}
-              className="img-fluid"
-              style={{ maxWidth: "100px", pointerEvents: "none" }}
+              className={styles.optionImage}
               draggable={false}
             />
           )}

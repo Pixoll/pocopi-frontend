@@ -7,7 +7,8 @@ import { RavenMatrixOptions } from "@/components/RavenMatrix/RavenMatrixOptions"
 import { useRavenMatrixTest } from "@/hooks/useRavenMatrixTest";
 import { useTheme } from "@/hooks/useTheme";
 import { Group } from "@pocopi/config";
-import { Col, Container, Row } from "react-bootstrap";
+import classNames from "classnames";
+import styles from "@/styles/RavenMatrixPage.module.css";
 
 // Props del componente principal
 type RavenMatrixPageProps = {
@@ -50,10 +51,7 @@ export function RavenMatrixPage({
 
   // Render principal
   return (
-    <Container
-      fluid
-      className="p-0 min-vh-100 position-relative d-flex flex-column"
-    >
+    <div className={styles.page}>
       {/* Header con barra de progreso */}
       <RavenMatrixHeader
         isDarkMode={isDarkMode}
@@ -63,45 +61,38 @@ export function RavenMatrixPage({
         questionsCount={questions.length}
         progressPercentage={progressPercentage}
       />
-
+      
       {/* Contenido principal */}
-      <Container className="py-4 flex-grow-1 d-flex flex-column justify-content-center">
-        {/* Imagen de la pregunta */}
-        <Row className="justify-content-center mb-3">
-          <Col md={10} lg={8} className="text-center">
-            <div
-              className={`p-4 rounded-4 mb-4 ${
-                isDarkMode ? "bg-dark" : "bg-white"
-              } shadow-sm`}
-              style={{ userSelect: "none" }}
-            >
-              {/* TODO add text */}
-              {questionImage && (
-                <img
-                  src={questionImage.src}
-                  alt={questionImage.alt}
-                  className="img-fluid"
-                  style={{ maxWidth: "100%", pointerEvents: "none" }}
-                  draggable={false}
-                />
-              )}
-            </div>
-          </Col>
-        </Row>
-        {/* Opciones de respuesta */}
-        <Row className="justify-content-center">
-          <Col md={10} lg={8}>
-            <RavenMatrixOptions
-              options={options}
-              selected={selected}
-              onOptionClick={handleOptionClick}
-              optionsColumns={optionsColumns}
-              isDarkMode={isDarkMode}
-            />
-          </Col>
-        </Row>
-      </Container>
-
+      <div className={styles.content}>
+        <div className={styles.question}>
+          <div
+            className={classNames(
+              styles.questionBox,
+              isDarkMode ? styles.dark : styles.light
+            )}
+          >
+            {questionImage && (
+              <img
+                src={questionImage.src}
+                alt={questionImage.alt}
+                className={styles.questionImage}
+                draggable={false}
+              />
+            )}
+          </div>
+        </div>
+        
+        <div className={styles.options}>
+          <RavenMatrixOptions
+            options={options}
+            selected={selected}
+            onOptionClick={handleOptionClick}
+            optionsColumns={optionsColumns}
+            isDarkMode={isDarkMode}
+          />
+        </div>
+      </div>
+      
       {/* Navegación inferior */}
       <RavenMatrixNavigation
         phase={phase}
@@ -116,11 +107,6 @@ export function RavenMatrixPage({
         disableNextPhase={phase >= group.protocol.phases.length - 1}
         isDarkMode={isDarkMode}
       />
-
-      {/* Estilos CSS personalizados */}
-      <style>{`
-        
-      `}</style>
-    </Container>
+    </div>
   );
 }
