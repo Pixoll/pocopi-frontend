@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 import { TimelogController } from "./timelog.controller";
 import { TimelogService } from "./timelog.service";
 

@@ -15,4 +15,3 @@ export class TimelogEventDto {
     @Min(0)
     public declare timestamp: number;
 }
-

@@ -5,4 +5,3 @@ export class TimelogEvent {
     public declare optionId: number;
     public declare timestamp: number;
 }
-

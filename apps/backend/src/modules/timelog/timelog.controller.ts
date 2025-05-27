@@ -1,18 +1,17 @@
-import { Controller, Get, Post, Body } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { TimelogDto } from "./dtos/timelog.dto";
-import { TimelogService } from "./timelog.service";
 import { Timelog } from "./entities/timelog.entity";
-
+import { TimelogService } from "./timelog.service";
 
 @Controller("timelog")
 export class TimelogController {
-    constructor(private readonly timelogService: TimelogService) {}
+    public constructor(private readonly timelogService: TimelogService) {
+    }
 
     @Post()
-    public saveTimelog(@Body() timelogDto: TimelogDto):  void {
-        // Aquí 'timelogDto' contiene el JSON enviado en la solicitud POST
+    public saveTimelog(@Body() timelogDto: TimelogDto): void {
         this.timelogService.saveTimelog(timelogDto);
-        console.log("Nuevo timelog recibido:",timelogDto);
+        console.log("Nuevo timelog recibido:", timelogDto);
     }
 
     @Get()
@@ -20,6 +19,3 @@ export class TimelogController {
         return this.timelogService.getTimelogs();
     }
 }     
-
-
-

@@ -1,5 +1,5 @@
-import {  Min, MinLength  } from 'class-validator';
-import { TimelogEventDto } from './timelog-event.dto';
+import { Min, MinLength } from "class-validator";
+import { TimelogEventDto } from "./timelog-event.dto";
 
 export class TimelogDto {
     @MinLength(1)
@@ -15,7 +15,7 @@ export class TimelogDto {
     public declare startTimestamp: number;
 
     @Min(0)
-    public declare endTimestamp: number; 
+    public declare endTimestamp: number;
 
     public declare correct: boolean;
     public declare skipped: boolean;
@@ -26,8 +26,5 @@ export class TimelogDto {
     @Min(0)
     public declare totalOptionHovers: number;
 
-    public declare events: TimelogEventDto[]; 
-
+    public declare events: TimelogEventDto[];
 }
-
-
