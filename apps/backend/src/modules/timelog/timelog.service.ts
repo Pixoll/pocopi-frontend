@@ -44,9 +44,10 @@ export class TimelogService {
     }
 
     private saveTimelogToFile(timelog:Timelog): void { //lo estoy guardando en un archivo
-        const filename= `${timelog.userId}-${timelog.timestamp}.json`;
+        const filename= `${timelog.userId}-${timelog.phaseId}-${timelog.questionId}-${timelog.startTimestamp}.json`;
         const filePath = path.join(TIMELOGS_DIR, filename);
         writeFileSync(filePath, JSON.stringify(timelog), "utf-8");
     }
 
 }
+
