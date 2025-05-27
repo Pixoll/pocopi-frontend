@@ -9,19 +9,17 @@ export class TimelogController {
     constructor(private readonly timelogService: TimelogService) {}
 
     @Post()
-    public logTimelog(@Body() timelogDto: TimelogDto): { message: string } {
+    public saveTimelog(@Body() timelogDto: TimelogDto):  void {
         // Aquí 'timelogDto' contiene el JSON enviado en la solicitud POST
-        this.timelogService.logTimelog(timelogDto);
+        this.timelogService.saveTimelog(timelogDto);
         console.log("Nuevo timelog recibido:",timelogDto);
-        return { message: "Timelog registrado correctamente" };
     }
 
     @Get()
-    public getTimelog(): Timelog[] {
+    public getTimelogs(): Timelog[] {
         return this.timelogService.getTimelogs();
     }
 }     
 
-// Removed duplicate TimelogDto class declaration since it's already imported from './dto/timelog.dto'
 
 
