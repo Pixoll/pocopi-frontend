@@ -20,7 +20,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "preserveWatchOutput": true,
-    "removeComments": true,
+    "removeComments": false,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,

@@ -10,7 +10,8 @@
   },
   "scripts": {
     "prestart": "tsc -b ./tsconfig.json ./tsconfig.cjs.json ./tsconfig.esm.json",
-    "start": "node ."
+    "start": "node .",
+    "build": "npm start"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
@@ -25,7 +26,6 @@
     "decimal.js": "^10.5.0",
     "fast-xml-parser": "^5.2.1",
     "jsonschema": "^1.5.0",
-    "mime": "^4.0.7",
     "yaml": "^2.7.1"
   }
 }

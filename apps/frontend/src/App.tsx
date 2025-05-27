@@ -1,13 +1,19 @@
-import CompletionModal from "@/components/CompletionModal";
+// Punto de entrada principal para la aplicación frontend de la Prueba de Raven.
+// Gestiona la navegación global, el theming y el estado de nivel superior.
+
+import { CompletionModal } from "@/components/HomePage/CompletionModal";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { useTheme } from "@/hooks/useTheme";
-import AnalyticsDashboard from "@/pages/AnalyticsDashboard";
-import HomePage from "@/pages/HomePage";
+import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
+import { HomePage } from "@/pages/HomePage";
 import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
 import { config } from "@pocopi/config";
-import { JSX, useEffect, useState } from "react";
+import mime from "mime";
+import { JSX, ReactNode, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+// Enum para todas las páginas/rutas posibles en la app
+// Permite navegación type-safe y fácil extensión
 enum Page {
   HOME,
   RAVEN_MATRIX,
@@ -15,48 +21,89 @@ enum Page {
   DASHBOARD,
 }
 
-interface StudentData {
+// Tipo para los datos del estudiante
+// Usada en toda la app para consistencia y seguridad de tipos
+type StudentData = {
   name: string;
   id: string;
   email: string;
   age: string;
-}
+};
 
-// Componente para establecer el tema en el documento
-const ThemeHandler = ({ children }: { children: React.ReactNode }) => {
+/**
+ * ThemeHandler
+ * Establece el tema de Bootstrap (claro/oscuro) en el root del documento según el contexto.
+ * Esto asegura un theming consistente en todos los componentes.
+ */
+function ThemeHandler({ children }: { children: ReactNode }) {
   const { theme } = useTheme();
 
   useEffect(() => {
-    // Establece el atributo data-bs-theme para Bootstrap
+    // Establece el atributo de tema de Bootstrap para el estilo global
     document.documentElement.setAttribute("data-bs-theme", theme);
   }, [theme]);
 
   return <>{children}</>;
-};
+}
 
-export default function App(): JSX.Element {
+/**
+ * App
+ * Componente principal de la aplicación. Gestiona la navegación, el estado global y el theming.
+ * Utiliza páginas y componentes modularizados para claridad y mantenibilidad.
+ */
+export function App(): JSX.Element {
+  // Grupo para la prueba (puede extenderse para A/B testing, etc.)
   const [group] = useState(config.sampleGroup());
+  // Página actual (estado de navegación)
   const [page, setPage] = useState<Page>(Page.HOME);
+  // Datos del estudiante recogidos del formulario (null si no ha comenzado)
   const [studentData, setStudentData] = useState<StudentData | null>(null);
 
+  useEffect(() => {
+    document.title = config.title;
+
+    const head = document.querySelector("head")!;
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.type = mime.getType(config.icon.src)!;
+    link.href = config.icon.src;
+    head.appendChild(link);
+  }, []);
+
+  /**
+   * Handler para iniciar la prueba después de recoger los datos del estudiante.
+   * @param data - Objeto StudentData del formulario
+   */
   const startTest = (data: StudentData) => {
     setStudentData(data);
     setPage(Page.RAVEN_MATRIX);
   };
 
+  /**
+   * Handler para volver a la página de inicio.
+   */
   const goToHome = () => {
     setPage(Page.HOME);
   };
 
+  /**
+   * Handler para navegar al dashboard de analíticas.
+   */
   const goToDashboard = () => {
     setPage(Page.DASHBOARD);
   };
 
+  /**
+   * Renderiza la página actual según el estado de navegación.
+   * Utiliza componentes modularizados para cada ruta.
+   */
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
+        // Página de inicio: recoge datos del estudiante y permite acceso al dashboard
         return <HomePage onStartTest={startTest} onDashboard={goToDashboard}/>;
       case Page.RAVEN_MATRIX:
+        // Página de la prueba Raven: lógica principal y UI de la prueba
         return (
           <RavenMatrixPage
             group={group}
@@ -65,14 +112,20 @@ export default function App(): JSX.Element {
           />
         );
       case Page.END:
+        // Modal de finalización: se muestra tras terminar la prueba
         return (
           <CompletionModal studentData={studentData} onBackToHome={goToHome}/>
         );
       case Page.DASHBOARD:
+        // Dashboard de analíticas: muestra resultados y analíticas
         return <AnalyticsDashboard onBack={goToHome}/>;
+      default:
+        // Fallback: no renderiza nada (no debería ocurrir)
+        return null;
     }
   };
 
+  // Envuelve la app en ThemeProvider y ThemeHandler para theming global
   return (
     <ThemeProvider>
       <ThemeHandler>{renderPage()}</ThemeHandler>

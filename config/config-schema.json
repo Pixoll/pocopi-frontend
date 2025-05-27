@@ -3,15 +3,44 @@
   "title": "JSON schema for PoCoPI's configuration file.",
   "type": "object",
   "properties": {
+    "icon": {
+      "$ref": "#/$defs/image"
+    },
     "title": {
       "type": "string",
-      "description": "The tile of the web app.",
+      "description": "The title of the web app.",
+      "minLength": 1
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "The subtitle of the web app. Shown in between the title and description.",
       "minLength": 1
     },
     "description": {
       "type": "string",
       "description": "The description of the web app.",
       "minLength": 1
+    },
+    "informationCards": {
+      "type": "array",
+      "description": "List of information cards to be shown below the web app description.",
+      "items": {
+        "$ref": "#/$defs/information-card"
+      },
+      "minItems": 1
+    },
+    "informedConsent": {
+      "type": "string",
+      "description": "The informed consent to be displayed before starting the tests.",
+      "minLength": 1
+    },
+    "faq": {
+      "type": "array",
+      "description": "A list of frequently asked questions.",
+      "items": {
+        "$ref": "#/$defs/faq"
+      },
+      "minItems": 1
     },
     "preTestForm": {
       "$ref": "#/$defs/form"
@@ -65,12 +94,147 @@
     }
   },
   "required": [
+    "icon",
     "title",
     "description",
+    "informedConsent",
     "groups"
   ],
   "additionalProperties": false,
   "$defs": {
+    "color": {
+      "type": "object",
+      "description": "An RGB color.",
+      "properties": {
+        "r": {
+          "type": "integer",
+          "description": "The red part of RGB.",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "g": {
+          "type": "integer",
+          "description": "The green part of RGB.",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "b": {
+          "type": "integer",
+          "description": "The blue part of RGB.",
+          "minimum": 0,
+          "maximum": 255
+        }
+      },
+      "required": [
+        "r",
+        "g",
+        "b"
+      ],
+      "additionalProperties": false
+    },
+    "faq": {
+      "type": "object",
+      "description": "A frequently asked question.",
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The question.",
+          "minItems": 1
+        },
+        "answer": {
+          "type": "string",
+          "description": "The answer.",
+          "minItems": 1
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ],
+      "additionalProperties": false
+    },
+    "form": {
+      "type": "object",
+      "description": "Structure of the form.",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "description": "List of questions.",
+          "items": {
+            "$ref": "#/$defs/form-question"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "questions"
+      ]
+    },
+    "form-option": {
+      "type": "object",
+      "description": "An option.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The options's text.",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/$defs/image"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "form-question": {
+      "type": "object",
+      "description": "A form question.",
+      "allOf": [
+        {
+          "properties": {
+            "category": {
+              "type": "string",
+              "description": "The category to which this question belongs to.",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string",
+              "description": "The question's text.",
+              "minLength": 1
+            },
+            "image": {
+              "$ref": "#/$defs/image"
+            }
+          },
+          "required": [
+            "category",
+            "text"
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/question-select-multiple"
+            },
+            {
+              "$ref": "#/$defs/question-select-one"
+            },
+            {
+              "$ref": "#/$defs/question-number"
+            },
+            {
+              "$ref": "#/$defs/question-slider"
+            },
+            {
+              "$ref": "#/$defs/question-text-short"
+            },
+            {
+              "$ref": "#/$defs/question-text-long"
+            }
+          ]
+        }
+      ]
+    },
     "group": {
       "type": "object",
       "description": "A test group.",
@@ -106,7 +270,7 @@
       "properties": {
         "src": {
           "type": "string",
-          "description": "Where the image is located.",
+          "description": "Filename of the image.",
           "format": "uri-reference",
           "minLength": 1
         },
@@ -121,29 +285,30 @@
       ],
       "additionalProperties": false
     },
-    "option": {
+    "information-card": {
       "type": "object",
-      "description": "An option.",
+      "description": "An information card.",
       "properties": {
-        "src": {
+        "title": {
           "type": "string",
-          "description": "Where the image is located.",
-          "format": "uri-reference",
+          "description": "The title of the card.",
           "minLength": 1
         },
-        "alt": {
+        "description": {
           "type": "string",
-          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)."
+          "description": "The description of the card.",
+          "minLength": 1
         },
-        "correct": {
-          "type": "boolean",
-          "description": "Whether it's the correct option or not.",
-          "default": false
+        "color": {
+          "$ref": "#/$defs/color"
+        },
+        "icon": {
+          "$ref": "#/$defs/image"
         }
       },
       "required": [
-        "src",
-        "alt"
+        "title",
+        "description"
       ],
       "additionalProperties": false
     },
@@ -233,12 +398,17 @@
     },
     "phase-question": {
       "type": "object",
-      "description": "A test question.",
+      "description": "A test question. Must have either text, image, or both.",
       "properties": {
         "randomize": {
           "type": "boolean",
           "description": "Whether to randomize the order of the options or not.",
           "default": false
+        },
+        "text": {
+          "type": "string",
+          "description": "The question's text.",
+          "minLength": 1
         },
         "image": {
           "$ref": "#/$defs/image"
@@ -247,15 +417,15 @@
           "type": "array",
           "description": "List of options.",
           "items": {
-            "$ref": "#/$defs/option"
+            "$ref": "#/$defs/test-option"
           },
           "minLength": 1
         }
       },
       "required": [
-        "image",
         "options"
       ],
+      "minProperties": 2,
       "additionalProperties": false
     },
     "question-select-multiple": {
@@ -271,20 +441,7 @@
           "type": "array",
           "description": "The list of options.",
           "items": {
-            "type": "object",
-            "description": "An option.",
-            "properties": {
-              "text": {
-                "type": "string",
-                "description": "The options's text.",
-                "minLength": 1
-              },
-              "image": {
-                "$ref": "#/$defs/image"
-              }
-            },
-            "minProperties": 1,
-            "additionalProperties": false
+            "$ref": "#/$defs/form-option"
           },
           "minItems": 2
         },
@@ -296,6 +453,11 @@
         "max": {
           "type": "integer",
           "description": "The maximum number of options to select."
+        },
+        "other": {
+          "type": "boolean",
+          "description": "Whether to add an 'Other' option at the end of the options list or not.",
+          "default": false
         }
       },
       "required": [
@@ -318,22 +480,14 @@
           "type": "array",
           "description": "The list of options.",
           "items": {
-            "type": "object",
-            "description": "An option.",
-            "properties": {
-              "text": {
-                "type": "string",
-                "description": "The options's text.",
-                "minLength": 1
-              },
-              "image": {
-                "$ref": "#/$defs/image"
-              }
-            },
-            "minProperties": 1,
-            "additionalProperties": false
+            "$ref": "#/$defs/form-option"
           },
           "minItems": 2
+        },
+        "other": {
+          "type": "boolean",
+          "description": "Whether to add an 'Other' option at the end of the options list or not.",
+          "default": false
         }
       },
       "required": [
@@ -398,6 +552,9 @@
           "type": "number",
           "description": "The increment interval for the slider.",
           "exclusiveMinimum": 0
+        },
+        "labels": {
+          "$ref": "#/$defs/range-labels"
         }
       },
       "required": [
@@ -469,65 +626,39 @@
         "maxLength"
       ]
     },
-    "form": {
+    "range-labels": {
       "type": "object",
-      "description": "Structure of the form.",
-      "properties": {
-        "questions": {
-          "type": "array",
-          "description": "List of questions.",
-          "items": {
-            "$ref": "#/$defs/form-question"
-          },
-          "minItems": 1
+      "description": "Labels for different points in a numeric range.",
+      "patternProperties": {
+        "^\\d+(\\.\\d+)?$": {
+          "type": "string",
+          "description": "The label for that number.",
+          "minLength": 1
         }
       },
-      "required": [
-        "questions"
-      ]
+      "minProperties": 2,
+      "additionalProperties": false
     },
-    "form-question": {
+    "test-option": {
       "type": "object",
-      "description": "A form question.",
-      "allOf": [
-        {
-          "properties": {
-            "text": {
-              "type": "string",
-              "description": "The question's text.",
-              "minLength": 1
-            },
-            "image": {
-              "$ref": "#/$defs/image"
-            }
-          },
-          "required": [
-            "text"
-          ]
+      "description": "An option. Must have either text, image, or both.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The options's text.",
+          "minLength": 1
         },
-        {
-          "oneOf": [
-            {
-              "$ref": "#/$defs/question-select-multiple"
-            },
-            {
-              "$ref": "#/$defs/question-select-one"
-            },
-            {
-              "$ref": "#/$defs/question-number"
-            },
-            {
-              "$ref": "#/$defs/question-slider"
-            },
-            {
-              "$ref": "#/$defs/question-text-short"
-            },
-            {
-              "$ref": "#/$defs/question-text-long"
-            }
-          ]
+        "image": {
+          "$ref": "#/$defs/image"
+        },
+        "correct": {
+          "type": "boolean",
+          "description": "Whether it's the correct option or not.",
+          "default": false
         }
-      ]
+      },
+      "minProperties": 1,
+      "additionalProperties": false
     }
   }
 }

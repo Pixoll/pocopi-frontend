@@ -1,11 +1,11 @@
-import { ReactNode, useState, useEffect } from "react";
-import { ThemeContext, Theme } from "./ThemeContext";
+import { ReactNode, useEffect, useState } from "react";
+import { Theme, ThemeContext } from "./ThemeContext";
 
-interface ThemeProviderProps {
+type ThemeProviderProps = {
   children: ReactNode;
-}
+};
 
-export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const getInitialTheme = (): Theme => {
     if (typeof window === "undefined") return "light"; // SSR safety
 
@@ -50,4 +50,4 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
       {children}
     </ThemeContext.Provider>
   );
-};
+}

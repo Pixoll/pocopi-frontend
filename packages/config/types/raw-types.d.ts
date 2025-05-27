@@ -1,19 +1,39 @@
 export type FlatRawConfig = {
+    icon: RawImage;
     title: string;
+    subtitle?: string;
     description: string;
+    informationCards?: RawInformationCard[];
+    informedConsent: string;
+    faq?: RawFaq[];
     preTestForm?: RawForm;
     postTestForm?: RawForm;
     groups: Record<string, FlatRawGroup>;
 };
 export type RawConfig = {
+    icon: RawImage;
     title: string;
+    subtitle?: string;
     description: string;
+    informationCards?: RawInformationCard[];
+    informedConsent: string;
+    faq?: RawFaq[];
     preTestForm?: RawForm;
     postTestForm?: RawForm;
     groups: Record<string, RawGroup>;
     protocols?: Record<string, RawProtocol>;
     phases?: Record<string, RawPhase>;
     questions?: Record<string, RawPhaseQuestion>;
+};
+export type RawInformationCard = {
+    title: string;
+    description: string;
+    color?: RawColor;
+    icon?: RawImage;
+};
+export type RawFaq = {
+    question: string;
+    answer: string;
 };
 export type RawForm = {
     questions: RawFormQuestion[];
@@ -27,6 +47,7 @@ export declare enum FormQuestionType {
     TEXT_LONG = "text-long"
 }
 export type RawFormQuestion = {
+    category: string;
     text: string;
     image?: RawImage;
 } & (RawFormQuestionSelectMultiple | RawFormQuestionSelectOne | RawFormQuestionNumber | RawFormQuestionSlider | RawFormQuestionTextShort | RawFormQuestionTextLong);
@@ -35,10 +56,12 @@ export type RawFormQuestionSelectMultiple = {
     options: RawFormOption[];
     min: number;
     max: number;
+    other?: boolean;
 };
 export type RawFormQuestionSelectOne = {
     type: FormQuestionType.SELECT_ONE;
     options: RawFormOption[];
+    other?: boolean;
 };
 export type RawFormQuestionNumber = {
     type: FormQuestionType.NUMBER;
@@ -52,6 +75,7 @@ export type RawFormQuestionSlider = {
     min: number;
     max: number;
     step: number;
+    labels?: Record<`${number}`, string>;
 };
 export type RawFormQuestionTextShort = {
     type: FormQuestionType.TEXT_SHORT;
@@ -99,13 +123,21 @@ export type RawPhase = {
 };
 export type RawPhaseQuestion = {
     randomize?: boolean;
-    image: RawImage;
-    options: RawOption[];
+    text?: string;
+    image?: RawImage;
+    options: RawTestOption[];
 };
-export type RawOption = RawImage & {
+export type RawTestOption = {
+    text?: string;
+    image?: RawImage;
     correct?: boolean;
 };
 export type RawImage = {
     src: string;
     alt: string;
+};
+export type RawColor = {
+    r: number;
+    g: number;
+    b: number;
 };

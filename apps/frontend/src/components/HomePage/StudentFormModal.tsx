@@ -1,52 +1,50 @@
-import { useState } from "react";
+// Modal para ingresar los datos del participante antes de iniciar el test
+
+import { useTheme } from "@/hooks/useTheme";
 import {
-  Button,
-  Form,
-  Modal,
-  FloatingLabel,
-  Row,
-  Col,
-  Alert,
-} from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUser,
-  faIdCard,
-  faEnvelope,
   faCakeCandles,
-  faShield,
+  faEnvelope,
+  faIdCard,
   faSave,
+  faShield,
+  faUser,
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
-import { useTheme } from "@/hooks/useTheme";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ChangeEvent, useState } from "react";
+import { Alert, Button, Col, FloatingLabel, Form, Modal, Row, } from "react-bootstrap";
 
-interface StudentData {
+// Datos del estudiante
+type StudentData = {
   name: string;
   id: string;
   email: string;
   age: string;
-}
+};
 
-interface StudentFormModalProps {
+// Props del modal
+type  StudentFormModalProps = {
   show: boolean;
   onHide: () => void;
   onSubmit: (data: StudentData) => void;
-}
+};
 
-interface InputWithIconProps {
+// Props para el input con ícono
+type InputWithIconProps = {
   icon: IconDefinition;
   label: string;
   name: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   required?: boolean;
   min?: string;
   max?: string;
   isDarkMode: boolean;
-}
+};
 
-const InputWithIcon = ({
+// Componente reutilizable para inputs con ícono
+function InputWithIcon({
   icon,
   label,
   type = "text",
@@ -57,59 +55,64 @@ const InputWithIcon = ({
   min,
   max,
   isDarkMode,
-}: InputWithIconProps) => (
-  <div className="position-relative mb-3">
-    <FloatingLabel
-      controlId={`form${name}`}
-      label={<span style={{ paddingLeft: "1.75rem" }}>{label}</span>}
-    >
-      <Form.Control
-        type={type}
-        placeholder={`Enter your ${name.toLowerCase()}`}
-        name={name}
-        value={value}
-        onChange={onChange}
-        required={required}
-        min={min}
-        max={max}
-        className={`${isDarkMode ? "bg-dark text-light border-secondary" : ""}`}
-        style={{ paddingLeft: "2.5rem" }}
-      />
-      <div
-        className="position-absolute"
-        style={{
-          left: "0.75rem",
-          top: "calc(50% - 0.15rem)",
-          transform: "translateY(-50%)",
-          zIndex: 4,
-          color: isDarkMode ? "#7984ff" : "#4361ee",
-          pointerEvents: "none",
-        }}
+}: InputWithIconProps) {
+  return (
+    <div className="position-relative mb-3">
+      <FloatingLabel
+        controlId={`form${name}`}
+        label={<span style={{ paddingLeft: "1.75rem" }}>{label}</span>}
       >
-        <FontAwesomeIcon icon={icon} />
-      </div>
-      <Form.Control.Feedback type="invalid">
-        Please enter{" "}
-        {name === "id"
-          ? "your identification number"
-          : name === "email"
-          ? "a valid email address"
-          : `a valid ${name.toLowerCase()}`}
-        .
-      </Form.Control.Feedback>
-    </FloatingLabel>
-  </div>
-);
+        <Form.Control
+          type={type}
+          placeholder={`Enter your ${name.toLowerCase()}`}
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={required}
+          min={min}
+          max={max}
+          className={`${isDarkMode ? "bg-dark text-light border-secondary" : ""}`}
+          style={{ paddingLeft: "2.5rem" }}
+        />
+        {/* Ícono a la izquierda del input */}
+        <div
+          className="position-absolute"
+          style={{
+            left: "0.75rem",
+            top: "calc(50% - 0.15rem)",
+            transform: "translateY(-50%)",
+            zIndex: 4,
+            color: isDarkMode ? "#7984ff" : "#4361ee",
+            pointerEvents: "none",
+          }}
+        >
+          <FontAwesomeIcon icon={icon}/>
+        </div>
+        <Form.Control.Feedback type="invalid">
+          Please enter{" "}
+          {name === "id"
+            ? "your identification number"
+            : name === "email"
+              ? "a valid email address"
+              : `a valid ${name.toLowerCase()}`}
+          .
+        </Form.Control.Feedback>
+      </FloatingLabel>
+    </div>
+  );
+}
 
-const StudentFormModal = ({
+// Modal principal para el formulario del estudiante
+export function StudentFormModal({
   show,
   onHide,
   onSubmit,
-}: StudentFormModalProps) => {
+}: StudentFormModalProps) {
   const [validated, setValidated] = useState(false);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
+  // Estado local para los datos del formulario
   const [formData, setFormData] = useState<StudentData>({
     name: "",
     id: "",
@@ -117,6 +120,7 @@ const StudentFormModal = ({
     age: "",
   });
 
+  // Maneja cambios en los inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -125,16 +129,15 @@ const StudentFormModal = ({
     }));
   };
 
+  // Maneja el submit del formulario
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidated(true);
       return;
     }
-
     setValidated(true);
     onSubmit(formData);
   };
@@ -150,9 +153,10 @@ const StudentFormModal = ({
         isDarkMode ? "bg-dark" : ""
       }`}
     >
+      {/* Header del modal */}
       <Modal.Header className="bg-primary border-0 text-white">
         <h5 className="modal-title d-flex align-items-center m-0 fw-bold">
-          <FontAwesomeIcon icon={faUser} className="me-2" />
+          <FontAwesomeIcon icon={faUser} className="me-2"/>
           Participant Information
         </h5>
         <Button
@@ -164,17 +168,18 @@ const StudentFormModal = ({
         </Button>
       </Modal.Header>
       <Modal.Body className={`p-4 ${isDarkMode ? "bg-dark text-light" : ""}`}>
+        {/* Alerta de confidencialidad */}
         <Alert
           variant={isDarkMode ? "primary" : "info"}
           className="d-flex align-items-center mb-4"
         >
-          <FontAwesomeIcon icon={faShield} className="me-3 fs-5" />
+          <FontAwesomeIcon icon={faShield} className="me-3 fs-5"/>
           <div>
             Your data will be treated confidentially and used solely for
             academic purposes.
           </div>
         </Alert>
-
+        {/* Formulario de datos */}
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <InputWithIcon
             icon={faUser}
@@ -185,7 +190,6 @@ const StudentFormModal = ({
             required
             isDarkMode={isDarkMode}
           />
-
           <Row className="g-3">
             <Col md={6}>
               <InputWithIcon
@@ -213,7 +217,6 @@ const StudentFormModal = ({
               />
             </Col>
           </Row>
-
           <InputWithIcon
             icon={faEnvelope}
             label="Email Address"
@@ -224,7 +227,6 @@ const StudentFormModal = ({
             required
             isDarkMode={isDarkMode}
           />
-
           <div className="d-flex justify-content-end gap-3 mt-4">
             <Button
               variant={isDarkMode ? "outline-light" : "outline-secondary"}
@@ -234,7 +236,7 @@ const StudentFormModal = ({
               Cancel
             </Button>
             <Button variant="primary" type="submit" className="px-4">
-              <FontAwesomeIcon icon={faSave} className="me-2" />
+              <FontAwesomeIcon icon={faSave} className="me-2"/>
               Save Information
             </Button>
           </div>
@@ -242,6 +244,4 @@ const StudentFormModal = ({
       </Modal.Body>
     </Modal>
   );
-};
-
-export default StudentFormModal;
+}

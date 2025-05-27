@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { Validator } from "jsonschema";
-import mime from "mime";
 import path from "path";
 import yaml from "yaml";
 import { Config } from "./config";
@@ -21,16 +20,32 @@ const ESM_SCRIPT_PATH = path.join(__dirname, "../esm/index.js");
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
 const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
+const FRONTEND_PUBLIC_PATH = path.join(__dirname, "../../../apps/frontend/public/images");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
-const IMAGE_NAME_TO_BASE64 = new Map(readdirSync(IMAGES_DIR).map(filename =>
-    [filename, getBase64Image(path.join(IMAGES_DIR, filename).replace(/\\/g, "/"))]
-));
+const IMAGE_NAMES = new Set(readdirSync(IMAGES_DIR));
+
+if (existsSync(FRONTEND_PUBLIC_PATH)) {
+    rmSync(FRONTEND_PUBLIC_PATH, {
+        recursive: true,
+        force: true,
+    });
+}
+
+mkdirSync(FRONTEND_PUBLIC_PATH, {
+    recursive: true,
+});
 
 export const config = getConfig();
 
 export * from "./config";
 export { FormQuestionType } from "./raw-types";
 
+/**
+ * Loads, validates, and processes the configuration from YAML file. Validates against JSON schema, flattens references,
+ * and exports for browser use.
+ *
+ * @returns Processed configuration object
+ */
 function getConfig(): Config {
     const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
     const jsonSchema = JSON.parse(readFileSync(CONFIG_JSON_SCHEMA_PATH, "utf-8"));
@@ -46,6 +61,12 @@ function getConfig(): Config {
     return new Config(config);
 }
 
+/**
+ * Exports the configuration for browser use by replacing ESM_SCRIPT_PATH such that it doesn't require filesystem
+ * access.
+ *
+ * @param config - The validated and flattened configuration
+ */
 function exportConfigForBrowser(config: FlatRawConfig): void {
     const configJson = JSON.stringify(config, null, 4);
 
@@ -61,6 +82,16 @@ function exportConfigForBrowser(config: FlatRawConfig): void {
     writeFileSync(ESM_SCRIPT_PATH, newScript, "utf-8");
 }
 
+/**
+ * Flattens the configuration by resolving all references to protocols, phases, and questions.
+ *
+ * This modifies the `config` object, and it does not create a new one. The returned object has the same pointer as the
+ * one passed in the arguments.
+ *
+ * @param config - The raw configuration with possible references
+ *
+ * @returns Flattened configuration with all references resolved
+ */
 function flattenConfig(config: RawConfig): FlatRawConfig {
     const allProtocols: RawProtocol[] = [];
     const allPhases: RawPhase[] = [];
@@ -142,6 +173,13 @@ function flattenConfig(config: RawConfig): FlatRawConfig {
     return config as unknown as FlatRawConfig;
 }
 
+/**
+ * Validates the flattened configuration. Checks group probabilities, validates forms, questions, and images.
+ *
+ * @param config - The flattened configuration to validate
+ *
+ * @returns The validated configuration
+ */
 function validateConfig(config: FlatRawConfig): FlatRawConfig {
     const probabilitySum = Object.values(config.groups).reduce((a, b) => a.add(b.probability), new Decimal(0));
     if (probabilitySum.lessThan(1)) {
@@ -149,6 +187,15 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
     }
 
     const usedImages = new Map<string, string>();
+
+    validateImage(config.icon, "icon", usedImages);
+
+    for (let i = 0; i < (config.informationCards ?? []).length; i++) {
+        const infoCard = config.informationCards![i]!;
+        if (infoCard.icon) {
+            validateImage(infoCard.icon, `informationCards[${i}].icon`, usedImages);
+        }
+    }
 
     if (config.preTestForm) {
         valideForm(config.preTestForm, "preTestForm", usedImages);
@@ -158,14 +205,26 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
     }
 
     for (const { yamlPath, question } of createPhaseQuestionsIterator(config)) {
-        validateImage(question.image, `${yamlPath}.image`, usedImages);
+        if (!question.text && !question.image) {
+            throw new Error(`Question ${yamlPath} must have either text, image, or both.`);
+        }
+
+        if (question.image) {
+            validateImage(question.image, `${yamlPath}.image`, usedImages);
+        }
 
         let correctOptionIndex = -1;
 
         for (let k = 0; k < question.options.length; k++) {
             const option = question.options[k]!;
 
-            validateImage(option, `${yamlPath}.options[${k}]`, usedImages);
+            if (!option.text && !option.image) {
+                throw new Error(`Option ${yamlPath}.options[${k}] must have either text, image, or both.`);
+            }
+
+            if (option.image) {
+                validateImage(option.image, `${yamlPath}.options[${k}].image`, usedImages);
+            }
 
             if (!option.correct) {
                 continue;
@@ -186,6 +245,13 @@ function validateConfig(config: FlatRawConfig): FlatRawConfig {
     return config;
 }
 
+/**
+ * Validates a form including all its questions and images.
+ *
+ * @param form - The form to validate
+ * @param key - The key path for error messages
+ * @param usedImages - Map of image sources to their usage paths
+ */
 function valideForm(form: RawForm, key: string, usedImages: Map<string, string>): void {
     const questions = form.questions ?? [];
 
@@ -201,6 +267,13 @@ function valideForm(form: RawForm, key: string, usedImages: Map<string, string>)
     }
 }
 
+/**
+ * Validates a form question based on its type. Different validation rules apply to different question types.
+ *
+ * @param question - The question to validate
+ * @param yamlPath - The path to the question for error messages
+ * @param usedImages - Map of image sources to their usage paths
+ */
 function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedImages: Map<string, string>): void {
     switch (question.type) {
         case FormQuestionType.SELECT_ONE:
@@ -213,17 +286,40 @@ function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedI
             }
             break;
         }
-        case FormQuestionType.NUMBER:
+        case FormQuestionType.NUMBER: {
+            if (question.min >= question.max) {
+                throw new Error(`min=${question.min} should be less than max=${question.max} in ${yamlPath}`);
+            }
+            break;
+        }
         case FormQuestionType.SLIDER: {
             if (question.min >= question.max) {
-                throw new Error(`'min' should be less than 'max' in ${yamlPath}`);
+                throw new Error(`min=${question.min} should be less than max=${question.max} in ${yamlPath}`);
             }
+
+            for (const label of Object.keys(question.labels ?? {})) {
+                const n = +label;
+                if (n < question.min || n > question.max) {
+                    throw new Error(
+                        `label=${label} should be between min=${question.min} and max=${question.max} `
+                        + `(inclusive) in ${yamlPath}.labels`
+                    );
+                }
+
+                if (new Decimal(label).modulo(question.step).greaterThan(0)) {
+                    throw new Error(`label=${label} must be divisible by step=${question.step} in ${yamlPath}`);
+                }
+            }
+
             break;
         }
         case FormQuestionType.TEXT_SHORT:
         case FormQuestionType.TEXT_LONG: {
             if (question.minLength >= question.maxLength) {
-                throw new Error(`'minLength' should be less than 'maxLength' in ${yamlPath}`);
+                throw new Error(
+                    `minLength=${question.minLength} should be less than maxLength=${question.maxLength} `
+                    + `in ${yamlPath}`
+                );
             }
             break;
         }
@@ -233,6 +329,14 @@ function validateFormQuestion(question: RawFormQuestion, yamlPath: string, usedI
     }
 }
 
+/**
+ * Validates an image reference and converts its src to the image data in base64 URL representation. Checks if the image
+ * exists and warns about duplicate usage.
+ *
+ * @param image - The image to validate
+ * @param yamlPath - The path to the image for error messages
+ * @param usedImages - Map of image sources to their usage paths
+ */
 function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string, string>): void {
     const { src } = image;
     const usedImageAt = usedImages.get(src);
@@ -241,15 +345,23 @@ function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string
         console.warn(`Image '${src}' already used at ${usedImageAt}.`);
     }
 
-    const imagePath = IMAGE_NAME_TO_BASE64.get(src);
-    if (!imagePath) {
+    if (!IMAGE_NAMES.has(src)) {
         throw new Error(`Image '${src}' not found in images directory.`);
     }
 
-    image.src = imagePath;
+    copyFileSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src));
+
+    image.src = `images/${src}`;
     usedImages.set(src, yamlPath);
 }
 
+/**
+ * Creates an iterator that yields all questions in all phases across all groups.
+ *
+ * @param config - The flattened configuration
+ *
+ * @yields Object containing the question and its YAML path
+ */
 function* createPhaseQuestionsIterator(config: FlatRawConfig): QuestionsIterator {
     for (const [label, { protocol }] of Object.entries(config.groups)) {
         for (let i = 0; i < protocol.phases.length; i++) {
@@ -263,10 +375,6 @@ function* createPhaseQuestionsIterator(config: FlatRawConfig): QuestionsIterator
             }
         }
     }
-}
-
-function getBase64Image(filePath: string): string {
-    return `data:${mime.getType(filePath)};base64,${readFileSync(filePath, "base64")}`;
 }
 
 type QuestionsIterator = Generator<{
