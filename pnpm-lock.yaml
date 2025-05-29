@@ -131,6 +131,9 @@ importers:
       bootstrap:
         specifier: ^5.3.6
         version: 5.3.6(@popperjs/core@2.11.8)
+      mime:
+        specifier: ^4.0.7
+        version: 4.0.7
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -192,9 +195,6 @@ importers:
       jsonschema:
         specifier: ^1.5.0
         version: 1.5.0
-      mime:
-        specifier: ^4.0.7
-        version: 4.0.7
       yaml:
         specifier: ^2.7.1
         version: 2.7.1
