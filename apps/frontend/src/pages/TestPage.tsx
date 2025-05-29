@@ -1,6 +1,3 @@
-// Página del test de modularizada y comentada
-// Usa hooks y componentes presentacionales para separar lógica y UI
-
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
 import { TestOptions } from "@/components/TestPage/TestOptions";
@@ -9,7 +6,6 @@ import { useTheme } from "@/hooks/useTheme";
 import { Group } from "@pocopi/config";
 import { Col, Container, Row } from "react-bootstrap";
 
-// Props del componente principal
 type TestPageProps = {
   group: Group;
   goToNextPage: () => void;
@@ -74,9 +70,9 @@ export function TestPage({
         progressPercentage={progressPercentage}
       />
 
-      {/* Contenido principal */}
+      {/* main content */}
       <Container className="py-4 flex-grow-1 d-flex flex-column justify-content-center">
-        {/* Imagen de la pregunta */}
+        {/* question */}
         <Row className="justify-content-center mb-3">
           <Col
             md={10}
@@ -99,7 +95,7 @@ export function TestPage({
           </Col>
         </Row>
 
-        {/* Opciones de respuesta */}
+        {/* options */}
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
             <TestOptions
@@ -113,7 +109,7 @@ export function TestPage({
         </Row>
       </Container>
 
-      {/* Navegación inferior */}
+      {/* bottom nav bar */}
       <TestPageNavigation
         onPreviousPhase={goToPreviousPhase}
         onNextPhase={() => goToNextPhase(goToNextPage)}

@@ -1,6 +1,3 @@
-// Hook personalizado para manejar la lógica del test
-// Separa la lógica de navegación, selección y analítica del componente principal
-
 import { StudentData } from "@/types/student";
 import { TestAnalytics, saveResultsToStorage, saveStudentDataToStorage, } from "@/utils/TestAnalytics.ts";
 import { Group, Image, TestOption } from "@pocopi/config";
@@ -40,7 +37,6 @@ export function useTest(
   const [selectedOptionId, setSelectedOptionId] = useState("");
   const analyticsRef = useRef<TestAnalytics | null>(null);
 
-  // Inicializa la analítica y el primer tracking al montar
   useEffect(() => {
     analyticsRef.current = new TestAnalytics(group.label);
     if (studentData?.id) {
@@ -121,7 +117,6 @@ export function useTest(
       return;
     }
 
-    // Completa el test
     if (analyticsRef.current) {
       const results = analyticsRef.current.completeTest();
       saveResultsToStorage(results);

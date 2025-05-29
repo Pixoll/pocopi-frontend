@@ -32,7 +32,6 @@ export function TestPageNavigation({
   return (
     <div className={`py-3 px-4 border-top ${isDarkMode ? "bg-dark" : "bg-light"}`}>
       <Col className="d-flex justify-content-between position-relative">
-        {/* Botón fase anterior */}
         <div>
           <Button
             variant="outline-secondary"
@@ -45,7 +44,6 @@ export function TestPageNavigation({
           </Button>
         </div>
 
-        {/* Botones anterior/siguiente pregunta */}
         <div className={!hidePreviousPhase || !hideNextPhase ? "position-absolute translate-middle-x start-50" : ""}>
           <Button
             variant="outline-primary"
@@ -68,7 +66,6 @@ export function TestPageNavigation({
           </Button>
         </div>
 
-        {/* Botón siguiente fase */}
         <div>
           <Button
             variant="outline-secondary"
