@@ -233,7 +233,7 @@ async function sendTimelogsToBackend(results: TestResults): Promise<void> {
     for (const question of phase.questions) {
       const timelog = {
         userId: results.participantId,
-        phaseId: phase.phaseId,
+        phaseId: phase.phaseIndex+1,
         questionId: question.questionIndex + 1,
         startTimestamp: question.startTime,
         endTimestamp: question.endTime ?? question.startTime,
@@ -241,9 +241,9 @@ async function sendTimelogsToBackend(results: TestResults): Promise<void> {
         skipped: question.options.length === 0,
         totalOptionChanges: question.options.length,
         totalOptionHovers: 0,
-        events: question.options.map(opt => ({
+        events: question.options.map((opt, index) => ({
           type: "select",
-          optionId: parseInt(opt.optionIndex, 10) + 1,
+          optionId: index + 1,
           timestamp: opt.startTime,
         })),
       };
