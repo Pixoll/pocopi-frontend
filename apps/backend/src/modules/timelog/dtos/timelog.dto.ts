@@ -1,4 +1,5 @@
-import { Min, MinLength } from "class-validator";
+import { TransformToInstance } from "@decorators";
+import { IsArray, IsBoolean, Min, MinLength, ValidateNested } from "class-validator";
 import { TimelogEventDto } from "./timelog-event.dto";
 
 export class TimelogDto {
@@ -17,7 +18,10 @@ export class TimelogDto {
     @Min(0)
     public declare endTimestamp: number;
 
+    @IsBoolean()
     public declare correct: boolean;
+
+    @IsBoolean()
     public declare skipped: boolean;
 
     @Min(0)
@@ -26,5 +30,8 @@ export class TimelogDto {
     @Min(0)
     public declare totalOptionHovers: number;
 
+    @ValidateNested()
+    @TransformToInstance(TimelogEventDto, {}, { each: true })
+    @IsArray()
     public declare events: TimelogEventDto[];
 }
