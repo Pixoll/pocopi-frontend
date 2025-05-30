@@ -1,4 +1,4 @@
-// Clase y utilidades para el tracking de analítica del test de matrices de Raven
+// Clase y utilidades para el tracking de analítica del test
 
 // Tipos para las interacciones y resultados
 export type InteractionType =
@@ -38,10 +38,10 @@ export interface TestResults {
 }
 
 /**
- * Clase principal para el tracking de analítica del test de Raven.
+ * Clase principal para el tracking de analítica del test.
  * Permite registrar el inicio y fin de preguntas, cambios de opción, y resultados.
  */
-export class RavenAnalytics {
+export class TestAnalytics {
   private results: TestResults;
   private currentPhase: number = 0;
   private currentQuestion: number = 0;
@@ -168,7 +168,7 @@ export class RavenAnalytics {
 // Función utilitaria para guardar resultados en localStorage
 export function saveResultsToStorage(results: TestResults): void {
   try {
-    const key = `raven_test_${results.participantId}`;
+    const key = `test_${results.participantId}`;
     localStorage.setItem(key, JSON.stringify(results));
   } catch (error) {
     console.error("Error saving results to localStorage:", error);

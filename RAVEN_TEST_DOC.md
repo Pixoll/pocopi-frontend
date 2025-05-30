@@ -11,7 +11,7 @@ El Test de Matrices Progresivas de Raven es una prueba psicométrica ampliamente
 1. **Pantalla de inicio (HomePage):**
    - El usuario ve una introducción al test y debe aceptar el consentimiento informado.
    - Se solicita información básica del participante (nombre, identificación, email, edad).
-2. **Test de Raven (RavenMatrixPage):**
+2. **Test de Raven (TestPage):**
    - El test está dividido en fases y cada fase contiene varias preguntas.
    - En cada pregunta, el usuario ve una imagen con una matriz incompleta y varias opciones de respuesta (imágenes).
    - El usuario selecciona la opción que considera correcta y navega entre preguntas y fases.
