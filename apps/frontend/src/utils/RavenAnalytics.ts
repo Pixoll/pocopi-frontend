@@ -175,7 +175,7 @@ export class RavenAnalytics {
     }
   }
   
-  completeTest(): TestResults {
+  async completeTest(): Promise<TestResults> {
     const now = Date.now();
     this.results.endTime = now;
     this.results.totalTime = now - this.results.startTime;
@@ -185,9 +185,11 @@ export class RavenAnalytics {
     console.log("==== RESULTADOS COMPLETOS DEL TEST ====");
     console.log(JSON.stringify(clonedResults, null, 2));
     
+    await sendTimelogsToBackend(clonedResults);
+    
     return clonedResults;
   }
-
+  
   
   setParticipantId(id: string): void {
     if (id) {
@@ -204,6 +206,7 @@ export class RavenAnalytics {
     const question = phase.questions.find(q => q.questionIndex === this.currentQuestion);
     return question || null;
   }
+  
 }
 
 // Función utilitaria para guardar resultados en localStorage
@@ -223,5 +226,45 @@ export function saveStudentDataToStorage( participantId: string, data: unknown):
     localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
     console.error("Error saving student data to localStorage:", error);
+  }
+}
+
+
+async function sendTimelogsToBackend(results: TestResults): Promise<void> {
+  const allTimelogs = [];
+  
+  for (const phase of results.phases) {
+    for (const question of phase.questions) {
+      const timelog = {
+        userId: results.participantId,
+        phaseId: phase.phaseId,
+        questionId: question.questionIndex + 1,
+        startTimestamp: question.startTime,
+        endTimestamp: question.endTime ?? question.startTime,
+        correct: question.options.some(opt => opt.isCorrect),
+        skipped: question.options.length === 0,
+        totalOptionChanges: question.options.length,
+        totalOptionHovers: 0,
+        events: question.options.map(opt => ({
+          type: "select",
+          optionId: parseInt(opt.optionIndex, 10) + 1,
+          timestamp: opt.startTime,
+        })),
+      };
+      
+      allTimelogs.push(timelog);
+    }
+  }
+  
+  for (const log of allTimelogs) {
+    try {
+      await fetch("http://localhost:3000/api/timelog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(log),
+      });
+    } catch (error) {
+      console.error("Error enviando timelog al backend:", error);
+    }
   }
 }

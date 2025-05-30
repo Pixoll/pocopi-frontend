@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect } from "react";
 import {
   RavenAnalytics,
-  saveResultsToStorage,
   saveStudentDataToStorage,
 } from "@/utils/RavenAnalytics";
 import { Group } from "@pocopi/config";
@@ -95,8 +94,7 @@ export function useRavenMatrixTest(
       return;
     }
     if (analyticsRef.current) {
-      const results = analyticsRef.current.completeTest();
-      saveResultsToStorage(results);
+       analyticsRef.current.completeTest();
     }
     onFinish();
   };
