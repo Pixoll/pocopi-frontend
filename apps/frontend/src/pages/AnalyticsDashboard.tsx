@@ -1,4 +1,5 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { config } from "@pocopi/config";
 import { useState, useEffect } from "react";
 import {
   Container,
@@ -24,7 +25,7 @@ import {
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "@/hooks/useTheme";
-import { TestResults } from "@/utils/RavenAnalytics";
+import { TestResults } from "@/utils/TestAnalytics.ts";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 type ParticipantSummary = {
@@ -91,7 +92,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       // Then find all test results
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith("raven_test_")) {
+        if (key && key.startsWith("test_")) {
           const data = localStorage.getItem(key);
           if (data) {
             try {
@@ -160,7 +161,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       const a = document.createElement("a");
       a.setAttribute("hidden", "");
       a.setAttribute("href", url);
-      a.setAttribute("download", "raven_test_results.csv");
+      a.setAttribute("download", "test_results.csv");
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -206,7 +207,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         const key = localStorage.key(i);
         if (
           key &&
-          (key.startsWith("raven_test_") || key.startsWith("student_data_"))
+          (key.startsWith("test_") || key.startsWith("student_data_"))
         ) {
           localStorage.removeItem(key);
         }
@@ -246,7 +247,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                 icon={faChartLine}
                 className="me-2 text-primary"
               />
-              Raven's Matrices Test Analytics
+              {config.title} Analytics
             </h2>
             <Button
               variant={isDarkMode ? "outline-light" : "outline-dark"}

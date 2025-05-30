@@ -1,4 +1,4 @@
-// Punto de entrada principal para la aplicación frontend de la Prueba de Raven.
+// Punto de entrada principal para la aplicación frontend del test.
 // Gestiona la navegación global, el theming y el estado de nivel superior.
 
 import { CompletionModal } from "@/pages/CompletionModal";
@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { useTheme } from "@/hooks/useTheme";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { HomePage } from "@/pages/HomePage";
-import { RavenMatrixPage } from "@/pages/RavenMatrixPage.tsx";
+import { TestPage } from "@/pages/TestPage";
 import { config } from "@pocopi/config";
 import mime from "mime";
 import { JSX, ReactNode, useEffect, useState } from "react";
@@ -16,7 +16,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // Permite navegación type-safe y fácil extensión
 enum Page {
   HOME,
-  RAVEN_MATRIX,
+  TEST,
   END,
   DASHBOARD,
 }
@@ -76,7 +76,7 @@ export function App(): JSX.Element {
    */
   const startTest = (data: StudentData) => {
     setStudentData(data);
-    setPage(Page.RAVEN_MATRIX);
+    setPage(Page.TEST);
   };
 
   /**
@@ -102,10 +102,10 @@ export function App(): JSX.Element {
       case Page.HOME:
         // Página de inicio: recoge datos del estudiante y permite acceso al dashboard
         return <HomePage onStartTest={startTest} onDashboard={goToDashboard}/>;
-      case Page.RAVEN_MATRIX:
-        // Página de la prueba Raven: lógica principal y UI de la prueba
+      case Page.TEST:
+        // Página del test: lógica principal y UI de la prueba
         return (
-          <RavenMatrixPage
+          <TestPage
             group={group}
             goToNextPage={() => setPage(Page.END)}
             studentData={studentData}

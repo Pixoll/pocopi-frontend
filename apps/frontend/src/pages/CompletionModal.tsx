@@ -12,6 +12,7 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
 import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
 
 // Datos del estudiante
@@ -143,8 +144,7 @@ export function CompletionModal({
                 )}
 
                 <p className="lead">
-                  You have successfully completed the Raven's Progressive
-                  Matrices Test.
+                  You have successfully completed the {config.title}.
                 </p>
               </div>
 

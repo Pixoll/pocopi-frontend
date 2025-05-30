@@ -1,4 +1,9 @@
+<<<<<<<< HEAD:apps/frontend/src/styles/RavenMatrix/RavenMatrixOptions.module.css
 .ravenOptionsContainer {
+========
+.testOptionsContainer {
+  align-items: center;
+>>>>>>>> main:apps/frontend/src/styles/TestOptions.module.css
   display: grid;
   grid-template-rows: repeat(2, 1fr);
   justify-items: center;

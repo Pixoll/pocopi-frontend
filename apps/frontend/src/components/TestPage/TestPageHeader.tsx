@@ -1,10 +1,8 @@
-// Header con barra de progreso y estado de la fase/pregunta
-
-import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styles from "@/styles/TestPageHeader.module.css";
+import { config } from "@pocopi/config";
 import { Col, ProgressBar, Row } from "react-bootstrap";
 
-type RavenMatrixHeaderProps = {
+type TestPageHeaderProps = {
   isDarkMode: boolean;
   phase: number;
   phasesCount: number;
@@ -13,14 +11,14 @@ type RavenMatrixHeaderProps = {
   progressPercentage: number;
 };
 
-export function RavenMatrixHeader({
+export function TestPageHeader({
   isDarkMode,
   phase,
   phasesCount,
   question,
   questionsCount,
   progressPercentage,
-}: RavenMatrixHeaderProps) {
+}: TestPageHeaderProps) {
   return (
     <div
       className={`py-3 px-4 ${isDarkMode ? "bg-dark" : "bg-light"} border-bottom`}
@@ -28,8 +26,8 @@ export function RavenMatrixHeader({
       <Row className="align-items-center gx-4">
         <Col>
           <h4 className="m-0 d-flex align-items-center">
-            <FontAwesomeIcon icon={faLayerGroup} className="me-2 text-primary"/>
-            <span>Raven's Matrices Test</span>
+            <img className={styles.icon} src={config.icon.src} alt={config.icon.alt}/>
+            <span>{config.title}</span>
           </h4>
         </Col>
         <Col md={6}>

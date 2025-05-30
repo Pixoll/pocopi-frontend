@@ -1,4 +1,4 @@
-// Página principal del test de matrices progresivas de Raven
+// Página principal del test
 
 import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
