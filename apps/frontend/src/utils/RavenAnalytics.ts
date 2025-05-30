@@ -14,7 +14,7 @@ export interface QuestionMetrics {
 
 export interface PhaseMetrics {
   phaseIndex: number;
-  sessionId: string;      // <-- agregado para identificar sesión única de fase
+  phaseId: string;
   startTime: number;
   endTime?: number;
   questions: QuestionMetrics[];
@@ -36,28 +36,6 @@ export interface TestResults {
   };
 }
 
-export function printPhaseMetrics(phase: PhaseMetrics): void {
-  console.log(`--- Phase ${phase.phaseIndex} ---`);
-  console.log(`Start Time: ${new Date(phase.startTime).toLocaleString()}`);
-  console.log(`End Time: ${phase.endTime ? new Date(phase.endTime).toLocaleString() : 'Still running'}`);
-  console.log(`Questions:`);
-  
-  phase.questions.forEach((question, qIndex) => {
-    console.log(`  [Q${qIndex}] Question Index: ${question.questionIndex}`);
-    console.log(`    Start Time: ${new Date(question.startTime).toLocaleString()}`);
-    console.log(`    End Time: ${question.endTime ? new Date(question.endTime).toLocaleString() : 'Still running'}`);
-    console.log(`    Options:`);
-    
-    question.options.forEach((option, oIndex) => {
-      console.log(`      [O${oIndex}] Option Index: ${option.optionIndex}`);
-      console.log(`        Is Correct: ${option.isCorrect}`);
-      console.log(`        Start Time: ${new Date(option.startTime).toLocaleString()}`);
-      console.log(`        End Time: ${option.endTime ? new Date(option.endTime).toLocaleString() : 'Still active'}`);
-    });
-  });
-  
-  console.log(`----------------------------`);
-}
 
 
 export class RavenAnalytics {
@@ -85,13 +63,15 @@ export class RavenAnalytics {
   
   startPhase(phaseIndex: number): void {
     const now = Date.now();
-    const sessionId = `phase_${phaseIndex}_${now}`; // << sesión única
+    const sessionId = `phase_${phaseIndex}_${now}`;
     this.currentPhase = phaseIndex;
     this.currentPhaseSessionId = sessionId;
     
+    console.log(`\nIniciando fase: ${phaseIndex}\nID: ${this.currentPhaseSessionId}\nInicio: ${now}`);
+    
     const newPhase: PhaseMetrics = {
       phaseIndex,
-      sessionId,
+      phaseId: sessionId,
       startTime: now,
       questions: [],
     };
@@ -101,12 +81,19 @@ export class RavenAnalytics {
   
   completePhase(phaseIndex: number): void {
     const now = Date.now();
-    const phase = this.results.phases.find(
-      p => p.phaseIndex === phaseIndex && p.sessionId === this.currentPhaseSessionId
-    );
+    const phase = this.results.phases.find(p => {
+      return p.phaseIndex === phaseIndex && p.phaseId === this.currentPhaseSessionId;
+    });
     if (phase && !phase.endTime) {
       phase.endTime = now;
-      printPhaseMetrics(phase);
+      const questionsVisited = phase.questions.length;
+      console.log(
+        `Terminando fase: ${phaseIndex}\n` +
+        `ID: ${this.currentPhaseSessionId}\n` +
+        `Fin: ${now}\n` +
+        `Preguntas visitadas: ${questionsVisited}\n`
+      );
+      
     }
   }
   
@@ -114,10 +101,11 @@ export class RavenAnalytics {
     const now = Date.now();
     this.currentPhase = phaseIndex;
     this.currentQuestion = questionIndex;
+    console.log(`Pregunta N_: ${questionIndex}, Inicio: ${now}`);
     
-    const phase = this.results.phases.find(
-      p => p.phaseIndex === phaseIndex && p.sessionId === this.currentPhaseSessionId
-    );
+    const phase = this.results.phases.find(p => {
+      return p.phaseIndex === phaseIndex && p.phaseId === this.currentPhaseSessionId
+    });
     
     if (!phase) {
       this.startPhase(phaseIndex);
@@ -150,6 +138,7 @@ export class RavenAnalytics {
     if (lastOption && !lastOption.endTime) {
       lastOption.endTime = now;
     }
+    console.log(`Finalizando Pregunta N_: ${this.currentQuestion}, Fin: ${now}`);
   }
   
   recordOptionSelection(optionIndex: string, isCorrect: boolean): void {
@@ -167,6 +156,10 @@ export class RavenAnalytics {
       isCorrect,
       startTime: now,
     });
+    console.log(
+      `Se seleccionó la respuesta: ${optionIndex}. ` +
+      (isCorrect ? "¡Es correcta!" : "No es correcta.")
+    );
   }
   
   recordOptionDeselection(): void {
@@ -186,8 +179,15 @@ export class RavenAnalytics {
     const now = Date.now();
     this.results.endTime = now;
     this.results.totalTime = now - this.results.startTime;
-    return structuredClone(this.results);
+    
+    const clonedResults = structuredClone(this.results);
+    
+    console.log("==== RESULTADOS COMPLETOS DEL TEST ====");
+    console.log(JSON.stringify(clonedResults, null, 2));
+    
+    return clonedResults;
   }
+
   
   setParticipantId(id: string): void {
     if (id) {
@@ -197,7 +197,7 @@ export class RavenAnalytics {
   
   private getCurrentQuestion(): QuestionMetrics | null {
     const phase = this.results.phases.find(
-      p => p.phaseIndex === this.currentPhase && p.sessionId === this.currentPhaseSessionId
+      p => p.phaseIndex === this.currentPhase && p.phaseId === this.currentPhaseSessionId
     );
     if (!phase) return null;
     
@@ -217,10 +217,7 @@ export function saveResultsToStorage(results: TestResults): void {
 }
 
 // Función utilitaria para guardar datos del estudiante en localStorage
-export function saveStudentDataToStorage(
-  participantId: string,
-  data: unknown
-): void {
+export function saveStudentDataToStorage( participantId: string, data: unknown): void {
   try {
     const key = `student_data_${participantId}`;
     localStorage.setItem(key, JSON.stringify(data));
