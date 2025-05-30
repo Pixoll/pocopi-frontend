@@ -13,14 +13,15 @@ type Test = {
   selectedOptionId: string;
   questionText?: string;
   questionImage?: Image;
-  options: Option[];
+  options: readonly Option[];
   optionsColumns: number;
   progressPercentage: number;
   totalPhaseQuestions: number;
+  phasesCount: number;
   allowPreviousPhase: boolean;
-  allowSkipPhase: boolean;
+  isNextPhaseHidden: boolean;
   allowPreviousQuestion: boolean;
-  allowSkipQuestion: boolean;
+  isNextQuestionDisabled: boolean;
   goToPreviousPhase: () => void;
   goToNextPhase: (onFinish: () => void) => void;
   goToPreviousQuestion: () => void;
@@ -53,6 +54,14 @@ export function useTest(
   const { phases, allowPreviousPhase, allowSkipPhase } = group.protocol;
   const { questions, allowPreviousQuestion, allowSkipQuestion } = phases[phaseIndex];
   const { text: questionText, image: questionImage, options: tempOptions } = questions[questionIndex];
+
+  const phasesCount = group.protocol.phases.length;
+
+  const isNextPhaseHidden = !allowSkipPhase;
+
+  const isNextQuestionDisabled = allowSkipQuestion
+    ? false
+    : selectedOptionId === "";
 
   const totalPhaseQuestions = questions.length;
 
@@ -90,16 +99,19 @@ export function useTest(
     }
   };
 
-  const goToPreviousPhase = () => {
+  // parameter is meant to be private inside this hook, do not add signature to return value type
+  const goToPreviousPhase = (goToLastQuestion: unknown = false) => {
     if (!allowPreviousPhase || phaseIndex <= 0) {
       return;
     }
 
+    const newQuestionIndex = goToLastQuestion === true ? phases[phaseIndex - 1].questions.length - 1 : 0;
+
     completeCurrentQuestion();
-    setSelectedOptionId("");
-    setQuestionIndex(0);
     setPhaseIndex(phaseIndex - 1);
-    analyticsRef.current?.startQuestion(phaseIndex - 1, 0);
+    setQuestionIndex(newQuestionIndex);
+    setSelectedOptionId("");
+    analyticsRef.current?.startQuestion(phaseIndex - 1, newQuestionIndex);
   };
 
   const goToNextPhase = (onFinish: () => void) => {
@@ -110,9 +122,9 @@ export function useTest(
     completeCurrentQuestion();
 
     if (phaseIndex < phases.length - 1) {
-      setSelectedOptionId("");
-      setQuestionIndex(0);
       setPhaseIndex(phaseIndex + 1);
+      setQuestionIndex(0);
+      setSelectedOptionId("");
       analyticsRef.current?.startQuestion(phaseIndex + 1, 0);
       return;
     }
@@ -133,12 +145,12 @@ export function useTest(
     completeCurrentQuestion();
 
     if (questionIndex <= 0) {
-      goToPreviousPhase();
+      goToPreviousPhase(true);
       return;
     }
 
-    setSelectedOptionId("");
     setQuestionIndex(questionIndex - 1);
+    setSelectedOptionId("");
     analyticsRef.current?.startQuestion(phaseIndex, questionIndex - 1);
   };
 
@@ -150,8 +162,8 @@ export function useTest(
     completeCurrentQuestion();
 
     if (questionIndex < questions.length - 1) {
-      setSelectedOptionId("");
       setQuestionIndex(questionIndex + 1);
+      setSelectedOptionId("");
       analyticsRef.current?.startQuestion(phaseIndex, questionIndex + 1);
       return;
     }
@@ -177,10 +189,11 @@ export function useTest(
     optionsColumns,
     progressPercentage,
     totalPhaseQuestions,
+    phasesCount,
     allowPreviousPhase,
-    allowSkipPhase,
+    isNextPhaseHidden,
     allowPreviousQuestion,
-    allowSkipQuestion,
+    isNextQuestionDisabled,
     goToPreviousPhase,
     goToNextPhase,
     goToPreviousQuestion,

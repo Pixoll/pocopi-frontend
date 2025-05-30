@@ -2,7 +2,7 @@ import { Option } from "@/hooks/useTest";
 import styles from "@/styles/TestOptions.module.css";
 
 type TestOptionsProps = {
-  options: Option[];
+  options: readonly Option[];
   selected: string;
   onOptionClick: (id: string) => void;
   optionsColumns: number;

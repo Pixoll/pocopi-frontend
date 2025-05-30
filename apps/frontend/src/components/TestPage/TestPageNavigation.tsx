@@ -9,10 +9,11 @@ type TestPageNavigationProps = {
   onNextQuestion: () => void;
   disablePreviousPhase: boolean;
   disablePreviousQuestion: boolean;
-  hideNextPhase: boolean;
   disableNextQuestion: boolean;
+  disableNextPhase: boolean;
   hidePreviousPhase: boolean;
   hidePreviousQuestion: boolean;
+  hideNextPhase: boolean;
   isDarkMode: boolean;
 };
 
@@ -23,10 +24,11 @@ export function TestPageNavigation({
   onNextQuestion,
   disablePreviousPhase,
   disablePreviousQuestion,
-  hideNextPhase,
   disableNextQuestion,
+  disableNextPhase,
   hidePreviousPhase,
   hidePreviousQuestion,
+  hideNextPhase,
   isDarkMode,
 }: TestPageNavigationProps) {
   return (
@@ -70,6 +72,7 @@ export function TestPageNavigation({
           <Button
             variant="outline-secondary"
             onClick={onNextPhase}
+            disabled={disableNextPhase}
             hidden={hideNextPhase}
           >
             Next Phase

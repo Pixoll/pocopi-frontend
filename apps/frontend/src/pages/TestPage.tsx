@@ -35,26 +35,17 @@ export function TestPage({
     optionsColumns,
     progressPercentage,
     totalPhaseQuestions,
+    phasesCount,
     allowPreviousPhase,
-    allowSkipPhase,
+    isNextPhaseHidden,
     allowPreviousQuestion,
-    allowSkipQuestion,
+    isNextQuestionDisabled,
     goToPreviousPhase,
     goToNextPhase,
     goToPreviousQuestion,
     goToNextQuestion,
     handleOptionClick,
   } = useTest(group, studentData ?? null);
-
-  const phasesCount = group.protocol.phases.length;
-
-  const isNextPhaseHidden = allowSkipPhase
-    ? phaseIndex >= phasesCount - 1
-    : true;
-
-  const isNextQuestionDisabled = allowSkipQuestion
-    ? false
-    : selectedOptionId === "";
 
   return (
     <Container
@@ -116,8 +107,9 @@ export function TestPage({
         onPreviousQuestion={goToPreviousQuestion}
         onNextQuestion={() => goToNextQuestion(goToNextPage)}
         disablePreviousPhase={phaseIndex === 0}
-        disablePreviousQuestion={questionIndex === 0}
+        disablePreviousQuestion={phaseIndex === 0 && questionIndex === 0}
         disableNextQuestion={isNextQuestionDisabled}
+        disableNextPhase={phaseIndex >= phasesCount - 1}
         hidePreviousPhase={!allowPreviousPhase}
         hidePreviousQuestion={!allowPreviousQuestion}
         hideNextPhase={isNextPhaseHidden}
