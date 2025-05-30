@@ -7,6 +7,7 @@ export interface OptionMetrics {
 
 export interface QuestionMetrics {
   questionIndex: number;
+  questionSessionId: string;
   startTime: number;
   endTime?: number;
   options: OptionMetrics[];
@@ -93,7 +94,6 @@ export class RavenAnalytics {
         `Fin: ${now}\n` +
         `Preguntas visitadas: ${questionsVisited}\n`
       );
-      
     }
   }
   
@@ -112,17 +112,14 @@ export class RavenAnalytics {
       return this.startQuestion(phaseIndex, questionIndex);
     }
     
-    let question = phase.questions.find(q => q.questionIndex === questionIndex);
-    if (!question) {
-      question = {
-        questionIndex,
-        startTime: now,
-        options: [],
-      };
-      phase.questions.push(question);
-    } else if (!question.startTime) {
-      question.startTime = now;
-    }
+    const questionSessionId = `q_${questionIndex}_${now}`;
+    const question: QuestionMetrics = {
+      questionIndex,
+      questionSessionId,
+      startTime: now,
+      options: [],
+    };
+    phase.questions.push(question);
   }
   
   completeQuestion(): void {
@@ -203,8 +200,8 @@ export class RavenAnalytics {
     );
     if (!phase) return null;
     
-    const question = phase.questions.find(q => q.questionIndex === this.currentQuestion);
-    return question || null;
+    const questions = phase.questions.filter(q => q.questionIndex === this.currentQuestion);
+    return questions.length ? questions[questions.length - 1] : null;
   }
   
 }
@@ -228,7 +225,6 @@ export function saveStudentDataToStorage( participantId: string, data: unknown):
     console.error("Error saving student data to localStorage:", error);
   }
 }
-
 
 async function sendTimelogsToBackend(results: TestResults): Promise<void> {
   const allTimelogs = [];
@@ -258,6 +254,8 @@ async function sendTimelogsToBackend(results: TestResults): Promise<void> {
   
   for (const log of allTimelogs) {
     try {
+      console.log("Enviando timelog al backend:\n", JSON.stringify(log, null, 2));
+      
       await fetch("http://localhost:3000/api/timelog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
