@@ -53,7 +53,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
       console.log("Getting timelogs from backend");
 
-      const response = await fetch("http://localhost:3000/api/timelog");
+      const response = await fetch("${import.meta.env.VITE_API_URL}/timelog");
 
       if (!response.ok) {
         setLoading(false);
