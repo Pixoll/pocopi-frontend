@@ -79,35 +79,36 @@ export function useTest(
   const progressPercentage = (currentQuestionNumber / totalTestQuestions) * 100;
 
   const completeCurrentQuestion = () => {
-    if (selectedOptionId === null || analyticsRef.current === null) {
-      return;
-    }
-
     const selectedOption = options.find(o => o.id === selectedOptionId);
 
-    analyticsRef.current.completeQuestion(!!selectedOption, !!selectedOption?.correct);
+    analyticsRef.current?.completeQuestion(!!selectedOption, !!selectedOption?.correct);
   };
 
   // parameter is meant to be private inside this hook, do not add signature to return value type
-  const goToPreviousPhase = (goToLastQuestion: unknown = false) => {
+  const goToPreviousPhase = (goToLastQuestion: unknown = false, markedAsComplete: unknown = false) => {
     if (!allowPreviousPhase || phaseIndex <= 0) {
       return;
     }
 
     const newQuestionIndex = goToLastQuestion === true ? phases[phaseIndex - 1].questions.length - 1 : 0;
 
-    completeCurrentQuestion();
+    if (!markedAsComplete) {
+      completeCurrentQuestion();
+    }
+
     setPhaseIndex(phaseIndex - 1);
     setQuestionIndex(newQuestionIndex);
     setSelectedOptionId(null);
   };
 
-  const goToNextPhase = (onFinish: () => void) => {
+  const goToNextPhase = (onFinish: () => void, markedAsComplete: unknown = false) => {
     if (selectedOptionId === null && !allowSkipPhase) {
       return;
     }
 
-    completeCurrentQuestion();
+    if (!markedAsComplete) {
+      completeCurrentQuestion();
+    }
 
     if (phaseIndex < phases.length - 1) {
       setPhaseIndex(phaseIndex + 1);
@@ -127,7 +128,7 @@ export function useTest(
     completeCurrentQuestion();
 
     if (questionIndex <= 0) {
-      goToPreviousPhase(true);
+      goToPreviousPhase(true, true);
       return;
     }
 
@@ -148,7 +149,7 @@ export function useTest(
       return;
     }
 
-    goToNextPhase(onFinish);
+    goToNextPhase(onFinish, true);
   };
 
   const handleOptionClick = (id: number) => {

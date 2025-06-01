@@ -23,6 +23,8 @@ type Timelog = {
   events: TimelogEvent[];
 };
 
+let timelogId = 1;
+
 export class TestAnalytics {
   private readonly timelog: Timelog;
   private lastSelectedOptionId: number | null;
@@ -90,6 +92,8 @@ export class TestAnalytics {
   }
 
   private async sendTimelogToBackend(): Promise<void> {
+    console.log(`Sending timelog #${timelogId++} to backend`);
+
     try {
       await fetch("http://localhost:3000/api/timelog", {
         method: "POST",
