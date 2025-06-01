@@ -1,5 +1,5 @@
 import { StudentData } from "@/types/student";
-import { TestAnalytics, saveResultsToStorage, saveStudentDataToStorage, } from "@/utils/TestAnalytics.ts";
+import { saveStudentDataToStorage, TestAnalytics } from "@/utils/TestAnalytics";
 import { Group, Image, TestOption } from "@pocopi/config";
 import { useEffect, useRef, useState } from "react";
 
@@ -48,6 +48,7 @@ export function useTest(
         age: studentData.age,
       });
     }
+    analyticsRef.current.startPhase(0);
     analyticsRef.current.startQuestion(0, 0);
   }, [group, studentData]);
 
@@ -92,10 +93,7 @@ export function useTest(
     const selectedOption = options.find(o => o.id === selectedOptionId);
 
     if (selectedOption) {
-      analyticsRef.current.completeQuestion(
-        selectedOptionId,
-        selectedOption.correct
-      );
+      analyticsRef.current.completeQuestion();
     }
   };
 
@@ -108,9 +106,11 @@ export function useTest(
     const newQuestionIndex = goToLastQuestion === true ? phases[phaseIndex - 1].questions.length - 1 : 0;
 
     completeCurrentQuestion();
+    analyticsRef.current?.completePhase(phaseIndex);
     setPhaseIndex(phaseIndex - 1);
     setQuestionIndex(newQuestionIndex);
     setSelectedOptionId("");
+    analyticsRef.current?.startPhase(phaseIndex - 1);
     analyticsRef.current?.startQuestion(phaseIndex - 1, newQuestionIndex);
   };
 
@@ -120,18 +120,19 @@ export function useTest(
     }
 
     completeCurrentQuestion();
+    analyticsRef.current?.completePhase(phaseIndex);
 
     if (phaseIndex < phases.length - 1) {
       setPhaseIndex(phaseIndex + 1);
       setQuestionIndex(0);
       setSelectedOptionId("");
+      analyticsRef.current?.startPhase(phaseIndex + 1);
       analyticsRef.current?.startQuestion(phaseIndex + 1, 0);
       return;
     }
 
     if (analyticsRef.current) {
-      const results = analyticsRef.current.completeTest();
-      saveResultsToStorage(results);
+      analyticsRef.current.completeTest();
     }
 
     onFinish();
@@ -172,8 +173,13 @@ export function useTest(
   };
 
   const handleOptionClick = (id: string) => {
-    if (analyticsRef.current && id !== selectedOptionId) {
-      analyticsRef.current.recordOptionChange();
+    if (id !== selectedOptionId) {
+      analyticsRef.current?.recordOptionDeselection();
+    } else {
+      const selectedOption = options.find((o) => o.id === id);
+      if (selectedOption) {
+        analyticsRef.current?.recordOptionSelection(id, selectedOption.correct);
+      }
     }
 
     setSelectedOptionId((v) => (v === id ? "" : id));

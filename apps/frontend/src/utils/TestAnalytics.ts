@@ -1,34 +1,34 @@
-// Clase y utilidades para el tracking de analítica del test
-
-// Tipos para las interacciones y resultados
-export type InteractionType =
-  | "view" // Visualización de una pregunta
-  | "select" // Selección de una opción
-  | "change" // Cambio de selección
-  | "next" // Siguiente pregunta
-  | "previous"; // Pregunta anterior
-
-// Métricas de cada pregunta
-export interface QuestionMetrics {
-  phaseIndex: number;
-  questionIndex: number;
+export interface OptionMetrics {
+  optionIndex: string;
+  isCorrect: boolean;
   startTime: number;
   endTime?: number;
-  timeTaken?: number;
-  selectedOption?: string;
-  isCorrect?: boolean;
-  optionChanges: number;
 }
 
-// Resultados completos del test
+export interface QuestionMetrics {
+  questionIndex: number;
+  questionSessionId: string;
+  startTime: number;
+  endTime?: number;
+  options: OptionMetrics[];
+}
+
+export interface PhaseMetrics {
+  phaseIndex: number;
+  phaseId: string;
+  startTime: number;
+  endTime?: number;
+  questions: QuestionMetrics[];
+}
+
 export interface TestResults {
   participantId: string;
   groupName: string;
   startTime: number;
   endTime?: number;
   totalTime?: number;
-  questions: QuestionMetrics[];
   totalCorrect: number;
+  phases: PhaseMetrics[];
   metadata: {
     userAgent: string;
     screenWidth: number;
@@ -37,27 +37,18 @@ export interface TestResults {
   };
 }
 
-/**
- * Clase principal para el tracking de analítica del test.
- * Permite registrar el inicio y fin de preguntas, cambios de opción, y resultados.
- */
 export class TestAnalytics {
   private results: TestResults;
   private currentPhase: number = 0;
   private currentQuestion: number = 0;
+  private currentPhaseSessionId: string | null = null; // << NUEVO
 
-  /**
-   * Inicializa la analítica para un grupo y protocolo.
-   * @param groupName Nombre del grupo experimental
-   * @param protocolName Nombre del protocolo
-   */
   constructor(groupName: string) {
     const now = Date.now();
     this.results = {
       participantId: `user_${now.toString().slice(-6)}`,
       groupName,
       startTime: now,
-      questions: [],
       totalCorrect: 0,
       metadata: {
         userAgent: navigator.userAgent,
@@ -65,110 +56,157 @@ export class TestAnalytics {
         screenHeight: window.innerHeight,
         timestamp: now,
       },
+      phases: [],
     };
   }
 
-  /**
-   * Inicia el tracking de una nueva pregunta.
-   * Si ya existe, actualiza el startTime si no ha sido completada.
-   */
+  startPhase(phaseIndex: number): void {
+    const now = Date.now();
+    const sessionId = `phase_${phaseIndex}_${now}`;
+    this.currentPhase = phaseIndex;
+    this.currentPhaseSessionId = sessionId;
+
+    console.log(`\nIniciando fase: ${phaseIndex}\nID: ${this.currentPhaseSessionId}\nInicio: ${now}`);
+
+    const newPhase: PhaseMetrics = {
+      phaseIndex,
+      phaseId: sessionId,
+      startTime: now,
+      questions: [],
+    };
+
+    this.results.phases.push(newPhase);
+  }
+
+  completePhase(phaseIndex: number): void {
+    const now = Date.now();
+    const phase = this.results.phases.find(p => {
+      return p.phaseIndex === phaseIndex && p.phaseId === this.currentPhaseSessionId;
+    });
+    if (phase && !phase.endTime) {
+      phase.endTime = now;
+      const questionsVisited = phase.questions.length;
+      console.log(
+        `Terminando fase: ${phaseIndex}\n` +
+        `ID: ${this.currentPhaseSessionId}\n` +
+        `Fin: ${now}\n` +
+        `Preguntas visitadas: ${questionsVisited}\n`
+      );
+    }
+  }
+
   startQuestion(phaseIndex: number, questionIndex: number): void {
     const now = Date.now();
     this.currentPhase = phaseIndex;
     this.currentQuestion = questionIndex;
-    const existingIndex = this.results.questions.findIndex(
-      (q) => q.phaseIndex === phaseIndex && q.questionIndex === questionIndex
-    );
-    if (existingIndex >= 0) {
-      const existing = this.results.questions[existingIndex];
-      if (!existing.endTime) {
-        this.results.questions[existingIndex].startTime = now;
-      }
-    } else {
-      this.results.questions.push({
-        phaseIndex,
-        questionIndex,
-        startTime: now,
-        optionChanges: 0,
-      });
+    console.log(`Pregunta N_: ${questionIndex}, Inicio: ${now}`);
+
+    const phase = this.results.phases.find(p => {
+      return p.phaseIndex === phaseIndex && p.phaseId === this.currentPhaseSessionId;
+    });
+
+    if (!phase) {
+      this.startPhase(phaseIndex);
+      return this.startQuestion(phaseIndex, questionIndex);
     }
+
+    const questionSessionId = `q_${questionIndex}_${now}`;
+    const question: QuestionMetrics = {
+      questionIndex,
+      questionSessionId,
+      startTime: now,
+      options: [],
+    };
+    phase.questions.push(question);
   }
 
-  /**
-   * Devuelve el objeto de métricas de la pregunta actual.
-   */
-  private getCurrentQuestion(): QuestionMetrics | null {
-    const questionIndex = this.results.questions.findIndex(
-      (q) =>
-        q.phaseIndex === this.currentPhase &&
-        q.questionIndex === this.currentQuestion
-    );
-    if (questionIndex >= 0) {
-      return this.results.questions[questionIndex];
-    }
-    return null;
-  }
-
-  /**
-   * Registra un cambio de opción en la pregunta actual.
-   */
-  recordOptionChange(): void {
-    const currentQuestion = this.getCurrentQuestion();
-    if (currentQuestion) {
-      currentQuestion.optionChanges++;
-    }
-  }
-
-  /**
-   * Completa la pregunta actual y registra el resultado.
-   * @param selectedOption Opción seleccionada
-   * @param isCorrect Si la respuesta es correcta
-   */
-  completeQuestion(selectedOption: string, isCorrect: boolean): void {
+  completeQuestion(): void {
     const now = Date.now();
-    const currentQuestion = this.getCurrentQuestion();
-    if (currentQuestion) {
-      currentQuestion.endTime = now;
-      currentQuestion.timeTaken = now - currentQuestion.startTime;
-      currentQuestion.selectedOption = selectedOption;
-      currentQuestion.isCorrect = isCorrect;
-      if (isCorrect) {
-        this.results.totalCorrect++;
+    const question = this.getCurrentQuestion();
+    if (!question) return;
+
+    if (!question.endTime) {
+      question.endTime = now;
+    }
+
+    const lastOption = question.options.length > 0 ? question.options[question.options.length - 1] : null;
+    if (lastOption && !lastOption.endTime) {
+      lastOption.endTime = now;
+    }
+    console.log(`Finalizando Pregunta N_: ${this.currentQuestion}, Fin: ${now}`);
+  }
+
+  recordOptionSelection(optionIndex: string, isCorrect: boolean): void {
+    const now = Date.now();
+    const question = this.getCurrentQuestion();
+    if (!question) return;
+
+    const lastOption = question.options.length > 0 ? question.options[question.options.length - 1] : null;
+    if (lastOption && !lastOption.endTime) {
+      lastOption.endTime = now;
+    }
+
+    question.options.push({
+      optionIndex,
+      isCorrect,
+      startTime: now,
+    });
+    console.log(
+      `Se seleccionó la respuesta: ${optionIndex}. ` +
+      (isCorrect ? "¡Es correcta!" : "No es correcta.")
+    );
+  }
+
+  recordOptionDeselection(): void {
+    const now = Date.now();
+    const question = this.getCurrentQuestion();
+    if (!question) return;
+
+    for (let i = question.options.length - 1; i >= 0; i--) {
+      if (!question.options[i].endTime) {
+        question.options[i].endTime = now;
+        break;
       }
     }
   }
 
-  /**
-   * Marca el test como completado y devuelve los resultados.
-   */
-  completeTest(): TestResults {
+  async completeTest(): Promise<TestResults> {
     const now = Date.now();
     this.results.endTime = now;
     this.results.totalTime = now - this.results.startTime;
-    return this.getResults();
+
+    const clonedResults = structuredClone(this.results);
+
+    console.log("==== RESULTADOS COMPLETOS DEL TEST ====");
+    console.log(JSON.stringify(clonedResults, null, 2));
+
+    await sendTimelogsToBackend(clonedResults);
+
+    return clonedResults;
   }
 
-  /**
-   * Devuelve una copia de los resultados actuales.
-   */
-  getResults(): TestResults {
-    return structuredClone(this.results);
-  }
-
-  /**
-   * Permite establecer el ID del participante (por ejemplo, desde los datos del estudiante).
-   */
   setParticipantId(id: string): void {
     if (id) {
       this.results.participantId = id;
     }
   }
+
+  private getCurrentQuestion(): QuestionMetrics | null {
+    const phase = this.results.phases.find(
+      p => p.phaseIndex === this.currentPhase && p.phaseId === this.currentPhaseSessionId
+    );
+    if (!phase) return null;
+
+    const questions = phase.questions.filter(q => q.questionIndex === this.currentQuestion);
+    return questions.length ? questions[questions.length - 1] : null;
+  }
+
 }
 
 // Función utilitaria para guardar resultados en localStorage
 export function saveResultsToStorage(results: TestResults): void {
   try {
-    const key = `test_${results.participantId}`;
+    const key = `raven_test_${results.participantId}`;
     localStorage.setItem(key, JSON.stringify(results));
   } catch (error) {
     console.error("Error saving results to localStorage:", error);
@@ -176,14 +214,52 @@ export function saveResultsToStorage(results: TestResults): void {
 }
 
 // Función utilitaria para guardar datos del estudiante en localStorage
-export function saveStudentDataToStorage(
-  participantId: string,
-  data: unknown
-): void {
+export function saveStudentDataToStorage(participantId: string, data: unknown): void {
   try {
     const key = `student_data_${participantId}`;
     localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
     console.error("Error saving student data to localStorage:", error);
+  }
+}
+
+async function sendTimelogsToBackend(results: TestResults): Promise<void> {
+  const allTimelogs = [];
+
+  for (const phase of results.phases) {
+    for (const question of phase.questions) {
+      const timelog = {
+        userId: results.participantId,
+        phaseId: phase.phaseIndex + 1,
+        questionId: question.questionIndex + 1,
+        startTimestamp: question.startTime,
+        endTimestamp: question.endTime ?? question.startTime,
+        correct: question.options.some(opt => opt.isCorrect),
+        skipped: question.options.length === 0,
+        totalOptionChanges: question.options.length,
+        totalOptionHovers: 0,
+        events: question.options.map((opt, index) => ({
+          type: "select",
+          optionId: index + 1,
+          timestamp: opt.startTime,
+        })),
+      };
+
+      allTimelogs.push(timelog);
+    }
+  }
+
+  for (const log of allTimelogs) {
+    try {
+      console.log("Enviando timelog al backend:\n", JSON.stringify(log, null, 2));
+
+      await fetch("http://localhost:3000/api/timelog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(log),
+      });
+    } catch (error) {
+      console.error("Error enviando timelog al backend:", error);
+    }
   }
 }
