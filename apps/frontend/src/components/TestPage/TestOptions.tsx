@@ -3,8 +3,9 @@ import styles from "@/styles/TestPage/TestOptions.module.css";
 
 type TestOptionsProps = {
   options: readonly Option[];
-  selected: string;
-  onOptionClick: (id: string) => void;
+  selected: number | null;
+  onOptionClick: (id: number) => void;
+  onOptionHover: (id: number) => void;
   optionsColumns: number;
   isDarkMode: boolean;
 };
@@ -13,6 +14,7 @@ export function TestOptions({
   options,
   selected,
   onOptionClick,
+  onOptionHover,
   optionsColumns,
   isDarkMode,
 }: TestOptionsProps) {
@@ -29,6 +31,7 @@ export function TestOptions({
             selected === option.id ? styles.selectedOption : "",
           ].join(" ")}
           onClick={() => onOptionClick(option.id)}
+          onMouseEnter={() => onOptionHover(option.id)}
           tabIndex={0}
           role="button"
           aria-pressed={selected === option.id}

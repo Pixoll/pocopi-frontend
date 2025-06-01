@@ -1,8 +1,9 @@
 import { IsIn, Min } from "class-validator";
 
 export enum TimelogEventType {
-    SELECT = "select",
+    DESELECT = "deselect",
     HOVER = "hover",
+    SELECT = "select",
 }
 
 export class TimelogEventDto {

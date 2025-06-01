@@ -10,7 +10,7 @@ import { Group } from "@pocopi/config";
 type TestPageProps = {
   group: Group;
   goToNextPage: () => void;
-  studentData: StudentData | null;
+  studentData: StudentData;
 };
 
 export function TestPage({
@@ -41,6 +41,7 @@ export function TestPage({
     goToPreviousQuestion,
     goToNextQuestion,
     handleOptionClick,
+    handleOptionHover,
   } = useTest(group, studentData);
 
   return (
@@ -83,6 +84,7 @@ export function TestPage({
           options={options}
           selected={selectedOptionId}
           onOptionClick={handleOptionClick}
+          onOptionHover={handleOptionHover}
           optionsColumns={optionsColumns}
           isDarkMode={isDarkMode}
         />

@@ -108,7 +108,7 @@ export function App(): JSX.Element {
           <TestPage
             group={group}
             goToNextPage={() => setPage(Page.END)}
-            studentData={studentData}
+            studentData={studentData!}
           />
         );
       case Page.END:

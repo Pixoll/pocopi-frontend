@@ -1,16 +1,17 @@
+import { TestAnalytics } from "@/analytics/TestAnalytics.ts";
 import { StudentData } from "@/types/student";
-import { saveStudentDataToStorage, TestAnalytics } from "@/utils/TestAnalytics";
 import { Group, Image, TestOption } from "@pocopi/config";
 import { useEffect, useRef, useState } from "react";
 
 export type Option = TestOption & {
-  id: string;
+  key: string;
+  id: number;
 };
 
 type Test = {
   phaseIndex: number;
   questionIndex: number;
-  selectedOptionId: string;
+  selectedOptionId: number | null;
   questionText?: string;
   questionImage?: Image;
   options: readonly Option[];
@@ -26,31 +27,22 @@ type Test = {
   goToNextPhase: (onFinish: () => void) => void;
   goToPreviousQuestion: () => void;
   goToNextQuestion: (onFinish: () => void) => void;
-  handleOptionClick: (id: string) => void;
+  handleOptionClick: (id: number) => void;
+  handleOptionHover: (id: number) => void;
 };
 
 export function useTest(
   group: Group,
-  studentData: StudentData | null,
+  studentData: StudentData,
 ): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [selectedOptionId, setSelectedOptionId] = useState("");
+  const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const analyticsRef = useRef<TestAnalytics | null>(null);
 
   useEffect(() => {
-    analyticsRef.current = new TestAnalytics(group.label);
-    if (studentData?.id) {
-      analyticsRef.current.setParticipantId(studentData.id);
-      saveStudentDataToStorage(studentData.id, {
-        name: studentData.name,
-        email: studentData.email,
-        age: studentData.age,
-      });
-    }
-    analyticsRef.current.startPhase(0);
-    analyticsRef.current.startQuestion(0, 0);
-  }, [group, studentData]);
+    analyticsRef.current = new TestAnalytics(studentData.id, phaseIndex + 1, questionIndex + 1);
+  }, [studentData.id, phaseIndex, questionIndex]);
 
   const { phases, allowPreviousPhase, allowSkipPhase } = group.protocol;
   const { questions, allowPreviousQuestion, allowSkipQuestion } = phases[phaseIndex];
@@ -62,12 +54,13 @@ export function useTest(
 
   const isNextQuestionDisabled = allowSkipQuestion
     ? false
-    : selectedOptionId === "";
+    : selectedOptionId === null;
 
   const totalPhaseQuestions = questions.length;
 
-  const options = tempOptions.map<Option>((option) => ({
-    id: option.image?.src ?? option.text!,
+  const options = tempOptions.map<Option>((option, index) => ({
+    key: option.image?.src ?? option.text!,
+    id: index + 1,
     ...option,
   }));
 
@@ -86,15 +79,13 @@ export function useTest(
   const progressPercentage = (currentQuestionNumber / totalTestQuestions) * 100;
 
   const completeCurrentQuestion = () => {
-    if (!selectedOptionId || !analyticsRef.current) {
+    if (selectedOptionId === null || analyticsRef.current === null) {
       return;
     }
 
     const selectedOption = options.find(o => o.id === selectedOptionId);
 
-    if (selectedOption) {
-      analyticsRef.current.completeQuestion();
-    }
+    analyticsRef.current.completeQuestion(!!selectedOption, !!selectedOption?.correct);
   };
 
   // parameter is meant to be private inside this hook, do not add signature to return value type
@@ -106,33 +97,23 @@ export function useTest(
     const newQuestionIndex = goToLastQuestion === true ? phases[phaseIndex - 1].questions.length - 1 : 0;
 
     completeCurrentQuestion();
-    analyticsRef.current?.completePhase(phaseIndex);
     setPhaseIndex(phaseIndex - 1);
     setQuestionIndex(newQuestionIndex);
-    setSelectedOptionId("");
-    analyticsRef.current?.startPhase(phaseIndex - 1);
-    analyticsRef.current?.startQuestion(phaseIndex - 1, newQuestionIndex);
+    setSelectedOptionId(null);
   };
 
   const goToNextPhase = (onFinish: () => void) => {
-    if (!selectedOptionId && !allowSkipPhase) {
+    if (selectedOptionId === null && !allowSkipPhase) {
       return;
     }
 
     completeCurrentQuestion();
-    analyticsRef.current?.completePhase(phaseIndex);
 
     if (phaseIndex < phases.length - 1) {
       setPhaseIndex(phaseIndex + 1);
       setQuestionIndex(0);
-      setSelectedOptionId("");
-      analyticsRef.current?.startPhase(phaseIndex + 1);
-      analyticsRef.current?.startQuestion(phaseIndex + 1, 0);
+      setSelectedOptionId(null);
       return;
-    }
-
-    if (analyticsRef.current) {
-      analyticsRef.current.completeTest();
     }
 
     onFinish();
@@ -151,12 +132,11 @@ export function useTest(
     }
 
     setQuestionIndex(questionIndex - 1);
-    setSelectedOptionId("");
-    analyticsRef.current?.startQuestion(phaseIndex, questionIndex - 1);
+    setSelectedOptionId(null);
   };
 
   const goToNextQuestion = (onFinish: () => void) => {
-    if (!selectedOptionId && !allowSkipQuestion) {
+    if (selectedOptionId === null && !allowSkipQuestion) {
       return;
     }
 
@@ -164,25 +144,25 @@ export function useTest(
 
     if (questionIndex < questions.length - 1) {
       setQuestionIndex(questionIndex + 1);
-      setSelectedOptionId("");
-      analyticsRef.current?.startQuestion(phaseIndex, questionIndex + 1);
+      setSelectedOptionId(null);
       return;
     }
 
     goToNextPhase(onFinish);
   };
 
-  const handleOptionClick = (id: string) => {
-    if (id !== selectedOptionId) {
-      analyticsRef.current?.recordOptionDeselection();
+  const handleOptionClick = (id: number) => {
+    if (selectedOptionId === id) {
+      analyticsRef.current?.recordOptionDeselect(id);
     } else {
-      const selectedOption = options.find((o) => o.id === id);
-      if (selectedOption) {
-        analyticsRef.current?.recordOptionSelection(id, selectedOption.correct);
-      }
+      analyticsRef.current?.recordOptionSelect(id);
     }
 
-    setSelectedOptionId((v) => (v === id ? "" : id));
+    setSelectedOptionId((v) => (v === id ? null : id));
+  };
+
+  const handleOptionHover = (id: number) => {
+    analyticsRef.current?.recordOptionHover(id);
   };
 
   return {
@@ -205,5 +185,6 @@ export function useTest(
     goToPreviousQuestion,
     goToNextQuestion,
     handleOptionClick,
+    handleOptionHover,
   };
 }
