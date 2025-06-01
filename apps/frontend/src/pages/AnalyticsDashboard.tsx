@@ -1,38 +1,27 @@
+import { Timelog } from "@/analytics/TestAnalytics";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { useTheme } from "@/hooks/useTheme";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { config } from "@pocopi/config";
-import { useState, useEffect } from "react";
 import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Table,
-  Button,
-  Badge,
-  Spinner,
-  Alert,
-  Tabs,
-  Tab,
-} from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faDownload,
+  faArrowLeft,
   faChartLine,
-  faUser,
   faCheckCircle,
+  faDownload,
   faExclamationTriangle,
   faFileExport,
-  faArrowLeft,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import { useTheme } from "@/hooks/useTheme";
-import { TestResults } from "@/utils/TestAnalytics.ts";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
+import { useEffect, useState } from "react";
+import { Alert, Badge, Button, Card, Col, Container, Row, Spinner, Tab, Table, Tabs } from "react-bootstrap";
 
-type ParticipantSummary = {
-  participantId: string;
-  name: string; // Added name field from student data
-  date: string; // Date when test was taken
-  totalTime: number; // In seconds
+type UserSummary = {
+  userId: string;
+  name: string;
+  timestamp: number;
+  date: string;
+  totalTime: number;
   totalCorrect: number;
   correctPercentage: number;
 };
@@ -45,90 +34,84 @@ type AnalyticsDashboardProps = {
  * Simple dashboard to view test results
  */
 export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
-  const [testResults, setTestResults] = useState<TestResults[]>([]);
-  const [participants, setParticipants] = useState<ParticipantSummary[]>([]);
+  const [timelogs, setTimelogs] = useState(new Map<string, Timelog[]>());
+  const [participants, setParticipants] = useState<UserSummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<string>("participants");
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
-  // Load data from localStorage on component mount
   useEffect(() => {
-    loadTestResults();
+    loadTimelogs();
   }, []);
 
-  // Function to load test results from localStorage
-  const loadTestResults = () => {
+  const loadTimelogs = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      console.log("Loading test results from localStorage");
-      const results: TestResults[] = [];
-      const studentData: { [key: string]: { name: string; email: string } } =
-        {};
+      console.log("Getting timelogs from backend");
 
-      // First try to find student data
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith("student_data_")) {
-          const data = localStorage.getItem(key);
-          if (data) {
-            try {
-              const parsedData = JSON.parse(data);
-              const participantId = key.replace("student_data_", "");
-              studentData[participantId] = {
-                name: parsedData.name,
-                email: parsedData.email,
-              };
-            } catch (e) {
-              console.error(`Error parsing student data for ${key}:`, e);
-            }
+      const response = await fetch("http://localhost:3000/api/timelog");
+
+      if (!response.ok) {
+        setLoading(false);
+        console.error("Error loading test results:", await response.json());
+        setError("Failed to load test results. Please try refreshing the page.");
+        return;
+      }
+
+      const results = await response.json() as Timelog[];
+
+      const newTimelogs = new Map<string, Timelog[]>();
+      const userSummaries = new Map<string, UserSummary>();
+
+      for (const timelog of results) {
+        const userTimelogs = newTimelogs.get(timelog.userId);
+        if (!userTimelogs) {
+          newTimelogs.set(timelog.userId, [timelog]);
+        } else {
+          userTimelogs.push(timelog);
+        }
+
+        // TODO eventually we should also get the user data, which should have their name and assigned group
+
+        const totalQuestions = 4;
+
+        const userSummary = userSummaries.get(timelog.userId);
+        if (!userSummary) {
+          const correct = timelog.correct ? 1 : 0;
+
+          userSummaries.set(timelog.userId, {
+            userId: timelog.userId,
+            name: "Unknown",
+            timestamp: timelog.startTimestamp,
+            date: new Date(timelog.startTimestamp).toLocaleString(),
+            totalTime: (timelog.endTimestamp - timelog.startTimestamp) / 1000,
+            totalCorrect: correct,
+            correctPercentage: (correct / totalQuestions) * 100,
+          });
+        } else {
+          if (timelog.correct) {
+            userSummary.totalCorrect++;
+            userSummary.correctPercentage = (userSummary.totalCorrect / totalQuestions) * 100;
           }
+
+          if (timelog.startTimestamp < userSummary.timestamp) {
+            userSummary.timestamp = timelog.startTimestamp;
+            userSummary.date = new Date(timelog.startTimestamp).toLocaleString();
+          }
+
+          userSummary.totalTime = Math.max(userSummary.totalTime, (timelog.endTimestamp - userSummary.timestamp) / 1000);
         }
       }
 
-      // Then find all test results
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith("test_")) {
-          const data = localStorage.getItem(key);
-          if (data) {
-            try {
-              console.log(`Found test data with key: ${key}`);
-              const parsedData = JSON.parse(data) as TestResults;
-              results.push(parsedData);
-            } catch (e) {
-              console.error(`Error parsing data for ${key}:`, e);
-            }
-          }
-        }
-      }
-
-      // Create simplified participant summaries
-      const summaries = results.map((result) => {
-        const participantId = result.participantId;
-        const completedQuestions = result.questions.filter(
-          (q) => q.endTime !== undefined
-        );
-        const totalQuestions = completedQuestions.length || 1; // Avoid division by zero
-
-        return {
-          participantId,
-          name: studentData[participantId]?.name || "Unknown",
-          date: new Date(result.startTime).toLocaleDateString(),
-          totalTime: (result.totalTime || 0) / 1000, // Convert to seconds
-          totalCorrect: result.totalCorrect,
-          correctPercentage: (result.totalCorrect / totalQuestions) * 100,
-        };
-      });
-
-      setTestResults(results);
-      setParticipants(summaries);
+      setTimelogs(newTimelogs);
+      setParticipants(Array.from(userSummaries.values()));
       setLoading(false);
 
-      if (summaries.length === 0) {
+      if (userSummaries.size === 0) {
         setError(
           "No test results found. Have students complete the test to see results here."
         );
@@ -140,22 +123,17 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
     }
   };
 
-  // Export participant data to CSV
   const exportToCSV = () => {
     try {
-      // Create CSV header
-      let csv =
-        "Participant ID,Name,Date,Total Time (s),Correct Answers,Accuracy %\n";
+      let csv = "Participant ID,Name,Date,Total Time (s),Correct Answers,Accuracy %\n";
 
-      // Add data rows
       participants.forEach((p) => {
-        csv += `${p.participantId},${p.name},${p.date},`;
+        csv += `${p.userId},${p.name},${p.date},`;
         csv += `${p.totalTime.toFixed(2)},${
           p.totalCorrect
         },${p.correctPercentage.toFixed(1)}\n`;
       });
 
-      // Create download link
       const blob = new Blob([csv], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -171,53 +149,27 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
     }
   };
 
-  // Export detailed data for a participant
-  const exportParticipantData = (participantId: string) => {
-    const participant = testResults.find(
-      (r) => r.participantId === participantId
-    );
-    if (!participant) return;
+  const exportUserTimelogs = (userId: string) => {
+    const userTimelogs = timelogs.get(userId);
+    if (!userTimelogs) return;
 
     try {
-      const json = JSON.stringify(participant, null, 2);
+      const json = JSON.stringify(userTimelogs, null, 2);
       const blob = new Blob([json], { type: "application/json" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.setAttribute("hidden", "");
       a.setAttribute("href", url);
-      a.setAttribute("download", `participant_${participantId}.json`);
+      a.setAttribute("download", `participant_${userId}.json`);
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
     } catch (error) {
       console.error("Error exporting participant data:", error);
-      setError(`Failed to export data for participant ${participantId}.`);
+      setError(`Failed to export data for participant ${userId}.`);
     }
   };
 
-  // Clear all test data (for development/testing)
-  const clearAllData = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete ALL test data? This cannot be undone."
-      )
-    ) {
-      // Delete all test data from localStorage
-      for (let i = localStorage.length - 1; i >= 0; i--) {
-        const key = localStorage.key(i);
-        if (
-          key &&
-          (key.startsWith("test_") || key.startsWith("student_data_"))
-        ) {
-          localStorage.removeItem(key);
-        }
-      }
-      // Reload data (will be empty)
-      loadTestResults();
-    }
-  };
-
-  // Loading indicator
   if (loading) {
     return (
       <Container
@@ -302,12 +254,6 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       <FontAwesomeIcon icon={faDownload} className="me-2"/>
                       Export CSV
                     </Button>
-                    {/* Only show in development environment */}
-                    {import.meta.env.DEV && (
-                      <Button variant="danger" size="sm" onClick={clearAllData}>
-                        Clear All Data
-                      </Button>
-                    )}
                   </div>
                 </Card.Header>
                 <Card.Body className="px-0 pt-0">
@@ -335,7 +281,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       </thead>
                       <tbody>
                       {participants.map((participant) => (
-                        <tr key={participant.participantId}>
+                        <tr key={participant.userId}>
                           <td>
                             <div className="d-flex align-items-center">
                               <div
@@ -355,7 +301,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                                   {participant.name}
                                 </div>
                                 <small className="text-secondary">
-                                  {participant.participantId}
+                                  {participant.userId}
                                 </small>
                               </div>
                             </div>
@@ -378,8 +324,8 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                               variant="outline-primary"
                               size="sm"
                               onClick={() =>
-                                exportParticipantData(
-                                  participant.participantId
+                                exportUserTimelogs(
+                                  participant.userId
                                 )
                               }
                               title="Export detailed results"
@@ -481,7 +427,7 @@ function getAccuracyBadgeColor(accuracy: number): string {
 }
 
 // Helper function to calculate average accuracy
-function calculateAverageAccuracy(participants: ParticipantSummary[]): string {
+function calculateAverageAccuracy(participants: UserSummary[]): string {
   if (participants.length === 0) return "0.0";
 
   const total = participants.reduce((sum, p) => sum + p.correctPercentage, 0);
@@ -489,7 +435,7 @@ function calculateAverageAccuracy(participants: ParticipantSummary[]): string {
 }
 
 // Helper function to calculate average time
-function calculateAverageTime(participants: ParticipantSummary[]): string {
+function calculateAverageTime(participants: UserSummary[]): string {
   if (participants.length === 0) return "0.0";
 
   const total = participants.reduce((sum, p) => sum + p.totalTime, 0);

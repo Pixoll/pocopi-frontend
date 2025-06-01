@@ -10,7 +10,7 @@ type TimelogEvent = {
   timestamp: number;
 };
 
-type Timelog = {
+export type Timelog = {
   userId: string;
   phaseId: number;
   questionId: number;

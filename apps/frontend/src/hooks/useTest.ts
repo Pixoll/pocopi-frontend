@@ -1,4 +1,4 @@
-import { TestAnalytics } from "@/analytics/TestAnalytics.ts";
+import { TestAnalytics } from "@/analytics/TestAnalytics";
 import { StudentData } from "@/types/student";
 import { Group, Image, TestOption } from "@pocopi/config";
 import { useEffect, useRef, useState } from "react";
