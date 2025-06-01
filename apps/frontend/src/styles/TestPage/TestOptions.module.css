@@ -1,0 +1,64 @@
+.testOptionsContainer {
+  align-items: center;
+  display: grid;
+  flex: 0 0 auto;
+  gap: 1em;
+  grid-template-rows: repeat(2, 1fr);
+  justify-items: center;
+  user-select: none;
+}
+
+.option {
+  border: 2px solid transparent;
+  border-radius: 0.5em;
+  cursor: pointer;
+  margin-bottom: 0.75em;
+  padding: 0.5em;
+  text-align: center;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.optionText {
+  border-radius: 0.5em;
+  padding: 1.5em 3em;
+}
+
+.optionTextDark {
+  background-color: #2b3035;
+}
+
+.optionTextLight {
+  background-color: #e9ecef;
+}
+
+.optionTextWithImage {
+  margin-bottom: 0.5em;
+}
+
+.optionImage {
+  height: auto;
+  max-width: 100px;
+  pointer-events: none;
+  width: 100%;
+}
+
+.selectedOption {
+  border: 2px solid #ffc107;
+}
+
+.selectedOption img, .selectedOption .optionText {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+}
+
+@media (min-width: 768px) {
+  .testOptionsContainer {
+    width: 83.3%;
+  }
+}
+
+@media (min-width: 992px) {
+  .testOptionsContainer {
+    width: 66.7%;
+  }
+}

@@ -1,20 +1,16 @@
+import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
-import { TestOptions } from "@/components/TestPage/TestOptions";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
+import styles from "@/styles/TestPage/TestPage.module.css";
+import { StudentData } from "@/types/student.ts";
 import { Group } from "@pocopi/config";
-import { Col, Container, Row } from "react-bootstrap";
 
 type TestPageProps = {
   group: Group;
   goToNextPage: () => void;
-  studentData?: {
-    name: string;
-    id: string;
-    email: string;
-    age: string;
-  } | null;
+  studentData: StudentData;
 };
 
 export function TestPage({
@@ -45,13 +41,11 @@ export function TestPage({
     goToPreviousQuestion,
     goToNextQuestion,
     handleOptionClick,
-  } = useTest(group, studentData ?? null);
+    handleOptionHover,
+  } = useTest(group, studentData);
 
   return (
-    <Container
-      fluid
-      className="p-0 min-vh-100 position-relative d-flex flex-column"
-    >
+    <div className={styles.page}>
       <TestPageHeader
         isDarkMode={isDarkMode}
         phase={phaseIndex}
@@ -62,43 +56,39 @@ export function TestPage({
       />
 
       {/* main content */}
-      <Container className="py-4 flex-grow-1 d-flex flex-column justify-content-center">
+      <div className={styles.content}>
         {/* question */}
-        <Row className="justify-content-center mb-3">
-          <Col
-            md={10}
-            lg={8}
-            className={`text-center p-4 rounded-4 mb-4 shadow-sm ${isDarkMode ? "bg-dark" : "bg-white"}`}
-            style={{ userSelect: "none" }}
-          >
-            {questionText && (
-              <div className={questionImage ? "mb-3" : ""}>{questionText}</div>
-            )}
-            {questionImage && (
-              <img
-                src={questionImage.src}
-                alt={questionImage.alt}
-                className="img-fluid"
-                style={{ maxWidth: "100%", maxHeight: "30rem", pointerEvents: "none" }}
-                draggable={false}
-              />
-            )}
-          </Col>
-        </Row>
+        <div
+          className={[
+            styles.question,
+            isDarkMode ? styles.dark : styles.light,
+          ].join(" ")}
+        >
+          {questionText && (
+            <div className={questionImage ? styles.questionText : ""}>
+              {questionText}
+            </div>
+          )}
+          {questionImage && (
+            <img
+              src={questionImage.src}
+              alt={questionImage.alt}
+              className={styles.questionImage}
+              draggable={false}
+            />
+          )}
+        </div>
 
         {/* options */}
-        <Row className="justify-content-center">
-          <Col md={10} lg={8}>
-            <TestOptions
-              options={options}
-              selected={selectedOptionId}
-              onOptionClick={handleOptionClick}
-              optionsColumns={optionsColumns}
-              isDarkMode={isDarkMode}
-            />
-          </Col>
-        </Row>
-      </Container>
+        <TestOptions
+          options={options}
+          selected={selectedOptionId}
+          onOptionClick={handleOptionClick}
+          onOptionHover={handleOptionHover}
+          optionsColumns={optionsColumns}
+          isDarkMode={isDarkMode}
+        />
+      </div>
 
       {/* bottom nav bar */}
       <TestPageNavigation
@@ -115,6 +105,6 @@ export function TestPage({
         hideNextPhase={isNextPhaseHidden}
         isDarkMode={isDarkMode}
       />
-    </Container>
+    </div>
   );
 }

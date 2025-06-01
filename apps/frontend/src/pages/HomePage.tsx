@@ -7,7 +7,7 @@ import { StudentFormModal } from "@/components/HomePage/StudentFormModal";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useStudentTest } from "@/hooks/useStudentTest";
 import { useTheme } from "@/hooks/useTheme";
-import styles from "@/styles/HomePage.module.css";
+import styles from "@/styles/HomePage/HomePage.module.css";
 import { StudentData } from "@/types/student";
 
 // Props que recibe el HomePage

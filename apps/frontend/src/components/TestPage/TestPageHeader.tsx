@@ -1,6 +1,6 @@
-import styles from "@/styles/TestPageHeader.module.css";
+import styles from "@/styles/TestPage/TestPageHeader.module.css";
 import { config } from "@pocopi/config";
-import { Col, ProgressBar, Row } from "react-bootstrap";
+import { ProgressBar } from "react-bootstrap";
 
 type TestPageHeaderProps = {
   isDarkMode: boolean;
@@ -21,34 +21,30 @@ export function TestPageHeader({
 }: TestPageHeaderProps) {
   return (
     <div
-      className={`py-3 px-4 ${isDarkMode ? "bg-dark" : "bg-light"} border-bottom`}
+      className={[
+        styles.headerContainer,
+        isDarkMode ? styles.headerDark : styles.headerLight,
+      ].join(" ")}
     >
-      <Row className="align-items-center gx-4">
-        <Col>
-          <h4 className="m-0 d-flex align-items-center">
-            <img className={styles.icon} src={config.icon.src} alt={config.icon.alt}/>
-            <span>{config.title}</span>
-          </h4>
-        </Col>
-        <Col md={6}>
-          <div className="d-flex align-items-center">
-            <small className="text-secondary me-2">Progress:</small>
-            <ProgressBar
-              now={progressPercentage}
-              className="w-100 rounded-pill"
-              variant="primary"
-              style={{ height: "10px" }}
-            />
-            <small className="ms-2">{Math.round(progressPercentage)}%</small>
-          </div>
-        </Col>
-        <Col className="text-end">
-        <span className="badge bg-primary rounded-pill">
+      <h4 className={styles.title}>
+        <img className={styles.icon} src={config.icon.src} alt={config.icon.alt}/>
+        <span>{config.title}</span>
+      </h4>
+      <div className={styles.progressBarContainer}>
+        <small className={styles.progressText}>Progress:</small>
+        <ProgressBar
+          now={progressPercentage}
+          className={styles.progressBar}
+          variant="primary"
+        />
+        <small>{Math.floor(progressPercentage)}%</small>
+      </div>
+      <div className={styles.progressBadgeContainer}>
+        <span className={styles.progressBadge}>
           Phase {phase + 1}/{phasesCount} - Question {question + 1}/
           {questionsCount}
         </span>
-        </Col>
-      </Row>
+      </div>
     </div>
   );
 }

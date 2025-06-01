@@ -1,6 +1,6 @@
+import styles from "@/styles/TestPage/TestPageNavigation.module.css";
 import { faAngleLeft, faAngleRight, faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Col } from "react-bootstrap";
 
 type TestPageNavigationProps = {
   onPreviousPhase: () => void;
@@ -32,54 +32,56 @@ export function TestPageNavigation({
   isDarkMode,
 }: TestPageNavigationProps) {
   return (
-    <div className={`py-3 px-4 border-top ${isDarkMode ? "bg-dark" : "bg-light"}`}>
-      <Col className="d-flex justify-content-between position-relative">
-        <div>
-          <Button
-            variant="outline-secondary"
-            onClick={onPreviousPhase}
-            disabled={disablePreviousPhase}
-            hidden={hidePreviousPhase}
-          >
-            <FontAwesomeIcon icon={faArrowLeft} className="me-2"/>
-            Previous Phase
-          </Button>
-        </div>
+    <div
+      className={[
+        styles.navigationContainer,
+        isDarkMode ? styles.dark : styles.light,
+      ].join(" ")}
+    >
+      <div className={styles.navGroup}>
+        <button
+          className={[styles.navButton, styles.secondaryOutline].join(" ")}
+          onClick={onPreviousPhase}
+          disabled={disablePreviousPhase}
+          hidden={hidePreviousPhase}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} className={styles.iconLeft}/>
+          Previous Phase
+        </button>
+      </div>
 
-        <div className={!hidePreviousPhase || !hideNextPhase ? "position-absolute translate-middle-x start-50" : ""}>
-          <Button
-            variant="outline-primary"
-            className="me-2"
-            onClick={onPreviousQuestion}
-            disabled={disablePreviousQuestion}
-            hidden={hidePreviousQuestion}
-          >
-            <FontAwesomeIcon icon={faAngleLeft} className="me-2"/>
-            Previous
-          </Button>
+      <div className={styles.navGroup}>
+        <button
+          className={[styles.navButton, styles.primaryOutline].join(" ")}
+          onClick={onPreviousQuestion}
+          disabled={disablePreviousQuestion}
+          hidden={hidePreviousQuestion}
+        >
+          <FontAwesomeIcon icon={faAngleLeft} className={styles.iconLeft}/>
+          Previous
+        </button>
 
-          <Button
-            variant="primary"
-            onClick={onNextQuestion}
-            disabled={disableNextQuestion}
-          >
-            Next
-            <FontAwesomeIcon icon={faAngleRight} className="ms-2"/>
-          </Button>
-        </div>
+        <button
+          className={[styles.navButton, styles.primary].join(" ")}
+          onClick={onNextQuestion}
+          disabled={disableNextQuestion}
+        >
+          Next
+          <FontAwesomeIcon icon={faAngleRight} className={styles.iconRight}/>
+        </button>
+      </div>
 
-        <div>
-          <Button
-            variant="outline-secondary"
-            onClick={onNextPhase}
-            disabled={disableNextPhase}
-            hidden={hideNextPhase}
-          >
-            Next Phase
-            <FontAwesomeIcon icon={faArrowRight} className="ms-2"/>
-          </Button>
-        </div>
-      </Col>
+      <div className={styles.navGroup}>
+        <button
+          className={[styles.navButton, styles.secondaryOutline].join(" ")}
+          onClick={onNextPhase}
+          disabled={disableNextPhase}
+          hidden={hideNextPhase}
+        >
+          Next Phase
+          <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
+        </button>
+      </div>
     </div>
   );
 }
