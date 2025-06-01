@@ -1,5 +1,5 @@
 import { Option } from "@/hooks/useTest";
-import styles from "@/styles/TestOptions.module.css";
+import styles from "@/styles/TestPage/TestOptions.module.css";
 
 type TestOptionsProps = {
   options: readonly Option[];
@@ -19,22 +19,15 @@ export function TestOptions({
   return (
     <div
       className={styles.testOptionsContainer}
-      style={{
-        gridTemplateColumns: `repeat(${optionsColumns}, ${100 / optionsColumns}%)`,
-      }}
+      style={{ gridTemplateColumns: `repeat(${optionsColumns}, 1fr)` }}
     >
       {options.map((option) => (
         <div
           key={option.id}
-          className={`text-center rounded-3 p-2 mb-2 ${styles.cursorPointer} ${
-            selected === option.id ? styles.selectedOption : ""
-          }`}
-          style={{
-            border:
-              selected === option.id
-                ? `2px solid #ffc107`
-                : `2px solid transparent`,
-          }}
+          className={[
+            styles.option,
+            selected === option.id ? styles.selectedOption : "",
+          ].join(" ")}
           onClick={() => onOptionClick(option.id)}
           tabIndex={0}
           role="button"
@@ -42,12 +35,13 @@ export function TestOptions({
         >
           {option.text && (
             option.image ? (
-              <div className="mb-2">{option.text}</div>
+              <div className={styles.optionTextWithImage}>{option.text}</div>
             ) : (
               <div
-                className={`pt-4 pb-4 ps-5 pe-5 rounded-3 ${
-                  isDarkMode ? "bg-body-tertiary" : "bg-body-secondary"
-                }`}
+                className={[
+                  styles.optionText,
+                  isDarkMode ? styles.optionTextDark : styles.optionTextLight,
+                ].join(" ")}
               >
                 {option.text}
               </div>
@@ -57,8 +51,7 @@ export function TestOptions({
             <img
               src={option.image.src}
               alt={option.image.alt}
-              className="img-fluid"
-              style={{ maxWidth: "100px", pointerEvents: "none" }}
+              className={styles.optionImage}
               draggable={false}
             />
           )}

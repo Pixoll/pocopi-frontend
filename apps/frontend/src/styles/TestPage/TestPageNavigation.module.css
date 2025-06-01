@@ -1,0 +1,120 @@
+.navigationContainer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 1em 1.5em;
+  position: relative;
+}
+
+.dark {
+  border-top: 1px solid #495057;
+  background-color: #212529;
+}
+
+.light {
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.navGroup {
+  align-items: center;
+  display: flex;
+  gap: 1em;
+}
+
+.navButton {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.375em;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0.375em 0.75em;
+  transition: color 0.15s ease-in-out,
+  background-color 0.15s ease-in-out,
+  border-color 0.15s ease-in-out,
+  box-shadow 0.15s ease-in-out;
+}
+
+.navButton:disabled {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+
+.primary:active {
+  background-color: #0a58ca !important;
+  border-color: #0a53be !important;
+}
+
+.primary:hover, .primary:focus-visible {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.primary:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+  outline: 0;
+}
+
+.primaryOutline {
+  background-color: transparent;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.primaryOutline:active, .primaryOutline:hover, .primaryOutline:focus-visible {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.primaryOutline:focus-visible {
+  box-shadow: 0 0 0 0.25em rgba(13, 110, 253, 0.5);
+  outline: 0;
+}
+
+.secondaryOutline {
+  background-color: transparent;
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.secondaryOutline:active, .secondaryOutline:hover, .secondaryOutline:focus-visible {
+  background-color: #6c757d;
+  color: white;
+}
+
+.secondaryOutline:focus-visible {
+  box-shadow: 0 0 0 0.25em rgba(108, 117, 125, 0.5);
+  outline: 0;
+}
+
+.iconLeft {
+  margin-right: 0.5em;
+}
+
+.iconRight {
+  margin-left: 0.5em;
+}
+
+.previousQuestion {
+  left: 50%;
+  position: absolute;
+  transform: translateX(calc(-100% - 0.25em));
+}
+
+.nextQuestion {
+  position: absolute;
+  right: 50%;
+  transform: translateX(calc(100% + 0.25em));
+}
+
+.nextQuestionCenter {
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+}

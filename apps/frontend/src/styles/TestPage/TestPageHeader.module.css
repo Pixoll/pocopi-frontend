@@ -1,0 +1,74 @@
+.headerContainer {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5em;
+  padding: 1em 1.5em;
+}
+
+.headerDark {
+  background-color: #212529;
+  border-bottom: 1px solid #495057;
+}
+
+.headerLight {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.icon {
+  height: 1em;
+  margin-right: 0.5em;
+}
+
+.title {
+  align-items: center;
+  display: flex;
+  flex: 1 0 0;
+  margin: 0;
+}
+
+.progressBarContainer {
+  align-items: center;
+  display: flex;
+  gap: 0.5em;
+}
+
+.progressText {
+  color: #6c757d;
+}
+
+.progressBar {
+  border-radius: 4em !important;
+  height: 10px !important;
+  width: 100%;
+}
+
+.progressBadgeContainer {
+  flex: 1 0 0;
+  text-align: right;
+}
+
+.progressBadge {
+  background-color: #0d6efd;
+  border-radius: 4em;
+  color: white;
+  display: inline-block;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.35em 0.65em;
+}
+
+@media (max-width: 768px) {
+  .progressBar {
+    min-width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .progressBarContainer {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
