@@ -1,6 +1,7 @@
 import { exceptionFactory } from "@exceptions";
 import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { CatchEverythingFilter } from "./filters";
@@ -8,16 +9,21 @@ import { LoggingInterceptor } from "./interceptors";
 import { LowercaseQueryKeysPipe } from "./pipes";
 
 void async function () {
-    const app = await NestFactory.create(AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         cors: true,
         logger: ["debug"],
     });
 
-    const logger = new Logger("PoCoPIApp");
+    const logger = new Logger("PoCoPIApplication");
 
     const globalPrefix = "api";
 
     app.getHttpAdapter().getInstance().disable("x-powered-by");
+
+    app.enableCors({
+        origin: true,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    });
 
     app.setGlobalPrefix(globalPrefix)
         .useGlobalFilters(new CatchEverythingFilter())
@@ -42,7 +48,7 @@ void async function () {
         ignoreGlobalPrefix: true,
     }));
 
-    await app.listen(process.env.PORT ?? 3000);
+    await app.listen(process.env.PORT ?? 3000, "0.0.0.0");
 
     const appUrl = await app.getUrl()
         .then(url => url.replace("[::1]", "localhost").replace(/\/$/, "") + "/" + globalPrefix);
