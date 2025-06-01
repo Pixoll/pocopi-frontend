@@ -3,10 +3,13 @@ import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { config } from "dotenv";
 import { AppModule } from "./app.module";
 import { CatchEverythingFilter } from "./filters";
 import { LoggingInterceptor } from "./interceptors";
 import { LowercaseQueryKeysPipe } from "./pipes";
+
+config();
 
 void async function () {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
