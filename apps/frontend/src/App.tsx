@@ -11,6 +11,7 @@ import { config } from "@pocopi/config";
 import mime from "mime";
 import { JSX, ReactNode, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { UserData } from "./types/user";
 
 // Enum para todas las páginas/rutas posibles en la app
 // Permite navegación type-safe y fácil extensión
@@ -20,15 +21,6 @@ enum Page {
   END,
   DASHBOARD,
 }
-
-// Tipo para los datos del estudiante
-// Usada en toda la app para consistencia y seguridad de tipos
-type StudentData = {
-  name: string;
-  id: string;
-  email: string;
-  age: string;
-};
 
 /**
  * ThemeHandler
@@ -57,7 +49,7 @@ export function App(): JSX.Element {
   // Página actual (estado de navegación)
   const [page, setPage] = useState<Page>(Page.HOME);
   // Datos del estudiante recogidos del formulario (null si no ha comenzado)
-  const [studentData, setStudentData] = useState<StudentData | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
     document.title = config.title;
@@ -74,8 +66,8 @@ export function App(): JSX.Element {
    * Handler para iniciar la prueba después de recoger los datos del estudiante.
    * @param data - Objeto UserData del formulario
    */
-  const startTest = (data: StudentData) => {
-    setStudentData(data);
+  const startTest = (data: UserData) => {
+    setUserData(data);
     setPage(Page.TEST);
   };
 
@@ -108,13 +100,13 @@ export function App(): JSX.Element {
           <TestPage
             group={group}
             goToNextPage={() => setPage(Page.END)}
-            studentData={studentData!}
+            userData={userData!}
           />
         );
       case Page.END:
         // Modal de finalización: se muestra tras terminar la prueba
         return (
-          <CompletionModal studentData={studentData} onBackToHome={goToHome}/>
+          <CompletionModal userData={userData} onBackToHome={goToHome}/>
         );
       case Page.DASHBOARD:
         // Dashboard de analíticas: muestra resultados y analíticas

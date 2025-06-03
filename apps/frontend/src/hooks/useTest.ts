@@ -33,7 +33,7 @@ type Test = {
 
 export function useTest(
   group: Group,
-  studentData: UserData,
+  userData: UserData,
 ): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -41,8 +41,8 @@ export function useTest(
   const analyticsRef = useRef<TestAnalytics | null>(null);
 
   useEffect(() => {
-    analyticsRef.current = new TestAnalytics(studentData.id, phaseIndex + 1, questionIndex + 1);
-  }, [studentData.id, phaseIndex, questionIndex]);
+    analyticsRef.current = new TestAnalytics(userData.id, phaseIndex + 1, questionIndex + 1);
+  }, [userData.id, phaseIndex, questionIndex]);
 
   const { phases, allowPreviousPhase, allowSkipPhase } = group.protocol;
   const { questions, allowPreviousQuestion, allowSkipQuestion } = phases[phaseIndex];

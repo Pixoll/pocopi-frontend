@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import { UserData } from "@/types/user";
-import { studentService } from "@/services/studentService";
+import { userService } from "@/services/userService";
 
 type HookedUserData = {
   showModal: boolean;
@@ -32,7 +32,7 @@ export function useUserData(): HookedUserData {
   const handleFormSubmit = (data: UserData) => {
     setUserData(data);
     setShowModal(false);
-    studentService.saveStudentData(data);
+    userService.saveUserData(data);
   };
 
   return {

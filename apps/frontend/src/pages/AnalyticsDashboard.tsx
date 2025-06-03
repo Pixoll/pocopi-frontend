@@ -113,7 +113,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
       if (userSummaries.size === 0) {
         setError(
-          "No test results found. Have students complete the test to see results here."
+          "No test results found. Have users complete the test to see results here."
         );
       }
     } catch (error) {

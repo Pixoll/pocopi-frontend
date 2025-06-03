@@ -10,13 +10,13 @@ import { Group } from "@pocopi/config";
 type TestPageProps = {
   group: Group;
   goToNextPage: () => void;
-  studentData: UserData;
+  userData: UserData;
 };
 
 export function TestPage({
   group,
   goToNextPage,
-  studentData,
+  userData,
 }: TestPageProps) {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -42,7 +42,7 @@ export function TestPage({
     goToNextQuestion,
     handleOptionClick,
     handleOptionHover,
-  } = useTest(group, studentData);
+  } = useTest(group, userData);
 
   return (
     <div className={styles.page}>

@@ -1,14 +1,14 @@
 import { UserData } from "@/types/user";
 
-export const studentService = {
-  saveStudentData(data: UserData) {
+export const userService = {
+  saveUserData(data: UserData) {
     localStorage.setItem("userData", JSON.stringify(data));
   },
-  getStudentData(): UserData | null {
+  getUserData(): UserData | null {
     const data = localStorage.getItem("userData");
     return data ? JSON.parse(data) : null;
   },
-  clearStudentData() {
+  clearUserData() {
     localStorage.removeItem("userData");
   },
 };

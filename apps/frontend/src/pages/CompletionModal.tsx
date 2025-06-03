@@ -1,6 +1,7 @@
 // Modal de finalización del test: muestra agradecimiento, datos del usuario y opciones
 
 import { useTheme } from "@/hooks/useTheme";
+import { UserData } from "@/types/user";
 import {
   faChartLine,
   faCheck,
@@ -15,23 +16,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
 
-// Datos del estudiante
-type StudentData = {
-  name: string;
-  id: string;
-  email: string;
-  age: string;
-};
-
 // Props del modal de finalización
 type CompletionModalProps = {
-  studentData: StudentData | null;
+  userData: UserData | null;
   onBackToHome: () => void;
 };
 
 // Componente principal del modal de finalización
 export function CompletionModal({
-  studentData,
+  userData,
   onBackToHome,
 }: CompletionModalProps) {
   const { theme } = useTheme();
@@ -129,7 +122,7 @@ export function CompletionModal({
             {/* Cuerpo del card */}
             <Card.Body className={`p-4 p-md-5 ${isDarkMode ? "bg-dark" : ""}`}>
               <div className="mb-4">
-                {studentData && (
+                {userData && (
                   <h4 className="h5 mb-4">
                     Thank you{" "}
                     <span
@@ -137,7 +130,7 @@ export function CompletionModal({
                         isDarkMode ? "text-primary" : "text-success"
                       }`}
                     >
-                      {studentData.name}
+                      {userData.name}
                     </span>{" "}
                     for your participation
                   </h4>
@@ -175,7 +168,7 @@ export function CompletionModal({
                     </span>
                     Registration Information
                   </Card.Title>
-                  {studentData && (
+                  {userData && (
                     <div>
                       <div className="d-flex align-items-center mb-3">
                         <div
@@ -205,7 +198,7 @@ export function CompletionModal({
                             Name
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
-                            {studentData.name}
+                            {userData.name}
                           </div>
                         </div>
                       </div>
@@ -238,7 +231,7 @@ export function CompletionModal({
                             Identification
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
-                            {studentData.id}
+                            {userData.id}
                           </div>
                         </div>
                       </div>
@@ -271,7 +264,7 @@ export function CompletionModal({
                             Email
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
-                            {studentData.email}
+                            {userData.email}
                           </div>
                         </div>
                       </div>
