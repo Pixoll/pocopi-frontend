@@ -72,7 +72,7 @@ export function App(): JSX.Element {
 
   /**
    * Handler para iniciar la prueba después de recoger los datos del estudiante.
-   * @param data - Objeto StudentData del formulario
+   * @param data - Objeto UserData del formulario
    */
   const startTest = (data: StudentData) => {
     setStudentData(data);

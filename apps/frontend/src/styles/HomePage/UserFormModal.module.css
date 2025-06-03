@@ -1,0 +1,180 @@
+.header {
+  align-items: center;
+  background-color: #0d6efd;
+  border: 0;
+  border-bottom: 1px solid #495057;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+  color: white;
+  display: flex;
+  flex-shrink: 0;
+  padding: 1em;
+}
+
+.headerText {
+  align-items: center;
+  display: flex;
+  font-weight: bold;
+  gap: 0.5em;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.modalBody {
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+  flex: 1 1 auto;
+  padding: 1.5em;
+  position: relative;
+}
+
+.modalBodyDark {
+  background-color: #212529;
+  color: #f8f9fa;
+}
+
+.alert {
+  align-items: center;
+  border-radius: 0.375em;
+  display: flex;
+  gap: 1em;
+  margin-bottom: 1.5em;
+  padding: 1em;
+  position: relative;
+}
+
+.alertDark {
+  background-color: #031633;
+  border: 1px solid #084298;
+  color: #6ea8fe;
+}
+
+.alertLight {
+  background-color: #cff4fc;
+  border: 1px solid #9eeaf9;
+  color: #055160;
+}
+
+.alertIcon {
+  font-size: 1.25em;
+}
+
+.closeButton {
+  background-color: transparent;
+  border: 0;
+  font-size: calc(1.275rem + 0.3vw);
+  line-height: 1;
+  margin-left: auto;
+  padding: 0;
+  transition: color 0.15s ease-in-out;
+  user-select: none;
+}
+
+.inputGroup {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: 1em;
+  justify-content: flex-end;
+  margin-top: 1.5em;
+}
+
+.button {
+  background-color: transparent;
+  border-radius: 0.375em;
+  text-align: center;
+  text-decoration: none;
+  transition: color 0.15s ease-in-out,
+  background-color 0.15s ease-in-out,
+  border-color 0.15s ease-in-out,
+  box-shadow 0.15s ease-in-out;
+  user-select: none;
+}
+
+.cancelButton {
+  padding: 0.375em 1em;
+}
+
+.cancelButtonDark {
+  border: 1px solid #f8f9fa;
+  color: #f8f9fa;
+}
+
+.cancelButtonDark:active, .cancelButtonDark:hover, .cancelButtonDark:focus-visible {
+  background-color: #f8f9fa;
+  color: black;
+}
+
+.cancelButtonDark:focus-visible {
+  border-color: #f8f9fa;
+  box-shadow: 0 0 0 0.25rem rgba(248, 249, 250, 0.5);
+  outline: 0;
+}
+
+.cancelButtonLight {
+  border: 1px solid #6c757d;
+  color: #6c757d;
+}
+
+.cancelButtonLight:active, .cancelButtonLight:hover, .cancelButtonLight:focus-visible {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancelButtonLight:focus-visible {
+  border-color: #6c757d;
+  box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5);
+  outline: 0;
+}
+
+.saveButton {
+  align-items: center;
+  background-color: #0d6efd;
+  border: 1px solid #0d6efd;
+  color: white;
+  display: flex;
+  gap: 0.5em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+
+.saveButton:hover, .saveButton:focus-visible {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.saveButton:active {
+  background-color: #0a58ca;
+  border-color: #0a53be;
+}
+
+.saveButton:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+  outline: 0;
+}
+
+@media (max-width: 768px) {
+  .inputGroupMember {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .inputGroup {
+    gap: 1em;
+  }
+
+  .inputGroupMember {
+    flex: 0 0 auto;
+    width: calc(50% - 0.5em);
+  }
+}
+
+@media (min-width: 1200px) {
+  .fs-4 {
+    font-size: 1.5rem;
+  }
+}

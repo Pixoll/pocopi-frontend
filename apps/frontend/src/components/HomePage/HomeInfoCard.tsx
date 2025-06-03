@@ -1,6 +1,7 @@
 // Tarjeta principal con información del test, consentimiento y botones de acción
 // Recibe props para controlar el estado y las acciones
 
+import { UserData } from "@/types/user";
 import { faArrowRight, faFileSignature } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
@@ -8,16 +9,9 @@ import { ChangeEvent } from "react";
 import { Accordion, Alert, Button, Card, Col, Form, Row, } from "react-bootstrap";
 import Markdown from "react-markdown";
 
-type StudentData = {
-  name: string;
-  id: string;
-  email: string;
-  age: string;
-};
-
 type HomeInfoCardProps = {
   isDarkMode: boolean;
-  studentData: StudentData | null;
+  userData: UserData | null;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onStartTest: () => void;
@@ -26,7 +20,7 @@ type HomeInfoCardProps = {
 
 export function HomeInfoCard({
   isDarkMode,
-  studentData,
+  userData,
   consentAccepted,
   onConsentChange,
   onStartTest,
@@ -41,7 +35,7 @@ export function HomeInfoCard({
   return (
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
       {/* Alerta con datos del participante si ya se ingresaron */}
-      {studentData && (
+      {userData && (
         <Alert variant="info" className="mb-0 border-0 rounded-0">
           <div className="d-flex align-items-center">
             <div
@@ -53,7 +47,7 @@ export function HomeInfoCard({
             </div>
             <div>
               <strong>Participant: </strong>
-              {studentData.name} ({studentData.id})
+              {userData.name} ({userData.id})
             </div>
           </div>
         </Alert>
@@ -104,7 +98,7 @@ export function HomeInfoCard({
         </div>
         {/* Botón para iniciar el test o continuar */}
         <div className="text-center mt-4">
-          {!studentData ? (
+          {!userData ? (
             <Button
               variant="primary"
               size="lg"

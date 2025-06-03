@@ -1,5 +1,5 @@
 import { TestAnalytics } from "@/analytics/TestAnalytics";
-import { StudentData } from "@/types/student";
+import { UserData } from "@/types/user";
 import { Group, Image, TestOption } from "@pocopi/config";
 import { useEffect, useRef, useState } from "react";
 
@@ -33,7 +33,7 @@ type Test = {
 
 export function useTest(
   group: Group,
-  studentData: StudentData,
+  studentData: UserData,
 ): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);

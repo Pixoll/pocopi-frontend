@@ -4,13 +4,13 @@ import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
-import { StudentData } from "@/types/student";
+import { UserData } from "@/types/user";
 import { Group } from "@pocopi/config";
 
 type TestPageProps = {
   group: Group;
   goToNextPage: () => void;
-  studentData: StudentData;
+  studentData: UserData;
 };
 
 export function TestPage({

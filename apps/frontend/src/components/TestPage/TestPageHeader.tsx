@@ -1,6 +1,5 @@
 import styles from "@/styles/TestPage/TestPageHeader.module.css";
 import { config } from "@pocopi/config";
-import { ProgressBar } from "react-bootstrap";
 
 type TestPageHeaderProps = {
   isDarkMode: boolean;
@@ -32,11 +31,16 @@ export function TestPageHeader({
       </h4>
       <div className={styles.progressBarContainer}>
         <small className={styles.progressText}>Progress:</small>
-        <ProgressBar
-          now={progressPercentage}
-          className={styles.progressBar}
-          variant="primary"
-        />
+        <div className={styles.progressBar}>
+          <div
+            className={styles.progressBarFill}
+            role="progressbar"
+            aria-valuenow={progressPercentage}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
         <small>{Math.floor(progressPercentage)}%</small>
       </div>
       <div className={styles.progressBadgeContainer}>

@@ -1,0 +1,31 @@
+.inputContainer {
+  position: relative;
+  margin-bottom: 1em;
+}
+
+.input {
+  padding-left: 2.5em !important;
+}
+
+.inputDark {
+  background-color: #212529;
+  border-color: #6c757d;
+  color: #f8f9fa;
+}
+
+.icon {
+  left: 0.75em;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+}
+
+.iconDark {
+  color: #7984ff;
+}
+
+.iconLight {
+  color: #4361ee;
+}
