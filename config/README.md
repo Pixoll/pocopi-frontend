@@ -33,6 +33,7 @@ icon: ...
 title: PoCoPI
 # Optional subtitle
 subtitle: The test making & taking platform.
+# Required description - allows markdown
 description: Proof of Concept of Psycho-Informatics.
 
 # Optional information cards

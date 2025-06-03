@@ -56,7 +56,7 @@ export function HomeInfoCard({
         {/* Información sobre el test */}
         <h2 className="h4 mb-4">About this test</h2>
         <p className="mb-4">
-          {config.description}
+          <Markdown>{config.description}</Markdown>
         </p>
         {Array.from({ length: Math.ceil(infoCardsAmount / 2) }, (_, i) => (
           <Row className="gx-4 mb-4">
