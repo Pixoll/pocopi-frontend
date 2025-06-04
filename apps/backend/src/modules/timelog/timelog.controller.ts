@@ -11,7 +11,6 @@ export class TimelogController {
     @Post()
     public saveTimelog(@Body() timelogDto: TimelogDto): void {
         this.timelogService.saveTimelog(timelogDto);
-        console.log("Nuevo timelog recibido:", timelogDto);
     }
 
     @Get()
