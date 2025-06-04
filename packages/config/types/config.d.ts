@@ -14,7 +14,9 @@ export declare class Config {
     readonly faq: readonly Faq[];
     readonly preTestForm?: Form;
     readonly postTestForm?: Form;
+    readonly groupLabels: readonly string[];
     private readonly groups;
+    private readonly totalGroupQuestionsMap;
     private readonly probabilitySums;
     /**
      * Main configuration class that processes and provides access to experiment configuration.
@@ -32,6 +34,7 @@ export declare class Config {
      * @returns The randomly selected group
      */
     sampleGroup(): Group;
+    getTotalQuestions(label: string): number | null;
 }
 export type InformationCard = {
     readonly title: string;

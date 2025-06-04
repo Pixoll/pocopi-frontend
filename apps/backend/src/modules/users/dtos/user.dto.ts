@@ -1,5 +1,6 @@
 import { IsUndefinedIf } from "@decorators";
-import { IsBoolean, IsEmail, IsInt, IsString, Min, MinLength } from "class-validator";
+import { config } from "@pocopi/config";
+import { IsBoolean, IsEmail, IsIn, IsInt, IsString, Min, MinLength } from "class-validator";
 
 export class UserDto {
     @IsBoolean()
@@ -8,6 +9,10 @@ export class UserDto {
     @MinLength(1)
     @IsString()
     public declare id: string;
+
+    @IsIn(config.groupLabels)
+    @IsString()
+    public declare group: string;
 
     @MinLength(1)
     @IsString()

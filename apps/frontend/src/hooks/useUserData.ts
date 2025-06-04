@@ -13,12 +13,13 @@ type HookedUserData = {
   handleFormSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
 };
 
-export function useUserData(): HookedUserData {
+export function useUserData(groupLabel: string): HookedUserData {
   const [showModal, setShowModal] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(config.anonymous ? {
     anonymous: true,
     id: getRandomUserId(),
+    group: groupLabel,
   } : null);
 
   const handleOpenModal = () => {

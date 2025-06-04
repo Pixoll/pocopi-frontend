@@ -9,11 +9,16 @@ import styles from "@/styles/HomePage/HomePage.module.css";
 import { UserData } from "@/types/user";
 
 type HomePageProps = {
+  groupLabel: string;
   onStartTest: (data: UserData) => void;
   onDashboard: () => void;
 };
 
-export function HomePage({ onStartTest, onDashboard }: HomePageProps) {
+export function HomePage({
+  groupLabel,
+  onStartTest,
+  onDashboard,
+}: HomePageProps) {
   const {
     showModal,
     consentAccepted,
@@ -22,7 +27,7 @@ export function HomePage({ onStartTest, onDashboard }: HomePageProps) {
     handleCloseModal,
     handleConsentChange,
     handleFormSubmit,
-  } = useUserData();
+  } = useUserData(groupLabel);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
@@ -46,6 +51,7 @@ export function HomePage({ onStartTest, onDashboard }: HomePageProps) {
       />
 
       <UserFormModal
+        groupLabel={groupLabel}
         show={showModal}
         onHide={handleCloseModal}
         onSubmit={handleFormSubmit}

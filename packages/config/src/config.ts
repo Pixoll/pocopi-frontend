@@ -57,8 +57,10 @@ export class Config {
     public readonly faq: readonly Faq[];
     public readonly preTestForm?: Form;
     public readonly postTestForm?: Form;
+    public readonly groupLabels: readonly string[];
 
     private readonly groups: readonly FlatRawGroupWithLabel[];
+    private readonly totalGroupQuestionsMap: ReadonlyMap<string, number>;
     private readonly probabilitySums: readonly Decimal[];
 
     /**
@@ -91,6 +93,11 @@ export class Config {
         }
 
         this.groups = Object.freeze(parseGroups(config));
+        this.totalGroupQuestionsMap = new Map(this.groups.map(g => [
+            g.label,
+            g.protocol.phases.reduce((sum, p) => sum + p.questions.length, 0),
+        ]));
+        this.groupLabels = Object.freeze(this.groups.map(g => g.label));
 
         const probabilitySums: Decimal[] = [];
         let lastProbability = new Decimal(0);
@@ -132,6 +139,10 @@ export class Config {
         }
 
         return makeGroup(this.groups[index]!);
+    }
+
+    public getTotalQuestions(label: string): number | null {
+        return this.totalGroupQuestionsMap.get(label) ?? null;
     }
 }
 

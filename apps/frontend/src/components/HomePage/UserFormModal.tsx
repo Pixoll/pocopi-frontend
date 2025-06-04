@@ -17,12 +17,14 @@ import { Form, Modal } from "react-bootstrap";
 import { InputWithIcon } from "./InputWithIcon";
 
 type UserFormModalProps = {
+  groupLabel: string;
   show: boolean;
   onHide: () => void;
   onSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
 };
 
 export function UserFormModal({
+  groupLabel,
   show,
   onHide,
   onSubmit,
@@ -36,6 +38,7 @@ export function UserFormModal({
   const [formData, setFormData] = useState<IdentifiableUserData>({
     anonymous: false,
     id: "",
+    group: groupLabel,
     name: "",
     email: "",
     age: 0,

@@ -93,7 +93,12 @@ export function App(): JSX.Element {
     switch (page) {
       case Page.HOME:
         // Página de inicio: recoge datos del estudiante y permite acceso al dashboard
-        return <HomePage onStartTest={startTest} onDashboard={goToDashboard}/>;
+        return (
+          <HomePage
+            groupLabel={group.label}
+            onStartTest={startTest}
+            onDashboard={goToDashboard}
+          />);
       case Page.TEST:
         // Página del test: lógica principal y UI de la prueba
         return (

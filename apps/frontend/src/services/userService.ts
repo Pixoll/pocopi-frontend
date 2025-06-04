@@ -1,11 +1,4 @@
-import { UserData, IdentifiableUserData, AnonymousUserData } from "@/types/user";
-
-interface BackendUserData extends Omit<IdentifiableUserData, 'age' | 'name'> { // Removed 'name' from Omit
-  age: number;
-  username: string; // Added username property
-}
-
-type BackendRequestBody = Partial<BackendUserData> | AnonymousUserData;
+import { UserData } from "@/types/user";
 
 export const userService = {
   saveUserData(data: UserData, onSaved: () => void, onError: (message: string) => void) {
