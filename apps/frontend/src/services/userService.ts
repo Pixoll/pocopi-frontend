@@ -1,4 +1,11 @@
-import { UserData } from "@/types/user";
+import { UserData, IdentifiableUserData, AnonymousUserData } from "@/types/user";
+
+interface BackendUserData extends Omit<IdentifiableUserData, 'age' | 'name'> { // Removed 'name' from Omit
+  age: number;
+  username: string; // Added username property
+}
+
+type BackendRequestBody = Partial<BackendUserData> | AnonymousUserData;
 
 export const userService = {
   async saveUserData(data: UserData) {
@@ -7,17 +14,27 @@ export const userService = {
 
     // Enviar al backend
     try {
+      let requestBody: BackendRequestBody;
+      if (!data.anonymous) {
+        requestBody = {
+          id: data.id,
+          username: data.name,
+          email: data.email,
+          age: parseInt(data.age)
+        };
+      } else {
+        requestBody = {
+          id: data.id,
+          anonymous: true
+        };
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          id: data.id,
-          username: data.name,
-          email: data.email,
-          age: parseInt(data.age)
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
