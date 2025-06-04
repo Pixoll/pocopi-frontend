@@ -1,6 +1,7 @@
 import { Timelog } from "@/analytics/TestAnalytics";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
+import { UserData } from "@/types/user";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowLeft,
@@ -18,6 +19,7 @@ import { Alert, Badge, Button, Card, Col, Container, Row, Spinner, Tab, Table, T
 
 type UserSummary = {
   userId: string;
+  group: string;
   name: string;
   timestamp: number;
   date: string;
@@ -26,13 +28,6 @@ type UserSummary = {
   totalQuestions: number;
   correctPercentage: number;
   email?: string;
-};
-
-type UserData = {
-  id: string;
-  username: string;
-  email: string;
-  age: number;
 };
 
 type AnalyticsDashboardProps = {
@@ -99,22 +94,25 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
           const userData = userMap.get(timelog.userId);
           userSummary = {
             userId: timelog.userId,
-            name: userData?.username || "Usuario Desconocido",
-            email: userData?.email,
+            group: userData?.group ?? "Grupo desconocido",
+            name: userData && !userData.anonymous ? userData.name : "Usuario anónimo",
+            email: userData && !userData.anonymous ? userData.email : "N/A",
             timestamp: timelog.startTimestamp,
             date: new Date(timelog.startTimestamp).toLocaleString(),
             totalTime: 0,
             totalCorrect: 0,
-            totalQuestions: 0,
+            totalQuestions: config.getTotalQuestions(userData?.group ?? "") ?? 0,
             correctPercentage: 0,
           };
           userSummaries.set(timelog.userId, userSummary);
         }
 
         // Actualizar estadísticas
-        userSummary.totalQuestions++;
         if (timelog.correct) {
           userSummary.totalCorrect++;
+          userSummary.correctPercentage = userSummary.totalQuestions > 0
+            ? (userSummary.totalCorrect / userSummary.totalQuestions) * 100
+            : 0;
         }
 
         // Actualizar timestamp más temprano
@@ -122,26 +120,9 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
           userSummary.timestamp = timelog.startTimestamp;
           userSummary.date = new Date(timelog.startTimestamp).toLocaleString();
         }
+
+        userSummary.totalTime = Math.max(userSummary.totalTime, (timelog.endTimestamp - userSummary.timestamp) / 1000);
       }
-
-      // Calcular tiempo total y porcentaje correcto para cada usuario
-      userSummaries.forEach((summary, userId) => {
-        const userLogs = userTimelogs.get(userId) || [];
-
-        if (userLogs.length > 0) {
-          // Encontrar el timestamp más temprano y más tardío
-          const minTimestamp = Math.min(...userLogs.map(log => log.startTimestamp));
-          const maxTimestamp = Math.max(...userLogs.map(log => log.endTimestamp));
-
-          // Calcular tiempo total en segundos
-          summary.totalTime = (maxTimestamp - minTimestamp) / 1000;
-
-          // Calcular porcentaje correcto
-          summary.correctPercentage = summary.totalQuestions > 0
-            ? (summary.totalCorrect / summary.totalQuestions) * 100
-            : 0;
-        }
-      });
 
       setTimelogs(userTimelogs);
       setParticipants(Array.from(userSummaries.values()));
@@ -161,10 +142,10 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
   const exportToCSV = () => {
     try {
-      let csv = "ID Participante,Nombre,Email,Fecha,Tiempo Total (s),Respuestas Correctas,Total Preguntas,Precisión %\n";
+      let csv = "ID Participante,Grupo,Nombre,Email,Fecha,Tiempo Total (s),Respuestas Correctas,Total Preguntas,Precisión %\n";
 
       participants.forEach((p) => {
-        csv += `${p.userId},${p.name},${p.email || "N/A"},${p.date},`;
+        csv += `${p.userId},${p.group},${p.name},${p.email || "N/A"},${p.date},`;
         csv += `${p.totalTime.toFixed(2)},${p.totalCorrect},${p.totalQuestions},${p.correctPercentage.toFixed(1)}\n`;
       });
 
@@ -192,7 +173,8 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       const exportData = {
         participant: {
           id: userId,
-          name: participant?.name || "Desconocido",
+          group: participant?.group || "Desconocido",
+          name: participant?.name || "Anónimo",
           email: participant?.email || "N/A",
           totalTime: participant?.totalTime || 0,
           totalCorrect: participant?.totalCorrect || 0,
@@ -225,7 +207,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         style={{ minHeight: "80vh" }}
       >
         <div className="text-center">
-          <Spinner animation="border" variant="primary" className="mb-3" />
+          <Spinner animation="border" variant="primary" className="mb-3"/>
           <p>Cargando resultados del test...</p>
         </div>
       </Container>
@@ -236,7 +218,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
     <Container
       fluid
       className={`p-4 min-vh-100 ${isDarkMode ? "bg-dark text-light" : "bg-light"
-        }`}
+      }`}
     >
       <Row className="mb-4">
         <Col>
@@ -253,7 +235,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
               onClick={onBack}
               className="d-flex align-items-center"
             >
-              <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
+              <FontAwesomeIcon icon={faArrowLeft} className="me-2"/>
               Volver al Inicio
             </Button>
           </div>
@@ -268,7 +250,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         <Row className="mb-4">
           <Col>
             <Alert variant="warning" className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+              <FontAwesomeIcon icon={faExclamationTriangle} className="me-2"/>
               {error}
             </Alert>
           </Col>
@@ -298,7 +280,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       className="me-2"
                       disabled={participants.length === 0}
                     >
-                      <FontAwesomeIcon icon={faDownload} className="me-2" />
+                      <FontAwesomeIcon icon={faDownload} className="me-2"/>
                       Exportar CSV
                     </Button>
                   </div>
@@ -317,72 +299,74 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       className={isDarkMode ? "table-dark" : ""}
                     >
                       <thead>
-                        <tr>
-                          <th>Participante</th>
-                          <th>Fecha</th>
-                          <th>Tiempo (s)</th>
-                          <th>Correctas</th>
-                          <th>Total</th>
-                          <th>Precisión</th>
-                          <th>Acciones</th>
-                        </tr>
+                      <tr>
+                        <th>Participante</th>
+                        <th>Grupo</th>
+                        <th>Fecha</th>
+                        <th>Tiempo (s)</th>
+                        <th>Correctas</th>
+                        <th>Total</th>
+                        <th>Precisión</th>
+                        <th>Acciones</th>
+                      </tr>
                       </thead>
                       <tbody>
-                        {participants.map((participant) => (
-                          <tr key={participant.userId}>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <div
-                                  className={`p-2 rounded-circle me-2 ${isDarkMode
-                                    ? "bg-primary bg-opacity-10"
-                                    : "bg-light"
-                                    }`}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faUser}
-                                    className="text-primary"
-                                  />
-                                </div>
-                                <div>
-                                  <div className="fw-medium">
-                                    {participant.name}
-                                  </div>
-                                  <small className="text-secondary">
-                                    ID: {participant.userId}
-                                  </small>
-                                </div>
+                      {participants.map((participant) => (
+                        <tr key={participant.userId}>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <div
+                                className={`p-2 rounded-circle me-2 ${isDarkMode
+                                  ? "bg-primary bg-opacity-10"
+                                  : "bg-light"
+                                }`}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faUser}
+                                  className="text-primary"
+                                />
                               </div>
-                            </td>
-                            <td>{participant.date}</td>
-                            <td>{participant.totalTime.toFixed(2)}</td>
-                            <td>{participant.totalCorrect}</td>
-                            <td>{participant.totalQuestions}</td>
-                            <td>
-                              <Badge
-                                bg={getAccuracyBadgeColor(
-                                  participant.correctPercentage
-                                )}
-                                className="px-2 py-1"
-                              >
-                                {participant.correctPercentage.toFixed(1)}%
-                              </Badge>
-                            </td>
-                            <td>
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                onClick={() =>
-                                  exportUserTimelogs(
-                                    participant.userId
-                                  )
-                                }
-                                title="Exportar resultados detallados"
-                              >
-                                <FontAwesomeIcon icon={faFileExport} />
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
+                              <div>
+                                <div className="fw-medium">
+                                  {participant.name}
+                                </div>
+                                <small className="text-secondary">
+                                  ID: {participant.userId}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{participant.group}</td>
+                          <td>{participant.date}</td>
+                          <td>{participant.totalTime.toFixed(2)}</td>
+                          <td>{participant.totalCorrect}</td>
+                          <td>{participant.totalQuestions}</td>
+                          <td>
+                            <Badge
+                              bg={getAccuracyBadgeColor(
+                                participant.correctPercentage
+                              )}
+                              className="px-2 py-1"
+                            >
+                              {participant.correctPercentage.toFixed(1)}%
+                            </Badge>
+                          </td>
+                          <td>
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() =>
+                                exportUserTimelogs(
+                                  participant.userId
+                                )
+                              }
+                              title="Exportar resultados detallados"
+                            >
+                              <FontAwesomeIcon icon={faFileExport}/>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
                       </tbody>
                     </Table>
                   )}
@@ -436,7 +420,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         </Col>
       </Row>
 
-      <ThemeSwitcher />
+      <ThemeSwitcher/>
     </Container>
   );
 }
@@ -453,14 +437,14 @@ function StatCard({ title, value, icon, isDarkMode }: StatCardProps) {
   return (
     <Card
       className={`border-0 h-100 ${isDarkMode ? "bg-dark bg-opacity-50 border-secondary" : "bg-white"
-        }`}
+      }`}
     >
       <Card.Body className="d-flex align-items-center">
         <div
           className={`me-3 p-3 rounded-circle ${isDarkMode ? "bg-primary bg-opacity-10" : "bg-light"
-            }`}
+          }`}
         >
-          <FontAwesomeIcon icon={icon} className="text-primary fa-lg" />
+          <FontAwesomeIcon icon={icon} className="text-primary fa-lg"/>
         </div>
         <div>
           <h6 className="text-secondary mb-1">{title}</h6>
