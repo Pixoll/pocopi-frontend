@@ -11,7 +11,6 @@ export class UsersController {
     @Post()
     public saveUser(@Body() userDto: UserDto): void {
         this.usersService.saveUser(userDto);
-        console.log("Nuevo timelog recibido:", userDto);
     }
 
     @Get()
