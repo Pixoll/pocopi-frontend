@@ -1,12 +1,12 @@
 export type UserData = AnonymousUserData | IdentifiableUserData;
 
 export type AnonymousUserData = {
-  anonymous: true;
+  anonymous: true; // no dar
   id: string;
 };
 
 export type IdentifiableUserData = {
-  anonymous: false;
+  anonymous: false; // no dar
   id: string;
   name: string;
   email: string;
