@@ -125,13 +125,15 @@ export function CompletionModal({
                 {userData && (
                   <h4 className="h5 mb-4">
                     Thank you{" "}
-                    <span
-                      className={`fw-bold ${
-                        isDarkMode ? "text-primary" : "text-success"
-                      }`}
-                    >
-                      {userData.name}
-                    </span>{" "}
+                    {!userData.anonymous && (
+                      <span
+                        className={`fw-bold ${
+                          isDarkMode ? "text-primary" : "text-success"
+                        }`}
+                      >
+                        {userData.name}
+                      </span>
+                    )}
                     for your participation
                   </h4>
                 )}
@@ -142,20 +144,21 @@ export function CompletionModal({
               </div>
 
               {/* Card de información del usuario */}
-              <Card
-                className={`mb-4 border ${
-                  isDarkMode
-                    ? "bg-dark border-primary border-opacity-25"
-                    : "bg-light"
-                }`}
-                style={{
-                  boxShadow: isDarkMode
-                    ? "0 0 15px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(121, 132, 255, 0.1)"
-                    : "0 0 10px rgba(0, 0, 0, 0.05)",
-                }}
-              >
-                <Card.Body>
-                  <Card.Title className="h6 mb-3 text-start d-flex align-items-center">
+              {userData && !userData.anonymous && (
+                <Card
+                  className={`mb-4 border ${
+                    isDarkMode
+                      ? "bg-dark border-primary border-opacity-25"
+                      : "bg-light"
+                  }`}
+                  style={{
+                    boxShadow: isDarkMode
+                      ? "0 0 15px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(121, 132, 255, 0.1)"
+                      : "0 0 10px rgba(0, 0, 0, 0.05)",
+                  }}
+                >
+                  <Card.Body>
+                    <Card.Title className="h6 mb-3 text-start d-flex align-items-center">
                     <span
                       className={`me-2 badge ${
                         isDarkMode
@@ -166,9 +169,8 @@ export function CompletionModal({
                       <FontAwesomeIcon icon={faUser} className="me-1"/>
                       User Info
                     </span>
-                    Registration Information
-                  </Card.Title>
-                  {userData && (
+                      Registration Information
+                    </Card.Title>
                     <div>
                       <div className="d-flex align-items-center mb-3">
                         <div
@@ -269,9 +271,9 @@ export function CompletionModal({
                         </div>
                       </div>
                     </div>
-                  )}
-                </Card.Body>
-              </Card>
+                  </Card.Body>
+                </Card>
+              )}
 
               {/* Card de opciones adicionales */}
               <Card

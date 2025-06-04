@@ -1,6 +1,6 @@
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
-import { UserData } from "@/types/user";
+import { IdentifiableUserData, UserData } from "@/types/user";
 import { faCakeCandles, faEnvelope, faIdCard, faSave, faShield, faUser, } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -22,9 +22,10 @@ export function UserFormModal({
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
-  const [formData, setFormData] = useState<UserData>({
-    name: "",
+  const [formData, setFormData] = useState<IdentifiableUserData>({
+    anonymous: false,
     id: "",
+    name: "",
     email: "",
     age: "",
   });
@@ -93,10 +94,12 @@ export function UserFormModal({
         </button>
       </div>
 
-      <div className={[
-        styles.modalBody,
-        isDarkMode ? styles.modalBodyDark : "",
-      ].join(" ")}>
+      <div
+        className={[
+          styles.modalBody,
+          isDarkMode ? styles.modalBodyDark : "",
+        ].join(" ")}
+      >
         <div
           className={[
             styles.alert,
