@@ -1,7 +1,7 @@
+import { userService } from "@/services/userService";
+import { UserData } from "@/types/user";
 import { config } from "@pocopi/config";
 import { ChangeEvent, useState } from "react";
-import { UserData } from "@/types/user";
-import { userService } from "@/services/userService";
 
 type HookedUserData = {
   showModal: boolean;
@@ -11,6 +11,7 @@ type HookedUserData = {
   handleCloseModal: () => void;
   handleConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleFormSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
+  saveIfAnonymous: () => void;
 };
 
 export function useUserData(groupLabel: string): HookedUserData {
@@ -42,6 +43,14 @@ export function useUserData(groupLabel: string): HookedUserData {
     }, onError);
   };
 
+  const saveIfAnonymous = () => {
+    if (config.anonymous && userData) {
+      const noop = () => {
+      };
+      userService.saveUserData(userData, noop, noop);
+    }
+  };
+
   return {
     showModal,
     consentAccepted,
@@ -50,6 +59,7 @@ export function useUserData(groupLabel: string): HookedUserData {
     handleCloseModal,
     handleConsentChange,
     handleFormSubmit,
+    saveIfAnonymous,
   };
 }
 

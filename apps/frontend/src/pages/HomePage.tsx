@@ -27,12 +27,14 @@ export function HomePage({
     handleCloseModal,
     handleConsentChange,
     handleFormSubmit,
+    saveIfAnonymous,
   } = useUserData(groupLabel);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
   const startTest = () => {
     if (userData && consentAccepted) {
+      saveIfAnonymous();
       onStartTest(userData);
     }
   };
