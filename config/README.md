@@ -36,6 +36,13 @@ subtitle: The test making & taking platform.
 # Required description - allows markdown
 description: Proof of Concept of Psycho-Informatics.
 
+# Whether to anonymize the collected data from the test takers.
+# If this is off, a basic personal information form will be required to be filled
+# before starting the test.
+# If this is on, it will be skipped, and the data will have randomly assigned IDs.
+# Off by default.
+anonymous: true
+
 # Optional information cards
 informationCards:
 

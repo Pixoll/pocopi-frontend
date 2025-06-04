@@ -8,6 +8,7 @@ export declare class Config {
     readonly title: string;
     readonly subtitle?: string;
     readonly description: string;
+    readonly anonymous: boolean;
     readonly informationCards: readonly InformationCard[];
     readonly informedConsent: string;
     readonly faq: readonly Faq[];

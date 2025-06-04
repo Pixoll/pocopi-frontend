@@ -21,6 +21,11 @@
       "description": "The description of the web app.",
       "minLength": 1
     },
+    "anonymous": {
+      "type": "boolean",
+      "description": "Whether to anonymize the collected data from the test takers. If this is off, a basic personal information form will be required to be filled before starting the test. If this is on, it will be skipped, and the data will have randomly assigned IDs. Off by default.",
+      "default": false
+    },
     "informationCards": {
       "type": "array",
       "description": "List of information cards to be shown below the web app description.",
