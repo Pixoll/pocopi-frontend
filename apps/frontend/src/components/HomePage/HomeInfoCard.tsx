@@ -39,11 +39,10 @@ export function HomeInfoCard({
         <Alert variant="info" className="mb-0 border-0 rounded-0">
           <div className="d-flex align-items-center">
             <div
-              className={`p-2 me-3 rounded-circle bg-info ${
-                isDarkMode ? "bg-opacity-25" : "bg-opacity-10"
-              }`}
+              className={`p-2 me-3 rounded-circle bg-info ${isDarkMode ? "bg-opacity-25" : "bg-opacity-10"
+                }`}
             >
-              <FontAwesomeIcon icon={faFileSignature} className="text-info"/>
+              <FontAwesomeIcon icon={faFileSignature} className="text-info" />
             </div>
             <div>
               <strong>Participant: </strong>
@@ -59,9 +58,9 @@ export function HomeInfoCard({
           <Markdown>{config.description}</Markdown>
         </div>
         {Array.from({ length: Math.ceil(infoCardsAmount / 2) }, (_, i) => (
-          <Row className="gx-4 mb-4">
-            {config.informationCards.slice(i * 2, i * 2 + 2).map(({ title, description, color, icon }) => (
-              <Col md={6}>
+          <Row key={`info-row-${i}`} className="gx-4 mb-4">
+            {config.informationCards.slice(i * 2, i * 2 + 2).map(({ title, description, color, icon }, index) => (
+              <Col key={`info-card-${i * 2 + index}`} md={6}>
                 <div className="d-flex h-100">
                   <div
                     className="p-2 me-3 mt-1 rounded d-flex align-items-center justify-content-center"
@@ -71,7 +70,7 @@ export function HomeInfoCard({
                       backgroundColor: `rgba(${color?.r ?? 255}, ${color?.g ?? 255}, ${color?.b ?? 255}, ${iconOpacity})`,
                     }}
                   >
-                    <img src={icon?.src} alt={icon?.alt} style={{ height: "1em" }}/>
+                    {icon && <img src={icon.src} alt={icon.alt} style={{ height: "1em" }} />}
                   </div>
                   <div>
                     <h5 className="h6 mb-2">{title}</h5>
@@ -106,7 +105,7 @@ export function HomeInfoCard({
               onClick={onStartTest}
             >
               <span className="me-2">Start Test</span>
-              <FontAwesomeIcon icon={faArrowRight}/>
+              <FontAwesomeIcon icon={faArrowRight} />
             </Button>
           ) : (
             <Button
@@ -117,7 +116,7 @@ export function HomeInfoCard({
               disabled={!consentAccepted}
             >
               <span className="me-2">Begin Assessment</span>
-              <FontAwesomeIcon icon={faArrowRight}/>
+              <FontAwesomeIcon icon={faArrowRight} />
             </Button>
           )}
         </div>
@@ -129,9 +128,9 @@ export function HomeInfoCard({
             <Accordion.Header>Frequently Asked Questions</Accordion.Header>
             <Accordion.Body>
               {Array.from({ length: Math.ceil(faqAmount / 2) }, (_, i) => (
-                <Row className="g-4">
-                  {config.faq.slice(i * 2, i * 2 + 2).map(faq => (
-                    <Col md={6}>
+                <Row key={`faq-row-${i}`} className="g-4">
+                  {config.faq.slice(i * 2, i * 2 + 2).map((faq, index) => (
+                    <Col key={`faq-${i * 2 + index}`} md={6}>
                       <h5 className="h6 fw-bold">
                         {faq.question}
                       </h5>

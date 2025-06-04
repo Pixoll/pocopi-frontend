@@ -15,6 +15,7 @@ type InputWithIconProps = {
   min?: string;
   max?: string;
   isDarkMode: boolean;
+  error?: boolean; // Nuevo prop para indicar error
 };
 
 export function InputWithIcon({
@@ -28,13 +29,8 @@ export function InputWithIcon({
   min,
   max,
   isDarkMode,
+  error = false, // Nuevo prop con valor por defecto
 }: InputWithIconProps) {
-  const invalidText = name === "id"
-    ? "your identification number"
-    : name === "email"
-      ? "a valid email address"
-      : `a valid ${name.toLowerCase()}`;
-
   return (
     <div className={styles.inputContainer}>
       <FloatingLabel
@@ -45,6 +41,7 @@ export function InputWithIcon({
           className={[
             styles.input,
             isDarkMode ? styles.inputDark : "",
+            error ? styles.inputError : "",
           ].join(" ")}
           type={type}
           placeholder={`Enter your ${name.toLowerCase()}`}
@@ -54,19 +51,21 @@ export function InputWithIcon({
           required={required}
           min={min}
           max={max}
+          isInvalid={error}
         />
-
         <FontAwesomeIcon
           className={[
             styles.icon,
             isDarkMode ? styles.iconDark : styles.iconLight,
+            error ? styles.iconError : "",
           ].join(" ")}
           icon={icon}
         />
-
-        <Form.Control.Feedback type="invalid">
-          Please enter {invalidText}.
-        </Form.Control.Feedback>
+        {error && name !== "email" && (
+          <Form.Control.Feedback type="invalid">
+            Please enter a valid {name.toLowerCase()}.
+          </Form.Control.Feedback>
+        )}
       </FloatingLabel>
     </div>
   );

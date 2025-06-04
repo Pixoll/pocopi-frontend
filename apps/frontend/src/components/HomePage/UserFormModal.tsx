@@ -16,7 +16,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { Form, Modal } from "react-bootstrap";
 import { InputWithIcon } from "./InputWithIcon";
 
-type  UserFormModalProps = {
+type UserFormModalProps = {
   show: boolean;
   onHide: () => void;
   onSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
@@ -41,12 +41,25 @@ export function UserFormModal({
     age: 0,
   });
 
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "number" ? +value : value,
     }));
+    if (name === "email") {
+      if (!validateEmail(value)) {
+        setEmailError("Por favor ingresa un email válido.");
+      } else {
+        setEmailError(null);
+      }
+    }
   };
 
   const onSaved = () => {
@@ -63,7 +76,14 @@ export function UserFormModal({
     setError(null);
 
     const form = e.currentTarget;
-    if (!form.checkValidity()) {
+    let valid = true;
+    if (!validateEmail(formData.email)) {
+      setEmailError("Por favor ingresa un email válido.");
+      valid = false;
+    } else {
+      setEmailError(null);
+    }
+    if (!form.checkValidity() || !valid) {
       e.stopPropagation();
       setValidated(true);
       return;
@@ -81,13 +101,12 @@ export function UserFormModal({
       centered
       backdrop="static"
       size="lg"
-      contentClassName={`border-0 rounded-4 shadow ${
-        isDarkMode ? "bg-dark" : ""
-      }`}
+      contentClassName={`border-0 rounded-4 shadow ${isDarkMode ? "bg-dark" : ""
+        }`}
     >
       <div className={styles.header}>
         <h5 className={styles.headerText}>
-          <FontAwesomeIcon icon={faUser}/>
+          <FontAwesomeIcon icon={faUser} />
           Participant Information
         </h5>
 
@@ -111,7 +130,7 @@ export function UserFormModal({
             isDarkMode ? styles.alertDataDark : styles.alertDataLight,
           ].join(" ")}
         >
-          <FontAwesomeIcon icon={faShield} className={styles.alertIcon}/>
+          <FontAwesomeIcon icon={faShield} className={styles.alertIcon} />
           Your data will be treated confidentially and used solely for academic purposes.
         </div>
 
@@ -169,13 +188,19 @@ export function UserFormModal({
           <InputWithIcon
             icon={faEnvelope}
             label="Email Address"
-            type="email"
+            type="text"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
             isDarkMode={isDarkMode}
+            error={!!emailError}
           />
+          {emailError && (
+            <div className="text-danger mb-3" style={{ fontSize: "0.95em" }}>
+              {emailError}
+            </div>
+          )}
 
           <div className={styles.buttonsContainer}>
             <button

@@ -14,7 +14,7 @@ export function HomeHeader({ isDarkMode }: HomeHeaderProps) {
           isDarkMode ? styles.iconDark : styles.iconLight,
         ].join(" ")}
       >
-        <img className={styles.appIcon} src={config.icon.src} alt={config.icon.alt}/>
+        <img className={styles.appIcon} src={config.icon.src} alt={config.icon.alt} />
       </div>
 
       <h1 className={styles.title}>
@@ -22,9 +22,9 @@ export function HomeHeader({ isDarkMode }: HomeHeaderProps) {
       </h1>
 
       {config.subtitle && (
-        <p className={styles.subtitle}>
+        <div className={styles.subtitle}>
           {config.subtitle}
-        </p>
+        </div>
       )}
     </div>
   );
