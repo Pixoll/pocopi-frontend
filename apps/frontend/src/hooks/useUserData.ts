@@ -38,14 +38,7 @@ export function useUserData(): HookedUserData {
   const handleFormSubmit = (data: UserData) => {
     setUserData(data);
     setShowModal(false);
-    
-    if (!data.anonymous) {
-      const jsonToSend = userService.prepareUserDataForSend(data);
-      userService.saveUserData(jsonToSend);
-      console.log("JSON listo para enviar:", jsonToSend);
-    } else {
-      console.log("Usuario anónimo, no se envía solicitud");
-    }
+    userService.saveUserData(data);
   };
 
   return {
