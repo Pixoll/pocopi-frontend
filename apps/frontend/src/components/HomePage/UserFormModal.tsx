@@ -27,14 +27,14 @@ export function UserFormModal({
     id: "",
     name: "",
     email: "",
-    age: "",
+    age: 0,
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "number" ? +value : value,
     }));
   };
 
@@ -120,7 +120,7 @@ export function UserFormModal({
                 label="Age"
                 type="number"
                 name="age"
-                value={formData.age}
+                value={formData.age > 0 ? formData.age.toString() : ""}
                 onChange={handleChange}
                 required
                 min="5"

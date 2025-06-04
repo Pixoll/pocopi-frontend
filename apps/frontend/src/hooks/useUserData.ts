@@ -13,8 +13,6 @@ type HookedUserData = {
   handleFormSubmit: (data: UserData) => void;
 };
 
-
-
 export function useUserData(): HookedUserData {
   const [showModal, setShowModal] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
@@ -34,7 +32,7 @@ export function useUserData(): HookedUserData {
   const handleConsentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setConsentAccepted(e.target.checked);
   };
-  
+
   const handleFormSubmit = (data: UserData) => {
     setUserData(data);
     setShowModal(false);

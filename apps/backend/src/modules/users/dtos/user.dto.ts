@@ -14,7 +14,7 @@ export class UserDto {
     @IsUndefinedIf((user: UserDto) => user.anonymous, {
         message: "$property should not be provided if user is anonymous.",
     })
-    public declare username?: string;
+    public declare name?: string;
 
     @IsEmail()
     @MinLength(1)

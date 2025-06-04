@@ -55,9 +55,9 @@ export function HomeInfoCard({
       <Card.Body className="p-4 p-md-5">
         {/* Información sobre el test */}
         <h2 className="h4 mb-4">About this test</h2>
-        <p className="mb-4">
+        <div className="mb-4">
           <Markdown>{config.description}</Markdown>
-        </p>
+        </div>
         {Array.from({ length: Math.ceil(infoCardsAmount / 2) }, (_, i) => (
           <Row className="gx-4 mb-4">
             {config.informationCards.slice(i * 2, i * 2 + 2).map(({ title, description, color, icon }) => (
