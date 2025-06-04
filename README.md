@@ -57,20 +57,34 @@ Go to [PoCoPI Configuration Documentation](config/README.md) to learn how to con
 
 ### Environment variables
 
-This project uses `.env` files to manage environment-specific and sensitive configuration variables for each app.  
-To modify the environment variables for each app, you should edit `apps/frontend/.env` or `apps/backend/.env`, using both [apps/frontend/.env.example](apps/frontend/.env.example) and [apps/backend/.env.example](apps/backend/.env.example) as examples respectively.
+This project uses `.env` files to manage environment-specific and sensitive configuration variables for each app.
 
-A typical `.env.example` file looks like:
+To modify the environment variables for each app, you should edit `apps/frontend/.env` or `apps/backend/.env`, using
+both [apps/frontend/.env.example](apps/frontend/.env.example) and [apps/backend/.env.example](apps/backend/.env.example)
+as examples respectively.
+
+A typical `.env` file looks like:
+
+#### Backend
 
 ```env
 PORT=3000
+```
+
+#### Frontend
+
+```env
 VITE_API_URL=http://localhost:3000/api
 ```
+
 **Variable descriptions:**
+
 - `PORT`: The port where the application will run.
 - `VITE_API_URL`: The base URL for API requests from the frontend.
 
-> Copy the corresponding `.env.example` file and rename it to `.env` in each app folder.  
+> Copy the corresponding `.env.example` file, rename it to `.env` in each app folder, and fill it with the proper values
+> for your environment.
+
 ## Commands
 
 Run the project while watching for live changes (ideal for development environments):
