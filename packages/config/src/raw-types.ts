@@ -3,6 +3,7 @@ export type FlatRawConfig = {
     title: string;
     subtitle?: string;
     description: string;
+    anonymous?: boolean;
     informationCards?: RawInformationCard[];
     informedConsent: string;
     faq?: RawFaq[];
@@ -16,6 +17,7 @@ export type RawConfig = {
     title: string;
     subtitle?: string;
     description: string;
+    anonymous?: boolean;
     informationCards?: RawInformationCard[];
     informedConsent: string;
     faq?: RawFaq[];

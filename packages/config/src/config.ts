@@ -16,6 +16,9 @@ import {
 import { shuffle } from "./shuffle";
 
 const defaults = Object.freeze({
+    config: Object.freeze({
+        anonymous: false,
+    } satisfies Partial<FlatRawConfig>),
     protocol: Object.freeze({
         allowPreviousPhase: true,
         allowSkipPhase: true,
@@ -48,6 +51,7 @@ export class Config {
     public readonly title: string;
     public readonly subtitle?: string;
     public readonly description: string;
+    public readonly anonymous: boolean;
     public readonly informationCards: readonly InformationCard[];
     public readonly informedConsent: string;
     public readonly faq: readonly Faq[];
@@ -74,6 +78,7 @@ export class Config {
         }
 
         this.description = config.description;
+        this.anonymous = config.anonymous ?? defaults.config.anonymous;
         this.informationCards = Object.freeze(config.informationCards?.map(makeInformationCard) ?? []);
         this.informedConsent = config.informedConsent;
         this.faq = Object.freeze(config.faq?.map(f => Object.freeze(f)) ?? []);

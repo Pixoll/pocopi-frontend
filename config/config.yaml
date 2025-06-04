@@ -10,6 +10,8 @@ description: >
   reasoning. In this test, you will be presented with a series of matrices or designs with a missing part. Your task
   will be to select, from several options, the one that correctly completes the pattern.
 
+anonymous: true
+
 informationCards:
   - title: Scientific purpose
     description: This test is part of academic research in the field of psychometrics.

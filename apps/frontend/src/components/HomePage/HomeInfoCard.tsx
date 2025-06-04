@@ -35,7 +35,7 @@ export function HomeInfoCard({
   return (
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
       {/* Alerta con datos del participante si ya se ingresaron */}
-      {userData && (
+      {userData && !userData.anonymous && (
         <Alert variant="info" className="mb-0 border-0 rounded-0">
           <div className="d-flex align-items-center">
             <div
@@ -98,7 +98,7 @@ export function HomeInfoCard({
         </div>
         {/* Botón para iniciar el test o continuar */}
         <div className="text-center mt-4">
-          {!userData ? (
+          {!userData && !config.anonymous ? (
             <Button
               variant="primary"
               size="lg"
