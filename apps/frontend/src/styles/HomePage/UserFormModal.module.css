@@ -43,16 +43,28 @@
   position: relative;
 }
 
-.alertDark {
+.alertDataDark {
   background-color: #031633;
   border: 1px solid #084298;
   color: #6ea8fe;
 }
 
-.alertLight {
+.alertDataLight {
   background-color: #cff4fc;
   border: 1px solid #9eeaf9;
   color: #055160;
+}
+
+.alertErrorDark {
+  background-color: #2c0b0e;
+  border: 1px solid #842029;
+  color: #ea868f;
+}
+
+.alertErrorLight {
+  background-color: #f8d7da;
+  border: 1px solid #f1aeb5;
+  color: #58151c;
 }
 
 .alertIcon {

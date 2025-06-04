@@ -1,7 +1,7 @@
 import { UserData } from "@/types/user";
 
 export const userService = {
-  saveUserData(data: UserData) {
+  saveUserData(data: UserData, onSaved: () => void, onError: (message: string) => void) {
     console.log("user json:", data);
 
     fetch(`${import.meta.env.VITE_API_URL}/users`, {
@@ -14,12 +14,17 @@ export const userService = {
       .then(async (res) => {
         if (res.status === 201) {
           console.log("user saved successfully.");
+          onSaved();
         } else {
-          console.error("error when saving user:", await res.json().catch(() => res));
+          const errorJson = await res.json().catch(() => null);
+          const errorMessage = errorJson?.message ?? "Unknown error";
+          console.error("error when saving user:", errorJson ?? res);
+          onError(errorMessage);
         }
       })
       .catch((err) => {
         console.error("error when saving user:", err);
+        onError(err.message);
       });
   },
 };

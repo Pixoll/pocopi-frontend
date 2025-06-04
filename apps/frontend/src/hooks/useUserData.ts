@@ -10,7 +10,7 @@ type HookedUserData = {
   handleOpenModal: () => void;
   handleCloseModal: () => void;
   handleConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleFormSubmit: (data: UserData) => void;
+  handleFormSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
 };
 
 export function useUserData(): HookedUserData {
@@ -33,10 +33,12 @@ export function useUserData(): HookedUserData {
     setConsentAccepted(e.target.checked);
   };
 
-  const handleFormSubmit = (data: UserData) => {
-    setUserData(data);
-    setShowModal(false);
-    userService.saveUserData(data);
+  const handleFormSubmit = (data: UserData, onSaved: () => void, onError: (message: string) => void) => {
+    userService.saveUserData(data, () => {
+      setUserData(data);
+      setShowModal(false);
+      onSaved();
+    }, onError);
   };
 
   return {

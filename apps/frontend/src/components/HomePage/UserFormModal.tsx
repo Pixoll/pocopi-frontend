@@ -1,7 +1,16 @@
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
 import { IdentifiableUserData, UserData } from "@/types/user";
-import { faCakeCandles, faEnvelope, faIdCard, faSave, faShield, faUser, } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCakeCandles,
+  faCircleNotch,
+  faEnvelope,
+  faIdCard,
+  faSave,
+  faShield,
+  faUser,
+  faWarning,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Form, Modal } from "react-bootstrap";
@@ -10,7 +19,7 @@ import { InputWithIcon } from "./InputWithIcon";
 type  UserFormModalProps = {
   show: boolean;
   onHide: () => void;
-  onSubmit: (data: UserData) => void;
+  onSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
 };
 
 export function UserFormModal({
@@ -19,6 +28,8 @@ export function UserFormModal({
   onSubmit,
 }: UserFormModalProps) {
   const [validated, setValidated] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
@@ -38,16 +49,29 @@ export function UserFormModal({
     }));
   };
 
+  const onSaved = () => {
+    setSaving(false);
+  };
+
+  const onSavedError = (message: string) => {
+    setSaving(false);
+    setError(message);
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+
     const form = e.currentTarget;
     if (!form.checkValidity()) {
       e.stopPropagation();
       setValidated(true);
       return;
     }
+
     setValidated(true);
-    onSubmit(formData);
+    setSaving(true);
+    onSubmit(formData, onSaved, onSavedError);
   };
 
   return (
@@ -84,12 +108,24 @@ export function UserFormModal({
         <div
           className={[
             styles.alert,
-            isDarkMode ? styles.alertDark : styles.alertLight,
+            isDarkMode ? styles.alertDataDark : styles.alertDataLight,
           ].join(" ")}
         >
           <FontAwesomeIcon icon={faShield} className={styles.alertIcon}/>
           Your data will be treated confidentially and used solely for academic purposes.
         </div>
+
+        {error && (
+          <div
+            className={[
+              styles.alert,
+              isDarkMode ? styles.alertErrorDark : styles.alertErrorLight,
+            ].join(" ")}
+          >
+            <FontAwesomeIcon icon={faWarning} className={styles.alertIcon}/>
+            {error}
+          </div>
+        )}
 
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <InputWithIcon
@@ -154,7 +190,7 @@ export function UserFormModal({
             </button>
 
             <button type="submit" className={[styles.button, styles.saveButton].join(" ")}>
-              <FontAwesomeIcon icon={faSave}/>
+              <FontAwesomeIcon icon={saving ? faCircleNotch : faSave} spin={saving}/>
               Save Information
             </button>
           </div>
