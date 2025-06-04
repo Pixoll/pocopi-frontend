@@ -34,6 +34,13 @@ export declare class Config {
      * @returns The randomly selected group
      */
     sampleGroup(): Group;
+    /**
+     * Gets the total number of questions present in a given group. Returns `null` if the group doesn't exist.
+     *
+     * @param label - The label that identifies the group.
+     *
+     * @return The total number of questions in the group, or `null` if it doesn't exist.
+     */
     getTotalQuestions(label: string): number | null;
 }
 export type InformationCard = {

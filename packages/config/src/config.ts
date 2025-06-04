@@ -141,6 +141,13 @@ export class Config {
         return makeGroup(this.groups[index]!);
     }
 
+    /**
+     * Gets the total number of questions present in a given group. Returns `null` if the group doesn't exist.
+     *
+     * @param label - The label that identifies the group.
+     *
+     * @return The total number of questions in the group, or `null` if it doesn't exist.
+     */
     public getTotalQuestions(label: string): number | null {
         return this.totalGroupQuestionsMap.get(label) ?? null;
     }
