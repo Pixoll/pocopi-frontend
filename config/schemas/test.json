@@ -88,7 +88,7 @@
       "properties": {
         "src": {
           "type": "string",
-          "description": "Filename of the image.",
+          "description": "Path to the image relative to the images directory.",
           "format": "uri-reference",
           "minLength": 1
         },

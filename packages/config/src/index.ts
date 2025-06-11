@@ -1,5 +1,14 @@
 import Decimal from "decimal.js";
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import {
+    constants as fsConstants,
+    copyFileSync,
+    existsSync,
+    mkdirSync,
+    readdirSync,
+    readFileSync,
+    rmSync,
+    writeFileSync,
+} from "fs";
 import { Validator } from "jsonschema";
 import path from "path";
 import yaml from "yaml";
@@ -30,7 +39,9 @@ const HOME_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "home.json");
 const TEST_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "test.json");
 const FRONTEND_PUBLIC_PATH = path.join(__dirname, "../../../apps/frontend/public/images");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
-const IMAGE_NAMES = new Set(readdirSync(IMAGES_DIR));
+const IMAGE_NAMES = new Set<string>((readdirSync(IMAGES_DIR, { recursive: true }) as string[])
+    .map(f => f.replace(/\\/g, "/"))
+);
 
 if (existsSync(FRONTEND_PUBLIC_PATH)) {
     rmSync(FRONTEND_PUBLIC_PATH, {
@@ -392,7 +403,13 @@ function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string
         throw new Error(`Image '${src}' not found in images directory.`);
     }
 
-    copyFileSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src));
+    const dir = path.dirname(path.join(FRONTEND_PUBLIC_PATH, src));
+
+    if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+    }
+
+    copyFileSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src), fsConstants.COPYFILE_FICLONE);
 
     image.src = `images/${src}`;
     usedImages.set(src, yamlPath);
