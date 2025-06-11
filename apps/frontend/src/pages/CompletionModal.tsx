@@ -102,7 +102,7 @@ export function CompletionModal({
                 >
                   <FontAwesomeIcon icon={faTrophy} className="fa-3x"/>
                 </div>
-                <h2 className="h3 mb-0">Test Completed!</h2>
+                <h2 className="h3 mb-0">{config.t("completion.testCompleted")}</h2>
                 <Badge
                   bg={isDarkMode ? "primary" : "light"}
                   text={isDarkMode ? "light" : "success"}
@@ -114,7 +114,7 @@ export function CompletionModal({
                   }}
                 >
                   <FontAwesomeIcon icon={faCheck} className="me-1"/>
-                  Successfully Submitted
+                  {config.t("completion.successfullySubmitted")}
                 </Badge>
               </div>
             </div>
@@ -124,22 +124,12 @@ export function CompletionModal({
               <div className="mb-4">
                 {userData && (
                   <h4 className="h5 mb-4">
-                    Thank you{" "}
-                    {!userData.anonymous && (
-                      <span
-                        className={`fw-bold ${
-                          isDarkMode ? "text-primary" : "text-success"
-                        }`}
-                      >
-                        {userData.name}
-                      </span>
-                    )}
-                    for your participation
+                    {config.t("completion.thankYou", !userData.anonymous ? userData.name : "")}
                   </h4>
                 )}
 
                 <p className="lead">
-                  You have successfully completed the {config.title}.
+                  {config.t("completion.successfullyCompleted", config.title)}
                 </p>
               </div>
 
@@ -167,9 +157,9 @@ export function CompletionModal({
                       }`}
                     >
                       <FontAwesomeIcon icon={faUser} className="me-1"/>
-                      User Info
+                      {config.t("completion.userInfo")}
                     </span>
-                      Registration Information
+                      {config.t("completion.registrationInformation")}
                     </Card.Title>
                     <div>
                       <div className="d-flex align-items-center mb-3">
@@ -197,7 +187,7 @@ export function CompletionModal({
                                 : "text-secondary"
                             }`}
                           >
-                            Name
+                            {config.t("completion.name")}
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
                             {userData.name}
@@ -230,7 +220,7 @@ export function CompletionModal({
                                 : "text-secondary"
                             }`}
                           >
-                            Identification
+                            {config.t("completion.identification")}
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
                             {userData.id}
@@ -263,7 +253,7 @@ export function CompletionModal({
                                 : "text-secondary"
                             }`}
                           >
-                            Email
+                            {config.t("completion.email")}
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
                             {userData.email}
@@ -290,7 +280,7 @@ export function CompletionModal({
               >
                 <Card.Body className="p-3">
                   <Card.Title className="h6 mb-3 text-start">
-                    Additional Options
+                    {config.t("completion.additionalOptions")}
                   </Card.Title>
                   <Row className="g-2">
                     <Col xs={6}>
@@ -303,7 +293,7 @@ export function CompletionModal({
                         disabled
                       >
                         <FontAwesomeIcon icon={faDownload} className="me-2"/>
-                        Download Report
+                        {config.t("completion.downloadReport")}
                       </Button>
                     </Col>
                     <Col xs={6}>
@@ -316,7 +306,7 @@ export function CompletionModal({
                         disabled
                       >
                         <FontAwesomeIcon icon={faChartLine} className="me-2"/>
-                        View Results
+                        {config.t("completion.viewResults")}
                       </Button>
                     </Col>
                   </Row>
@@ -328,8 +318,7 @@ export function CompletionModal({
                   isDarkMode ? "text-light opacity-75" : "text-secondary"
                 }`}
               >
-                Your results have been recorded successfully. These data will be
-                used for academic and research purposes only.
+                {config.t("completion.resultsRecorded")}
               </p>
 
               {/* Botón para regresar a la página principal */}
@@ -350,7 +339,7 @@ export function CompletionModal({
                   }}
                 >
                   <FontAwesomeIcon icon={faHome} className="me-2"/>
-                  Back to Home
+                  {config.t("completion.backToHome")}
                 </Button>
               </div>
             </Card.Body>

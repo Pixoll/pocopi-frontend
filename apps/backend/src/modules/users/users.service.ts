@@ -1,4 +1,5 @@
 import { ConflictException, Injectable } from "@nestjs/common";
+import { config } from "@pocopi/config";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 import { User } from "./entities";
@@ -50,7 +51,7 @@ export class UsersService {
         const filePath = path.join(USERS_DIR, filename);
 
         if (existsSync(filePath)) {
-            throw new ConflictException(`User with id '${user.id}' already exists.`);
+            throw new ConflictException(config.t("errors.userAlreadyExists", user.id));
         }
 
         writeFileSync(filePath, JSON.stringify(user), "utf-8");

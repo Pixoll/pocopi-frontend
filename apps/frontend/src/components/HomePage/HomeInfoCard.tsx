@@ -45,15 +45,14 @@ export function HomeInfoCard({
               <FontAwesomeIcon icon={faFileSignature} className="text-info" />
             </div>
             <div>
-              <strong>Participant: </strong>
-              {userData.name} ({userData.id})
+              {config.t("home.participant", userData.name, userData.id)}
             </div>
           </div>
         </Alert>
       )}
       <Card.Body className="p-4 p-md-5">
         {/* Información sobre el test */}
-        <h2 className="h4 mb-4">About this test</h2>
+        <h2 className="h4 mb-4">{config.t("home.aboutThisTest")}</h2>
         <div className="mb-4">
           <Markdown>{config.description}</Markdown>
         </div>
@@ -83,7 +82,7 @@ export function HomeInfoCard({
         ))}
         {/* Consentimiento informado */}
         <div className="border-top pt-4 mb-4">
-          <h3 className="h5 mb-3">Informed Consent</h3>
+          <h3 className="h5 mb-3">{config.t("home.informedConsent")}</h3>
           <div className="mb-4">
             <Markdown>{config.informedConsent}</Markdown>
           </div>
@@ -104,7 +103,7 @@ export function HomeInfoCard({
               className="px-5 py-3 rounded-pill shadow-sm"
               onClick={onStartTest}
             >
-              <span className="me-2">Start Test</span>
+              <span className="me-2">{config.t("home.startTest")}</span>
               <FontAwesomeIcon icon={faArrowRight} />
             </Button>
           ) : (
@@ -115,7 +114,7 @@ export function HomeInfoCard({
               onClick={onBeginAssessment}
               disabled={!consentAccepted}
             >
-              <span className="me-2">Begin Assessment</span>
+              <span className="me-2">{config.t("home.register")}</span>
               <FontAwesomeIcon icon={faArrowRight} />
             </Button>
           )}
@@ -125,7 +124,7 @@ export function HomeInfoCard({
       {faqAmount > 0 && (
         <Accordion className="border-top" flush>
           <Accordion.Item eventKey="0">
-            <Accordion.Header>Frequently Asked Questions</Accordion.Header>
+            <Accordion.Header>{config.t("home.frequentlyAskedQuestions")}</Accordion.Header>
             <Accordion.Body>
               {Array.from({ length: Math.ceil(faqAmount / 2) }, (_, i) => (
                 <Row key={`faq-row-${i}`} className="g-4">

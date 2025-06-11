@@ -208,7 +208,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       >
         <div className="text-center">
           <Spinner animation="border" variant="primary" className="mb-3"/>
-          <p>Cargando resultados del test...</p>
+          <p>{config.t("dashboard.loadingResults")}</p>
         </div>
       </Container>
     );
@@ -228,7 +228,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                 icon={faChartLine}
                 className="me-2 text-primary"
               />
-              {config.title} - Analíticas
+              {config.t("dashboard.analytics", config.title)}
             </h2>
             <Button
               variant={isDarkMode ? "outline-light" : "outline-dark"}
@@ -236,11 +236,11 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
               className="d-flex align-items-center"
             >
               <FontAwesomeIcon icon={faArrowLeft} className="me-2"/>
-              Volver al Inicio
+              {config.t("dashboard.backToHome")}
             </Button>
           </div>
           <p className="text-secondary">
-            Ver y exportar los resultados del test de los participantes.
+            {config.t("dashboard.viewAndExportResults")}
           </p>
         </Col>
       </Row>
@@ -266,12 +266,12 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             onSelect={(k) => k && setSelectedTab(k)}
             className={isDarkMode ? "text-white" : ""}
           >
-            <Tab eventKey="participants" title="Lista de Participantes">
+            <Tab eventKey="participants" title={config.t("dashboard.participantsList")}>
               <Card
                 className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}
               >
                 <Card.Header className="d-flex justify-content-between align-items-center bg-transparent border-bottom-0 pt-4">
-                  <h5 className="mb-0">Resultados del Test</h5>
+                  <h5 className="mb-0">{config.t("dashboard.testResults")}</h5>
                   <div>
                     <Button
                       variant="primary"
@@ -281,7 +281,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       disabled={participants.length === 0}
                     >
                       <FontAwesomeIcon icon={faDownload} className="me-2"/>
-                      Exportar CSV
+                      {config.t("dashboard.exportCsv")}
                     </Button>
                   </div>
                 </Card.Header>
@@ -289,7 +289,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                   {participants.length === 0 ? (
                     <div className="text-center py-5">
                       <p className="text-muted mb-0">
-                        No hay resultados disponibles todavía
+                        {config.t("dashboard.noResults")}
                       </p>
                     </div>
                   ) : (
@@ -300,14 +300,14 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     >
                       <thead>
                       <tr>
-                        <th>Participante</th>
-                        <th>Grupo</th>
-                        <th>Fecha</th>
-                        <th>Tiempo (s)</th>
-                        <th>Correctas</th>
-                        <th>Total</th>
-                        <th>Precisión</th>
-                        <th>Acciones</th>
+                        <th>{config.t("dashboard.participant")}</th>
+                        <th>{config.t("dashboard.group")}</th>
+                        <th>{config.t("dashboard.date")}</th>
+                        <th>{config.t("dashboard.timeTaken")}</th>
+                        <th>{config.t("dashboard.correct")}</th>
+                        <th>{config.t("dashboard.total")}</th>
+                        <th>{config.t("dashboard.accuracy")}</th>
+                        <th>{config.t("dashboard.actions")}</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -331,7 +331,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                                   {participant.name}
                                 </div>
                                 <small className="text-secondary">
-                                  ID: {participant.userId}
+                                  {config.t("dashboard.id", participant.userId)}
                                 </small>
                               </div>
                             </div>
@@ -360,7 +360,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                                   participant.userId
                                 )
                               }
-                              title="Exportar resultados detallados"
+                              title={config.t("dashboard.exportParticipantResult")}
                             >
                               <FontAwesomeIcon icon={faFileExport}/>
                             </Button>
@@ -382,7 +382,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                   <Row className="g-4">
                     <Col md={6} lg={3}>
                       <StatCard
-                        title="Total Participantes"
+                        title={config.t("dashboard.totalParticipants")}
                         value={participants.length.toString()}
                         icon={faUser}
                         isDarkMode={isDarkMode}
@@ -390,7 +390,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     </Col>
                     <Col md={6} lg={3}>
                       <StatCard
-                        title="Precisión Promedio"
+                        title={config.t("dashboard.averageAccuracy")}
                         value={`${calculateAverageAccuracy(participants)}%`}
                         icon={faCheckCircle}
                         isDarkMode={isDarkMode}
@@ -398,7 +398,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     </Col>
                     <Col md={6} lg={3}>
                       <StatCard
-                        title="Tiempo Promedio"
+                        title={config.t("dashboard.averageTimeTaken")}
                         value={`${calculateAverageTime(participants)} seg`}
                         icon={faChartLine}
                         isDarkMode={isDarkMode}
@@ -406,7 +406,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     </Col>
                     <Col md={6} lg={3}>
                       <StatCard
-                        title="Total Preguntas"
+                        title={config.t("dashboard.totalQuestionsAnswered")}
                         value={`${calculateTotalQuestions(participants)}`}
                         icon={faChartLine}
                         isDarkMode={isDarkMode}

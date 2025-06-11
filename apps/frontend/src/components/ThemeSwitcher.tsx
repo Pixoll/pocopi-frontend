@@ -2,6 +2,7 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/ThemeSwitcher.module.css";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
 
 export function ThemeSwitcher() {
   const { theme, toggleTheme } = useTheme();
@@ -14,7 +15,7 @@ export function ThemeSwitcher() {
         isDark ? styles.themeSwitcherDark : styles.themeSwitcherLight,
       ].join(" ")}
       onClick={toggleTheme}
-      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      aria-label={config.t("home.themeSwitchButtonHint", isDark ? "light" : "dark")}
     >
       <FontAwesomeIcon
         icon={isDark ? faSun : faMoon}

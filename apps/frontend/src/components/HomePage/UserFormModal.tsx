@@ -12,6 +12,7 @@ import {
   faWarning,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Form, Modal } from "react-bootstrap";
 import { InputWithIcon } from "./InputWithIcon";
@@ -58,7 +59,7 @@ export function UserFormModal({
     }));
     if (name === "email") {
       if (!validateEmail(value)) {
-        setEmailError("Por favor ingresa un email válido.");
+        setEmailError(config.t("home.pleaseEnterValid", "email"));
       } else {
         setEmailError(null);
       }
@@ -81,7 +82,7 @@ export function UserFormModal({
     const form = e.currentTarget;
     let valid = true;
     if (!validateEmail(formData.email)) {
-      setEmailError("Por favor ingresa un email válido.");
+      setEmailError(config.t("home.pleaseEnterValid", "email"));
       valid = false;
     } else {
       setEmailError(null);
@@ -110,7 +111,7 @@ export function UserFormModal({
       <div className={styles.header}>
         <h5 className={styles.headerText}>
           <FontAwesomeIcon icon={faUser} />
-          Participant Information
+          {config.t("home.participantInformation")}
         </h5>
 
         <button
@@ -134,7 +135,7 @@ export function UserFormModal({
           ].join(" ")}
         >
           <FontAwesomeIcon icon={faShield} className={styles.alertIcon} />
-          Your data will be treated confidentially and used solely for academic purposes.
+          {config.t("home.registrationModalMessage")}
         </div>
 
         {error && (
@@ -152,7 +153,7 @@ export function UserFormModal({
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <InputWithIcon
             icon={faUser}
-            label="Full Name"
+            label={config.t("home.fullName")}
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -164,7 +165,7 @@ export function UserFormModal({
             <div className={styles.inputGroupMember}>
               <InputWithIcon
                 icon={faIdCard}
-                label="Identification Number"
+                label={config.t("home.identificationNumber")}
                 name="id"
                 value={formData.id}
                 onChange={handleChange}
@@ -175,7 +176,7 @@ export function UserFormModal({
             <div className={styles.inputGroupMember}>
               <InputWithIcon
                 icon={faCakeCandles}
-                label="Age"
+                label={config.t("home.age")}
                 type="number"
                 name="age"
                 value={formData.age > 0 ? formData.age.toString() : ""}
@@ -190,7 +191,7 @@ export function UserFormModal({
 
           <InputWithIcon
             icon={faEnvelope}
-            label="Email Address"
+            label={config.t("home.email")}
             type="text"
             name="email"
             value={formData.email}
@@ -214,12 +215,12 @@ export function UserFormModal({
               ].join(" ")}
               onClick={onHide}
             >
-              Cancel
+              {config.t("home.cancel")}
             </button>
 
             <button type="submit" className={[styles.button, styles.saveButton].join(" ")}>
               <FontAwesomeIcon icon={saving ? faCircleNotch : faSave} spin={saving}/>
-              Save Information
+              {config.t("home.saveInformation")}
             </button>
           </div>
         </Form>

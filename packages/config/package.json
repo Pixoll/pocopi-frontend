@@ -11,6 +11,7 @@
   "scripts": {
     "prestart": "tsc -b ./tsconfig.json ./tsconfig.cjs.json ./tsconfig.esm.json",
     "start": "node .",
+    "poststart": "tsc -b ./tsconfig.json",
     "build": "npm start"
   },
   "devDependencies": {

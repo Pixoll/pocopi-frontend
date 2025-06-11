@@ -1,6 +1,7 @@
 import styles from "@/styles/HomePage/InputWithIcon.module.css";
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
 import { ChangeEvent } from "react";
 import { FloatingLabel, Form } from "react-bootstrap";
 
@@ -63,7 +64,7 @@ export function InputWithIcon({
         />
         {error && name !== "email" && (
           <Form.Control.Feedback type="invalid">
-            Please enter a valid {name.toLowerCase()}.
+              {config.t("home.pleaseEnterValid", label.toLowerCase())}
           </Form.Control.Feedback>
         )}
       </FloatingLabel>

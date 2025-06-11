@@ -1,6 +1,7 @@
 import styles from "@/styles/HomePage/DashboardButton.module.css";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
 
 type DashboardButtonProps = {
   isDarkMode: boolean;
@@ -15,7 +16,7 @@ export function DashboardButton({ isDarkMode, onDashboard }: DashboardButtonProp
         isDarkMode ? styles.dashboardButtonDark : styles.dashboardButtonLight,
       ].join(" ")}
       onClick={onDashboard}
-      title="Admin Dashboard"
+      title={config.t("home.dashboardButtonHint")}
     >
       <FontAwesomeIcon icon={faChartLine} className={styles.icon}/>
     </button>

@@ -1,0 +1,87 @@
+# $schema: ./schemas/translations.json
+
+home:
+  dashboardButtonHint: Panel de Administración
+  # {0} = mode
+  themeSwitchButtonHint: Cambiar a modo {0}
+  # {0} = name
+  # {1} = id
+  participant: "Participante: {0} ({1})"
+  aboutThisTest: Sobre este test
+  informedConsent: Consentimiento Informado
+  startTest: Iniciar Test
+  register: Registrarse
+  frequentlyAskedQuestions: Preguntas Frecuentes
+  # {0} = name of the field
+  pleaseEnterValid: Por favor ingrese un {0} válido.
+  participantInformation: Información del Participante
+  registrationModalMessage: >
+    Tus datos serán tratados confidencialmente y serán utilizados exclusivamente con propósitos académicos.
+  fullName: Nombre Completo
+  identificationNumber: Número de Identificación
+  age: Edad
+  email: Correo Electrónico
+  cancel: Cancelar
+  saveInformation: Guardar Información
+
+test:
+  progress: "Progreso:"
+  # {0} = current phase
+  # {1} = total number of phases
+  # {2} = current question in current phase
+  # {3} = total number of questions in current phase
+  phaseQuestion: Fase {0}/{1} - Pregunta {2}/{3}
+  previousPhase: Fase Anterior
+  previousQuestion: Anterior
+  nextQuestion: Siguiente
+  nextPhase: Fase Siguiente
+
+completion:
+  testCompleted: Test Completado!
+  successfullySubmitted: Enviado Exitosamente
+  # {0} = participant name
+  thankYou: Muchas gracias {0} por tu participación
+  # {0} = test name
+  successfullyCompleted: Haz enviado con éxito el {0}
+  userInfo: Información de Usuario
+  registrationInformation: Información de Registro
+  name: Nombre
+  identification: Identificación
+  email: Correo Electrónico
+  additionalOptions: Opciones Adicionales
+  downloadReport: Descargar Reporte
+  viewResults: Ver Resultados
+  resultsRecorded: >
+    Tus resultados han sido guardados exitosamente.
+    Estos datos serán utilizados exclusivamente con propósitos académicos y de investigación.
+  backToHome: Volver a Inicio
+
+dashboard:
+  loadingResults: Cargando resultados del test...
+  # {0} = test name
+  analytics: "{0} - Analíticas"
+  backToHome: Volver al Inicio
+  viewAndExportResults: Ver y exportar los resultados del test de los participantes.
+  participantsList: Lista de Participantes
+  testResults: Resultados del Test
+  exportCsv: Exportar CSV
+  noResults: No hay resultados disponibles todavía
+  participant: Participante
+  group: Grupo
+  date: Fecha
+  timeTaken: Tiempo (s)
+  correct: Correctas
+  total: Total
+  accuracy: Precisión
+  actions: Acciones
+  # {0} = participant identification number
+  id: "ID: {0}"
+  exportParticipantResult: Exportar resultados detallados
+  totalParticipants: Total Participantes
+  averageAccuracy: Precisión Promedio
+  averageTimeTaken: Tiempo Promedio
+  totalQuestionsAnswered: Total Preguntas
+
+errors:
+  # {0} = participant identification number
+  userAlreadyExists: Usuario con ID '{0}' ya existe.

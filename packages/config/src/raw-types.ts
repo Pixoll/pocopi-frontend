@@ -10,12 +10,14 @@ export type FlatRawConfig = {
     preTestForm?: RawForm;
     postTestForm?: RawForm;
     groups: Record<string, FlatRawGroup>;
+    translations: Record<string, string>;
 };
 
 export type RawMergedConfig =
     & RawFormsConfig
     & RawHomeConfig
-    & RawTestConfig;
+    & RawTestConfig
+    & { translations: RawTranslationsConfig };
 
 export type RawFormsConfig = {
     preTestForm?: RawForm;
@@ -39,6 +41,8 @@ export type RawTestConfig = {
     phases?: Record<string, RawPhase>;
     questions?: Record<string, RawPhaseQuestion>;
 };
+
+export type RawTranslationsConfig = Record<string, string | Record<string, string>>;
 
 export type RawInformationCard = {
     title: string;

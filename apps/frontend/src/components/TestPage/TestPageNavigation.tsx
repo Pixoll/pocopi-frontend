@@ -1,6 +1,7 @@
 import styles from "@/styles/TestPage/TestPageNavigation.module.css";
 import { faAngleLeft, faAngleRight, faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
 
 type TestPageNavigationProps = {
   onPreviousPhase: () => void;
@@ -46,7 +47,7 @@ export function TestPageNavigation({
           hidden={hidePreviousPhase}
         >
           <FontAwesomeIcon icon={faArrowLeft} className={styles.iconLeft}/>
-          Previous Phase
+          {config.t("test.previousPhase")}
         </button>
       </div>
 
@@ -58,7 +59,7 @@ export function TestPageNavigation({
           hidden={hidePreviousQuestion}
         >
           <FontAwesomeIcon icon={faAngleLeft} className={styles.iconLeft}/>
-          Previous
+          {config.t("test.previousQuestion")}
         </button>
 
         <button
@@ -66,7 +67,7 @@ export function TestPageNavigation({
           onClick={onNextQuestion}
           disabled={disableNextQuestion}
         >
-          Next
+          {config.t("test.nextQuestion")}
           <FontAwesomeIcon icon={faAngleRight} className={styles.iconRight}/>
         </button>
       </div>
@@ -78,7 +79,7 @@ export function TestPageNavigation({
           disabled={disableNextPhase}
           hidden={hideNextPhase}
         >
-          Next Phase
+          {config.t("test.nextPhase")}
           <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
         </button>
       </div>
