@@ -1,7 +1,7 @@
 # $schema: ./schemas/home.json
 
 icon:
-  src: app_icon.png
+  src: icons/app.png
   alt: App Icon
 title: Raven's Progressive Matrices Test
 subtitle: An assessment to measure analytical reasoning and problem-solving skills.
@@ -18,7 +18,7 @@ informationCards:
       g: 110
       b: 253
     icon:
-      src: flask.svg
+      src: icons/flask.svg
       alt: Flask Icon
   - title: Voluntary participation
     description: Your participation is completely voluntary, and the data will be treated confidentially.
@@ -27,7 +27,7 @@ informationCards:
       g: 135
       b: 84
     icon:
-      src: file_signature.svg
+      src: icons/file_signature.svg
       alt: File Signature Icon
 
 informedConsent: >
