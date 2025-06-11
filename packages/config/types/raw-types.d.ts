@@ -11,7 +11,12 @@ export type FlatRawConfig = {
     postTestForm?: RawForm;
     groups: Record<string, FlatRawGroup>;
 };
-export type RawConfig = {
+export type RawMergedConfig = RawFormsConfig & RawHomeConfig & RawTestConfig;
+export type RawFormsConfig = {
+    preTestForm?: RawForm;
+    postTestForm?: RawForm;
+};
+export type RawHomeConfig = {
     icon: RawImage;
     title: string;
     subtitle?: string;
@@ -20,8 +25,8 @@ export type RawConfig = {
     informationCards?: RawInformationCard[];
     informedConsent: string;
     faq?: RawFaq[];
-    preTestForm?: RawForm;
-    postTestForm?: RawForm;
+};
+export type RawTestConfig = {
     groups: Record<string, RawGroup>;
     protocols?: Record<string, RawProtocol>;
     phases?: Record<string, RawPhase>;

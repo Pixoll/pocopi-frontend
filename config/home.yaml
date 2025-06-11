@@ -1,0 +1,56 @@
+# $schema: ./schemas/home.json
+
+icon:
+  src: app_icon.png
+  alt: App Icon
+title: Raven's Progressive Matrices Test
+subtitle: An assessment to measure analytical reasoning and problem-solving skills.
+description: >
+  Raven's Progressive Matrices Test is one of the most widely used tools for assessing non-verbal intelligence and
+  reasoning. In this test, you will be presented with a series of matrices or designs with a missing part. Your task
+  will be to select, from several options, the one that correctly completes the pattern.
+
+informationCards:
+  - title: Scientific purpose
+    description: This test is part of academic research in the field of psychometrics.
+    color:
+      r: 13
+      g: 110
+      b: 253
+    icon:
+      src: flask.svg
+      alt: Flask Icon
+  - title: Voluntary participation
+    description: Your participation is completely voluntary, and the data will be treated confidentially.
+    color:
+      r: 25
+      g: 135
+      b: 84
+    icon:
+      src: file_signature.svg
+      alt: File Signature Icon
+
+informedConsent: >
+  By agreeing to participate in this study, you acknowledge that:
+
+  - Your participation is completely voluntary.
+
+  - The data provided will be treated with confidentiality.
+
+  - The information collected will be used solely for academic purposes.
+
+  - You can leave the test at any time if you wish.
+
+
+  The test has no time limit, but it is recommended to complete it without interruptions. If you have any questions
+  about the study, you can contact the research team at [research@example.com](mailto:research@example.com).
+
+faq:
+  - question: How long does it take to complete the test?
+    answer: The time varies depending on the person, but it generally takes between 20 and 45 minutes.
+  - question: Can I pause the test and continue later?
+    answer: It is recommended to complete the test without interruptions to obtain more accurate results.
+  - question: How will my data be used?
+    answer: The data will be used solely for academic purposes and will be presented anonymously.
+  - question: Will I receive my results?
+    answer: At the end of the test, you will be provided with information about your performance.
