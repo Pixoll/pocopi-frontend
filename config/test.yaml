@@ -1,0 +1,1080 @@
+# $schema: ./schemas/test.json
+
+groups:
+  control:
+    probability: 0.25
+    protocol: control
+  groupA:
+    probability: 0.25
+    protocol: groupA
+  groupB:
+    probability: 0.25
+    protocol: groupB
+  groupC:
+    probability: 0.25
+    protocol: groupC
+
+protocols:
+  control:
+    phases:
+      - control-phase1
+      - questions:
+          - text: Question 3
+            image:
+              src: control3.webp
+              alt: question image
+            options:
+              - text: "1"
+                image:
+                  src: control3_option1.webp
+                  alt: option 1
+              - text: "2"
+                image:
+                  src: control3_option2.webp
+                  alt: option 2
+              - text: "3"
+                image:
+                  src: control3_option3.webp
+                  alt: option 3
+              - text: "4"
+                image:
+                  src: control3_option4.webp
+                  alt: option 4
+                correct: true
+              - text: "5"
+                image:
+                  src: control3_option5.webp
+                  alt: option 5
+              - text: "6"
+                image:
+                  src: control3_option6.webp
+                  alt: option 6
+          - text: Question 4
+            image:
+              src: control4.webp
+              alt: question image
+            options:
+              - text: "1"
+                image:
+                  src: control4_option1.webp
+                  alt: option 1
+              - text: "2"
+                image:
+                  src: control4_option2.webp
+                  alt: option 2
+                correct: true
+              - text: "3"
+                image:
+                  src: control4_option3.webp
+                  alt: option 3
+              - text: "4"
+                image:
+                  src: control4_option4.webp
+                  alt: option 4
+              - text: "5"
+                image:
+                  src: control4_option5.webp
+                  alt: option 5
+              - text: "6"
+                image:
+                  src: control4_option6.webp
+                  alt: option 6
+  groupA:
+    phases:
+      - questions:
+          - image:
+              src: groupA1.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupA1_option1.webp
+                  alt: option 1
+                correct: true
+              - image:
+                  src: groupA1_option2.webp
+                  alt: option 2
+              - image:
+                  src: groupA1_option3.webp
+                  alt: option 3
+              - image:
+                  src: groupA1_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupA1_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupA1_option6.webp
+                  alt: option 6
+          - image:
+              src: groupA2.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupA2_option1.webp
+                  alt: option 1
+              - image:
+                  src: groupA2_option2.webp
+                  alt: option 2
+                correct: true
+              - image:
+                  src: groupA2_option3.webp
+                  alt: option 3
+              - image:
+                  src: groupA2_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupA2_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupA2_option6.webp
+                  alt: option 6
+      - questions:
+          - image:
+              src: groupA3.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupA3_option1.webp
+                  alt: option 1
+              - image:
+                  src: groupA3_option2.webp
+                  alt: option 2
+              - image:
+                  src: groupA3_option3.webp
+                  alt: option 3
+              - image:
+                  src: groupA3_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupA3_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupA3_option6.webp
+                  alt: option 6
+                correct: true
+          - image:
+              src: groupA4.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupA4_option1.webp
+                  alt: option 1
+              - image:
+                  src: groupA4_option2.webp
+                  alt: option 2
+                correct: true
+              - image:
+                  src: groupA4_option3.webp
+                  alt: option 3
+              - image:
+                  src: groupA4_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupA4_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupA4_option6.webp
+                  alt: option 6
+  groupB:
+    allowPreviousPhase: false
+    allowSkipPhase: false
+    randomize: true
+    phases:
+      - allowPreviousQuestion: false
+        allowSkipQuestion: false
+        randomize: true
+        questions:
+          - randomize: true
+            image:
+              src: groupB1.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupB1_option1.webp
+                  alt: option 1
+              - image:
+                  src: groupB1_option2.webp
+                  alt: option 2
+              - image:
+                  src: groupB1_option3.webp
+                  alt: option 3
+              - image:
+                  src: groupB1_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupB1_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupB1_option6.webp
+                  alt: option 6
+                correct: true
+          - randomize: true
+            image:
+              src: groupB2.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupB2_option1.webp
+                  alt: option 1
+              - image:
+                  src: groupB2_option2.webp
+                  alt: option 2
+                correct: true
+              - image:
+                  src: groupB2_option3.webp
+                  alt: option 3
+              - image:
+                  src: groupB2_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupB2_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupB2_option6.webp
+                  alt: option 6
+      - allowPreviousQuestion: false
+        allowSkipQuestion: false
+        randomize: true
+        questions:
+          - randomize: true
+            image:
+              src: groupB3.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupB3_option1.webp
+                  alt: option 1
+                correct: true
+              - image:
+                  src: groupB3_option2.webp
+                  alt: option 2
+              - image:
+                  src: groupB3_option3.webp
+                  alt: option 3
+              - image:
+                  src: groupB3_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupB3_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupB3_option6.webp
+                  alt: option 6
+          - randomize: true
+            image:
+              src: groupB4.webp
+              alt: question image
+            options:
+              - image:
+                  src: groupB4_option1.webp
+                  alt: option 1
+              - image:
+                  src: groupB4_option2.webp
+                  alt: option 2
+              - image:
+                  src: groupB4_option3.webp
+                  alt: option 3
+                correct: true
+              - image:
+                  src: groupB4_option4.webp
+                  alt: option 4
+              - image:
+                  src: groupB4_option5.webp
+                  alt: option 5
+              - image:
+                  src: groupB4_option6.webp
+                  alt: option 6
+  groupC:
+    phases:
+      - questions:
+          - image:
+              src: groupC_A01.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A02.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+          - image:
+              src: groupC_A03.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A04.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A05.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+          - image:
+              src: groupC_A06.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A07.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+          - image:
+              src: groupC_A08.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A09.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A10.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A11.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_A12.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+      - questions:
+          - image:
+              src: groupC_B01.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B02.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+          - image:
+              src: groupC_B03.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B04.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B05.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B06.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B07.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+          - image:
+              src: groupC_B08.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+          - image:
+              src: groupC_B09.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B10.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B11.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+          - image:
+              src: groupC_B12.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+      - questions:
+          - image:
+              src: groupC_C01.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+                correct: true
+          - image:
+              src: groupC_C02.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_C03.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_C04.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+                correct: true
+          - image:
+              src: groupC_C05.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+                correct: true
+              - text: "8"
+          - image:
+              src: groupC_C06.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_C07.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_C08.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_C09.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+                correct: true
+              - text: "8"
+          - image:
+              src: groupC_C10.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_C11.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_C12.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+      - questions:
+          - image:
+              src: groupC_D01.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D02.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D03.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D04.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+                correct: true
+              - text: "8"
+          - image:
+              src: groupC_D05.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+                correct: true
+          - image:
+              src: groupC_D06.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D07.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D08.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D09.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D10.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_D11.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+              - text: "7"
+              - text: "8"
+      - questions:
+          - image:
+              src: groupC_E01.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+                correct: true
+              - text: "8"
+          - image:
+              src: groupC_E02.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E03.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+                correct: true
+          - image:
+              src: groupC_E04.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E05.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E06.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E07.jpg
+              alt: question image
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E08.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E09.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E10.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E11.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: groupC_E12.jpg
+              alt: question image
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+              - text: "7"
+              - text: "8"
+
+phases:
+  control-phase1:
+    questions:
+      - control-phase1-question1
+      - text: Question 2
+        image:
+          src: control2.webp
+          alt: question image
+        options:
+          - text: "1"
+            image:
+              src: control2_option1.webp
+              alt: option 1
+          - text: "2"
+            image:
+              src: control2_option2.webp
+              alt: option 2
+          - text: "3"
+            image:
+              src: control2_option3.webp
+              alt: option 3
+          - text: "4"
+            image:
+              src: control2_option4.webp
+              alt: option 4
+          - text: "5"
+            image:
+              src: control2_option5.webp
+              alt: option 5
+            correct: true
+          - text: "6"
+            image:
+              src: control2_option6.webp
+              alt: option 6
+
+questions:
+  control-phase1-question1:
+    text: Question 1
+    image:
+      src: control1.webp
+      alt: question image
+    options:
+      - text: "1"
+        image:
+          src: control1_option1.webp
+          alt: option 1
+      - text: "2"
+        image:
+          src: control1_option2.webp
+          alt: option 2
+      - text: "3"
+        image:
+          src: control1_option3.webp
+          alt: option 3
+      - text: "4"
+        image:
+          src: control1_option4.webp
+          alt: option 4
+        correct: true
+      - text: "5"
+        image:
+          src: control1_option5.webp
+          alt: option 5
+      - text: "6"
+        image:
+          src: control1_option6.webp
+          alt: option 6

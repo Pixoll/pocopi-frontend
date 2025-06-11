@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JSON schema for PoCoPI's test configuration file.",
+  "type": "object",
+  "properties": {
+    "groups": {
+      "type": "object",
+      "description": "List of test groups.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/group"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "protocols": {
+      "type": "object",
+      "description": "List of protocols the test groups will use.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/protocol"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "phases": {
+      "type": "object",
+      "description": "List of phases the test protocols will use.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/phase"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "questions": {
+      "type": "object",
+      "description": "List of questions the test phases will use.",
+      "patternProperties": {
+        "^([\\w-]+)$": {
+          "$ref": "#/$defs/phase-question"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "groups"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "group": {
+      "type": "object",
+      "description": "A test group.",
+      "properties": {
+        "probability": {
+          "type": "number",
+          "description": "The chance of this group to be selected. The sum of all the probabilities of all the groups should be 1.",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "protocol": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/protocol"
+            },
+            {
+              "type": "string",
+              "description": "Name of the protocol to use.",
+              "minLength": 1
+            }
+          ]
+        }
+      },
+      "required": [
+        "probability",
+        "protocol"
+      ],
+      "additionalProperties": false
+    },
+    "image": {
+      "type": "object",
+      "description": "An image.",
+      "properties": {
+        "src": {
+          "type": "string",
+          "description": "Filename of the image.",
+          "format": "uri-reference",
+          "minLength": 1
+        },
+        "alt": {
+          "type": "string",
+          "description": "Needed for accessibility reasons (screen readers, image loading failure, etc.)."
+        }
+      },
+      "required": [
+        "src",
+        "alt"
+      ],
+      "additionalProperties": false
+    },
+    "phase": {
+      "type": "object",
+      "description": "Phase of a testing protocol.",
+      "properties": {
+        "allowPreviousQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow going to the previous question or not.",
+          "default": true
+        },
+        "allowSkipQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow skipping the current question without answering it or not.",
+          "default": true
+        },
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the questions or not.",
+          "default": false
+        },
+        "questions": {
+          "type": "array",
+          "description": "List of questions.",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/phase-question"
+              },
+              {
+                "type": "string",
+                "description": "Name of the test question to use.",
+                "minLength": 1
+              }
+            ]
+          },
+          "minLength": 1
+        }
+      },
+      "required": [
+        "questions"
+      ],
+      "additionalProperties": false
+    },
+    "protocol": {
+      "type": "object",
+      "description": "A testing protocol.",
+      "properties": {
+        "allowPreviousPhase": {
+          "type": "boolean",
+          "description": "Whether to allow going to the previous phase or not.",
+          "default": true
+        },
+        "allowSkipPhase": {
+          "type": "boolean",
+          "description": "Whether to allow skipping the current phase without completing it or not.",
+          "default": true
+        },
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the phases or not.",
+          "default": false
+        },
+        "phases": {
+          "type": "array",
+          "description": "Phases of the testing protocol.",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/phase"
+              },
+              {
+                "type": "string",
+                "description": "Name of the test phase to use.",
+                "minLength": 1
+              }
+            ]
+          },
+          "minLength": 1
+        }
+      },
+      "required": [
+        "phases"
+      ],
+      "additionalProperties": false
+    },
+    "phase-question": {
+      "type": "object",
+      "description": "A test question. Must have either text, image, or both.",
+      "properties": {
+        "randomize": {
+          "type": "boolean",
+          "description": "Whether to randomize the order of the options or not.",
+          "default": false
+        },
+        "text": {
+          "type": "string",
+          "description": "The question's text.",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/$defs/image"
+        },
+        "options": {
+          "type": "array",
+          "description": "List of options.",
+          "items": {
+            "$ref": "#/$defs/test-option"
+          },
+          "minLength": 1
+        }
+      },
+      "required": [
+        "options"
+      ],
+      "minProperties": 2,
+      "additionalProperties": false
+    },
+    "test-option": {
+      "type": "object",
+      "description": "An option. Must have either text, image, or both.",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The options's text.",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/$defs/image"
+        },
+        "correct": {
+          "type": "boolean",
+          "description": "Whether it's the correct option or not.",
+          "default": false
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    }
+  }
+}

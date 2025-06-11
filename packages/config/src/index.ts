@@ -7,19 +7,27 @@ import { Config } from "./config";
 import {
     FlatRawConfig,
     FormQuestionType,
-    RawConfig,
     RawForm,
     RawFormQuestion,
+    RawFormsConfig,
+    RawHomeConfig,
     RawImage,
+    RawMergedConfig,
     RawPhase,
     RawPhaseQuestion,
     RawProtocol,
+    RawTestConfig,
 } from "./raw-types";
 
 const ESM_SCRIPT_PATH = path.join(__dirname, "../esm/index.js");
 const CONFIG_DIR = path.join(__dirname, "../../../config");
-const CONFIG_YAML_PATH = path.join(CONFIG_DIR, "config.yaml");
-const CONFIG_JSON_SCHEMA_PATH = path.join(CONFIG_DIR, "config-schema.json");
+const JSON_SCHEMAS_DIR = path.join(CONFIG_DIR, "schemas");
+const FORMS_CONFIG_PATH = path.join(CONFIG_DIR, "forms.yaml");
+const HOME_CONFIG_PATH = path.join(CONFIG_DIR, "home.yaml");
+const TEST_CONFIG_PATH = path.join(CONFIG_DIR, "test.yaml");
+const FORMS_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "forms.json");
+const HOME_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "home.json");
+const TEST_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "test.json");
 const FRONTEND_PUBLIC_PATH = path.join(__dirname, "../../../apps/frontend/public/images");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
 const IMAGE_NAMES = new Set(readdirSync(IMAGES_DIR));
@@ -47,14 +55,28 @@ export { FormQuestionType } from "./raw-types";
  * @returns Processed configuration object
  */
 function getConfig(): Config {
-    const yamlConfig = yaml.parse(readFileSync(CONFIG_YAML_PATH, "utf-8"));
-    const jsonSchema = JSON.parse(readFileSync(CONFIG_JSON_SCHEMA_PATH, "utf-8"));
+    const yamlFormsConfig = yaml.parse(readFileSync(FORMS_CONFIG_PATH, "utf-8"));
+    const yamlHomeConfig = yaml.parse(readFileSync(HOME_CONFIG_PATH, "utf-8"));
+    const yamlTestConfig = yaml.parse(readFileSync(TEST_CONFIG_PATH, "utf-8"));
 
-    new Validator().validate(yamlConfig, jsonSchema, {
+    const formsJsonSchema = JSON.parse(readFileSync(FORMS_JSON_SCHEMA_PATH, "utf-8"));
+    const homeJsonSchema = JSON.parse(readFileSync(HOME_JSON_SCHEMA_PATH, "utf-8"));
+    const testJsonSchema = JSON.parse(readFileSync(TEST_JSON_SCHEMA_PATH, "utf-8"));
+
+    new Validator().validate(yamlFormsConfig, formsJsonSchema, {
         throwAll: true,
     });
 
-    const flatConfig = flattenConfig(yamlConfig);
+    new Validator().validate(yamlHomeConfig, homeJsonSchema, {
+        throwAll: true,
+    });
+
+    new Validator().validate(yamlTestConfig, testJsonSchema, {
+        throwAll: true,
+    });
+
+    const mergedConfigs = mergeConfigs(yamlFormsConfig, yamlHomeConfig, yamlTestConfig);
+    const flatConfig = flattenConfig(mergedConfigs);
     const config = validateConfig(flatConfig);
     exportConfigForBrowser(config);
 
@@ -83,6 +105,27 @@ function exportConfigForBrowser(config: FlatRawConfig): void {
 }
 
 /**
+ * Merges all the configuration files into one
+ *
+ * @param formsConfig Forms config
+ * @param homeConfig Home config
+ * @param testConfig Test config
+ *
+ * @returns Merged config object
+ */
+function mergeConfigs(
+    formsConfig: RawFormsConfig,
+    homeConfig: RawHomeConfig,
+    testConfig: RawTestConfig
+): RawMergedConfig {
+    return {
+        ...formsConfig,
+        ...homeConfig,
+        ...testConfig,
+    };
+}
+
+/**
  * Flattens the configuration by resolving all references to protocols, phases, and questions.
  *
  * This modifies the `config` object, and it does not create a new one. The returned object has the same pointer as the
@@ -92,7 +135,7 @@ function exportConfigForBrowser(config: FlatRawConfig): void {
  *
  * @returns Flattened configuration with all references resolved
  */
-function flattenConfig(config: RawConfig): FlatRawConfig {
+function flattenConfig(config: RawMergedConfig): FlatRawConfig {
     const allProtocols: RawProtocol[] = [];
     const allPhases: RawPhase[] = [];
     const usedProtocols = new Set<string>();

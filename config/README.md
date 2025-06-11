@@ -1,7 +1,7 @@
 # PoCoPI Configuration Documentation
 
 This document explains how to configure the PoCoPI (Proof of Concept of Psycho-Informatics) application using the
-[config.yaml](./config.yaml) file. The configuration defines the experiment structure, including forms, groups,
+various configuration files. The configuration files define the experiment structure, including forms, groups,
 protocols, phases, and questions.
 
 ## Table of Contents
