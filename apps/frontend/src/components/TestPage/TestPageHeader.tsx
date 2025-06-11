@@ -30,7 +30,7 @@ export function TestPageHeader({
         <span>{config.title}</span>
       </h4>
       <div className={styles.progressBarContainer}>
-        <small className={styles.progressText}>Progress:</small>
+        <small className={styles.progressText}>{config.t("test.progress")}</small>
         <div className={styles.progressBar}>
           <div
             className={styles.progressBarFill}
@@ -45,8 +45,7 @@ export function TestPageHeader({
       </div>
       <div className={styles.progressBadgeContainer}>
         <span className={styles.progressBadge}>
-          Phase {phase + 1}/{phasesCount} - Question {question + 1}/
-          {questionsCount}
+          {config.t("test.phaseQuestion", `${phase + 1}`, `${phasesCount}`, `${question + 1}`, `${questionsCount}`)}
         </span>
       </div>
     </div>

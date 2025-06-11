@@ -15,6 +15,8 @@ import yaml from "yaml";
 import { Config } from "./config";
 import {
     FlatRawConfig,
+    FlatRawGroup,
+    FlatRawPhase,
     FormQuestionType,
     RawForm,
     RawFormQuestion,
@@ -26,17 +28,21 @@ import {
     RawPhaseQuestion,
     RawProtocol,
     RawTestConfig,
+    RawTranslationsConfig,
 } from "./raw-types";
 
 const ESM_SCRIPT_PATH = path.join(__dirname, "../esm/index.js");
+const TRANSLATIONS_TS_PATH = path.join(__dirname, "../src/translations.ts");
 const CONFIG_DIR = path.join(__dirname, "../../../config");
 const JSON_SCHEMAS_DIR = path.join(CONFIG_DIR, "schemas");
 const FORMS_CONFIG_PATH = path.join(CONFIG_DIR, "forms.yaml");
 const HOME_CONFIG_PATH = path.join(CONFIG_DIR, "home.yaml");
 const TEST_CONFIG_PATH = path.join(CONFIG_DIR, "test.yaml");
+const TRANSLATIONS_CONFIG_PATH = path.join(CONFIG_DIR, "translations.yaml");
 const FORMS_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "forms.json");
 const HOME_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "home.json");
 const TEST_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "test.json");
+const TRANSLATIONS_JSON_SCHEMA_PATH = path.join(JSON_SCHEMAS_DIR, "translations.json");
 const FRONTEND_PUBLIC_PATH = path.join(__dirname, "../../../apps/frontend/public/images");
 const IMAGES_DIR = path.join(CONFIG_DIR, "images");
 const IMAGE_NAMES = new Set<string>((readdirSync(IMAGES_DIR, { recursive: true }) as string[])
@@ -69,10 +75,12 @@ function getConfig(): Config {
     const yamlFormsConfig = yaml.parse(readFileSync(FORMS_CONFIG_PATH, "utf-8"));
     const yamlHomeConfig = yaml.parse(readFileSync(HOME_CONFIG_PATH, "utf-8"));
     const yamlTestConfig = yaml.parse(readFileSync(TEST_CONFIG_PATH, "utf-8"));
+    const yamlTranslationsConfig = yaml.parse(readFileSync(TRANSLATIONS_CONFIG_PATH, "utf-8"));
 
     const formsJsonSchema = JSON.parse(readFileSync(FORMS_JSON_SCHEMA_PATH, "utf-8"));
     const homeJsonSchema = JSON.parse(readFileSync(HOME_JSON_SCHEMA_PATH, "utf-8"));
     const testJsonSchema = JSON.parse(readFileSync(TEST_JSON_SCHEMA_PATH, "utf-8"));
+    const translationsJsonSchema = JSON.parse(readFileSync(TRANSLATIONS_JSON_SCHEMA_PATH, "utf-8"));
 
     new Validator().validate(yamlFormsConfig, formsJsonSchema, {
         throwAll: true,
@@ -86,16 +94,21 @@ function getConfig(): Config {
         throwAll: true,
     });
 
-    const mergedConfigs = mergeConfigs(yamlFormsConfig, yamlHomeConfig, yamlTestConfig);
+    new Validator().validate(yamlTranslationsConfig, translationsJsonSchema, {
+        throwAll: true,
+    });
+
+    const mergedConfigs = mergeConfigs(yamlFormsConfig, yamlHomeConfig, yamlTestConfig, yamlTranslationsConfig);
     const flatConfig = flattenConfig(mergedConfigs);
     const config = validateConfig(flatConfig);
     exportConfigForBrowser(config);
+    createTranslationKeyType(config);
 
     return new Config(config);
 }
 
 /**
- * Exports the configuration for browser use by replacing ESM_SCRIPT_PATH such that it doesn't require filesystem
+ * Exports the configuration for browser use by replacing `ESM_SCRIPT_PATH` such that it doesn't require filesystem
  * access.
  *
  * @param config - The validated and flattened configuration
@@ -116,115 +129,160 @@ function exportConfigForBrowser(config: FlatRawConfig): void {
 }
 
 /**
- * Merges all the configuration files into one
+ * Creates the `TranslationKey` at `TRANSLATIONS_TS_PATH` so we can have type safety outside the package.
+ *
+ * @param config The validated and flattened configuration
+ */
+function createTranslationKeyType(config: FlatRawConfig): void {
+    const translationKeys = Object.keys(config.translations).map(k => `"${k}"`).join("\n    | ");
+    const translationsTs = `
+        export type TranslationKey =
+            | ${translationKeys};
+    `.trim().replace(/^ {8}/gm, "") + "\n";
+
+    writeFileSync(TRANSLATIONS_TS_PATH, translationsTs, "utf-8");
+}
+
+/**
+ * Merges all the configuration files into one.
  *
  * @param formsConfig Forms config
  * @param homeConfig Home config
  * @param testConfig Test config
+ * @param translationsConfig Translations config
  *
  * @returns Merged config object
  */
 function mergeConfigs(
     formsConfig: RawFormsConfig,
     homeConfig: RawHomeConfig,
-    testConfig: RawTestConfig
+    testConfig: RawTestConfig,
+    translationsConfig: RawTranslationsConfig
 ): RawMergedConfig {
     return {
         ...formsConfig,
         ...homeConfig,
         ...testConfig,
+        translations: translationsConfig,
     };
 }
 
 /**
  * Flattens the configuration by resolving all references to protocols, phases, and questions.
  *
- * This modifies the `config` object, and it does not create a new one. The returned object has the same pointer as the
- * one passed in the arguments.
- *
  * @param config - The raw configuration with possible references
  *
  * @returns Flattened configuration with all references resolved
  */
 function flattenConfig(config: RawMergedConfig): FlatRawConfig {
-    const allProtocols: RawProtocol[] = [];
-    const allPhases: RawPhase[] = [];
+    const groups: Record<string, FlatRawGroup> = {};
+    const translations: Record<string, string> = {};
     const usedProtocols = new Set<string>();
     const usedPhases = new Set<string>();
     const usedQuestions = new Set<string>();
 
-    for (const group of Object.values(config.groups)) {
-        if (typeof group.protocol === "object") {
-            allProtocols.push(group.protocol);
+    // flatten groups
+    for (const [label, group] of Object.entries(config.groups)) {
+        let protocol = group.protocol;
+
+        // flatten protocol
+        if (typeof protocol === "string") {
+            if (usedProtocols.has(protocol)) {
+                console.warn(`Protocol '${protocol}' already used.`);
+            }
+
+            usedProtocols.add(protocol);
+
+            const protocolObject = config.protocols?.[protocol];
+            if (!protocolObject) {
+                throw new Error(`Protocol '${protocol}' does not exist in protocols list.`);
+            }
+
+            protocol = JSON.parse(JSON.stringify(protocolObject)) as RawProtocol;
+        }
+
+        // flatten phases
+        const phases = protocol.phases.map<FlatRawPhase>(phase => {
+            if (typeof phase === "string") {
+                if (usedPhases.has(phase)) {
+                    console.warn(`Phase '${phase}' already used.`);
+                }
+
+                usedPhases.add(phase);
+
+                const phaseObject = config.phases?.[phase];
+                if (!phaseObject) {
+                    throw new Error(`Phase '${phase}' does not exist in phases list.`);
+                }
+
+                phase = JSON.parse(JSON.stringify(phaseObject)) as RawPhase;
+            }
+
+            // flatten questions
+            const questions = phase.questions.map<RawPhaseQuestion>(question => {
+                if (typeof question === "object") {
+                    return question;
+                }
+
+                if (usedQuestions.has(question)) {
+                    console.warn(`Question '${question}' already used.`);
+                }
+
+                usedQuestions.add(question);
+
+                const questionObject = config.questions?.[question];
+                if (!questionObject) {
+                    throw new Error(`Question '${question}' does not exist in questions list.`);
+                }
+
+                return JSON.parse(JSON.stringify(questionObject)) as RawPhaseQuestion;
+            });
+
+            return {
+                allowPreviousQuestion: phase.allowPreviousQuestion,
+                allowSkipQuestion: phase.allowSkipQuestion,
+                randomize: phase.randomize,
+                questions,
+            };
+        });
+
+        groups[label] = {
+            probability: group.probability,
+            protocol: {
+                allowPreviousPhase: protocol.allowPreviousPhase,
+                allowSkipPhase: protocol.allowSkipPhase,
+                randomize: protocol.randomize,
+                phases,
+            },
+        };
+    }
+
+    // flatten translations
+    for (const [key, value] of Object.entries(config.translations)) {
+        if (typeof value === "string") {
+            translations[key] = value;
             continue;
         }
 
-        if (usedProtocols.has(group.protocol)) {
-            console.warn(`Protocol '${group.protocol}' already used.`);
-        }
-
-        usedProtocols.add(group.protocol);
-
-        const protocolObject = config.protocols?.[group.protocol];
-        if (!protocolObject) {
-            throw new Error(`Protocol '${group.protocol}' does not exist in protocols list.`);
-        }
-
-        group.protocol = JSON.parse(JSON.stringify(protocolObject)) as RawProtocol;
-        allProtocols.push(group.protocol);
-    }
-
-    for (const { phases } of allProtocols) {
-        for (let i = 0; i < phases.length; i++) {
-            const phase = phases[i]!;
-            if (typeof phase === "object") {
-                allPhases.push(phase);
-                continue;
-            }
-
-            if (usedPhases.has(phase)) {
-                console.warn(`Phase '${phase}' already used.`);
-            }
-
-            usedPhases.add(phase);
-
-            const phaseObject = config.phases?.[phase];
-            if (!phaseObject) {
-                throw new Error(`Phase '${phase}' does not exist in phases list.`);
-            }
-
-            phases[i] = JSON.parse(JSON.stringify(phaseObject)) as RawPhase;
-            allPhases.push(phases[i] as RawPhase);
+        for (const [subkey, subvalue] of Object.entries(value)) {
+            translations[`${key}.${subkey}`] = subvalue;
         }
     }
 
-    for (const { questions } of allPhases) {
-        for (let i = 0; i < questions.length; i++) {
-            const question = questions[i]!;
-            if (typeof question === "object") {
-                continue;
-            }
-
-            if (usedQuestions.has(question)) {
-                console.warn(`Question '${question}' already used.`);
-            }
-
-            usedQuestions.add(question);
-
-            const questionObject = config.questions?.[question];
-            if (!questionObject) {
-                throw new Error(`Question '${question}' does not exist in questions list.`);
-            }
-
-            questions[i] = JSON.parse(JSON.stringify(questionObject)) as RawPhaseQuestion;
-        }
-    }
-
-    delete config.protocols;
-    delete config.phases;
-    delete config.questions;
-
-    return config as unknown as FlatRawConfig;
+    return {
+        icon: config.icon,
+        title: config.title,
+        subtitle: config.subtitle,
+        description: config.description,
+        anonymous: config.anonymous,
+        informationCards: config.informationCards,
+        informedConsent: config.informedConsent,
+        faq: config.faq,
+        preTestForm: config.preTestForm,
+        postTestForm: config.postTestForm,
+        groups,
+        translations,
+    };
 }
 
 /**

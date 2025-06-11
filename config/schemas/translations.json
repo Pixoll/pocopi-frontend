@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JSON schema for PoCoPI's translations configuration file.",
+  "type": "object",
+  "patternProperties": {
+    "^\\w+$": {
+      "oneOf": [
+        {
+          "type": "string",
+          "default": "The value of the translated key."
+        },
+        {
+          "type": "object",
+          "default": "A group of translation keys.",
+          "patternProperties": {
+            "^\\w+$": {
+              "type": "string",
+              "default": "The value of the translated key."
+            }
+          },
+          "minProperties": 1
+        }
+      ]
+    }
+  },
+  "minProperties": 1
+}

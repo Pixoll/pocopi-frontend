@@ -14,6 +14,7 @@ import {
     RawTestOption,
 } from "./raw-types";
 import { shuffle } from "./shuffle";
+import { TranslationKey } from "./translations";
 
 const defaults = Object.freeze({
     config: Object.freeze({
@@ -62,6 +63,7 @@ export class Config {
     private readonly groups: readonly FlatRawGroupWithLabel[];
     private readonly totalGroupQuestionsMap: ReadonlyMap<string, number>;
     private readonly probabilitySums: readonly Decimal[];
+    private readonly translations: Translations;
 
     /**
      * Main configuration class that processes and provides access to experiment configuration.
@@ -108,6 +110,7 @@ export class Config {
         }
 
         this.probabilitySums = Object.freeze(probabilitySums);
+        this.translations = Object.freeze(config.translations);
 
         Object.freeze(this);
     }
@@ -150,6 +153,30 @@ export class Config {
      */
     public getTotalQuestions(label: string): number | null {
         return this.totalGroupQuestionsMap.get(label) ?? null;
+    }
+
+    /**
+     * Get a translation value by its key.
+     *
+     * @param key The translation key.
+     * @param args List of values to replace in the translation string.
+     *
+     * @throws Error on unknown key
+     *
+     * @return The translation string with the proper inset values.
+     */
+    public t(key: TranslationKey, ...args: string[]): string {
+        let value = this.translations[key];
+
+        if (!value) {
+            throw new Error(`Translation key '${key}' not found.`);
+        }
+
+        for (let i = 0; i < args.length; i++) {
+            value = value.replace(`{${i}}`, args[i]!);
+        }
+
+        return value;
     }
 }
 
@@ -385,6 +412,8 @@ function makeTestOption(option: RawTestOption): TestOption {
         correct: option.correct ?? defaults.testOption.correct,
     });
 }
+
+export type Translations = Readonly<Record<string, string>>;
 
 export type InformationCard = {
     readonly title: string;

@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 import { FlatRawConfig, FormQuestionType } from "./raw-types";
+import { TranslationKey } from "./translations";
 /**
  * Main configuration class that processes and provides access to experiment configuration.
  */
@@ -18,6 +19,7 @@ export declare class Config {
     private readonly groups;
     private readonly totalGroupQuestionsMap;
     private readonly probabilitySums;
+    private readonly translations;
     /**
      * Main configuration class that processes and provides access to experiment configuration.
      *
@@ -42,7 +44,19 @@ export declare class Config {
      * @return The total number of questions in the group, or `null` if it doesn't exist.
      */
     getTotalQuestions(label: string): number | null;
+    /**
+     * Get a translation value by its key.
+     *
+     * @param key The translation key.
+     * @param args List of values to replace in the translation string.
+     *
+     * @throws Error on unknown key
+     *
+     * @return The translation string with the proper inset values.
+     */
+    t(key: TranslationKey, ...args: string[]): string;
 }
+export type Translations = Readonly<Record<string, string>>;
 export type InformationCard = {
     readonly title: string;
     readonly description: string;
