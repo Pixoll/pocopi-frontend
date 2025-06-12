@@ -9,6 +9,7 @@ home:
   participant: "Participante: {0} ({1})"
   aboutThisTest: Sobre este test
   informedConsent: Consentimiento Informado
+  iAcceptInformedConsent: He leído y acepto el consentimiento informado
   startTest: Iniciar Test
   register: Registrarse
   frequentlyAskedQuestions: Preguntas Frecuentes

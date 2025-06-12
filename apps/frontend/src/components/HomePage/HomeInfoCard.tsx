@@ -89,7 +89,7 @@ export function HomeInfoCard({
           <Form.Check
             type="checkbox"
             id="consent-checkbox"
-            label="I have read and accept the informed consent"
+            label={config.t("home.iAcceptInformedConsent")}
             onChange={onConsentChange}
             className="user-select-none fw-bold"
           />

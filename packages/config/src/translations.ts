@@ -4,6 +4,7 @@ export type TranslationKey =
     | "home.participant"
     | "home.aboutThisTest"
     | "home.informedConsent"
+    | "home.iAcceptInformedConsent"
     | "home.startTest"
     | "home.register"
     | "home.frequentlyAskedQuestions"
