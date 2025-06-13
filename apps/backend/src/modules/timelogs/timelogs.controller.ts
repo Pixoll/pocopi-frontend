@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
-import { TimelogDto } from "./dtos/timelog.dto";
-import { Timelog } from "./entities/timelog.entity";
+import { TimelogDto } from "./dtos";
+import { Timelog } from "./entities";
 import { TimelogsService } from "./timelogs.service";
 
 @Controller("timelogs")
@@ -14,7 +14,15 @@ export class TimelogsController {
     }
 
     @Get()
-    public getTimelogs(): Timelog[] {
-        return this.timelogService.getTimelogs();
+    public getAllTimelogs(): Timelog[] {
+        const timelogs: Timelog[] = [];
+
+        for (const userTimelogs of this.timelogService.getTimelogs().values()) {
+            for (const timelog of userTimelogs) {
+                timelogs.push(timelog);
+            }
+        }
+
+        return timelogs;
     }
-}     
+}

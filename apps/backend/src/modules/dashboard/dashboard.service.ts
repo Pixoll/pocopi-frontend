@@ -14,55 +14,53 @@ export class DashboardService {
     }
 
     public getSummary(): Summary {
-        const timelogs = this.timelogsService.getTimelogs();
+        const userTimelogs = this.timelogsService.getTimelogs();
         const users = new Map(this.usersService.getUsers().map(u => [u.id, u]));
 
         let totalAccuracy = 0;
         let totalTimeTaken = 0;
         let totalQuestionsAnswered = 0;
-        const summaryUsers = new Map<string, UserSummary>();
-        const questionsAnsweredMap = new Map<string, Map<string, QuestionStatus>>();
+        const userSummaries: UserSummary[] = [];
 
-        for (const timelog of timelogs) {
-            const user = users.get(timelog.userId);
-            if (!user || config.getTotalQuestions(user.group) === null) {
+        for (const [userId, timelogs] of userTimelogs) {
+            const user = users.get(userId);
+            if (!user || config.getTotalQuestions(user.group) === null || timelogs.length === 0) {
                 continue;
             }
 
-            const userSummary = summaryUsers.get(user.id) ?? {
-                id: user.id,
+            const questionsAnswered = new Map<string, QuestionStatus>();
+
+            const userSummary = {
+                id: userId,
                 name: user.anonymous ? config.t("backend.anonymousUser") : user.name!,
+                email: user.email,
+                age: user.age,
                 group: user.group,
-                timestamp: timelog.startTimestamp,
+                timestamp: Date.now(),
                 timeTaken: 0,
                 correctQuestions: 0,
                 questionsAnswered: 0,
                 accuracy: 0,
             } satisfies UserSummary;
 
-            const questionsAnswered = questionsAnsweredMap.get(user.id) ?? new Map<string, QuestionStatus>();
-            const questionId = `${timelog.phaseId}:${timelog.questionId}`;
-            const questionStatus = questionsAnswered.get(questionId) ?? {
-                timestamp: 0,
-                correct: false,
-            } satisfies QuestionStatus;
+            for (const timelog of timelogs) {
+                const questionId = `${timelog.phaseId}:${timelog.questionId}`;
+                const questionStatus = questionsAnswered.get(questionId) ?? {
+                    timestamp: 0,
+                    correct: false,
+                } satisfies QuestionStatus;
 
-            if (timelog.endTimestamp > questionStatus.timestamp) {
-                questionStatus.timestamp = timelog.endTimestamp;
-                questionStatus.correct = timelog.correct;
+                if (timelog.endTimestamp > questionStatus.timestamp) {
+                    questionStatus.timestamp = timelog.endTimestamp;
+                    questionStatus.correct = timelog.correct;
+                }
+
+                userSummary.timestamp = Math.min(userSummary.timestamp, timelog.startTimestamp);
+                userSummary.timeTaken = Math.max(userSummary.timeTaken, timelog.endTimestamp - userSummary.timestamp);
+                userSummary.questionsAnswered = questionsAnswered.size;
+
+                questionsAnswered.set(questionId, questionStatus);
             }
-
-            userSummary.timestamp = Math.min(userSummary.timestamp, timelog.startTimestamp);
-            userSummary.timeTaken = Math.max(userSummary.timeTaken, timelog.endTimestamp - userSummary.timestamp);
-            userSummary.questionsAnswered = questionsAnswered.size;
-
-            summaryUsers.set(user.id, userSummary);
-            questionsAnswered.set(questionId, questionStatus);
-            questionsAnsweredMap.set(user.id, questionsAnswered);
-        }
-
-        for (const [userId, userSummary] of summaryUsers) {
-            const questionsAnswered = questionsAnsweredMap.get(userId)!;
 
             for (const { correct } of questionsAnswered.values()) {
                 if (correct) {
@@ -77,13 +75,15 @@ export class DashboardService {
             totalAccuracy += accuracy;
             totalTimeTaken += userSummary.timeTaken;
             totalQuestionsAnswered += userSummary.questionsAnswered;
+
+            userSummaries.push(userSummary);
         }
 
         return {
-            averageAccuracy: totalAccuracy / summaryUsers.size,
-            averageTimeTaken: totalTimeTaken / summaryUsers.size,
+            averageAccuracy: totalAccuracy / userSummaries.length,
+            averageTimeTaken: totalTimeTaken / userSummaries.length,
             totalQuestionsAnswered,
-            users: [...summaryUsers.values()],
+            users: userSummaries,
         };
     }
 }

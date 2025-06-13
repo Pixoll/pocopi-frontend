@@ -1,3 +1,4 @@
+import { Timelog } from "@/analytics/TestAnalytics";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
@@ -14,7 +15,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 import { useEffect, useState } from "react";
-import { Alert, Badge, Button, Card, Col, Container, Row, Tab, Table, Tabs } from "react-bootstrap";
+import { Alert, Badge, Button, Card, Col, Container, Row, Spinner, Tab, Table, Tabs } from "react-bootstrap";
 
 enum DashboardTab {
   PARTICIPANTS = "participants",
@@ -31,6 +32,8 @@ type Summary = {
 type UserSummary = {
   id: string;
   name: string;
+  email?: string;
+  age?: number;
   group: string;
   timestamp: number;
   timeTaken: number;
@@ -50,7 +53,9 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
     totalQuestionsAnswered: 0,
     users: [],
   });
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingSummary, setLoadingSummary] = useState<boolean>(true);
+  const [loadingExportSummary, setLoadingExportSummary] = useState<boolean>(false);
+  const [loadingExportUserTimelogs, setLoadingExportUserTimelogs] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<DashboardTab>(DashboardTab.PARTICIPANTS);
   const { theme } = useTheme();
@@ -62,7 +67,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
   const loadData = async () => {
     try {
-      setLoading(true);
+      setLoadingSummary(true);
       setError(null);
 
       const dashboardResponse = await fetch(`${import.meta.env.VITE_API_URL}/dashboard`);
@@ -82,75 +87,99 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       console.error("Error cargando datos:", error);
       setError("Error al cargar los resultados. Por favor, actualiza la página.");
     } finally {
-      setLoading(false);
+      setLoadingSummary(false);
     }
   };
 
-  // const exportToCSV = () => {
-  //   try {
-  //     let csv = "ID Participante,Grupo,Nombre,Email,Fecha,Tiempo Total (s),Respuestas Correctas,Total Preguntas,Precisión %\n";
-  //
-  //     participants.forEach((p) => {
-  //       csv += `${p.userId},${p.group},${p.name},${p.email || "N/A"},${p.date},`;
-  //       csv += `${p.totalTime.toFixed(2)},${p.totalCorrect},${p.totalQuestions},${p.correctPercentage.toFixed(1)}\n`;
-  //     });
-  //
-  //     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.setAttribute("hidden", "");
-  //     a.setAttribute("href", url);
-  //     a.setAttribute("download", "resultados_test.csv");
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //   } catch (error) {
-  //     console.error("Error exportando CSV:", error);
-  //     setError("Error al exportar los datos como CSV.");
-  //   }
-  // };
-  //
-  // const exportUserTimelogs = (userId: string) => {
-  //   const userTimelogs = timelogs.get(userId);
-  //   if (!userTimelogs) return;
-  //
-  //   try {
-  //     const participant = participants.find(p => p.userId === userId);
-  //     const exportData = {
-  //       participant: {
-  //         id: userId,
-  //         group: participant?.group || "Desconocido",
-  //         name: participant?.name || "Anónimo",
-  //         email: participant?.email || "N/A",
-  //         totalTime: participant?.totalTime || 0,
-  //         totalCorrect: participant?.totalCorrect || 0,
-  //         totalQuestions: participant?.totalQuestions || 0,
-  //         correctPercentage: participant?.correctPercentage || 0
-  //       },
-  //       timelogs: userTimelogs
-  //     };
-  //
-  //     const json = JSON.stringify(exportData, null, 2);
-  //     const blob = new Blob([json], { type: "application/json" });
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.setAttribute("hidden", "");
-  //     a.setAttribute("href", url);
-  //     a.setAttribute("download", `participante_${userId}_resultados.json`);
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //   } catch (error) {
-  //     console.error("Error exportando datos del participante:", error);
-  //     setError(`Error al exportar los datos del participante ${userId}.`);
-  //   }
-  // };
+  const exportToCSV = () => {
+    try {
+      setLoadingExportSummary(true);
+      setError(null);
+
+      const rows = [
+        [
+          "user_id",
+          "group",
+          "name",
+          "email",
+          "age",
+          "date",
+          "time_taken",
+          "correct_questions",
+          "questions_answered",
+          "accuracy",
+        ].join(","),
+      ];
+
+      summary.users.forEach((u) => {
+        rows.push([
+          u.id,
+          u.group,
+          escapeCsvValue(u.name),
+          escapeCsvValue(u.email ?? "-"),
+          u.age ?? "-",
+          new Date(u.timestamp).toISOString(),
+          (u.timeTaken / 1000).toFixed(2),
+          u.correctQuestions,
+          u.questionsAnswered,
+          u.accuracy.toFixed(1),
+        ].join(","));
+      });
+
+      const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.setAttribute("hidden", "");
+      a.setAttribute("href", url);
+      a.setAttribute("download", "test_results.csv");
+      a.click();
+    } catch (error) {
+      console.error("Error exportando CSV:", error);
+      setError("Error al exportar los datos como CSV.");
+    } finally {
+      setLoadingExportSummary(false);
+    }
+  };
+
+  const exportUserTimelogs = async (user: UserSummary) => {
+    try {
+      setLoadingExportUserTimelogs(true);
+      setError(null);
+
+      const timelogsResponse = await fetch(`${import.meta.env.VITE_API_URL}/users/${user.id}/timelogs`);
+
+      if (!timelogsResponse.ok) {
+        console.error(await timelogsResponse.json()?.catch(() => timelogsResponse.text()));
+        setError("Error al exportar los resultados. Por favor, actualiza la página.");
+      } else {
+        const timelogs = await timelogsResponse.json() as Timelog[];
+
+        const exportData = {
+          participant: user,
+          timelogs: timelogs,
+        };
+
+        const json = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.setAttribute("hidden", "");
+        a.setAttribute("href", url);
+        a.setAttribute("download", `user_${user.id}_results.json`);
+        a.click();
+      }
+    } catch (error) {
+      console.error("Error exportando datos del participante:", error);
+      setError(`Error al exportar los datos del participante ${user.id}.`);
+    } finally {
+      setLoadingExportUserTimelogs(false);
+    }
+  };
 
   return (
     <Container
       fluid
-      className={`p-4 min-vh-100 ${isDarkMode ? "bg-dark text-light" : "bg-light"
-      }`}
+      className={`p-4 min-vh-100 ${isDarkMode ? "bg-dark text-light" : "bg-light"}`}
     >
       <Row className="mb-4">
         <Col>
@@ -198,7 +227,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             className={isDarkMode ? "text-white" : ""}
           >
             <Tab eventKey={DashboardTab.PARTICIPANTS} title={config.t("dashboard.participantsList")}>
-              {loading
+              {loadingSummary
                 ? <LoadingIndicator/>
                 : (
                   <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
@@ -208,11 +237,14 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                         <Button
                           variant="primary"
                           size="sm"
-                          // onClick={exportToCSV}
+                          onClick={exportToCSV}
                           className="me-2"
-                          disabled={summary.users.length === 0}
+                          disabled={loadingExportSummary || summary.users.length === 0}
                         >
-                          <FontAwesomeIcon icon={faDownload} className="me-2"/>
+                          {loadingExportSummary
+                            ? <Spinner className="me-2" style={{ height: "1em", width: "1em" }}/>
+                            : <FontAwesomeIcon icon={faDownload} className="me-2"/>
+                          }
                           {config.t("dashboard.exportCsv")}
                         </Button>
                       </div>
@@ -285,10 +317,14 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                                 <Button
                                   variant="outline-primary"
                                   size="sm"
-                                  // onClick={() => exportUserTimelogs(user.id)}
+                                  onClick={() => exportUserTimelogs(user)}
+                                  disabled={loadingExportUserTimelogs}
                                   title={config.t("dashboard.exportParticipantResult")}
                                 >
-                                  <FontAwesomeIcon icon={faFileExport}/>
+                                  {loadingExportUserTimelogs
+                                    ? <Spinner style={{ height: "1em", width: "1em" }}/>
+                                    : <FontAwesomeIcon icon={faFileExport}/>
+                                  }
                                 </Button>
                               </td>
                             </tr>
@@ -303,7 +339,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             </Tab>
 
             <Tab eventKey={DashboardTab.SUMMARY} title={config.t("dashboard.summary")}>
-              {loading
+              {loadingSummary
                 ? <LoadingIndicator/>
                 : (
                   <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
@@ -389,4 +425,8 @@ function getAccuracyBadgeColor(accuracy: number): string {
   if (accuracy >= 70) return "primary";
   if (accuracy >= 50) return "warning";
   return "danger";
+}
+
+function escapeCsvValue(value: string): string {
+  return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, "\"\"")}"` : value;
 }
