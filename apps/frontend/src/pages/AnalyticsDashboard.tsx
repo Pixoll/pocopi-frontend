@@ -126,13 +126,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         ].join(","));
       });
 
-      const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.setAttribute("hidden", "");
-      a.setAttribute("href", url);
-      a.setAttribute("download", "test_results.csv");
-      a.click();
+      downloadFile("test_results.csv", rows.join("\n"), "text/csv;charset=utf-8;");
     } catch (error) {
       console.error("Error exportando CSV:", error);
       setError(config.t("dashboard.exportCsv"));
@@ -160,13 +154,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         };
 
         const json = JSON.stringify(exportData, null, 2);
-        const blob = new Blob([json], { type: "application/json" });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.setAttribute("hidden", "");
-        a.setAttribute("href", url);
-        a.setAttribute("download", `user_${user.id}_results.json`);
-        a.click();
+        downloadFile(`user_${user.id}_results.json`, json, "application/json");
       }
     } catch (error) {
       console.error("error while exporting user:", error);
@@ -425,4 +413,14 @@ function getAccuracyBadgeColor(accuracy: number): string {
 
 function escapeCsvValue(value: string): string {
   return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, "\"\"")}"` : value;
+}
+
+function downloadFile(filename: string, data: string, mimeType: string): void {
+  const blob = new Blob([data], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.setAttribute("hidden", "");
+  a.setAttribute("href", url);
+  a.setAttribute("download", filename);
+  a.click();
 }
