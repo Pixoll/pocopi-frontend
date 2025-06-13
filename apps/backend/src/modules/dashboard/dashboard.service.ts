@@ -28,6 +28,7 @@ export class DashboardService {
                 continue;
             }
 
+            const totalGroupQuestions = config.getTotalQuestions(user.group)!;
             const questionsAnswered = new Map<string, QuestionStatus>();
 
             const userSummary = {
@@ -44,6 +45,13 @@ export class DashboardService {
             } satisfies UserSummary;
 
             for (const timelog of timelogs) {
+                userSummary.timestamp = Math.min(userSummary.timestamp, timelog.startTimestamp);
+                userSummary.timeTaken = Math.max(userSummary.timeTaken, timelog.endTimestamp - userSummary.timestamp);
+
+                if (timelog.skipped) {
+                    continue;
+                }
+
                 const questionId = `${timelog.phaseId}:${timelog.questionId}`;
                 const questionStatus = questionsAnswered.get(questionId) ?? {
                     timestamp: 0,
@@ -55,11 +63,8 @@ export class DashboardService {
                     questionStatus.correct = timelog.correct;
                 }
 
-                userSummary.timestamp = Math.min(userSummary.timestamp, timelog.startTimestamp);
-                userSummary.timeTaken = Math.max(userSummary.timeTaken, timelog.endTimestamp - userSummary.timestamp);
-                userSummary.questionsAnswered = questionsAnswered.size;
-
                 questionsAnswered.set(questionId, questionStatus);
+                userSummary.questionsAnswered = questionsAnswered.size;
             }
 
             for (const { correct } of questionsAnswered.values()) {
@@ -68,7 +73,7 @@ export class DashboardService {
                 }
             }
 
-            const accuracy = (userSummary.correctQuestions / config.getTotalQuestions(userSummary.group)!) * 100;
+            const accuracy = (userSummary.correctQuestions / totalGroupQuestions) * 100;
 
             userSummary.accuracy = accuracy;
 
