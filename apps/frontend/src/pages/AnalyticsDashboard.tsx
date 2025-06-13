@@ -1,3 +1,4 @@
+import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -13,7 +14,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 import { useEffect, useState } from "react";
-import { Alert, Badge, Button, Card, Col, Container, Row, Spinner, Tab, Table, Tabs } from "react-bootstrap";
+import { Alert, Badge, Button, Card, Col, Container, Row, Tab, Table, Tabs } from "react-bootstrap";
 
 enum DashboardTab {
   PARTICIPANTS = "participants",
@@ -69,21 +70,18 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       if (!dashboardResponse.ok) {
         console.error(await dashboardResponse.json()?.catch(() => dashboardResponse.text()));
         setError("Error al cargar los resultados. Por favor, actualiza la página.");
-        setLoading(false);
-        return;
-      }
+      } else {
+        const summary = await dashboardResponse.json() as Summary;
+        setSummary(summary);
 
-      const summary = await dashboardResponse.json() as Summary;
-
-      setSummary(summary);
-      setLoading(false);
-
-      if (summary.users.length === 0) {
-        setError("No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí.");
+        if (summary.users.length === 0) {
+          setError("No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí.");
+        }
       }
     } catch (error) {
       console.error("Error cargando datos:", error);
       setError("Error al cargar los resultados. Por favor, actualiza la página.");
+    } finally {
       setLoading(false);
     }
   };
@@ -148,20 +146,6 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   //   }
   // };
 
-  if (loading) {
-    return (
-      <Container
-        className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: "80vh" }}
-      >
-        <div className="text-center">
-          <Spinner animation="border" variant="primary" className="mb-3"/>
-          <p>{config.t("dashboard.loadingResults")}</p>
-        </div>
-      </Container>
-    );
-  }
-
   return (
     <Container
       fluid
@@ -214,144 +198,154 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             className={isDarkMode ? "text-white" : ""}
           >
             <Tab eventKey={DashboardTab.PARTICIPANTS} title={config.t("dashboard.participantsList")}>
-              <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
-                <Card.Header className="d-flex justify-content-between align-items-center bg-transparent border-bottom-0 pt-4">
-                  <h5 className="mb-0">{config.t("dashboard.testResults")}</h5>
-                  <div>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      // onClick={exportToCSV}
-                      className="me-2"
-                      disabled={summary.users.length === 0}
-                    >
-                      <FontAwesomeIcon icon={faDownload} className="me-2"/>
-                      {config.t("dashboard.exportCsv")}
-                    </Button>
-                  </div>
-                </Card.Header>
-                <Card.Body className="px-0 pt-0">
-                  {summary.users.length === 0 ? (
-                    <div className="text-center py-5">
-                      <p className="text-muted mb-0">
-                        {config.t("dashboard.noResults")}
-                      </p>
-                    </div>
-                  ) : (
-                    <Table
-                      responsive
-                      hover
-                      className={isDarkMode ? "table-dark" : ""}
-                    >
-                      <thead>
-                      <tr>
-                        <th>{config.t("dashboard.participant")}</th>
-                        <th>{config.t("dashboard.group")}</th>
-                        <th>{config.t("dashboard.date")}</th>
-                        <th>{config.t("dashboard.timeTaken")}</th>
-                        <th>{config.t("dashboard.correct")}</th>
-                        <th>{config.t("dashboard.total")}</th>
-                        <th>{config.t("dashboard.accuracy")}</th>
-                        <th>{config.t("dashboard.actions")}</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {summary.users.map((user) => (
-                        <tr key={user.id}>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <div
-                                className={`p-2 rounded-circle me-2 ${isDarkMode
-                                  ? "bg-primary bg-opacity-10"
-                                  : "bg-light"
-                                }`}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faUser}
-                                  className="text-primary"
-                                />
-                              </div>
-                              <div>
-                                <div className="fw-medium">
-                                  {user.name}
+              {loading
+                ? <LoadingIndicator/>
+                : (
+                  <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
+                    <Card.Header className="d-flex justify-content-between align-items-center bg-transparent border-bottom-0 pt-4">
+                      <h5 className="mb-0">{config.t("dashboard.testResults")}</h5>
+                      <div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          // onClick={exportToCSV}
+                          className="me-2"
+                          disabled={summary.users.length === 0}
+                        >
+                          <FontAwesomeIcon icon={faDownload} className="me-2"/>
+                          {config.t("dashboard.exportCsv")}
+                        </Button>
+                      </div>
+                    </Card.Header>
+                    <Card.Body className="px-0 pt-0">
+                      {summary.users.length === 0 ? (
+                        <div className="text-center py-5">
+                          <p className="text-muted mb-0">
+                            {config.t("dashboard.noResults")}
+                          </p>
+                        </div>
+                      ) : (
+                        <Table
+                          responsive
+                          hover
+                          className={isDarkMode ? "table-dark" : ""}
+                        >
+                          <thead>
+                          <tr>
+                            <th>{config.t("dashboard.participant")}</th>
+                            <th>{config.t("dashboard.group")}</th>
+                            <th>{config.t("dashboard.date")}</th>
+                            <th>{config.t("dashboard.timeTaken")}</th>
+                            <th>{config.t("dashboard.correct")}</th>
+                            <th>{config.t("dashboard.total")}</th>
+                            <th>{config.t("dashboard.accuracy")}</th>
+                            <th>{config.t("dashboard.actions")}</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {summary.users.map((user) => (
+                            <tr key={user.id}>
+                              <td>
+                                <div className="d-flex align-items-center">
+                                  <div
+                                    className={`p-2 rounded-circle me-2 ${isDarkMode
+                                      ? "bg-primary bg-opacity-10"
+                                      : "bg-light"
+                                    }`}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faUser}
+                                      className="text-primary"
+                                    />
+                                  </div>
+                                  <div>
+                                    <div className="fw-medium">
+                                      {user.name}
+                                    </div>
+                                    <small className="text-secondary">
+                                      {config.t("dashboard.id", user.id)}
+                                    </small>
+                                  </div>
                                 </div>
-                                <small className="text-secondary">
-                                  {config.t("dashboard.id", user.id)}
-                                </small>
-                              </div>
-                            </div>
-                          </td>
-                          <td>{user.group}</td>
-                          <td>{new Date(user.timestamp).toLocaleString()}</td>
-                          <td>{(user.timeTaken / 1000).toFixed(2)}</td>
-                          <td>{user.correctQuestions}</td>
-                          <td>{user.questionsAnswered}</td>
-                          <td>
-                            <Badge
-                              bg={getAccuracyBadgeColor(user.accuracy)}
-                              className="px-2 py-1"
-                            >
-                              {user.accuracy.toFixed(1)}%
-                            </Badge>
-                          </td>
-                          <td>
-                            <Button
-                              variant="outline-primary"
-                              size="sm"
-                              // onClick={() => exportUserTimelogs(user.id)}
-                              title={config.t("dashboard.exportParticipantResult")}
-                            >
-                              <FontAwesomeIcon icon={faFileExport}/>
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                      </tbody>
-                    </Table>
-                  )}
-                </Card.Body>
-              </Card>
+                              </td>
+                              <td>{user.group}</td>
+                              <td>{new Date(user.timestamp).toLocaleString()}</td>
+                              <td>{(user.timeTaken / 1000).toFixed(2)}</td>
+                              <td>{user.correctQuestions}</td>
+                              <td>{user.questionsAnswered}</td>
+                              <td>
+                                <Badge
+                                  bg={getAccuracyBadgeColor(user.accuracy)}
+                                  className="px-2 py-1"
+                                >
+                                  {user.accuracy.toFixed(1)}%
+                                </Badge>
+                              </td>
+                              <td>
+                                <Button
+                                  variant="outline-primary"
+                                  size="sm"
+                                  // onClick={() => exportUserTimelogs(user.id)}
+                                  title={config.t("dashboard.exportParticipantResult")}
+                                >
+                                  <FontAwesomeIcon icon={faFileExport}/>
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Card.Body>
+                  </Card>
+                )
+              }
             </Tab>
 
             <Tab eventKey={DashboardTab.SUMMARY} title={config.t("dashboard.summary")}>
-              <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
-                <Card.Body>
-                  <Row className="g-4">
-                    <Col md={6} lg={3}>
-                      <StatCard
-                        title={config.t("dashboard.totalParticipants")}
-                        value={summary.users.length.toString()}
-                        icon={faUser}
-                        isDarkMode={isDarkMode}
-                      />
-                    </Col>
-                    <Col md={6} lg={3}>
-                      <StatCard
-                        title={config.t("dashboard.averageAccuracy")}
-                        value={`${summary.averageAccuracy.toFixed(1)}%`}
-                        icon={faCheckCircle}
-                        isDarkMode={isDarkMode}
-                      />
-                    </Col>
-                    <Col md={6} lg={3}>
-                      <StatCard
-                        title={config.t("dashboard.averageTimeTaken")}
-                        value={`${(summary.averageTimeTaken / 1000).toFixed(1)} seg`}
-                        icon={faChartLine}
-                        isDarkMode={isDarkMode}
-                      />
-                    </Col>
-                    <Col md={6} lg={3}>
-                      <StatCard
-                        title={config.t("dashboard.totalQuestionsAnswered")}
-                        value={`${summary.totalQuestionsAnswered}`}
-                        icon={faChartLine}
-                        isDarkMode={isDarkMode}
-                      />
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
+              {loading
+                ? <LoadingIndicator/>
+                : (
+                  <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
+                    <Card.Body>
+                      <Row className="g-4">
+                        <Col md={6} lg={3}>
+                          <StatCard
+                            title={config.t("dashboard.totalParticipants")}
+                            value={summary.users.length.toString()}
+                            icon={faUser}
+                            isDarkMode={isDarkMode}
+                          />
+                        </Col>
+                        <Col md={6} lg={3}>
+                          <StatCard
+                            title={config.t("dashboard.averageAccuracy")}
+                            value={`${summary.averageAccuracy.toFixed(1)}%`}
+                            icon={faCheckCircle}
+                            isDarkMode={isDarkMode}
+                          />
+                        </Col>
+                        <Col md={6} lg={3}>
+                          <StatCard
+                            title={config.t("dashboard.averageTimeTaken")}
+                            value={`${(summary.averageTimeTaken / 1000).toFixed(1)} seg`}
+                            icon={faChartLine}
+                            isDarkMode={isDarkMode}
+                          />
+                        </Col>
+                        <Col md={6} lg={3}>
+                          <StatCard
+                            title={config.t("dashboard.totalQuestionsAnswered")}
+                            value={`${summary.totalQuestionsAnswered}`}
+                            icon={faChartLine}
+                            isDarkMode={isDarkMode}
+                          />
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                )
+              }
             </Tab>
           </Tabs>
         </Col>
