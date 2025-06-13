@@ -60,5 +60,9 @@ export type TranslationKey =
     | "dashboard.averageAccuracy"
     | "dashboard.averageTimeTaken"
     | "dashboard.totalQuestionsAnswered"
+    | "dashboard.errorLoadingResults"
+    | "dashboard.errorNoResults"
+    | "dashboard.errorExportCsv"
+    | "dashboard.errorExportUser"
     | "backend.anonymousUser"
     | "backend.userAlreadyExists";

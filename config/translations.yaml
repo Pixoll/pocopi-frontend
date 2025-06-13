@@ -83,6 +83,11 @@ dashboard:
   averageAccuracy: Precisión Promedio
   averageTimeTaken: Tiempo Promedio
   totalQuestionsAnswered: Total Preguntas
+  errorLoadingResults: Error al cargar los resultados. Por favor, actualiza la página.
+  errorNoResults: No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí.
+  errorExportCsv: Error al exportar los datos como CSV.
+  # {0} = participant identification number
+  errorExportUser: Error al exportar los datos del participante {0}.
 
 backend:
   anonymousUser: Usuario Anónimo

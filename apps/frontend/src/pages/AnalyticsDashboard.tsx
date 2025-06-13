@@ -74,18 +74,18 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
       if (!dashboardResponse.ok) {
         console.error(await dashboardResponse.json()?.catch(() => dashboardResponse.text()));
-        setError("Error al cargar los resultados. Por favor, actualiza la página.");
+        setError(config.t("dashboard.errorLoadingResults"));
       } else {
         const summary = await dashboardResponse.json() as Summary;
         setSummary(summary);
 
         if (summary.users.length === 0) {
-          setError("No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí.");
+          setError(config.t("dashboard.errorNoResults"));
         }
       }
     } catch (error) {
-      console.error("Error cargando datos:", error);
-      setError("Error al cargar los resultados. Por favor, actualiza la página.");
+      console.error("error while loading dashboard:", error);
+      setError(config.t("dashboard.errorLoadingResults"));
     } finally {
       setLoadingSummary(false);
     }
@@ -135,7 +135,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       a.click();
     } catch (error) {
       console.error("Error exportando CSV:", error);
-      setError("Error al exportar los datos como CSV.");
+      setError(config.t("dashboard.exportCsv"));
     } finally {
       setLoadingExportSummary(false);
     }
@@ -150,7 +150,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
       if (!timelogsResponse.ok) {
         console.error(await timelogsResponse.json()?.catch(() => timelogsResponse.text()));
-        setError("Error al exportar los resultados. Por favor, actualiza la página.");
+        setError(config.t("dashboard.errorExportUser", user.id));
       } else {
         const timelogs = await timelogsResponse.json() as Timelog[];
 
@@ -169,8 +169,8 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         a.click();
       }
     } catch (error) {
-      console.error("Error exportando datos del participante:", error);
-      setError(`Error al exportar los datos del participante ${user.id}.`);
+      console.error("error while exporting user:", error);
+      setError(config.t("dashboard.errorExportUser", user.id));
     } finally {
       setLoadingExportUserTimelogs(false);
     }
@@ -231,7 +231,9 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                 ? <LoadingIndicator/>
                 : (
                   <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
-                    <Card.Header className="d-flex justify-content-between align-items-center bg-transparent border-bottom-0 pt-4">
+                    <Card.Header
+                      className="d-flex justify-content-between align-items-center bg-transparent border-bottom-0 pt-4"
+                    >
                       <h5 className="mb-0">{config.t("dashboard.testResults")}</h5>
                       <div>
                         <Button
@@ -400,15 +402,9 @@ type StatCardProps = {
 
 function StatCard({ title, value, icon, isDarkMode }: StatCardProps) {
   return (
-    <Card
-      className={`border-0 h-100 ${isDarkMode ? "bg-dark bg-opacity-50 border-secondary" : "bg-white"
-      }`}
-    >
+    <Card className={`border-0 h-100 ${isDarkMode ? "bg-dark bg-opacity-50 border-secondary" : "bg-white"}`}>
       <Card.Body className="d-flex align-items-center">
-        <div
-          className={`me-3 p-3 rounded-circle ${isDarkMode ? "bg-primary bg-opacity-10" : "bg-light"
-          }`}
-        >
+        <div className={`me-3 p-3 rounded-circle ${isDarkMode ? "bg-primary bg-opacity-10" : "bg-light"}`}>
           <FontAwesomeIcon icon={icon} className="text-primary fa-lg"/>
         </div>
         <div>
