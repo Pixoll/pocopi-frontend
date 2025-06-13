@@ -24,11 +24,12 @@ export class DashboardService {
 
         for (const [userId, timelogs] of userTimelogs) {
             const user = users.get(userId);
-            if (!user || config.getTotalQuestions(user.group) === null || timelogs.length === 0) {
+            const totalGroupQuestions = user ? config.getTotalQuestions(user.group) : null;
+
+            if (!user || totalGroupQuestions === null || timelogs.length === 0) {
                 continue;
             }
 
-            const totalGroupQuestions = config.getTotalQuestions(user.group)!;
             const questionsAnswered = new Map<string, QuestionStatus>();
 
             const userSummary = {
