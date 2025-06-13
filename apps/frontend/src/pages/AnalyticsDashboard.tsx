@@ -1,7 +1,5 @@
-import { Timelog } from "@/analytics/TestAnalytics";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
-import { UserData } from "@/types/user";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowLeft,
@@ -17,32 +15,43 @@ import { config } from "@pocopi/config";
 import { useEffect, useState } from "react";
 import { Alert, Badge, Button, Card, Col, Container, Row, Spinner, Tab, Table, Tabs } from "react-bootstrap";
 
+enum DashboardTab {
+  PARTICIPANTS = "participants",
+  SUMMARY = "summary",
+}
+
+type Summary = {
+  averageAccuracy: number;
+  averageTimeTaken: number;
+  totalQuestionsAnswered: number;
+  users: UserSummary[];
+};
+
 type UserSummary = {
-  userId: string;
-  group: string;
+  id: string;
   name: string;
+  group: string;
   timestamp: number;
-  date: string;
-  totalTime: number;
-  totalCorrect: number;
-  totalQuestions: number;
-  correctPercentage: number;
-  email?: string;
+  timeTaken: number;
+  correctQuestions: number;
+  questionsAnswered: number;
+  accuracy: number;
 };
 
 type AnalyticsDashboardProps = {
   onBack: () => void;
 };
 
-/**
- * Dashboard para ver los resultados del test
- */
 export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
-  const [timelogs, setTimelogs] = useState(new Map<string, Timelog[]>());
-  const [participants, setParticipants] = useState<UserSummary[]>([]);
+  const [summary, setSummary] = useState<Summary>({
+    averageAccuracy: 0,
+    averageTimeTaken: 0,
+    totalQuestionsAnswered: 0,
+    users: [],
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<string>("participants");
+  const [selectedTab, setSelectedTab] = useState<DashboardTab>(DashboardTab.PARTICIPANTS);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
@@ -55,83 +64,22 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       setLoading(true);
       setError(null);
 
-      console.log("Obteniendo datos del backend");
+      const dashboardResponse = await fetch(`${import.meta.env.VITE_API_URL}/dashboard`);
 
-      // Obtener timelogs
-      const [timelogsResponse, usersResponse] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/timelog`),
-        fetch(`${import.meta.env.VITE_API_URL}/users`)
-      ]);
-
-      if (!timelogsResponse.ok) {
-        setLoading(false);
-        console.error("Error cargando timelogs:", await timelogsResponse.text());
+      if (!dashboardResponse.ok) {
+        console.error(await dashboardResponse.json()?.catch(() => dashboardResponse.text()));
         setError("Error al cargar los resultados. Por favor, actualiza la página.");
+        setLoading(false);
         return;
       }
 
-      const timelogs = await timelogsResponse.json() as Timelog[];
-      const users = usersResponse.ok ? await usersResponse.json() as UserData[] : [];
+      const summary = await dashboardResponse.json() as Summary;
 
-      // Crear un mapa de usuarios para búsqueda rápida
-      const userMap = new Map<string, UserData>();
-      users.forEach(user => userMap.set(user.id, user));
-
-      // Agrupar timelogs por usuario
-      const userTimelogs = new Map<string, Timelog[]>();
-      const userSummaries = new Map<string, UserSummary>();
-
-      for (const timelog of timelogs) {
-        // Agregar el timelog al mapa de usuario
-        const currentUserTimelogs = userTimelogs.get(timelog.userId) || [];
-        currentUserTimelogs.push(timelog);
-        userTimelogs.set(timelog.userId, currentUserTimelogs);
-
-        // Actualizar o crear el resumen del usuario
-        let userSummary = userSummaries.get(timelog.userId);
-
-        if (!userSummary) {
-          const userData = userMap.get(timelog.userId);
-          userSummary = {
-            userId: timelog.userId,
-            group: userData?.group ?? "Grupo desconocido",
-            name: userData && !userData.anonymous ? userData.name : "Usuario anónimo",
-            email: userData && !userData.anonymous ? userData.email : "N/A",
-            timestamp: timelog.startTimestamp,
-            date: new Date(timelog.startTimestamp).toLocaleString(),
-            totalTime: 0,
-            totalCorrect: 0,
-            totalQuestions: config.getTotalQuestions(userData?.group ?? "") ?? 0,
-            correctPercentage: 0,
-          };
-          userSummaries.set(timelog.userId, userSummary);
-        }
-
-        // Actualizar estadísticas
-        if (timelog.correct) {
-          userSummary.totalCorrect++;
-          userSummary.correctPercentage = userSummary.totalQuestions > 0
-            ? (userSummary.totalCorrect / userSummary.totalQuestions) * 100
-            : 0;
-        }
-
-        // Actualizar timestamp más temprano
-        if (timelog.startTimestamp < userSummary.timestamp) {
-          userSummary.timestamp = timelog.startTimestamp;
-          userSummary.date = new Date(timelog.startTimestamp).toLocaleString();
-        }
-
-        userSummary.totalTime = Math.max(userSummary.totalTime, (timelog.endTimestamp - userSummary.timestamp) / 1000);
-      }
-
-      setTimelogs(userTimelogs);
-      setParticipants(Array.from(userSummaries.values()));
+      setSummary(summary);
       setLoading(false);
 
-      if (userSummaries.size === 0) {
-        setError(
-          "No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí."
-        );
+      if (summary.users.length === 0) {
+        setError("No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí.");
       }
     } catch (error) {
       console.error("Error cargando datos:", error);
@@ -140,65 +88,65 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
     }
   };
 
-  const exportToCSV = () => {
-    try {
-      let csv = "ID Participante,Grupo,Nombre,Email,Fecha,Tiempo Total (s),Respuestas Correctas,Total Preguntas,Precisión %\n";
-
-      participants.forEach((p) => {
-        csv += `${p.userId},${p.group},${p.name},${p.email || "N/A"},${p.date},`;
-        csv += `${p.totalTime.toFixed(2)},${p.totalCorrect},${p.totalQuestions},${p.correctPercentage.toFixed(1)}\n`;
-      });
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.setAttribute("hidden", "");
-      a.setAttribute("href", url);
-      a.setAttribute("download", "resultados_test.csv");
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error("Error exportando CSV:", error);
-      setError("Error al exportar los datos como CSV.");
-    }
-  };
-
-  const exportUserTimelogs = (userId: string) => {
-    const userTimelogs = timelogs.get(userId);
-    if (!userTimelogs) return;
-
-    try {
-      const participant = participants.find(p => p.userId === userId);
-      const exportData = {
-        participant: {
-          id: userId,
-          group: participant?.group || "Desconocido",
-          name: participant?.name || "Anónimo",
-          email: participant?.email || "N/A",
-          totalTime: participant?.totalTime || 0,
-          totalCorrect: participant?.totalCorrect || 0,
-          totalQuestions: participant?.totalQuestions || 0,
-          correctPercentage: participant?.correctPercentage || 0
-        },
-        timelogs: userTimelogs
-      };
-
-      const json = JSON.stringify(exportData, null, 2);
-      const blob = new Blob([json], { type: "application/json" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.setAttribute("hidden", "");
-      a.setAttribute("href", url);
-      a.setAttribute("download", `participante_${userId}_resultados.json`);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error("Error exportando datos del participante:", error);
-      setError(`Error al exportar los datos del participante ${userId}.`);
-    }
-  };
+  // const exportToCSV = () => {
+  //   try {
+  //     let csv = "ID Participante,Grupo,Nombre,Email,Fecha,Tiempo Total (s),Respuestas Correctas,Total Preguntas,Precisión %\n";
+  //
+  //     participants.forEach((p) => {
+  //       csv += `${p.userId},${p.group},${p.name},${p.email || "N/A"},${p.date},`;
+  //       csv += `${p.totalTime.toFixed(2)},${p.totalCorrect},${p.totalQuestions},${p.correctPercentage.toFixed(1)}\n`;
+  //     });
+  //
+  //     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.setAttribute("hidden", "");
+  //     a.setAttribute("href", url);
+  //     a.setAttribute("download", "resultados_test.csv");
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //   } catch (error) {
+  //     console.error("Error exportando CSV:", error);
+  //     setError("Error al exportar los datos como CSV.");
+  //   }
+  // };
+  //
+  // const exportUserTimelogs = (userId: string) => {
+  //   const userTimelogs = timelogs.get(userId);
+  //   if (!userTimelogs) return;
+  //
+  //   try {
+  //     const participant = participants.find(p => p.userId === userId);
+  //     const exportData = {
+  //       participant: {
+  //         id: userId,
+  //         group: participant?.group || "Desconocido",
+  //         name: participant?.name || "Anónimo",
+  //         email: participant?.email || "N/A",
+  //         totalTime: participant?.totalTime || 0,
+  //         totalCorrect: participant?.totalCorrect || 0,
+  //         totalQuestions: participant?.totalQuestions || 0,
+  //         correctPercentage: participant?.correctPercentage || 0
+  //       },
+  //       timelogs: userTimelogs
+  //     };
+  //
+  //     const json = JSON.stringify(exportData, null, 2);
+  //     const blob = new Blob([json], { type: "application/json" });
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.setAttribute("hidden", "");
+  //     a.setAttribute("href", url);
+  //     a.setAttribute("download", `participante_${userId}_resultados.json`);
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //   } catch (error) {
+  //     console.error("Error exportando datos del participante:", error);
+  //     setError(`Error al exportar los datos del participante ${userId}.`);
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -245,7 +193,6 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         </Col>
       </Row>
 
-      {/* Alerta de error si es necesario */}
       {error && (
         <Row className="mb-4">
           <Col>
@@ -263,22 +210,20 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
           <Tabs
             id="dashboard-tabs"
             activeKey={selectedTab}
-            onSelect={(k) => k && setSelectedTab(k)}
+            onSelect={(k) => k && setSelectedTab(k as DashboardTab)}
             className={isDarkMode ? "text-white" : ""}
           >
-            <Tab eventKey="participants" title={config.t("dashboard.participantsList")}>
-              <Card
-                className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}
-              >
+            <Tab eventKey={DashboardTab.PARTICIPANTS} title={config.t("dashboard.participantsList")}>
+              <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
                 <Card.Header className="d-flex justify-content-between align-items-center bg-transparent border-bottom-0 pt-4">
                   <h5 className="mb-0">{config.t("dashboard.testResults")}</h5>
                   <div>
                     <Button
                       variant="primary"
                       size="sm"
-                      onClick={exportToCSV}
+                      // onClick={exportToCSV}
                       className="me-2"
-                      disabled={participants.length === 0}
+                      disabled={summary.users.length === 0}
                     >
                       <FontAwesomeIcon icon={faDownload} className="me-2"/>
                       {config.t("dashboard.exportCsv")}
@@ -286,7 +231,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                   </div>
                 </Card.Header>
                 <Card.Body className="px-0 pt-0">
-                  {participants.length === 0 ? (
+                  {summary.users.length === 0 ? (
                     <div className="text-center py-5">
                       <p className="text-muted mb-0">
                         {config.t("dashboard.noResults")}
@@ -311,8 +256,8 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       </tr>
                       </thead>
                       <tbody>
-                      {participants.map((participant) => (
-                        <tr key={participant.userId}>
+                      {summary.users.map((user) => (
+                        <tr key={user.id}>
                           <td>
                             <div className="d-flex align-items-center">
                               <div
@@ -328,38 +273,32 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                               </div>
                               <div>
                                 <div className="fw-medium">
-                                  {participant.name}
+                                  {user.name}
                                 </div>
                                 <small className="text-secondary">
-                                  {config.t("dashboard.id", participant.userId)}
+                                  {config.t("dashboard.id", user.id)}
                                 </small>
                               </div>
                             </div>
                           </td>
-                          <td>{participant.group}</td>
-                          <td>{participant.date}</td>
-                          <td>{participant.totalTime.toFixed(2)}</td>
-                          <td>{participant.totalCorrect}</td>
-                          <td>{participant.totalQuestions}</td>
+                          <td>{user.group}</td>
+                          <td>{new Date(user.timestamp).toLocaleString()}</td>
+                          <td>{(user.timeTaken / 1000).toFixed(2)}</td>
+                          <td>{user.correctQuestions}</td>
+                          <td>{user.questionsAnswered}</td>
                           <td>
                             <Badge
-                              bg={getAccuracyBadgeColor(
-                                participant.correctPercentage
-                              )}
+                              bg={getAccuracyBadgeColor(user.accuracy)}
                               className="px-2 py-1"
                             >
-                              {participant.correctPercentage.toFixed(1)}%
+                              {user.accuracy.toFixed(1)}%
                             </Badge>
                           </td>
                           <td>
                             <Button
                               variant="outline-primary"
                               size="sm"
-                              onClick={() =>
-                                exportUserTimelogs(
-                                  participant.userId
-                                )
-                              }
+                              // onClick={() => exportUserTimelogs(user.id)}
                               title={config.t("dashboard.exportParticipantResult")}
                             >
                               <FontAwesomeIcon icon={faFileExport}/>
@@ -374,16 +313,14 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
               </Card>
             </Tab>
 
-            <Tab eventKey="summary" title="Resumen">
-              <Card
-                className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}
-              >
+            <Tab eventKey={DashboardTab.SUMMARY} title={config.t("dashboard.summary")}>
+              <Card className={`border-0 shadow-sm ${isDarkMode ? "bg-dark" : ""}`}>
                 <Card.Body>
                   <Row className="g-4">
                     <Col md={6} lg={3}>
                       <StatCard
                         title={config.t("dashboard.totalParticipants")}
-                        value={participants.length.toString()}
+                        value={summary.users.length.toString()}
                         icon={faUser}
                         isDarkMode={isDarkMode}
                       />
@@ -391,7 +328,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     <Col md={6} lg={3}>
                       <StatCard
                         title={config.t("dashboard.averageAccuracy")}
-                        value={`${calculateAverageAccuracy(participants)}%`}
+                        value={`${summary.averageAccuracy.toFixed(1)}%`}
                         icon={faCheckCircle}
                         isDarkMode={isDarkMode}
                       />
@@ -399,7 +336,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     <Col md={6} lg={3}>
                       <StatCard
                         title={config.t("dashboard.averageTimeTaken")}
-                        value={`${calculateAverageTime(participants)} seg`}
+                        value={`${(summary.averageTimeTaken / 1000).toFixed(1)} seg`}
                         icon={faChartLine}
                         isDarkMode={isDarkMode}
                       />
@@ -407,7 +344,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     <Col md={6} lg={3}>
                       <StatCard
                         title={config.t("dashboard.totalQuestionsAnswered")}
-                        value={`${calculateTotalQuestions(participants)}`}
+                        value={`${summary.totalQuestionsAnswered}`}
                         icon={faChartLine}
                         isDarkMode={isDarkMode}
                       />
@@ -419,13 +356,11 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
           </Tabs>
         </Col>
       </Row>
-
       <ThemeSwitcher/>
     </Container>
   );
 }
 
-// Componente auxiliar para las tarjetas de estadísticas
 type StatCardProps = {
   title: string;
   value: string;
@@ -455,31 +390,9 @@ function StatCard({ title, value, icon, isDarkMode }: StatCardProps) {
   );
 }
 
-// Función auxiliar para determinar el color del badge según la precisión
 function getAccuracyBadgeColor(accuracy: number): string {
   if (accuracy >= 90) return "success";
   if (accuracy >= 70) return "primary";
   if (accuracy >= 50) return "warning";
   return "danger";
-}
-
-// Función auxiliar para calcular la precisión promedio
-function calculateAverageAccuracy(participants: UserSummary[]): string {
-  if (participants.length === 0) return "0.0";
-
-  const total = participants.reduce((sum, p) => sum + p.correctPercentage, 0);
-  return (total / participants.length).toFixed(1);
-}
-
-// Función auxiliar para calcular el tiempo promedio
-function calculateAverageTime(participants: UserSummary[]): string {
-  if (participants.length === 0) return "0.0";
-
-  const total = participants.reduce((sum, p) => sum + p.totalTime, 0);
-  return (total / participants.length).toFixed(1);
-}
-
-// Función auxiliar para calcular el total de preguntas respondidas
-function calculateTotalQuestions(participants: UserSummary[]): number {
-  return participants.reduce((sum, p) => sum + p.totalQuestions, 0);
 }

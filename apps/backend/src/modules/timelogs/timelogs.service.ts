@@ -6,7 +6,7 @@ import { Timelog } from "./entities/timelog.entity";
 const TIMELOGS_DIR = path.join(__dirname, "../../../data/timelogs");
 
 @Injectable()
-export class TimelogService {
+export class TimelogsService {
     private readonly timelogs: Timelog[];
 
     public constructor() {

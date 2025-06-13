@@ -95,7 +95,7 @@ export class TestAnalytics {
     console.log(`Sending timelog #${timelogId++} to backend`);
 
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/timelog`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/timelogs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(this.timelog),

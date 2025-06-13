@@ -2,7 +2,7 @@
   align-items: center;
   display: grid;
   flex: 0 0 auto;
-  gap: 1em;
+  gap: 1rem;
   grid-template-rows: repeat(2, 1fr);
   justify-items: center;
   user-select: none;
@@ -10,17 +10,17 @@
 
 .option {
   border: 2px solid transparent;
-  border-radius: 0.5em;
+  border-radius: 0.5rem;
   cursor: pointer;
-  margin-bottom: 0.75em;
-  padding: 0.5em;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
   text-align: center;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .optionText {
-  border-radius: 0.5em;
-  padding: 1.5em 3em;
+  border-radius: 0.5rem;
+  padding: 1.5rem 3rem;
 }
 
 .optionTextDark {
@@ -32,7 +32,7 @@
 }
 
 .optionTextWithImage {
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
 }
 
 .optionImage {

@@ -1,10 +1,10 @@
 .inputContainer {
   position: relative;
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
 }
 
 .input {
-  padding-left: 2.5em !important;
+  padding-left: 2.5rem !important;
 }
 
 .inputDark {
@@ -14,7 +14,7 @@
 }
 
 .icon {
-  left: 0.75em;
+  left: 0.75rem;
   pointer-events: none;
   position: absolute;
   top: 50%;

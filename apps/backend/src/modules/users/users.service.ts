@@ -51,7 +51,7 @@ export class UsersService {
         const filePath = path.join(USERS_DIR, filename);
 
         if (existsSync(filePath)) {
-            throw new ConflictException(config.t("errors.userAlreadyExists", user.id));
+            throw new ConflictException(config.t("backend.userAlreadyExists", user.id));
         }
 
         writeFileSync(filePath, JSON.stringify(user), "utf-8");

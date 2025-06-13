@@ -1,4 +1,4 @@
+export { DashboardModule } from "./dashboard";
 export { PingModule } from "./ping";
-export { TimelogModule } from "./timelog";
+export { TimelogsModule } from "./timelogs";
 export { UsersModule } from "./users";
-

@@ -78,11 +78,13 @@ dashboard:
   # {0} = participant identification number
   id: "ID: {0}"
   exportParticipantResult: Exportar resultados detallados
+  summary: Resumen
   totalParticipants: Total Participantes
   averageAccuracy: Precisión Promedio
   averageTimeTaken: Tiempo Promedio
   totalQuestionsAnswered: Total Preguntas
 
-errors:
+backend:
+  anonymousUser: Usuario Anónimo
   # {0} = participant identification number
   userAlreadyExists: Usuario con ID '{0}' ya existe.

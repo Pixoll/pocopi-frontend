@@ -1,13 +1,11 @@
-// Tarjeta principal con información del test, consentimiento y botones de acción
-// Recibe props para controlar el estado y las acciones
-
 import { UserData } from "@/types/user";
 import { faArrowRight, faFileSignature } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 import { ChangeEvent } from "react";
-import { Accordion, Alert, Button, Card, Col, Form, Row, } from "react-bootstrap";
+import { Accordion, Button, Card, Col, Form, Row, } from "react-bootstrap";
 import Markdown from "react-markdown";
+import styles from "@/styles/HomePage/HomeInfoCard.module.css";
 
 type HomeInfoCardProps = {
   isDarkMode: boolean;
@@ -36,19 +34,22 @@ export function HomeInfoCard({
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
       {/* Alerta con datos del participante si ya se ingresaron */}
       {userData && !userData.anonymous && (
-        <Alert variant="info" className="mb-0 border-0 rounded-0">
-          <div className="d-flex align-items-center">
-            <div
-              className={`p-2 me-3 rounded-circle bg-info ${isDarkMode ? "bg-opacity-25" : "bg-opacity-10"
-                }`}
-            >
-              <FontAwesomeIcon icon={faFileSignature} className="text-info" />
-            </div>
-            <div>
-              {config.t("home.participant", userData.name, userData.id)}
-            </div>
+        <div
+          className={[
+            styles.participantContainer,
+            isDarkMode ? styles.participantContainerDark : styles.participantContainerLight,
+          ].join(" ")}
+        >
+          <div
+            className={[
+              styles.participantIcon,
+              isDarkMode ? styles.participantIconDark : styles.participantIconLight,
+            ].join(" ")}
+          >
+            <FontAwesomeIcon icon={faFileSignature}/>
           </div>
-        </Alert>
+          {config.t("home.participant", userData.name, userData.id)}
+        </div>
       )}
       <Card.Body className="p-4 p-md-5">
         {/* Información sobre el test */}
@@ -69,7 +70,7 @@ export function HomeInfoCard({
                       backgroundColor: `rgba(${color?.r ?? 255}, ${color?.g ?? 255}, ${color?.b ?? 255}, ${iconOpacity})`,
                     }}
                   >
-                    {icon && <img src={icon.src} alt={icon.alt} style={{ height: "1em" }} />}
+                    {icon && <img src={icon.src} alt={icon.alt} style={{ height: "1em" }}/>}
                   </div>
                   <div>
                     <h5 className="h6 mb-2">{title}</h5>
@@ -104,7 +105,7 @@ export function HomeInfoCard({
               onClick={onStartTest}
             >
               <span className="me-2">{config.t("home.startTest")}</span>
-              <FontAwesomeIcon icon={faArrowRight} />
+              <FontAwesomeIcon icon={faArrowRight}/>
             </Button>
           ) : (
             <Button
@@ -115,7 +116,7 @@ export function HomeInfoCard({
               disabled={!consentAccepted}
             >
               <span className="me-2">{config.t("home.register")}</span>
-              <FontAwesomeIcon icon={faArrowRight} />
+              <FontAwesomeIcon icon={faArrowRight}/>
             </Button>
           )}
         </div>

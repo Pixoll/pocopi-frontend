@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { TimelogDto } from "./dtos/timelog.dto";
 import { Timelog } from "./entities/timelog.entity";
-import { TimelogService } from "./timelog.service";
+import { TimelogsService } from "./timelogs.service";
 
-@Controller("timelog")
-export class TimelogController {
-    public constructor(private readonly timelogService: TimelogService) {
+@Controller("timelogs")
+export class TimelogsController {
+    public constructor(private readonly timelogService: TimelogsService) {
     }
 
     @Post()

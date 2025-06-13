@@ -10,15 +10,15 @@
   flex-direction: column;
   flex-grow: 1;
   justify-content: center;
-  padding: 2em;
-  gap: 1.5em;
+  padding: 2rem;
+  gap: 1.5rem;
 }
 
 .question {
-  border-radius: 1em;
+  border-radius: 1rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   flex: 0 0 auto;
-  padding: 1.5em;
+  padding: 1.5rem;
   text-align: center;
   user-select: none;
 }
@@ -32,12 +32,12 @@
 }
 
 .questionText {
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
 }
 
 .questionImage {
   height: auto;
-  max-height: 30em;
+  max-height: 30rem;
   max-width: 100%;
   pointer-events: none;
 }
