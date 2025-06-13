@@ -1,4 +1,4 @@
-import { Timelog } from "@/analytics/TestAnalytics";
+import api from "@/api";
 import { Summary, UserSummary } from "@/types/summary";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -69,22 +69,19 @@ export function ParticipantsList({
       setLoadingExportUserTimelogs(true);
       setError(null);
 
-      const timelogsResponse = await fetch(`${import.meta.env.VITE_API_URL}/users/${user.id}/timelogs`);
+      const { data: timelogs } = await api.getUserTimelogs({
+        path: {
+          id: user.id,
+        },
+      });
 
-      if (!timelogsResponse.ok) {
-        console.error(await timelogsResponse.json()?.catch(() => timelogsResponse.text()));
-        setError(config.t("dashboard.errorExportUser", user.id));
-      } else {
-        const timelogs = await timelogsResponse.json() as Timelog[];
+      const exportData = {
+        participant: user,
+        timelogs: timelogs,
+      };
 
-        const exportData = {
-          participant: user,
-          timelogs: timelogs,
-        };
-
-        const json = JSON.stringify(exportData, null, 2);
-        downloadFile(`user_${user.id}_results.json`, json, "application/json");
-      }
+      const json = JSON.stringify(exportData, null, 2);
+      downloadFile(`user_${user.id}_results.json`, json, "application/json");
     } catch (error) {
       console.error("error while exporting user:", error);
       setError(config.t("dashboard.errorExportUser", user.id));

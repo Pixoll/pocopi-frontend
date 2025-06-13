@@ -1,4 +1,4 @@
-import { userService } from "@/services/userService";
+import api from "@/api";
 import { UserData } from "@/types/user";
 import { config } from "@pocopi/config";
 import { ChangeEvent, useState } from "react";
@@ -10,8 +10,7 @@ type HookedUserData = {
   handleOpenModal: () => void;
   handleCloseModal: () => void;
   handleConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleFormSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
-  saveIfAnonymous: () => void;
+  sendUserData: (data: UserData, onSaved?: () => void, onError?: (message: string) => void) => void;
 };
 
 export function useUserData(groupLabel: string): HookedUserData {
@@ -35,20 +34,20 @@ export function useUserData(groupLabel: string): HookedUserData {
     setConsentAccepted(e.target.checked);
   };
 
-  const handleFormSubmit = (data: UserData, onSaved: () => void, onError: (message: string) => void) => {
-    userService.saveUserData(data, () => {
-      setUserData(data);
-      setShowModal(false);
-      onSaved();
-    }, onError);
-  };
-
-  const saveIfAnonymous = () => {
-    if (config.anonymous && userData) {
-      const noop = () => {
-      };
-      userService.saveUserData(userData, noop, noop);
-    }
+  const sendUserData = (data: UserData, onSaved?: () => void, onError?: (message: string) => void) => {
+    api.saveUser({
+        body: data,
+      })
+      .then(() => {
+        console.log("user saved successfully.");
+        setUserData(data);
+        setShowModal(false);
+        onSaved?.();
+      })
+      .catch((error) => {
+        console.error("error when saving user:", error);
+        onError?.(error.message);
+      });
   };
 
   return {
@@ -58,8 +57,7 @@ export function useUserData(groupLabel: string): HookedUserData {
     handleOpenModal,
     handleCloseModal,
     handleConsentChange,
-    handleFormSubmit,
-    saveIfAnonymous,
+    sendUserData,
   };
 }
 

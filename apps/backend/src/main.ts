@@ -49,6 +49,7 @@ void async function () {
 
     SwaggerModule.setup(globalPrefix, app, () => SwaggerModule.createDocument(app, swaggerConfig, {
         ignoreGlobalPrefix: true,
+        operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
     }));
 
     await app.listen(process.env.PORT ?? 3000, "0.0.0.0");

@@ -1,3 +1,4 @@
+import api from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";
@@ -42,18 +43,11 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       setLoadingSummary(true);
       setError(null);
 
-      const dashboardResponse = await fetch(`${import.meta.env.VITE_API_URL}/dashboard`);
+      const { data: summary } = await api.getSummary();
+      setSummary(summary);
 
-      if (!dashboardResponse.ok) {
-        console.error(await dashboardResponse.json()?.catch(() => dashboardResponse.text()));
-        setError(config.t("dashboard.errorLoadingResults"));
-      } else {
-        const summary = await dashboardResponse.json() as Summary;
-        setSummary(summary);
-
-        if (summary.users.length === 0) {
-          setError(config.t("dashboard.errorNoResults"));
-        }
+      if (summary.users.length === 0) {
+        setError(config.t("dashboard.errorNoResults"));
       }
     } catch (error) {
       console.error("error while loading dashboard:", error);
