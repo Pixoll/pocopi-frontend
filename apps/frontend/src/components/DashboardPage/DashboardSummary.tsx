@@ -1,8 +1,8 @@
 import styles from "@/styles/DashboardPage/DashboardSummary.module.css";
-import { Summary } from "@/types/summary";
 import { faChartLine, faCheckCircle, faUser } from "@fortawesome/free-solid-svg-icons";
 import { config } from "@pocopi/config";
 import { StatCard } from "./StatCard";
+import { Summary } from "@/api";
 
 type DashboardSummaryProps = {
   isDarkMode: boolean;

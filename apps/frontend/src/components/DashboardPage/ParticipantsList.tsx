@@ -1,7 +1,6 @@
-import api from "@/api";
+import api, { Summary, UserSummary } from "@/api";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
-import { Summary, UserSummary } from "@/types/summary";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
