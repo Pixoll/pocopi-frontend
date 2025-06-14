@@ -35,9 +35,10 @@ export function HomePage({
   const startTest = () => {
     if (userData && consentAccepted) {
       if (config.anonymous) {
-        sendUserData(userData);
+        sendUserData(userData, () => onStartTest(userData));
+      } else {
+        onStartTest(userData);
       }
-      onStartTest(userData);
     }
   };
 
