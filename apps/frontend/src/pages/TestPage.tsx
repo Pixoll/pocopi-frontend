@@ -18,8 +18,7 @@ export function TestPage({
   goToNextPage,
   userData,
 }: TestPageProps) {
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const { isDarkMode } = useTheme();
 
   const {
     phaseIndex,

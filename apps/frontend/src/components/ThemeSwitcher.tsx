@@ -5,20 +5,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 
 export function ThemeSwitcher() {
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === "dark";
+  const { isDarkMode, toggleTheme } = useTheme();
 
   return (
     <button
       className={[
         styles.themeSwitcher,
-        isDark ? styles.themeSwitcherDark : styles.themeSwitcherLight,
+        isDarkMode ? styles.themeSwitcherDark : styles.themeSwitcherLight,
       ].join(" ")}
       onClick={toggleTheme}
-      aria-label={config.t("home.themeSwitchButtonHint", isDark ? "light" : "dark")}
+      aria-label={config.t("home.themeSwitchButtonHint", isDarkMode ? "light" : "dark")}
     >
       <FontAwesomeIcon
-        icon={isDark ? faSun : faMoon}
+        icon={isDarkMode ? faSun : faMoon}
         className={styles.icon}
       />
     </button>

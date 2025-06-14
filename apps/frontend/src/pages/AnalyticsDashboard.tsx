@@ -30,8 +30,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   });
   const [loadingSummary, setLoadingSummary] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     loadData();

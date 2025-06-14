@@ -28,12 +28,12 @@ enum Page {
  * Esto asegura un theming consistente en todos los componentes.
  */
 function ThemeHandler({ children }: { children: ReactNode }) {
-  const { theme } = useTheme();
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     // Establece el atributo de tema de Bootstrap para el estilo global
-    document.documentElement.setAttribute("data-bs-theme", theme);
-  }, [theme]);
+    document.documentElement.setAttribute("data-bs-theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   return <>{children}</>;
 }

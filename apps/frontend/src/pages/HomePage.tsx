@@ -29,8 +29,7 @@ export function HomePage({
     handleConsentChange,
     sendUserData,
   } = useUserData(groupLabel);
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const { isDarkMode } = useTheme();
 
   const startTest = () => {
     if (userData && consentAccepted) {

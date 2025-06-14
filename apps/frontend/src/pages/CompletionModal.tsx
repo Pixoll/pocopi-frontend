@@ -27,8 +27,7 @@ export function CompletionModal({
   userData,
   onBackToHome,
 }: CompletionModalProps) {
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const { isDarkMode } = useTheme();
 
   return (
     <Container

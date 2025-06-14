@@ -33,8 +33,7 @@ export function UserFormModal({
   const [validated, setValidated] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const { isDarkMode } = useTheme();
 
   const [formData, setFormData] = useState<IdentifiableUserData>({
     anonymous: false,
