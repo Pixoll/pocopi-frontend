@@ -78,11 +78,18 @@ dashboard:
   # {0} = participant identification number
   id: "ID: {0}"
   exportParticipantResult: Exportar resultados detallados
+  summary: Resumen
   totalParticipants: Total Participantes
   averageAccuracy: Precisión Promedio
   averageTimeTaken: Tiempo Promedio
   totalQuestionsAnswered: Total Preguntas
+  errorLoadingResults: Error al cargar los resultados. Por favor, actualiza la página.
+  errorNoResults: No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí.
+  errorExportCsv: Error al exportar los datos como CSV.
+  # {0} = participant identification number
+  errorExportUser: Error al exportar los datos del participante {0}.
 
-errors:
+backend:
+  anonymousUser: Usuario Anónimo
   # {0} = participant identification number
   userAlreadyExists: Usuario con ID '{0}' ya existe.

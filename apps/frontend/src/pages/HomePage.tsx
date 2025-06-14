@@ -7,6 +7,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useUserData } from "@/hooks/useUserData";
 import styles from "@/styles/HomePage/HomePage.module.css";
 import { UserData } from "@/types/user";
+import { config } from "@pocopi/config";
 
 type HomePageProps = {
   groupLabel: string;
@@ -26,16 +27,18 @@ export function HomePage({
     handleOpenModal,
     handleCloseModal,
     handleConsentChange,
-    handleFormSubmit,
-    saveIfAnonymous,
+    sendUserData,
   } = useUserData(groupLabel);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
   const startTest = () => {
     if (userData && consentAccepted) {
-      saveIfAnonymous();
-      onStartTest(userData);
+      if (config.anonymous) {
+        sendUserData(userData, () => onStartTest(userData));
+      } else {
+        onStartTest(userData);
+      }
     }
   };
 
@@ -56,7 +59,7 @@ export function HomePage({
         groupLabel={groupLabel}
         show={showModal}
         onHide={handleCloseModal}
-        onSubmit={handleFormSubmit}
+        onSubmit={sendUserData}
       />
 
       <DashboardButton isDarkMode={isDarkMode} onDashboard={onDashboard}/>

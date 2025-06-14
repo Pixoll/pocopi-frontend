@@ -1,3 +1,5 @@
+import api from "@/api";
+
 enum TimelogEventType {
   DESELECT = "deselect",
   HOVER = "hover",
@@ -95,10 +97,8 @@ export class TestAnalytics {
     console.log(`Sending timelog #${timelogId++} to backend`);
 
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/timelog`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(this.timelog),
+      await api.saveTimelog({
+        body: this.timelog,
       });
     } catch (error) {
       console.error("Error while sending timelog to backend:", error);

@@ -2,8 +2,8 @@
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5em;
-  padding: 1em 1.5em;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
 }
 
 .headerDark {
@@ -17,8 +17,8 @@
 }
 
 .icon {
-  height: 1em;
-  margin-right: 0.5em;
+  height: 1rem;
+  margin-right: 0.5rem;
 }
 
 .title {
@@ -31,7 +31,7 @@
 .progressBarContainer {
   align-items: center;
   display: flex;
-  gap: 0.5em;
+  gap: 0.5rem;
 }
 
 .progressText {
@@ -40,7 +40,7 @@
 
 .progressBar {
   background-color: #343a40;
-  border-radius: 4em !important;
+  border-radius: 4rem !important;
   display: flex;
   height: 10px !important;
   overflow: hidden;
@@ -66,13 +66,13 @@
 
 .progressBadge {
   background-color: #0d6efd;
-  border-radius: 4em;
+  border-radius: 4rem;
   color: white;
   display: inline-block;
-  font-size: 0.75em;
+  font-size: 0.75rem;
   font-weight: bold;
   line-height: 1;
-  padding: 0.35em 0.65em;
+  padding: 0.35rem 0.65rem;
 }
 
 @media (max-width: 768px) {

@@ -55,8 +55,14 @@ export type TranslationKey =
     | "dashboard.actions"
     | "dashboard.id"
     | "dashboard.exportParticipantResult"
+    | "dashboard.summary"
     | "dashboard.totalParticipants"
     | "dashboard.averageAccuracy"
     | "dashboard.averageTimeTaken"
     | "dashboard.totalQuestionsAnswered"
-    | "errors.userAlreadyExists";
+    | "dashboard.errorLoadingResults"
+    | "dashboard.errorNoResults"
+    | "dashboard.errorExportCsv"
+    | "dashboard.errorExportUser"
+    | "backend.anonymousUser"
+    | "backend.userAlreadyExists";

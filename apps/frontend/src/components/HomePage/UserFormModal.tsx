@@ -105,8 +105,7 @@ export function UserFormModal({
       centered
       backdrop="static"
       size="lg"
-      contentClassName={`border-0 rounded-4 shadow ${isDarkMode ? "bg-dark" : ""
-        }`}
+      contentClassName={`border-0 rounded-4 shadow ${isDarkMode ? "bg-dark" : ""}`}
     >
       <div className={styles.header}>
         <h5 className={styles.headerText}>

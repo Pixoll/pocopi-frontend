@@ -1,14 +1,5 @@
 import Decimal from "decimal.js";
-import {
-    constants as fsConstants,
-    copyFileSync,
-    existsSync,
-    mkdirSync,
-    readdirSync,
-    readFileSync,
-    rmSync,
-    writeFileSync,
-} from "fs";
+import { existsSync, linkSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { Validator } from "jsonschema";
 import path from "path";
 import yaml from "yaml";
@@ -467,7 +458,7 @@ function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string
         mkdirSync(dir, { recursive: true });
     }
 
-    copyFileSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src), fsConstants.COPYFILE_FICLONE);
+    linkSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src));
 
     image.src = `images/${src}`;
     usedImages.set(src, yamlPath);

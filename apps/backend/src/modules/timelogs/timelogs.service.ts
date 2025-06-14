@@ -1,42 +1,46 @@
 import { Injectable } from "@nestjs/common";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
-import { Timelog } from "./entities/timelog.entity";
+import { Timelog } from "./entities";
 
 const TIMELOGS_DIR = path.join(__dirname, "../../../data/timelogs");
 
 @Injectable()
-export class TimelogService {
-    private readonly timelogs: Timelog[];
+export class TimelogsService {
+    private readonly timelogs: Map<string, Timelog[]>;
 
     public constructor() {
         this.timelogs = this.readTimelogs();
     }
 
     public saveTimelog(timelog: Timelog): void {
-        this.timelogs.push(timelog);
+        const userTimelogs = this.timelogs.get(timelog.userId) ?? [];
+        userTimelogs.push(timelog);
+        this.timelogs.set(timelog.userId, userTimelogs);
         this.saveTimelogToFile(timelog);
     }
 
-    public getTimelogs(): Timelog[] {
+    public getTimelogs(): Map<string, Timelog[]> {
         return this.timelogs;
     }
 
-    private readTimelogs(): Timelog[] {
+    private readTimelogs(): Map<string, Timelog[]> {
         if (!existsSync(TIMELOGS_DIR)) {
             mkdirSync(TIMELOGS_DIR, { recursive: true });
-            return [];
+            return new Map();
         }
 
         const fileNames = readdirSync(TIMELOGS_DIR);
-        const timelogs: Timelog[] = [];
+        const timelogs = new Map<string, Timelog[]>;
 
         for (const filename of fileNames) {
             const filePath = path.join(TIMELOGS_DIR, filename);
             const content = readFileSync(filePath, "utf-8");
             try {
                 const timelog: Timelog = JSON.parse(content);
-                timelogs.push(timelog);
+                const userTimelogs = timelogs.get(timelog.userId) ?? [];
+                userTimelogs.push(timelog);
+                timelogs.set(timelog.userId, userTimelogs);
             } catch (error) {
                 console.error(`Error parsing file ${filename}:`, error);
             }
