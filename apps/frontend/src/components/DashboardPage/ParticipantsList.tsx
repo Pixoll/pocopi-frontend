@@ -136,7 +136,7 @@ export function ParticipantsList({
               <th>{config.t("dashboard.date")}</th>
               <th>{config.t("dashboard.timeTaken")}</th>
               <th>{config.t("dashboard.correct")}</th>
-              <th>{config.t("dashboard.total")}</th>
+              <th>{config.t("dashboard.answered")}</th>
               <th>{config.t("dashboard.accuracy")}</th>
               <th>{config.t("dashboard.actions")}</th>
             </tr>

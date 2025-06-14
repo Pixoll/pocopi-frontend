@@ -50,7 +50,7 @@ export type TranslationKey =
     | "dashboard.date"
     | "dashboard.timeTaken"
     | "dashboard.correct"
-    | "dashboard.total"
+    | "dashboard.answered"
     | "dashboard.accuracy"
     | "dashboard.actions"
     | "dashboard.id"

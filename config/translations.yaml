@@ -72,7 +72,7 @@ dashboard:
   date: Fecha
   timeTaken: Tiempo (s)
   correct: Correctas
-  total: Total
+  answered: Respondidas
   accuracy: Precisión
   actions: Acciones
   # {0} = participant identification number
@@ -82,7 +82,7 @@ dashboard:
   totalParticipants: Total Participantes
   averageAccuracy: Precisión Promedio
   averageTimeTaken: Tiempo Promedio
-  totalQuestionsAnswered: Total Preguntas
+  totalQuestionsAnswered: Total Preguntas Respondidas
   errorLoadingResults: Error al cargar los resultados. Por favor, actualiza la página.
   errorNoResults: No se encontraron resultados. Los usuarios deben completar el test para ver los resultados aquí.
   errorExportCsv: Error al exportar los datos como CSV.
