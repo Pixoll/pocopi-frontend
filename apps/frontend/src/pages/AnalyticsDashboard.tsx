@@ -2,15 +2,16 @@ import api from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";
-import { LoadingIndicator } from "@/components/LoadingIndicator";
+import { Spinner } from "@/components/Spinner";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
+import styles from "@/styles/DashboardPage/DashboardPage.module.css";
 import { Summary } from "@/types/summary";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 import { useEffect, useState } from "react";
-import { Alert, Col, Container, Row, Tab, Tabs } from "react-bootstrap";
+import { Tab, Tabs } from "react-bootstrap";
 
 enum DashboardTab {
   PARTICIPANTS = "participants",
@@ -30,7 +31,6 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   });
   const [loadingSummary, setLoadingSummary] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<DashboardTab>(DashboardTab.PARTICIPANTS);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
@@ -58,49 +58,52 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   };
 
   return (
-    <Container
-      fluid
-      className={`p-4 min-vh-100 ${isDarkMode ? "bg-dark text-light" : "bg-light"}`}
+    <div
+      className={[
+        styles.container,
+        isDarkMode ? styles.containerDark : styles.containerLight,
+      ].join(" ")}
     >
       <DashboardHeader isDarkMode={isDarkMode} onBack={onBack}/>
 
       {error && (
-        <Row className="mb-4">
-          <Col>
-            <Alert variant="warning" className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faExclamationTriangle} className="me-2"/>
-              {error}
-            </Alert>
-          </Col>
-        </Row>
+        <div
+          className={[
+            styles.warning,
+            isDarkMode ? styles.warningDark : styles.warningLight,
+          ].join(" ")}
+        >
+          <FontAwesomeIcon icon={faExclamationTriangle}/>
+          {error}
+        </div>
       )}
 
-      <Row className="mb-4">
-        <Col>
-          <Tabs
-            id="dashboard-tabs"
-            activeKey={selectedTab}
-            onSelect={(k) => k && setSelectedTab(k as DashboardTab)}
-            className={isDarkMode ? "text-white" : ""}
-          >
-            <Tab eventKey={DashboardTab.PARTICIPANTS} title={config.t("dashboard.participantsList")}>
-              {loadingSummary
-                ? <LoadingIndicator/>
-                : <ParticipantsList isDarkMode={isDarkMode} summary={summary} setError={setError}/>
-              }
-            </Tab>
+      <Tabs>
+        <Tab eventKey={DashboardTab.PARTICIPANTS} title={config.t("dashboard.participantsList")}>
+          {loadingSummary
+            ? <LoadingIndicator/>
+            : <ParticipantsList isDarkMode={isDarkMode} summary={summary} setError={setError}/>
+          }
+        </Tab>
 
-            <Tab eventKey={DashboardTab.SUMMARY} title={config.t("dashboard.summary")}>
-              {loadingSummary
-                ? <LoadingIndicator/>
-                : <DashboardSummary isDarkMode={isDarkMode} summary={summary}/>
-              }
-            </Tab>
-          </Tabs>
-        </Col>
-      </Row>
+        <Tab eventKey={DashboardTab.SUMMARY} title={config.t("dashboard.summary")}>
+          {loadingSummary
+            ? <LoadingIndicator/>
+            : <DashboardSummary isDarkMode={isDarkMode} summary={summary}/>
+          }
+        </Tab>
+      </Tabs>
 
       <ThemeSwitcher/>
-    </Container>
+    </div>
+  );
+}
+
+function LoadingIndicator() {
+  return (
+    <div className={styles.loadingIndicator}>
+      <Spinner className={styles.spinner}/>
+      <p>{config.t("dashboard.loadingResults")}</p>
+    </div>
   );
 }

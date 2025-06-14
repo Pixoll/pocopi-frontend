@@ -1,11 +1,11 @@
 import api from "@/api";
+import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
 import { Summary, UserSummary } from "@/types/summary";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 import { useState } from "react";
-import { Spinner } from "react-bootstrap";
 
 type ParticipantsListProps = {
   isDarkMode: boolean;
@@ -95,7 +95,7 @@ export function ParticipantsList({
     <div
       className={[
         styles.container,
-        isDarkMode ? styles.containerDark : "",
+        isDarkMode ? styles.containerDark : styles.containerLight,
       ].join(" ")}
     >
       <div className={styles.header}>
@@ -106,7 +106,7 @@ export function ParticipantsList({
           disabled={loadingExportSummary || summary.users.length === 0}
         >
           {loadingExportSummary
-            ? <Spinner style={{ height: "1em", width: "1em" }}/>
+            ? <Spinner/>
             : <FontAwesomeIcon icon={faDownload}/>
           }
           {config.t("dashboard.exportCsv")}
@@ -182,7 +182,7 @@ export function ParticipantsList({
                     title={config.t("dashboard.exportParticipantResult")}
                   >
                     {loadingExportUserTimelogs
-                      ? <Spinner style={{ height: "1em", width: "1em" }}/>
+                      ? <Spinner/>
                       : <FontAwesomeIcon icon={faFileExport}/>
                     }
                   </button>
