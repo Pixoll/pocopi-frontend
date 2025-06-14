@@ -104,7 +104,7 @@ export function HomeInfoCard({
               className="px-5 py-3 rounded-pill shadow-sm"
               onClick={onStartTest}
             >
-              <span className="me-2">{config.t("home.startTest")}</span>
+              <span className="me-2">{config.t("home.register")}</span>
               <FontAwesomeIcon icon={faArrowRight}/>
             </Button>
           ) : (
@@ -115,7 +115,7 @@ export function HomeInfoCard({
               onClick={onBeginAssessment}
               disabled={!consentAccepted}
             >
-              <span className="me-2">{config.t("home.register")}</span>
+              <span className="me-2">{config.t("home.startTest")}</span>
               <FontAwesomeIcon icon={faArrowRight}/>
             </Button>
           )}
