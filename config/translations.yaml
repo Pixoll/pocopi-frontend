@@ -92,4 +92,6 @@ dashboard:
 backend:
   anonymousUser: Usuario Anónimo
   # {0} = participant identification number
+  userDoesNotExist: Usuario con ID '{0}' no existe.
+  # {0} = participant identification number
   userAlreadyExists: Usuario con ID '{0}' ya existe.

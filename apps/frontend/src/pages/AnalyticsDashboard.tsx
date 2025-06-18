@@ -34,6 +34,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = async () => {
@@ -41,11 +42,17 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       setLoadingSummary(true);
       setError(null);
 
-      const { data: summary } = await api.getSummary();
-      setSummary(summary);
+      const response = await api.getSummary();
 
-      if (summary.users.length === 0) {
-        setError(config.t("dashboard.errorNoResults"));
+      if (response.error) {
+        console.error("error while loading dashboard:", error);
+        setError(config.t("dashboard.errorLoadingResults"));
+      } else {
+        setSummary(summary);
+
+        if (summary.users.length === 0) {
+          setError(config.t("dashboard.errorNoResults"));
+        }
       }
     } catch (error) {
       console.error("error while loading dashboard:", error);

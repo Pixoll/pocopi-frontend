@@ -34,20 +34,25 @@ export function useUserData(groupLabel: string): HookedUserData {
     setConsentAccepted(e.target.checked);
   };
 
-  const sendUserData = (data: UserData, onSaved?: () => void, onError?: (message: string) => void) => {
-    api.saveUser({
+  const sendUserData = async (data: UserData, onSaved?: () => void, onError?: (message: string) => void) => {
+    try {
+      const response = await api.saveUser({
         body: data,
-      })
-      .then(() => {
+      });
+
+      if (response.error) {
+        console.error("error when saving user:", response.error);
+        onError?.(response.error.message);
+      } else {
         console.log("user saved successfully.");
         setUserData(data);
         setShowModal(false);
         onSaved?.();
-      })
-      .catch((error) => {
-        console.error("error when saving user:", error);
-        onError?.(error.message);
-      });
+      }
+    } catch (error) {
+      console.error("error when saving user:", error);
+      onError?.(error instanceof Error ? error.message : `${error}`);
+    }
   };
 
   return {
