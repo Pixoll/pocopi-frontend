@@ -43,8 +43,8 @@ export function App() {
     setPage(Page.PRETEST);
   };
 
-  const handlePreTestSubmit = (answers: number[]) => {
-    setPreTestAnswers(answers);
+  const handlePreTestSubmit = (answers: (string | number)[]) => {
+    setPreTestAnswers(answers as number[]);
     setPage(Page.TEST);
   };
 
