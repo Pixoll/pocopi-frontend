@@ -69,19 +69,24 @@ export function ParticipantsList({
       setLoadingExportUserTimelogs(true);
       setError(null);
 
-      const { data: timelogs } = await api.getUserTimelogs({
+      const response = await api.getUserTimelogs({
         path: {
           id: user.id,
         },
       });
 
-      const exportData = {
-        participant: user,
-        timelogs: timelogs,
-      };
+      if (response.error) {
+        console.error("error while exporting user:", response.error);
+        setError(config.t("dashboard.errorExportUser", user.id));
+      } else {
+        const exportData = {
+          participant: user,
+          timelogs: response.data,
+        };
 
-      const json = JSON.stringify(exportData, null, 2);
-      downloadFile(`user_${user.id}_results.json`, json, "application/json");
+        const json = JSON.stringify(exportData, null, 2);
+        downloadFile(`user_${user.id}_results.json`, json, "application/json");
+      }
     } catch (error) {
       console.error("error while exporting user:", error);
       setError(config.t("dashboard.errorExportUser", user.id));

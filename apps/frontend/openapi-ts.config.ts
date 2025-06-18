@@ -10,5 +10,5 @@ export default defineConfig({
     indexFile: false,
     clean: false,
   },
-  plugins: ["@hey-api/client-axios"],
+  plugins: ["@hey-api/client-fetch"],
 });

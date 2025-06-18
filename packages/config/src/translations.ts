@@ -65,4 +65,5 @@ export type TranslationKey =
     | "dashboard.errorExportCsv"
     | "dashboard.errorExportUser"
     | "backend.anonymousUser"
+    | "backend.userDoesNotExist"
     | "backend.userAlreadyExists";

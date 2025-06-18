@@ -97,9 +97,13 @@ export class TestAnalytics {
     console.log(`Sending timelog #${timelogId++} to backend`);
 
     try {
-      await api.saveTimelog({
+      const response = await api.saveTimelog({
         body: this.timelog,
       });
+
+      if (response.error) {
+        console.error("Error while sending timelog to backend:", response.error);
+      }
     } catch (error) {
       console.error("Error while sending timelog to backend:", error);
     }
