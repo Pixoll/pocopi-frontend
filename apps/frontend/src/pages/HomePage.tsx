@@ -11,13 +11,13 @@ import { config } from "@pocopi/config";
 
 type HomePageProps = {
   groupLabel: string;
-  onStartTest: (data: UserData) => void;
+  onNextPage: (data: UserData) => void;
   onDashboard: () => void;
 };
 
 export function HomePage({
   groupLabel,
-  onStartTest,
+  onNextPage,
   onDashboard,
 }: HomePageProps) {
   const {
@@ -34,9 +34,9 @@ export function HomePage({
   const startTest = () => {
     if (userData && consentAccepted) {
       if (config.anonymous) {
-        sendUserData(userData, () => onStartTest(userData));
+        sendUserData(userData, () => onNextPage(userData));
       } else {
-        onStartTest(userData);
+        onNextPage(userData);
       }
     }
   };
