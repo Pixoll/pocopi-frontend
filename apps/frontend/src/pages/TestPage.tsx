@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
@@ -6,6 +7,7 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
 import { UserData } from "@/types/user";
 import { Group } from "@pocopi/config";
+import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 
 type TestPageProps = {
   group: Group;
@@ -14,12 +16,12 @@ type TestPageProps = {
 };
 
 export function TestPage({
-  group,
-  goToNextPage,
-  userData,
-}: TestPageProps) {
+                           group,
+                           goToNextPage,
+                           userData,
+                         }: TestPageProps) {
   const { isDarkMode } = useTheme();
-
+  
   const {
     phaseIndex,
     questionIndex,
@@ -41,8 +43,35 @@ export function TestPage({
     goToNextQuestion,
     handleOptionClick,
     handleOptionHover,
+    answeredQuestions,
+    jumpToQuestion,
   } = useTest(group, userData);
-
+  
+  const [showSummary, setShowSummary] = useState(false);
+  const [isLastPhase, setIsLastPhase] = useState(false);
+  
+  const handleNextPhase = () => {
+    const shouldShowBetweenPhases = !allowPreviousPhase && allowPreviousQuestion;
+    const atFinalPhase = phaseIndex >= phasesCount - 1;
+    
+    setIsLastPhase(atFinalPhase);
+    
+    if (shouldShowBetweenPhases || atFinalPhase) {
+      setShowSummary(true);
+    } else {
+      goToNextPhase(goToNextPage);
+    }
+  };
+  
+  const handleContinueFromSummary = () => {
+    if (isLastPhase) {
+      goToNextPage(); // va al CompletionModal
+    } else {
+      goToNextPhase(goToNextPage);
+    }
+    setShowSummary(false);
+  };
+  
   return (
     <div className={styles.page}>
       <TestPageHeader
@@ -53,7 +82,7 @@ export function TestPage({
         questionsCount={totalPhaseQuestions}
         progressPercentage={progressPercentage}
       />
-
+      
       {/* main content */}
       <div className={styles.content}>
         {/* question */}
@@ -77,7 +106,7 @@ export function TestPage({
             />
           )}
         </div>
-
+        
         {/* options */}
         <TestOptions
           options={options}
@@ -88,11 +117,11 @@ export function TestPage({
           isDarkMode={isDarkMode}
         />
       </div>
-
+      
       {/* bottom nav bar */}
       <TestPageNavigation
         onPreviousPhase={goToPreviousPhase}
-        onNextPhase={() => goToNextPhase(goToNextPage)}
+        onNextPhase={handleNextPhase}
         onPreviousQuestion={goToPreviousQuestion}
         onNextQuestion={() => goToNextQuestion(goToNextPage)}
         disablePreviousPhase={phaseIndex === 0}
@@ -104,6 +133,17 @@ export function TestPage({
         hideNextPhase={isNextPhaseHidden}
         isDarkMode={isDarkMode}
       />
+      
+      {showSummary && (
+        <PhaseSummaryModal
+          questions={answeredQuestions}
+          onSelectQuestion={(index) => {
+            jumpToQuestion(index);
+            setShowSummary(false);
+          }}
+          onContinue={handleContinueFromSummary}
+        />
+      )}
     </div>
   );
 }
