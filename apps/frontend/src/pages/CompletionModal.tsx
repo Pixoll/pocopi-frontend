@@ -338,28 +338,47 @@ export function CompletionModal({
                       </h5>
                       {loading && <div>Obteniendo resultados...</div>}
                       {error && <div className="text-danger">{error}</div>}
-                      {!loading && !error && userResult && (
-                        <ul className="list-unstyled mb-0">
-                          <li className="mb-3 d-flex align-items-center gap-2">
-                            <FontAwesomeIcon icon={faCheck} className="text-success fa-lg" />
-                            <span>
-                              <strong>Preguntas correctas:</strong> {userResult.correctQuestions} de {userResult.questionsAnswered}
-                            </span>
-                          </li>
-                          <li className="mb-3 d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
-                            <FontAwesomeIcon icon={faTrophy} className="text-warning fa-lg" />
-                            <span>
-                              <strong>Porcentaje de aciertos:</strong> {userResult.questionsAnswered > 0 ? ((userResult.correctQuestions / userResult.questionsAnswered) * 100).toFixed(1) : "0.0"}%
-                            </span>
-                          </li>
-                          <li className="d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
-                            <FontAwesomeIcon icon={faChartLine} className="text-info fa-lg" />
-                            <span>
-                              <strong>Tiempo total:</strong> {(userResult.timeTaken / 1000).toFixed(1)} segundos
-                            </span>
-                          </li>
-                        </ul>
-                      )}
+                      {!loading && !error && userResult && (() => {
+                        const totalQuestions = config.getTotalQuestions?.(userResult.group);
+                        const omitidas = typeof totalQuestions === "number" ? totalQuestions - userResult.questionsAnswered : null;
+                        return (
+                          <ul className="list-unstyled mb-0">
+                            <li className="mb-3 d-flex align-items-center gap-2">
+                              <FontAwesomeIcon icon={faCheck} className="text-success fa-lg" />
+                              <span>
+                                <strong>Preguntas correctas:</strong> {userResult.correctQuestions}
+                                {typeof totalQuestions === "number"
+                                  ? ` de ${totalQuestions}`
+                                  : ` de ${userResult.questionsAnswered} (respondidas)`}
+                              </span>
+                            </li>
+                            {typeof totalQuestions === "number" && (
+                              <li className="mb-3 d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
+                                <FontAwesomeIcon icon={faCheck} className="text-secondary fa-lg" />
+                                <span>
+                                  <strong>Preguntas omitidas:</strong> {omitidas}
+                                </span>
+                              </li>
+                            )}
+                            <li className="mb-3 d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
+                              <FontAwesomeIcon icon={faTrophy} className="text-warning fa-lg" />
+                              <span>
+                                <strong>Porcentaje de aciertos:</strong> {typeof totalQuestions === "number" && totalQuestions > 0
+                                  ? ((userResult.correctQuestions / totalQuestions) * 100).toFixed(1)
+                                  : userResult.questionsAnswered > 0
+                                    ? ((userResult.correctQuestions / userResult.questionsAnswered) * 100).toFixed(1)
+                                    : "0.0"}%
+                              </span>
+                            </li>
+                            <li className="d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
+                              <FontAwesomeIcon icon={faChartLine} className="text-info fa-lg" />
+                              <span>
+                                <strong>Tiempo total:</strong> {(userResult.timeTaken / 1000).toFixed(1)} segundos
+                              </span>
+                            </li>
+                          </ul>
+                        );
+                      })()}
                       {!loading && !error && !userResult && (
                         <div>No se encontraron resultados para este usuario.</div>
                       )}
