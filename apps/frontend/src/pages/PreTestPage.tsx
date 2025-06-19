@@ -1,12 +1,12 @@
-import { config } from "@fortawesome/fontawesome-svg-core";
+import { config } from "@pocopi/config";
 import { FormQuestionType } from "@pocopi/config";
 import { useState } from "react";
 
 interface PreTestPageProps {
-  onSubmit: (answers: (string | number)[]) => void;
+  onSubmit?: (answers: (string | number)[]) => void;
 }
 
-export function PreTestPage({ onSubmit }: PreTestPageProps) {
+export function PreTestPage({ onSubmit }: PreTestPageProps = {}) {
   const { questions } = config.preTestForm!;
   const [answers, setAnswers] = useState<(string | number)[]>(
     questions.map(q =>
@@ -22,7 +22,8 @@ export function PreTestPage({ onSubmit }: PreTestPageProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(answers);
+    if (onSubmit) onSubmit(answers);
+    else alert("Respuestas: " + JSON.stringify(answers, null, 2));
   };
 
   return (
@@ -30,7 +31,8 @@ export function PreTestPage({ onSubmit }: PreTestPageProps) {
       <h2>Pre-Test</h2>
       {questions.map((question, idx) => {
         switch (question.type) {
-          case FormQuestionType.SLIDER:
+          case FormQuestionType.SLIDER: {
+            const labelKeys = Object.keys(question.labels || {}).map(Number).sort((a, b) => a - b);
             return (
               <div key={idx} style={{ margin: "32px 0" }}>
                 <label style={{ display: "block", marginBottom: 8 }}>{question.text}</label>
@@ -38,6 +40,7 @@ export function PreTestPage({ onSubmit }: PreTestPageProps) {
                   type="range"
                   min={question.min}
                   max={question.max}
+                  step={question.step || 1}
                   value={answers[idx] as number}
                   onChange={e => handleChange(idx, Number(e.target.value))}
                   style={{ width: "100%" }}
@@ -45,16 +48,16 @@ export function PreTestPage({ onSubmit }: PreTestPageProps) {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: `repeat(${question.marks?.length ?? 0}, minmax(90px, 1fr))`,
+                    gridTemplateColumns: `repeat(${labelKeys.length}, minmax(60px, 1fr))`,
                     fontSize: 13,
                     marginTop: 4,
                     width: "100%",
                     gap: 4,
                   }}
                 >
-                  {question.marks?.map((mark: string, i: number) => (
+                  {labelKeys.map((key) => (
                     <span
-                      key={i}
+                      key={key}
                       style={{
                         textAlign: "center",
                         whiteSpace: "pre-line",
@@ -62,7 +65,7 @@ export function PreTestPage({ onSubmit }: PreTestPageProps) {
                         padding: "0 2px",
                       }}
                     >
-                      {mark}
+                      {String(question.labels[key])}
                     </span>
                   ))}
                 </div>
@@ -71,6 +74,7 @@ export function PreTestPage({ onSubmit }: PreTestPageProps) {
                 </div>
               </div>
             );
+          }
           case FormQuestionType.SELECT_ONE:
             return (
               <div key={idx} style={{ margin: "32px 0" }}>
@@ -81,14 +85,13 @@ export function PreTestPage({ onSubmit }: PreTestPageProps) {
                   style={{ width: 300 }}
                 >
                   <option value="">Seleccione una opción</option>
-                  {question.options?.map((opt: { text: string }, i: number) => (
-                    <option key={i} value={opt.text}>{opt.text}</option>
+                  {question.options?.map((opt, i) => (
+                    <option key={i} value={opt.text ?? ""}>{opt.text ?? ""}</option>
                   ))}
                   {question.other && <option value="other">Otro</option>}
                 </select>
               </div>
             );
-          // Puedes agregar más tipos aquí si los necesitas
           default:
             return null;
         }

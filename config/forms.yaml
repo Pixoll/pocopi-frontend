@@ -89,44 +89,48 @@ preTestForm:
       text: Los contratiempos me desaniman
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
     - category: GRIT-S
       type: slider
       text: Soy muy trabajador/a
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1 
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
     - category: GRIT-S
       type: slider
       text: Termino siempre todo lo que empiezo
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
     - category: GRIT-S
       type: slider
       text: Soy diligente (es decir, cuidadoso, activo y que ejecuta con celo y exactitud lo que esta a su cargo)
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
 
         # 10-12. SRL (slider)
@@ -135,36 +139,39 @@ preTestForm:
       text: Hago un plan antes de comenzar a hacer un trabajo escrito. Pienso lo que voy a hacer y lo que necesito para conseguirlo
       min: 1
       max: 5
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Ni acuerdo ni en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Ni acuerdo ni en desacuerdo
+        4: Algo de acuerdo
+        5: Totalmente de acuerdo
       other: false
     - category: SRL
       type: slider
       text: Cuando estudio, intento comprender las materias, tomar apuntes, hacer resúmenes, resolver ejercicios, hacer preguntas sobre los contenidos.
       min: 1
       max: 5
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Ni acuerdo ni en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Ni acuerdo ni en desacuerdo
+        4: Algo de acuerdo
+        5: Totalmente de acuerdo
       other: false
     - category: SRL
       type: slider
       text: Después de terminar un examen parcial / final, lo reviso mentalmente para saber dónde tuve los aciertos y errores y, hacerme una idea de la nota que voy a tener
       min: 1
       max: 5
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Ni acuerdo ni en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Ni acuerdo ni en desacuerdo
+        4: Algo de acuerdo
+        5: Totalmente de acuerdo
       other: false
 
       # 13-15. TPB (slider)
@@ -173,42 +180,45 @@ preTestForm:
       text: Depende de mí o no que tan bien me va en una actividad académica
       min: 1
       max: 7
-      marks:
-        - Totalmente en desacuerdo
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: "2"
+        3: "3"
+        4: "4"
+        5: "5"
+        6: "6"
+        7: Totalmente de acuerdo
       other: false
     - category: TPB
       type: slider
       text: Si quiero puedo completar todas las tareas de las actividades académicas
       min: 1
       max: 7
-      marks:
-        - Totalmente en desacuerdo
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: "2"
+        3: "3"
+        4: "4"
+        5: "5"
+        6: "6"
+        7: Totalmente de acuerdo
       other: false
     - category: TPB
       type: slider
       text: Depende de mí si mantengo al día mis actividades académicas
       min: 1
       max: 7
-      marks:
-        - Totalmente en desacuerdo
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: "2"
+        3: "3"
+        4: "4"
+        5: "5"
+        6: "6"
+        7: Totalmente de acuerdo
       other: false
    #  - category: SRL
     #   text: Short text question
@@ -230,44 +240,48 @@ postTestForm:
       text: Los contratiempos me desaniman
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
     - category: GRIT-S
       type: slider
       text: Soy muy trabajador/a
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1 
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
     - category: GRIT-S
       type: slider
       text: Termino siempre todo lo que empiezo
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
     - category: GRIT-S
       type: slider
       text: Soy diligente (es decir, cuidadoso, activo y que ejecuta con celo y exactitud lo que esta a su cargo)
       min: 1
       max: 4
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Algo de acuerdo
+        4: Totalmente de acuerdo
       other: false
 
         # 10-12. SRL (slider)
@@ -276,36 +290,39 @@ postTestForm:
       text: Hago un plan antes de comenzar a hacer un trabajo escrito. Pienso lo que voy a hacer y lo que necesito para conseguirlo
       min: 1
       max: 5
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Ni acuerdo ni en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Ni acuerdo ni en desacuerdo
+        4: Algo de acuerdo
+        5: Totalmente de acuerdo
       other: false
     - category: SRL
       type: slider
       text: Cuando estudio, intento comprender las materias, tomar apuntes, hacer resúmenes, resolver ejercicios, hacer preguntas sobre los contenidos.
       min: 1
       max: 5
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Ni acuerdo ni en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Ni acuerdo ni en desacuerdo
+        4: Algo de acuerdo
+        5: Totalmente de acuerdo
       other: false
     - category: SRL
       type: slider
       text: Después de terminar un examen parcial / final, lo reviso mentalmente para saber dónde tuve los aciertos y errores y, hacerme una idea de la nota que voy a tener
       min: 1
       max: 5
-      marks:
-        - Totalmente en desacuerdo
-        - Algo en desacuerdo
-        - Ni acuerdo ni en desacuerdo
-        - Algo de acuerdo
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: Algo en desacuerdo
+        3: Ni acuerdo ni en desacuerdo
+        4: Algo de acuerdo
+        5: Totalmente de acuerdo
       other: false
 
       # 13-15. TPB (slider)
@@ -314,40 +331,43 @@ postTestForm:
       text: Depende de mí o no que tan bien me va en una actividad académica
       min: 1
       max: 7
-      marks:
-        - Totalmente en desacuerdo
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: "2"
+        3: "3"
+        4: "4"
+        5: "5"
+        6: "6"
+        7: Totalmente de acuerdo
       other: false
     - category: TPB
       type: slider
       text: Si quiero puedo completar todas las tareas de las actividades académicas
       min: 1
       max: 7
-      marks:
-        - Totalmente en desacuerdo
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: "2"
+        3: "3"
+        4: "4"
+        5: "5"
+        6: "6"
+        7: Totalmente de acuerdo
       other: false
     - category: TPB
       type: slider
       text: Depende de mí si mantengo al día mis actividades académicas
       min: 1
       max: 7
-      marks:
-        - Totalmente en desacuerdo
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - Totalmente de acuerdo
+      step: 1
+      labels:
+        1: Totalmente en desacuerdo
+        2: "2"
+        3: "3"
+        4: "4"
+        5: "5"
+        6: "6"
+        7: Totalmente de acuerdo
       other: false
