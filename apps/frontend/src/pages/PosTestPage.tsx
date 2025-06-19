@@ -72,7 +72,7 @@ export function PostTestPage({ onSubmit }: PostTestPageProps = {}) {
                         padding: "0 2px",
                       }}
                     >
-                      {String(question.labels[key])}
+                      {String(question.labels[key].label)}
                     </span>
                   ))}
                 </div>
