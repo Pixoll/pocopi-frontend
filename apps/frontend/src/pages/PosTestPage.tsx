@@ -7,7 +7,10 @@ interface PostTestPageProps {
 }
 
 export function PostTestPage({ onSubmit }: PostTestPageProps = {}) {
-  const { questions } = config.postTestForm!;
+  // Solo mostrar preguntas de la 6 a la 15 (índices 5 a 14)
+  const allQuestions = config.postTestForm!.questions;
+  const questions = allQuestions.slice(5, 15);
+
   const [answers, setAnswers] = useState<(string | number)[]>(
     questions.map((q) =>
       q.type === FormQuestionType.SLIDER
