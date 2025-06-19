@@ -8,12 +8,15 @@ import mime from "mime";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { UserData } from "./types/user";
+import { TestInformationPage } from "./pages/TestInformationPage";
 
 enum Page {
   HOME,
+  INFORMATION,
   TEST,
   END,
   DASHBOARD,
+
 }
 
 export function App() {
@@ -34,7 +37,7 @@ export function App() {
 
   const startTest = (data: UserData) => {
     setUserData(data);
-    setPage(Page.TEST);
+    setPage(Page.INFORMATION);
   };
 
   const goToHome = () => {
@@ -54,6 +57,8 @@ export function App() {
     switch (page) {
       case Page.HOME:
         return <HomePage groupLabel={group.label} onStartTest={startTest} onDashboard={goToDashboard}/>;
+      case Page.INFORMATION:
+        return <TestInformationPage group={group} onNext={() => setPage(Page.TEST)} />;
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
       case Page.END:

@@ -125,6 +125,7 @@ export type Group = {
     readonly label: string;
     readonly probability: Decimal;
     readonly protocol: Protocol;
+    readonly text?: string;
 };
 export type Protocol = {
     readonly allowPreviousPhase: boolean;

@@ -341,6 +341,7 @@ function makeGroup(group: FlatRawGroupWithLabel): Group {
         label: group.label,
         probability: new Decimal(group.probability),
         protocol: makeProtocol(group.protocol),
+        text: group.text,
     });
 }
 
@@ -502,6 +503,7 @@ export type Group = {
     readonly label: string;
     readonly probability: Decimal;
     readonly protocol: Protocol;
+    readonly text?: string;
 };
 
 export type Protocol = {
