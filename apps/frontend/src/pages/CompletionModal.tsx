@@ -5,7 +5,6 @@ import { UserData } from "@/types/user";
 import {
   faChartLine,
   faCheck,
-  faDownload,
   faEnvelope,
   faHome,
   faIdCard,
@@ -32,9 +31,8 @@ export function CompletionModal({
   return (
     <Container
       fluid
-      className={`min-vh-100 d-flex align-items-center justify-content-center py-5 ${
-        isDarkMode ? "bg-dark" : "bg-light"
-      }`}
+      className={`min-vh-100 d-flex align-items-center justify-content-center py-5 ${isDarkMode ? "bg-dark" : "bg-light"
+        }`}
     >
       {/* Fondo decorativo */}
       <div
@@ -56,9 +54,8 @@ export function CompletionModal({
         <Col xs={12} md={8} lg={6} xl={5}>
           {/* Card principal */}
           <Card
-            className={`shadow-lg border-0 rounded-4 overflow-hidden text-center ${
-              isDarkMode ? "bg-dark text-light" : ""
-            }`}
+            className={`shadow-lg border-0 rounded-4 overflow-hidden text-center ${isDarkMode ? "bg-dark text-light" : ""
+              }`}
             style={{
               boxShadow: isDarkMode
                 ? "0 0 30px rgba(121, 132, 255, 0.2), 0 0 10px rgba(0, 0, 0, 0.3)"
@@ -67,9 +64,8 @@ export function CompletionModal({
           >
             {/* Encabezado con ícono y mensaje */}
             <div
-              className={`${
-                isDarkMode ? "bg-primary" : "bg-success"
-              } text-white py-4 position-relative`}
+              className={`${isDarkMode ? "bg-primary" : "bg-success"
+                } text-white py-4 position-relative`}
               style={{
                 borderBottom: isDarkMode
                   ? "1px solid rgba(255, 255, 255, 0.1)"
@@ -81,25 +77,24 @@ export function CompletionModal({
                 className="position-absolute start-0 top-0 bottom-0 end-0"
                 style={{
                   background: isDarkMode
-                    ? "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMTUwIDE1MCI+PGcgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPjxjaXJjbGUgcj0iNyIgY3g9IjE1IiBjeT0iMTUiLz48Y2lyY2xlIHI9IjciIGN4PSI0NSIgY3k9IjE1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNzUiIGN5PSIxNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEwNSIgY3k9IjE1Ii8+PGNpcmNsZSByPSI3IiBjeD0iMTM1IiBjeT0iMTUiLz48Y2lyY2xlIHI9IjciIGN4PSIxNSIgY3k9IjQ1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNDUiIGN5PSI0NSIvPjxjaXJjbGUgcj0iNyIgY3g9Ijc1IiBjeT0iNDUiLz48Y2lyY2xlIHI9IjciIGN4PSIxMDUiIGN5PSI0NSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEzNSIgY3k9IjQ1Ii8+PGNpcmNsZSByPSI3IiBjeD0iMTUiIGN5PSI3NSIvPjxjaXJjbGUgcj0iNyIgY3g9IjQ1IiBjeT0iNzUiLz48Y2lyY2xlIHI9IjciIGN4PSI3NSIgY3k9Ijc1Ii8+PGNpcmNsZSByPSI3IiBjeD0iMTA1IiBjeT0iNzUiLz48Y2lyY2xlIHI9IjciIGN4PSIxMzUiIGN5PSI3NSIvPjxjaXJjbGUgcj0iNyIgY3g9IjE1IiBjeT0iMTA1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNDUiIGN5PSIxMDUiLz48Y2lyY2xlIHI9IjciIGN4PSI3NSIgY3k9IjEwNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEwNSIgY3k9IjEwNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEzNSIgY3k9IjEwNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjE1IiBjeT0iMTM1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNDUiIGN5PSIxMzUiLz48Y2lyY2xlIHI9IjciIGN4PSI3NSIgY3k9IjEzNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEwNSIgY3k9IjEzNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEzNSIgY3k9IjEzNSIvPjwvZz48L3N2Zz4=')"
+                    ? "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMTUwIDE1MCI+PGcgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPjxjaXJjbGUgcj0iNyIgY3g9IjE1IiBjeT0iMTUiLz48Y2lyY2xlIHI9IjciIGN4PSI0NSIgY3k9IjE1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNzUiIGN5PSIxNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEwNSIgY3k9IjE1Ii8+PGNpcmNsZSByPSI3IiBjeD0iMTM1IiBjeT0iMTUiLz48Y2lyY2xlIHI9IjciIGN4PSIxNSIgY3k9IjQ1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNDUiIGN5PSI0NSIvPjxjaXJjbGUgcj0iNyIgY3g9Ijc1IiBjeT0iNDUiLz48Y2lyY2xlIHI9IjciIGN4PSIxMDUiIGN5PSI0NSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEzNSIgY3k9IjQ1Ii8+PGNpcmNsZSByPSI3IiBjeD0iMTUiIGN5PSI3NSIvPjxjaXJjbGUgcj0iNyIgY3g9IjQ1IiBjeT0iNzUiLz48Y2lyY2xlIHI9IjciIGN4PSI3NSIgY3k9Ijc1Ii8+PGNpcmNsZSByPSI3IiBjeD0iMTA1IiBjeT0iNzUiLz48Y2lyY2xlIHI9IjciIGN4PSIxMzUiIGN5PSI3NSIvPjxjaXJjbGUgcj0iNyIgY3g9IjE1IiBjeT0iMTA1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNDUiIGN5PSIxMDUiLz48Y2lyY2xlIHI9IjciIGN4PSI3NSIgY3k9IjEwNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEwNSIgY3k9IjEwNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEzNSIgY3k9IjEwNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjE1IiBjeT0iMTM1Ii8+PGNpcmNsZSByPSI3IiBjeD0iNDUiIGN5PSIxMzUiLz48Y2lyY2xlIHI9IjciIGN4PSI3NSIgY3g9IjEzNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEwNSIgY3k9IjEzNSIvPjxjaXJjbGUgcj0iNyIgY3g9IjEzNSIgY3k9IjEzNSIvPjwvZz48L3N2Zz4=')"
                     : "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMTUwIDE1MCI+CiAgPGcgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ij4KICAgIDxjaXJjbGUgcj0iNSIgY3g9IjEwIiBjeT0iMTAiLz4KICAgIDxjaXJjbGUgcj0iNSIgY3g9IjQwIiBjeT0iMTAiLz4KICAgIDxjaXJjbGUgcj0iNSIgY3g9IjcwIiBjeT0iMTAiLz4KICAgIDxjaXJjbGUgcj0iNSIgY3g9IjEwMCIgY3k9IjEwIi8+CiAgICA8Y2lyY2xlIHI9IjUiIGN4PSIxMzAiIGN5PSIxMCIvPgogICAgCiAgICA8Y2lyY2xlIHI9IjUiIGN4PSIxMCIgY3k9IjQwIi8+CiAgICA8Y2lyY2xlIHI9IjUiIGN4PSI0MCIgY3k9IjQwIi8+CiAgICA8Y2lyY2xlIHI9IjUiIGN4PSI3MCIgY3k9IjQwIi8+CiAgICA8Y2lyY2xlIHI9IjUiIGN4PSIxMDAiIGN5PSI0MCIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iMTMwIiBjeT0iNDAiLz4KICAgIAogICAgPGNpcmNsZSByPSI1IiBjeD0iMTAiIGN5PSI3NSIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iNDAiIGN5PSI3NSIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iNzAiIGN5PSI3NSIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iMTAwIiBjeT0iNzUiLz4KICAgIDxjaXJjbGUgcj0iNSIgY3g9IjEzMCIgY3k9Ijc1Ii8+CiAgICAKICAgIDxjaXJjbGUgcj0iNSIgY3g9IjEwIiBjeT0iMTAwIi8+CiAgICA8Y2lyY2xlIHI9IjUiIGN4PSI0MCIgY3k9IjEwMCIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iNzAiIGN5PSIxMDAiLz4KICAgIDxjaXJjbGUgcj0iNSIgY3g9IjEwMCIgY3k9IjEwMCIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iMTMwIiBjeT0iMTAwIi8+CiAgICAKICAgIDxjaXJjbGUgcj0iNSIgY3g9IjEwIiBjeT0iMTMwIi8+CiAgICA8Y2lyY2xlIHI9IjUiIGN4PSI0MCIgY3k9IjEzMCIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iNzAiIGN5PSIxMzAiLz4KICAgIDxjaXJjbGUgcj0iNSIgY3g9IjEwMCIgY3k9IjEzMCIvPgogICAgPGNpcmNsZSByPSI1IiBjeD0iMTMwIiBjeT0iMTMwIi8+CiAgPC9nPgo8L3N2Zz4=')",
                   opacity: 0.7,
                 }}
               />
               <div className="position-relative">
                 <div
-                  className={`mb-3 d-inline-flex p-3 rounded-circle ${
-                    isDarkMode
+                  className={`mb-3 d-inline-flex p-3 rounded-circle ${isDarkMode
                       ? "bg-primary-subtle"
                       : "bg-success bg-opacity-25"
-                  }`}
+                    }`}
                   style={{
                     boxShadow: isDarkMode
                       ? "0 0 20px rgba(121, 132, 255, 0.4)"
                       : "0 0 20px rgba(76, 201, 162, 0.4)",
                   }}
                 >
-                  <FontAwesomeIcon icon={faTrophy} className="fa-3x"/>
+                  <FontAwesomeIcon icon={faTrophy} className="fa-3x" />
                 </div>
                 <h2 className="h3 mb-0">{config.t("completion.testCompleted")}</h2>
                 <Badge
@@ -112,7 +107,7 @@ export function CompletionModal({
                       : "0 0 10px rgba(76, 201, 162, 0.3)",
                   }}
                 >
-                  <FontAwesomeIcon icon={faCheck} className="me-1"/>
+                  <FontAwesomeIcon icon={faCheck} className="me-1" />
                   {config.t("completion.successfullySubmitted")}
                 </Badge>
               </div>
@@ -135,11 +130,10 @@ export function CompletionModal({
               {/* Card de información del usuario */}
               {userData && !userData.anonymous && (
                 <Card
-                  className={`mb-4 border ${
-                    isDarkMode
+                  className={`mb-4 border ${isDarkMode
                       ? "bg-dark border-primary border-opacity-25"
                       : "bg-light"
-                  }`}
+                    }`}
                   style={{
                     boxShadow: isDarkMode
                       ? "0 0 15px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(121, 132, 255, 0.1)"
@@ -148,26 +142,24 @@ export function CompletionModal({
                 >
                   <Card.Body>
                     <Card.Title className="h6 mb-3 text-start d-flex align-items-center">
-                    <span
-                      className={`me-2 badge ${
-                        isDarkMode
-                          ? "bg-primary-subtle text-primary-emphasis"
-                          : "bg-light text-secondary"
-                      }`}
-                    >
-                      <FontAwesomeIcon icon={faUser} className="me-1"/>
-                      {config.t("completion.userInfo")}
-                    </span>
+                      <span
+                        className={`me-2 badge ${isDarkMode
+                            ? "bg-primary-subtle text-primary-emphasis"
+                            : "bg-light text-secondary"
+                          }`}
+                      >
+                        <FontAwesomeIcon icon={faUser} className="me-1" />
+                        {config.t("completion.userInfo")}
+                      </span>
                       {config.t("completion.registrationInformation")}
                     </Card.Title>
                     <div>
                       <div className="d-flex align-items-center mb-3">
                         <div
-                          className={`me-3 p-2 rounded-circle ${
-                            isDarkMode
+                          className={`me-3 p-2 rounded-circle ${isDarkMode
                               ? "bg-primary bg-opacity-10 text-primary"
                               : "bg-light text-success"
-                          }`}
+                            }`}
                           style={{
                             width: "36px",
                             height: "36px",
@@ -176,15 +168,14 @@ export function CompletionModal({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faUser}/>
+                          <FontAwesomeIcon icon={faUser} />
                         </div>
                         <div className="text-start">
                           <div
-                            className={`small ${
-                              isDarkMode
+                            className={`small ${isDarkMode
                                 ? "text-primary-emphasis"
                                 : "text-secondary"
-                            }`}
+                              }`}
                           >
                             {config.t("completion.name")}
                           </div>
@@ -196,11 +187,10 @@ export function CompletionModal({
 
                       <div className="d-flex align-items-center mb-3">
                         <div
-                          className={`me-3 p-2 rounded-circle ${
-                            isDarkMode
+                          className={`me-3 p-2 rounded-circle ${isDarkMode
                               ? "bg-primary bg-opacity-10 text-primary"
                               : "bg-light text-success"
-                          }`}
+                            }`}
                           style={{
                             width: "36px",
                             height: "36px",
@@ -209,15 +199,14 @@ export function CompletionModal({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faIdCard}/>
+                          <FontAwesomeIcon icon={faIdCard} />
                         </div>
                         <div className="text-start">
                           <div
-                            className={`small ${
-                              isDarkMode
+                            className={`small ${isDarkMode
                                 ? "text-primary-emphasis"
                                 : "text-secondary"
-                            }`}
+                              }`}
                           >
                             {config.t("completion.identification")}
                           </div>
@@ -229,11 +218,10 @@ export function CompletionModal({
 
                       <div className="d-flex align-items-center">
                         <div
-                          className={`me-3 p-2 rounded-circle ${
-                            isDarkMode
+                          className={`me-3 p-2 rounded-circle ${isDarkMode
                               ? "bg-primary bg-opacity-10 text-primary"
                               : "bg-light text-success"
-                          }`}
+                            }`}
                           style={{
                             width: "36px",
                             height: "36px",
@@ -242,15 +230,14 @@ export function CompletionModal({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faEnvelope}/>
+                          <FontAwesomeIcon icon={faEnvelope} />
                         </div>
                         <div className="text-start">
                           <div
-                            className={`small ${
-                              isDarkMode
+                            className={`small ${isDarkMode
                                 ? "text-primary-emphasis"
                                 : "text-secondary"
-                            }`}
+                              }`}
                           >
                             {config.t("completion.email")}
                           </div>
@@ -266,11 +253,10 @@ export function CompletionModal({
 
               {/* Card de opciones adicionales */}
               <Card
-                className={`mb-4 border ${
-                  isDarkMode
+                className={`mb-4 border ${isDarkMode
                     ? "border-primary border-opacity-25 bg-dark"
                     : "bg-light"
-                }`}
+                  }`}
                 style={{
                   boxShadow: isDarkMode
                     ? "0 0 15px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(121, 132, 255, 0.1)"
@@ -282,29 +268,17 @@ export function CompletionModal({
                     {config.t("completion.additionalOptions")}
                   </Card.Title>
                   <Row className="g-2">
-                    <Col xs={6}>
+                    <Col xs={12}>
                       <Button
                         variant={
                           isDarkMode ? "outline-primary" : "outline-success"
                         }
                         className="w-100 py-2"
                         size="sm"
-                        disabled
+                      // TODO: Cambiar a true si se habilita la funcionalidad
+                      // disabled={false}
                       >
-                        <FontAwesomeIcon icon={faDownload} className="me-2"/>
-                        {config.t("completion.downloadReport")}
-                      </Button>
-                    </Col>
-                    <Col xs={6}>
-                      <Button
-                        variant={
-                          isDarkMode ? "outline-primary" : "outline-success"
-                        }
-                        className="w-100 py-2"
-                        size="sm"
-                        disabled
-                      >
-                        <FontAwesomeIcon icon={faChartLine} className="me-2"/>
+                        <FontAwesomeIcon icon={faChartLine} className="me-2" />
                         {config.t("completion.viewResults")}
                       </Button>
                     </Col>
@@ -313,9 +287,8 @@ export function CompletionModal({
               </Card>
 
               <p
-                className={`small mb-4 ${
-                  isDarkMode ? "text-light opacity-75" : "text-secondary"
-                }`}
+                className={`small mb-4 ${isDarkMode ? "text-light opacity-75" : "text-secondary"
+                  }`}
               >
                 {config.t("completion.resultsRecorded")}
               </p>
@@ -337,7 +310,7 @@ export function CompletionModal({
                     border: "none",
                   }}
                 >
-                  <FontAwesomeIcon icon={faHome} className="me-2"/>
+                  <FontAwesomeIcon icon={faHome} className="me-2" />
                   {config.t("completion.backToHome")}
                 </Button>
               </div>
