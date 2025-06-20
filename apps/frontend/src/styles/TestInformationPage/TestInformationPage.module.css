@@ -1,21 +1,77 @@
 .test-information-page {
+    min-height: 100vh;
+    max-width: 700px;
+    margin: 2rem auto;
     padding: 2rem;
-    background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 1rem;
+    border: 1.5px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.test-information-page h1 {
-    font-size: 2rem;
+.testInformationPage--dark {
+    background-color: #212529;
+    color: #f8f9fa;
+}
+
+.testInformationPage--light {
+    background-color: #f8f9fa;
+    color: var(--color-text, #212529);
+}
+
+.testInformationPage__title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--color-primary, #0d6efd);
+    letter-spacing: 0.5px;
+}
+
+.testInformationPage__description {
+    font-size: 1.1rem;
+    line-height: 1.7;
     margin-bottom: 1rem;
 }
 
-.test-information-page p {
-    font-size: 1rem;
-    line-height: 1.5;
+.test-information-page:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
-.test-information-page button {
-    margin-top: 1rem;
+.test-information-page h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--color-primary);
+    letter-spacing: 0.5px;
+}
+
+.test-information-page p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+}
+
+.testInformationPage__button {
+    margin-top: 1.5rem;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--color-primary, #0d6efd);
+    border: none;
+    border-radius: 0.375rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.test-information-page button:hover,
+.test-information-page button:focus {
+    background: var(--color-primary-dark);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    outline: none;
 }
