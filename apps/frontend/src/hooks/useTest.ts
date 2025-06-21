@@ -21,6 +21,7 @@ type Test = {
   phasesCount: number;
   allowPreviousPhase: boolean;
   isNextPhaseHidden: boolean;
+  showSummary: boolean;
   allowPreviousQuestion: boolean;
   isNextQuestionDisabled: boolean;
   goToPreviousPhase: () => void;
@@ -29,6 +30,9 @@ type Test = {
   goToNextQuestion: (onFinish: () => void) => void;
   handleOptionClick: (id: number) => void;
   handleOptionHover: (id: number) => void;
+  quitSummaryPhase: (onFinish: () => void, shouldAdvancePhase: boolean) => void;
+  jumpToQuestion: (phaseId: number, questionId: number) => void;
+  getQuestions: () => [number, number][];
 };
 
 export function useTest(
@@ -39,7 +43,14 @@ export function useTest(
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const analyticsRef = useRef<TestAnalytics | null>(null);
-
+  const [showSummary, setShowSummary] = useState(false);
+  
+  const [questionMap] = useState<[number, number][]>(
+    () => group.protocol.phases.flatMap((phase, pIdx) =>
+      phase.questions.map((_, qIdx) => [pIdx, qIdx] as [number, number])
+    )
+  );
+  
   useEffect(() => {
     analyticsRef.current = new TestAnalytics(userData.id, phaseIndex + 1, questionIndex + 1);
   }, [userData.id, phaseIndex, questionIndex]);
@@ -77,14 +88,15 @@ export function useTest(
       0
     );
   const progressPercentage = (currentQuestionNumber / totalTestQuestions) * 100;
-
+  
+  const getQuestions = () => questionMap;
+  
   const completeCurrentQuestion = () => {
     const selectedOption = options.find(o => o.id === selectedOptionId);
 
     analyticsRef.current?.completeQuestion(!!selectedOption, !!selectedOption?.correct);
   };
-
-  // parameter is meant to be private inside this hook, do not add signature to return value type
+  
   const goToPreviousPhase = (goToLastQuestion: unknown = false, markedAsComplete: unknown = false) => {
     if (!allowPreviousPhase || phaseIndex <= 0) {
       return;
@@ -100,8 +112,27 @@ export function useTest(
     setQuestionIndex(newQuestionIndex);
     setSelectedOptionId(null);
   };
-
+  
+  const showSummaryPhase = () => {
+    setShowSummary(true);
+  };
+  
+  const quitSummaryPhase = (onFinish: () => void, shouldAdvancePhase: boolean) => {
+    setShowSummary(false);
+    
+    if (shouldAdvancePhase) {
+      if (phaseIndex < phases.length - 1) {
+        setPhaseIndex(phaseIndex + 1);
+        setQuestionIndex(0);
+        setSelectedOptionId(null);
+        return;
+      }
+      onFinish();
+    }
+  };
+  
   const goToNextPhase = (onFinish: () => void, markedAsComplete: unknown = false) => {
+    
     if (selectedOptionId === null && !allowSkipPhase) {
       return;
     }
@@ -110,10 +141,15 @@ export function useTest(
       completeCurrentQuestion();
     }
 
-    if (phaseIndex < phases.length - 1) {
-      setPhaseIndex(phaseIndex + 1);
-      setQuestionIndex(0);
-      setSelectedOptionId(null);
+    if (phaseIndex < phases.length) {
+      if(allowPreviousPhase){
+        setPhaseIndex(phaseIndex + 1);
+        setQuestionIndex(0);
+        setSelectedOptionId(null);
+      }
+      else {
+        showSummaryPhase();
+      }
       return;
     }
 
@@ -151,7 +187,21 @@ export function useTest(
 
     goToNextPhase(onFinish, true);
   };
-
+  
+  const jumpToQuestion = (phaseId: number, questionId: number) => {
+    if (phaseId < 0 || phaseId >= phases.length) return;
+    
+    const targetPhase = phases[phaseId];
+    if (questionId < 0 || questionId >= targetPhase.questions.length) return;
+    
+    completeCurrentQuestion();
+    
+    setPhaseIndex(phaseId);
+    setQuestionIndex(questionId);
+    setSelectedOptionId(null);
+    quitSummaryPhase(() => {}, false);
+  };
+  
   const handleOptionClick = (id: number) => {
     if (selectedOptionId === id) {
       analyticsRef.current?.recordOptionDeselect(id);
@@ -165,7 +215,7 @@ export function useTest(
   const handleOptionHover = (id: number) => {
     analyticsRef.current?.recordOptionHover(id);
   };
-
+  
   return {
     phaseIndex,
     questionIndex,
@@ -181,11 +231,15 @@ export function useTest(
     isNextPhaseHidden,
     allowPreviousQuestion,
     isNextQuestionDisabled,
+    showSummary,
+    quitSummaryPhase,
     goToPreviousPhase,
     goToNextPhase,
     goToPreviousQuestion,
     goToNextQuestion,
     handleOptionClick,
     handleOptionHover,
+    jumpToQuestion,
+    getQuestions,
   };
 }
