@@ -1,6 +1,6 @@
 import { TestAnalytics } from "@/analytics/TestAnalytics";
-import { UserData } from "@/types/user";
-import { Group, Image, TestOption } from "@pocopi/config";
+import type { UserData } from "@/types/user";
+import type { Group, Image, TestOption } from "@pocopi/config";
 import { useEffect, useRef, useState } from "react";
 
 export type Option = TestOption & {

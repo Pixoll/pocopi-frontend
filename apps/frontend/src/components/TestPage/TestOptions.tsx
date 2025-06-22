@@ -1,4 +1,4 @@
-import { Option } from "@/hooks/useTest";
+import type { Option } from "@/hooks/useTest";
 import styles from "@/styles/TestPage/TestOptions.module.css";
 
 type TestOptionsProps = {

@@ -6,7 +6,7 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { useUserData } from "@/hooks/useUserData";
 import styles from "@/styles/HomePage/HomePage.module.css";
-import { UserData } from "@/types/user";
+import type { UserData } from "@/types/user";
 import { config } from "@pocopi/config";
 
 type HomePageProps = {

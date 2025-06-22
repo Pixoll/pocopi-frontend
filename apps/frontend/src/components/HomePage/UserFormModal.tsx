@@ -1,6 +1,6 @@
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
-import { IdentifiableUserData, UserData } from "@/types/user";
+import type { IdentifiableUserData, UserData } from "@/types/user";
 import {
   faCakeCandles,
   faCircleNotch,
@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 import { Form, Modal } from "react-bootstrap";
 import { InputWithIcon } from "./InputWithIcon";
 

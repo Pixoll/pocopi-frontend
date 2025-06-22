@@ -1,4 +1,4 @@
-import api, { Summary } from "@/api";
+import api, { type Summary } from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";

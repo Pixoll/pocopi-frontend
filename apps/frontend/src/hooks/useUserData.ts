@@ -1,7 +1,7 @@
 import api from "@/api";
-import { UserData } from "@/types/user";
+import type { UserData } from "@/types/user";
 import { config } from "@pocopi/config";
-import { ChangeEvent, useState } from "react";
+import { type ChangeEvent, useState } from "react";
 
 type HookedUserData = {
   showModal: boolean;

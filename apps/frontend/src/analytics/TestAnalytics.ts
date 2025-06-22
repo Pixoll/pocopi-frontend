@@ -1,29 +1,4 @@
-import api from "@/api";
-
-enum TimelogEventType {
-  DESELECT = "deselect",
-  HOVER = "hover",
-  SELECT = "select",
-}
-
-type TimelogEvent = {
-  type: TimelogEventType;
-  optionId: number;
-  timestamp: number;
-};
-
-export type Timelog = {
-  userId: string;
-  phaseId: number;
-  questionId: number;
-  startTimestamp: number;
-  endTimestamp: number;
-  correct: boolean;
-  skipped: boolean;
-  totalOptionChanges: number;
-  totalOptionHovers: number;
-  events: TimelogEvent[];
-};
+import api, { type Timelog } from "@/api";
 
 let timelogId = 1;
 
@@ -64,7 +39,7 @@ export class TestAnalytics {
 
     this.timelog.events.push({
       optionId,
-      type: TimelogEventType.SELECT,
+      type: "select",
       timestamp: Date.now(),
     });
 
@@ -74,7 +49,7 @@ export class TestAnalytics {
   public recordOptionDeselect(optionId: number): void {
     this.timelog.events.push({
       optionId,
-      type: TimelogEventType.DESELECT,
+      type: "deselect",
       timestamp: Date.now(),
     });
 
@@ -86,7 +61,7 @@ export class TestAnalytics {
 
     this.timelog.events.push({
       optionId,
-      type: TimelogEventType.HOVER,
+      type: "hover",
       timestamp: Date.now(),
     });
 

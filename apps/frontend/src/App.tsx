@@ -7,7 +7,7 @@ import { config } from "@pocopi/config";
 import mime from "mime";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { UserData } from "./types/user";
+import type { UserData } from "./types/user";
 
 enum Page {
   HOME,
@@ -57,7 +57,7 @@ export function App() {
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
       case Page.END:
-        return <CompletionModal userData={userData} onBackToHome={goToHome}/>;
+        return <CompletionModal userData={userData!} onBackToHome={goToHome}/>;
       case Page.DASHBOARD:
         return <AnalyticsDashboard onBack={goToHome}/>;
     }

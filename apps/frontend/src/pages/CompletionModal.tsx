@@ -1,8 +1,6 @@
-// Modal de finalización del test: muestra agradecimiento, datos del usuario y opciones
-
+import api, { type UserSummary } from "@/api";
 import { useTheme } from "@/hooks/useTheme";
-import { UserData } from "@/types/user";
-import type { UserSummary } from "@/api/types.gen";
+import type { UserData } from "@/types/user";
 import {
   faChartLine,
   faCheck,
@@ -14,17 +12,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
-import sdk from "@/api";
+import { useState } from "react";
 import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
-import React, { useState } from "react";
 
-// Props del modal de finalización
 type CompletionModalProps = {
-  userData: UserData | null;
+  userData: UserData;
   onBackToHome: () => void;
 };
 
-// Componente principal del modal de finalización
 export function CompletionModal({
   userData,
   onBackToHome,
@@ -36,23 +31,20 @@ export function CompletionModal({
   const [error, setError] = useState<string | null>(null);
 
   const fetchUserResult = async () => {
-    if (!userData) return;
     setLoading(true);
     setError(null);
+
     try {
-      // getSummary retorna { data: Summary, ... }
-      const res = await sdk.getSummary();
-      const summary = res?.data;
-      if (summary && summary.users) {
-        let user: UserSummary | undefined;
-        if (!userData.anonymous && userData.email) {
-          user = summary.users.find((u) => u.email === userData.email);
-        } else {
-          user = summary.users.find((u) => u.id === userData.id);
+      const result = await api.getUserSummary({
+        path: {
+          userId: userData.id,
         }
-        setUserResult(user || null);
+      });
+
+      if (!result.data) {
+        setError("No se pudo obtener el resultado. Intenta de nuevo.");
       } else {
-        setUserResult(null);
+        setUserResult(result.data);
       }
     } catch {
       setError("No se pudo obtener el resultado. Intenta de nuevo.");
@@ -65,8 +57,9 @@ export function CompletionModal({
   return (
     <Container
       fluid
-      className={`min-vh-100 d-flex align-items-center justify-content-center py-5 ${isDarkMode ? "bg-dark" : "bg-light"
-        }`}
+      className={
+        `min-vh-100 d-flex align-items-center justify-content-center py-5 ${isDarkMode ? "bg-dark" : "bg-light"}`
+      }
     >
       {/* Fondo decorativo */}
       <div
@@ -88,8 +81,9 @@ export function CompletionModal({
         <Col xs={12} md={8} lg={6} xl={5}>
           {/* Card principal */}
           <Card
-            className={`shadow-lg border-0 rounded-4 overflow-hidden text-center ${isDarkMode ? "bg-dark text-light" : ""
-              }`}
+            className={
+              `shadow-lg border-0 rounded-4 overflow-hidden text-center ${isDarkMode ? "bg-dark text-light" : ""}`
+            }
             style={{
               boxShadow: isDarkMode
                 ? "0 0 30px rgba(121, 132, 255, 0.2), 0 0 10px rgba(0, 0, 0, 0.3)"
@@ -98,8 +92,7 @@ export function CompletionModal({
           >
             {/* Encabezado con ícono y mensaje */}
             <div
-              className={`${isDarkMode ? "bg-primary" : "bg-success"
-                } text-white py-4 position-relative`}
+              className={`${isDarkMode ? "bg-primary" : "bg-success"} text-white py-4 position-relative`}
               style={{
                 borderBottom: isDarkMode
                   ? "1px solid rgba(255, 255, 255, 0.1)"
@@ -121,14 +114,14 @@ export function CompletionModal({
                   className={`mb-3 d-inline-flex p-3 rounded-circle ${isDarkMode
                     ? "bg-primary-subtle"
                     : "bg-success bg-opacity-25"
-                    }`}
+                  }`}
                   style={{
                     boxShadow: isDarkMode
                       ? "0 0 20px rgba(121, 132, 255, 0.4)"
                       : "0 0 20px rgba(76, 201, 162, 0.4)",
                   }}
                 >
-                  <FontAwesomeIcon icon={faTrophy} className="fa-3x" />
+                  <FontAwesomeIcon icon={faTrophy} className="fa-3x"/>
                 </div>
                 <h2 className="h3 mb-0">{config.t("completion.testCompleted")}</h2>
                 <Badge
@@ -141,7 +134,7 @@ export function CompletionModal({
                       : "0 0 10px rgba(76, 201, 162, 0.3)",
                   }}
                 >
-                  <FontAwesomeIcon icon={faCheck} className="me-1" />
+                  <FontAwesomeIcon icon={faCheck} className="me-1"/>
                   {config.t("completion.successfullySubmitted")}
                 </Badge>
               </div>
@@ -150,24 +143,21 @@ export function CompletionModal({
             {/* Cuerpo del card */}
             <Card.Body className={`p-4 p-md-5 ${isDarkMode ? "bg-dark" : ""}`}>
               <div className="mb-4">
-                {userData && (
-                  <h4 className="h5 mb-4">
-                    {config.t("completion.thankYou", !userData.anonymous ? userData.name : "")}
-                  </h4>
-                )}
-
+                <h4 className="h5 mb-4">
+                  {config.t("completion.thankYou", !userData.anonymous ? userData.name : "")}
+                </h4>
                 <p className="lead">
                   {config.t("completion.successfullyCompleted", config.title)}
                 </p>
               </div>
 
               {/* Card de información del usuario */}
-              {userData && !userData.anonymous && (
+              {!userData.anonymous && (
                 <Card
                   className={`mb-4 border ${isDarkMode
                     ? "bg-dark border-primary border-opacity-25"
                     : "bg-light"
-                    }`}
+                  }`}
                   style={{
                     boxShadow: isDarkMode
                       ? "0 0 15px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(121, 132, 255, 0.1)"
@@ -180,9 +170,9 @@ export function CompletionModal({
                         className={`me-2 badge ${isDarkMode
                           ? "bg-primary-subtle text-primary-emphasis"
                           : "bg-light text-secondary"
-                          }`}
+                        }`}
                       >
-                        <FontAwesomeIcon icon={faUser} className="me-1" />
+                        <FontAwesomeIcon icon={faUser} className="me-1"/>
                         {config.t("completion.userInfo")}
                       </span>
                       {config.t("completion.registrationInformation")}
@@ -193,7 +183,7 @@ export function CompletionModal({
                           className={`me-3 p-2 rounded-circle ${isDarkMode
                             ? "bg-primary bg-opacity-10 text-primary"
                             : "bg-light text-success"
-                            }`}
+                          }`}
                           style={{
                             width: "36px",
                             height: "36px",
@@ -202,15 +192,10 @@ export function CompletionModal({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faUser} />
+                          <FontAwesomeIcon icon={faUser}/>
                         </div>
                         <div className="text-start">
-                          <div
-                            className={`small ${isDarkMode
-                              ? "text-primary-emphasis"
-                              : "text-secondary"
-                              }`}
-                          >
+                          <div className={`small ${isDarkMode ? "text-primary-emphasis" : "text-secondary"}`}>
                             {config.t("completion.name")}
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
@@ -224,7 +209,7 @@ export function CompletionModal({
                           className={`me-3 p-2 rounded-circle ${isDarkMode
                             ? "bg-primary bg-opacity-10 text-primary"
                             : "bg-light text-success"
-                            }`}
+                          }`}
                           style={{
                             width: "36px",
                             height: "36px",
@@ -233,15 +218,10 @@ export function CompletionModal({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faIdCard} />
+                          <FontAwesomeIcon icon={faIdCard}/>
                         </div>
                         <div className="text-start">
-                          <div
-                            className={`small ${isDarkMode
-                              ? "text-primary-emphasis"
-                              : "text-secondary"
-                              }`}
-                          >
+                          <div className={`small ${isDarkMode ? "text-primary-emphasis" : "text-secondary"}`}>
                             {config.t("completion.identification")}
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
@@ -255,7 +235,7 @@ export function CompletionModal({
                           className={`me-3 p-2 rounded-circle ${isDarkMode
                             ? "bg-primary bg-opacity-10 text-primary"
                             : "bg-light text-success"
-                            }`}
+                          }`}
                           style={{
                             width: "36px",
                             height: "36px",
@@ -264,15 +244,10 @@ export function CompletionModal({
                             justifyContent: "center",
                           }}
                         >
-                          <FontAwesomeIcon icon={faEnvelope} />
+                          <FontAwesomeIcon icon={faEnvelope}/>
                         </div>
                         <div className="text-start">
-                          <div
-                            className={`small ${isDarkMode
-                              ? "text-primary-emphasis"
-                              : "text-secondary"
-                              }`}
-                          >
+                          <div className={`small ${isDarkMode ? "text-primary-emphasis" : "text-secondary"}`}>
                             {config.t("completion.email")}
                           </div>
                           <div className={isDarkMode ? "text-light" : ""}>
@@ -290,7 +265,7 @@ export function CompletionModal({
                 className={`mb-4 border ${isDarkMode
                   ? "border-primary border-opacity-25 bg-dark"
                   : "bg-light"
-                  }`}
+                }`}
                 style={{
                   boxShadow: isDarkMode
                     ? "0 0 15px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(121, 132, 255, 0.1)"
@@ -312,15 +287,19 @@ export function CompletionModal({
                           setShowResults((prev) => !prev);
                         }}
                       >
-                        <FontAwesomeIcon icon={faChartLine} className="me-2" />
+                        <FontAwesomeIcon icon={faChartLine} className="me-2"/>
                         {showResults ? "Ocultar resultados" : config.t("completion.viewResults")}
                       </Button>
                     </Col>
                   </Row>
+
                   {/* Modal simple para mostrar resultados */}
                   {showResults && (
                     <div
-                      className={`mt-3 p-4 rounded-4 position-relative ${isDarkMode ? "bg-dark text-light border border-primary border-opacity-50" : "bg-light border"}`}
+                      className={`mt-3 p-4 rounded-4 position-relative ${isDarkMode
+                        ? "bg-dark text-light border border-primary border-opacity-50"
+                        : "bg-light border"
+                      }`}
                       style={{
                         background: isDarkMode
                           ? "linear-gradient(135deg, rgba(121,132,255,0.10) 0%, rgba(40,45,80,0.95) 100%)"
@@ -333,18 +312,23 @@ export function CompletionModal({
                       }}
                     >
                       <h5 className="mb-4 fw-bold d-flex align-items-center gap-2">
-                        <FontAwesomeIcon icon={faChartLine} className="text-primary fa-lg" />
+                        <FontAwesomeIcon icon={faChartLine} className="text-primary fa-lg"/>
                         Resultados de tu test
                       </h5>
+
                       {loading && <div>Obteniendo resultados...</div>}
                       {error && <div className="text-danger">{error}</div>}
+
                       {!loading && !error && userResult && (() => {
                         const totalQuestions = config.getTotalQuestions?.(userResult.group);
-                        const omitidas = typeof totalQuestions === "number" ? totalQuestions - userResult.questionsAnswered : null;
+                        const omitidas = typeof totalQuestions === "number"
+                          ? totalQuestions - userResult.questionsAnswered
+                          : null;
+
                         return (
                           <ul className="list-unstyled mb-0">
                             <li className="mb-3 d-flex align-items-center gap-2">
-                              <FontAwesomeIcon icon={faCheck} className="text-success fa-lg" />
+                              <FontAwesomeIcon icon={faCheck} className="text-success fa-lg"/>
                               <span>
                                 <strong>Preguntas correctas:</strong> {userResult.correctQuestions}
                                 {typeof totalQuestions === "number"
@@ -354,24 +338,24 @@ export function CompletionModal({
                             </li>
                             {typeof totalQuestions === "number" && (
                               <li className="mb-3 d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
-                                <FontAwesomeIcon icon={faCheck} className="text-secondary fa-lg" />
+                                <FontAwesomeIcon icon={faCheck} className="text-secondary fa-lg"/>
                                 <span>
                                   <strong>Preguntas omitidas:</strong> {omitidas}
                                 </span>
                               </li>
                             )}
                             <li className="mb-3 d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
-                              <FontAwesomeIcon icon={faTrophy} className="text-warning fa-lg" />
+                              <FontAwesomeIcon icon={faTrophy} className="text-warning fa-lg"/>
                               <span>
                                 <strong>Porcentaje de aciertos:</strong> {typeof totalQuestions === "number" && totalQuestions > 0
-                                  ? ((userResult.correctQuestions / totalQuestions) * 100).toFixed(1)
-                                  : userResult.questionsAnswered > 0
-                                    ? ((userResult.correctQuestions / userResult.questionsAnswered) * 100).toFixed(1)
-                                    : "0.0"}%
+                                ? ((userResult.correctQuestions / totalQuestions) * 100).toFixed(1)
+                                : userResult.questionsAnswered > 0
+                                  ? ((userResult.correctQuestions / userResult.questionsAnswered) * 100).toFixed(1)
+                                  : "0.0"}%
                               </span>
                             </li>
                             <li className="d-flex align-items-center gap-2 border-top border-primary border-opacity-25 pt-3">
-                              <FontAwesomeIcon icon={faChartLine} className="text-info fa-lg" />
+                              <FontAwesomeIcon icon={faChartLine} className="text-info fa-lg"/>
                               <span>
                                 <strong>Tiempo total:</strong> {(userResult.timeTaken / 1000).toFixed(1)} segundos
                               </span>
@@ -387,10 +371,7 @@ export function CompletionModal({
                 </Card.Body>
               </Card>
 
-              <p
-                className={`small mb-4 ${isDarkMode ? "text-light opacity-75" : "text-secondary"
-                  }`}
-              >
+              <p className={`small mb-4 ${isDarkMode ? "text-light opacity-75" : "text-secondary"}`}>
                 {config.t("completion.resultsRecorded")}
               </p>
 
@@ -411,7 +392,7 @@ export function CompletionModal({
                     border: "none",
                   }}
                 >
-                  <FontAwesomeIcon icon={faHome} className="me-2" />
+                  <FontAwesomeIcon icon={faHome} className="me-2"/>
                   {config.t("completion.backToHome")}
                 </Button>
               </div>

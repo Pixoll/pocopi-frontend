@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { ThemeContext } from "./ThemeContext";
 
 const IS_DARK_MODE_KEY = "isDarkMode";
