@@ -1,11 +1,11 @@
 import { ApiResponses } from "@decorators";
-import { Summary } from "@modules/dashboard/entities";
 import { Controller, Get } from "@nestjs/common";
-import { DashboardService } from "./dashboard.service";
+import { Summary } from "./entities";
+import { SummaryService } from "./summary.service";
 
-@Controller("dashboard")
-export class DashboardController {
-    public constructor(private readonly dashboardService: DashboardService) {
+@Controller("summary")
+export class SummaryController {
+    public constructor(private readonly summaryService: SummaryService) {
     }
 
     /**
@@ -19,6 +19,6 @@ export class DashboardController {
         },
     })
     public getSummary(): Summary {
-        return this.dashboardService.getSummary();
+        return this.summaryService.getSummary();
     }
 }

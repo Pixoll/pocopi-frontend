@@ -43,7 +43,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  */
 export const getSummary = <ThrowOnError extends boolean = false>(options?: Options<GetSummaryData, ThrowOnError>) => {
   return (options?.client ?? _heyApiClient).get<GetSummaryResponses, unknown, ThrowOnError>({
-    url: "/dashboard",
+    url: "/summary",
     ...options
   });
 };

@@ -251,7 +251,7 @@ export type GetSummaryData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/dashboard";
+  url: "/summary";
 };
 
 export type GetSummaryResponses = {

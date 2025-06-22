@@ -1,12 +1,11 @@
-import { UserSummary } from "@modules/dashboard/entities/user-summary.entity";
 import { TimelogsService } from "@modules/timelogs";
 import { UsersService } from "@modules/users";
 import { Injectable } from "@nestjs/common";
 import { config } from "@pocopi/config";
-import { Summary } from "./entities";
+import { Summary, UserSummary } from "./entities";
 
 @Injectable()
-export class DashboardService {
+export class SummaryService {
     public constructor(
         private readonly timelogsService: TimelogsService,
         private readonly usersService: UsersService
