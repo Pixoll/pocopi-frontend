@@ -263,6 +263,24 @@ export type GetSummaryResponses = {
 
 export type GetSummaryResponse = GetSummaryResponses[keyof GetSummaryResponses];
 
+export type GetUserSummaryData = {
+  body?: never;
+  path: {
+    userId: string;
+  };
+  query?: never;
+  url: "/summary/{userId}";
+};
+
+export type GetUserSummaryResponses = {
+  /**
+   * Successfully obtained user data and timelogs summary.
+   */
+  200: UserSummary;
+};
+
+export type GetUserSummaryResponse = GetUserSummaryResponses[keyof GetUserSummaryResponses];
+
 export type GetAllTimelogsData = {
   body?: never;
   path?: never;

@@ -9,6 +9,8 @@ import type {
   GetSummaryResponses,
   GetUsersData,
   GetUsersResponses,
+  GetUserSummaryData,
+  GetUserSummaryResponses,
   GetUserTimelogsData,
   GetUserTimelogsErrors,
   GetUserTimelogsResponses,
@@ -44,6 +46,16 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 export const getSummary = <ThrowOnError extends boolean = false>(options?: Options<GetSummaryData, ThrowOnError>) => {
   return (options?.client ?? _heyApiClient).get<GetSummaryResponses, unknown, ThrowOnError>({
     url: "/summary",
+    ...options
+  });
+};
+
+/**
+ * Get user data and timelogs summary for a single user.
+ */
+export const getUserSummary = <ThrowOnError extends boolean = false>(options: Options<GetUserSummaryData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).get<GetUserSummaryResponses, unknown, ThrowOnError>({
+    url: "/summary/{userId}",
     ...options
   });
 };
