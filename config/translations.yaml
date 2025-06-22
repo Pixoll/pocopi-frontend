@@ -45,7 +45,6 @@ completion:
   # {0} = test name
   successfullyCompleted: Haz enviado con éxito el {0}
   userInfo: Información de Usuario
-  registrationInformation: Información de Registro
   name: Nombre
   identification: Identificación
   email: Correo Electrónico

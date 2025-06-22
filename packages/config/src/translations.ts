@@ -28,7 +28,6 @@ export type TranslationKey =
     | "completion.thankYou"
     | "completion.successfullyCompleted"
     | "completion.userInfo"
-    | "completion.registrationInformation"
     | "completion.name"
     | "completion.identification"
     | "completion.email"
