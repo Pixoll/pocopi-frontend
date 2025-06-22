@@ -178,11 +178,11 @@ protocols:
   groupB:
     allowPreviousPhase: false
     allowSkipPhase: true
+    allowPreviousQuestion: true
+    allowSkipQuestion: true
     randomize: true
     phases:
-      - allowPreviousQuestion: true
-        allowSkipQuestion: true
-        randomize: true
+      - randomize: true
         questions:
           - randomize: true
             image:
@@ -232,9 +232,7 @@ protocols:
               - image:
                   src: groupB/question2_option6.webp
                   alt: option 6
-      - allowPreviousQuestion: true
-        allowSkipQuestion: true
-        randomize: true
+      - randomize: true
         questions:
           - randomize: true
             image:

@@ -107,16 +107,6 @@
       "type": "object",
       "description": "Phase of a testing protocol.",
       "properties": {
-        "allowPreviousQuestion": {
-          "type": "boolean",
-          "description": "Whether to allow going to the previous question or not.",
-          "default": true
-        },
-        "allowSkipQuestion": {
-          "type": "boolean",
-          "description": "Whether to allow skipping the current question without answering it or not.",
-          "default": true
-        },
         "randomize": {
           "type": "boolean",
           "description": "Whether to randomize the order of the questions or not.",
@@ -157,6 +147,16 @@
         "allowSkipPhase": {
           "type": "boolean",
           "description": "Whether to allow skipping the current phase without completing it or not.",
+          "default": true
+        },
+        "allowPreviousQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow going to the previous question or not.",
+          "default": true
+        },
+        "allowSkipQuestion": {
+          "type": "boolean",
+          "description": "Whether to allow skipping the current question without answering it or not.",
           "default": true
         },
         "randomize": {

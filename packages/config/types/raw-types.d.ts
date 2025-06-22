@@ -120,6 +120,8 @@ export type FlatRawProtocol = Omit<RawProtocol, "phases"> & {
 export type RawProtocol = {
     allowPreviousPhase?: boolean;
     allowSkipPhase?: boolean;
+    allowPreviousQuestion?: boolean;
+    allowSkipQuestion?: boolean;
     randomize?: boolean;
     phases: Array<RawPhase | string>;
 };
@@ -127,8 +129,6 @@ export type FlatRawPhase = Omit<RawPhase, "questions"> & {
     questions: RawPhaseQuestion[];
 };
 export type RawPhase = {
-    allowPreviousQuestion?: boolean;
-    allowSkipQuestion?: boolean;
     randomize?: boolean;
     questions: Array<RawPhaseQuestion | string>;
 };

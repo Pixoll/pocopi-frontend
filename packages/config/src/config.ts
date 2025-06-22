@@ -23,11 +23,11 @@ const defaults = Object.freeze({
     protocol: Object.freeze({
         allowPreviousPhase: true,
         allowSkipPhase: true,
+        allowPreviousQuestion: true,
+        allowSkipQuestion: true,
         randomize: false,
     } satisfies Partial<FlatRawProtocol>),
     phase: Object.freeze({
-        allowPreviousQuestion: true,
-        allowSkipQuestion: true,
         randomize: false,
     } satisfies Partial<FlatRawPhase>),
     phaseQuestion: Object.freeze({
@@ -358,6 +358,8 @@ function makeProtocol(protocol: FlatRawProtocol): Protocol {
     return Object.freeze({
         allowPreviousPhase: protocol.allowPreviousPhase ?? defaults.protocol.allowPreviousPhase,
         allowSkipPhase: protocol.allowSkipPhase ?? defaults.protocol.allowSkipPhase,
+        allowPreviousQuestion: protocol.allowPreviousQuestion ?? defaults.protocol.allowPreviousQuestion,
+        allowSkipQuestion: protocol.allowSkipQuestion ?? defaults.protocol.allowSkipQuestion,
         phases: Object.freeze(randomize ? shuffle(phases) : phases),
     });
 }
@@ -374,8 +376,6 @@ function makePhase(phase: FlatRawPhase): Phase {
     const questions = phase.questions.map(makePhaseQuestion);
 
     return Object.freeze({
-        allowPreviousQuestion: phase.allowPreviousQuestion ?? defaults.phase.allowPreviousQuestion,
-        allowSkipQuestion: phase.allowSkipQuestion ?? defaults.phase.allowSkipQuestion,
         questions: Object.freeze(randomize ? shuffle(questions) : questions),
     });
 }
@@ -507,12 +507,12 @@ export type Group = {
 export type Protocol = {
     readonly allowPreviousPhase: boolean;
     readonly allowSkipPhase: boolean;
+    readonly allowPreviousQuestion: boolean;
+    readonly allowSkipQuestion: boolean;
     readonly phases: readonly Phase[];
 };
 
 export type Phase = {
-    readonly allowPreviousQuestion: boolean;
-    readonly allowSkipQuestion: boolean;
     readonly questions: readonly PhaseQuestion[];
 };
 
