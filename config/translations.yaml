@@ -38,7 +38,7 @@ test:
   nextPhase: Fase Siguiente
 
 completion:
-  testCompleted: Test Completado!
+  testCompleted: ¡Test Completado!
   successfullySubmitted: Enviado Exitosamente
   # {0} = participant name
   thankYou: Muchas gracias {0} por tu participación
@@ -48,9 +48,21 @@ completion:
   name: Nombre
   identification: Identificación
   email: Correo Electrónico
-  additionalOptions: Opciones Adicionales
-  downloadReport: Descargar Reporte
+  results: Resultados del test
   viewResults: Ver Resultados
+  hideResults: Ocultar Resultados
+  gettingResults: Obteniendo resultados...
+  failedToGetResults: No se pudieron obtener los resultados. Intenta de nuevo.
+  noResultsFound: No se encontraron resultados.
+  correctAnswers: "Respuestas correctas:"
+  # {0} = correct answers
+  # {1} = total number of questions
+  correctOfTotal: "{0} de {1}"
+  skippedQuestions: "Preguntas omitidas:"
+  accuracyPercent: "Porcentaje de aciertos:"
+  timeTaken: "Tiempo total:"
+  # {0} = time taken in seconds
+  timeSeconds: "{0} segundos"
   resultsRecorded: >
     Tus resultados han sido guardados exitosamente.
     Estos datos serán utilizados exclusivamente con propósitos académicos y de investigación.

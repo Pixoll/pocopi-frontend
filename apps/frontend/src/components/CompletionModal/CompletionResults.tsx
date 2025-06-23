@@ -37,7 +37,7 @@ export function CompletionResults({ userData }: CompletionResultsProps) {
       });
 
       if (!result.data) {
-        setError("No se pudo obtener el resultado. Intenta de nuevo.");
+        setError(config.t("completion.failedToGetResults"));
       } else {
         setUserResult({
           ...result.data,
@@ -45,7 +45,7 @@ export function CompletionResults({ userData }: CompletionResultsProps) {
         });
       }
     } catch {
-      setError("No se pudo obtener el resultado. Intenta de nuevo.");
+      setError(config.t("completion.failedToGetResults"));
     } finally {
       setLoading(false);
     }
@@ -60,12 +60,16 @@ export function CompletionResults({ userData }: CompletionResultsProps) {
   };
 
   return (
-    <div className={[
-      styles.container,
-      isDarkMode ? styles.containerDark : styles.containerLight,
-    ].join(" ")}>
+    <div
+      className={[
+        styles.container,
+        isDarkMode ? styles.containerDark : styles.containerLight,
+      ].join(" ")}
+    >
       <div className={styles.headerContainer}>
-        <span className={styles.title}>Resultados del test</span>
+        <span className={styles.title}>
+          {config.t("completion.results")}
+        </span>
 
         <button
           className={[
@@ -75,42 +79,45 @@ export function CompletionResults({ userData }: CompletionResultsProps) {
           onClick={onShowResults}
         >
           <FontAwesomeIcon icon={faChartLine}/>
-          {showResults ? "Ocultar Resultados" : config.t("completion.viewResults")}
+          {showResults
+            ? config.t("completion.hideResults")
+            : config.t("completion.viewResults")
+          }
         </button>
       </div>
 
       {showResults && <>
-        {loading && <div>Obteniendo resultados...</div>}
+        {loading && <div>{config.t("completion.gettingResults")}</div>}
 
         {error && <div className={styles.error}>{error}</div>}
 
         {!loading && !error && !userResult && (
-          <div>No se encontraron resultados para este usuario.</div>
+          <div>{config.t("completion.noResultsFound")}</div>
         )}
 
         {!loading && !error && userResult && <>
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faCheck} className={[styles.resultIcon, styles.correctIcon].join(" ")}/>
-            <strong>Preguntas correctas:</strong>{" "}
-            {userResult.correctQuestions} de {userResult.totalQuestions}
+            <strong>{config.t("completion.correctAnswers")}</strong>{" "}
+            {config.t("completion.correctOfTotal", `${userResult.correctQuestions}`, `${userResult.totalQuestions}`)}
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faForward} className={[styles.resultIcon, styles.skippedIcon].join(" ")}/>
-            <strong>Preguntas omitidas:</strong>{" "}
+            <strong>{config.t("completion.skippedQuestions")}</strong>{" "}
             {userResult.totalQuestions - userResult.questionsAnswered}
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faPercent} className={[styles.resultIcon, styles.accuracyIcon].join(" ")}/>
-            <strong>Porcentaje de aciertos:</strong>{" "}
+            <strong>{config.t("completion.accuracyPercent")}</strong>{" "}
             {userResult.accuracy.toFixed(1)}%
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faClock} className={[styles.resultIcon, styles.timeIcon].join(" ")}/>
-            <strong>Tiempo total:</strong>{" "}
-            {(userResult.timeTaken / 1000).toFixed(1)} segundos
+            <strong>{config.t("completion.timeTaken")}</strong>{" "}
+            {config.t("completion.timeSeconds", (userResult.timeTaken / 1000).toFixed(1))}
           </div>
         </>}
       </>}
