@@ -1,7 +1,6 @@
-import api, { type UserSummary } from "@/api";
+import api, { type User, type UserSummary } from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
-import type { UserData } from "@/types/user";
 import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
@@ -12,7 +11,7 @@ type UserResult = UserSummary & {
 };
 
 type CompletionResultsProps = {
-  userData: UserData;
+  userData: User;
 };
 
 export function CompletionResults({ userData }: CompletionResultsProps) {

@@ -1,6 +1,6 @@
+import type { User } from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
-import type { IdentifiableUserData, UserData } from "@/types/user";
 import {
   faCakeCandles,
   faCircleNotch,
@@ -21,7 +21,7 @@ type UserFormModalProps = {
   groupLabel: string;
   show: boolean;
   onHide: () => void;
-  onSubmit: (data: UserData, onSaved: () => void, onError: (message: string) => void) => void;
+  onSubmit: (data: User, onSaved: () => void, onError: (message: string) => void) => void;
 };
 
 export function UserFormModal({
@@ -35,7 +35,7 @@ export function UserFormModal({
   const [error, setError] = useState<string | null>(null);
   const { isDarkMode } = useTheme();
 
-  const [formData, setFormData] = useState<IdentifiableUserData>({
+  const [formData, setFormData] = useState<Extract<User, { anonymous: false }>>({
     anonymous: false,
     id: "",
     group: groupLabel,

@@ -1,15 +1,15 @@
+import type { User } from "@/api";
 import { CompletionHeader } from "@/components/CompletionModal/CompletionHeader";
 import { CompletionResults } from "@/components/CompletionModal/CompletionResults";
 import { CompletionUserInfo } from "@/components/CompletionModal/CompletionUserInfo";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionModal.module.css";
-import type { UserData } from "@/types/user";
 import { faHome, } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
 
 type CompletionModalProps = {
-  userData: UserData;
+  userData: User;
   onBackToHome: () => void;
 };
 

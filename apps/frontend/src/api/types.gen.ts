@@ -224,7 +224,20 @@ export type User = {
   /**
    * Whether the user is anonymous or not.
    */
-  anonymous: boolean;
+  anonymous: true;
+  /**
+   * The ID of the user.
+   */
+  id: string;
+  /**
+   * The test group that was assigned to this user.
+   */
+  group: string;
+} | {
+  /**
+   * Whether the user is anonymous or not.
+   */
+  anonymous: false;
   /**
    * The ID of the user.
    */
@@ -236,15 +249,15 @@ export type User = {
   /**
    * The real name of the user. Required if not an anon. user.
    */
-  name?: string;
+  name: string;
   /**
    * The email of the user. Required if not an anon. user.
    */
-  email?: string;
+  email: string;
   /**
    * The age of the user. Required if not an anon. user.
    */
-  age?: number;
+  age: number;
 };
 
 export type GetSummaryData = {

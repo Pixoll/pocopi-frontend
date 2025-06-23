@@ -1,12 +1,12 @@
+import type { User } from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionUserInfo.module.css";
-import type { IdentifiableUserData } from "@/types/user";
 import { faEnvelope, faIdCard, faUser } from "@fortawesome/free-solid-svg-icons";
 import { config } from "@pocopi/config";
 import { UserInfoDetail } from "./UserInfoDetail";
 
 type CompletionUserInfoProps = {
-  userData: IdentifiableUserData;
+  userData: Extract<User, { anonymous: false }>;
 }
 
 export function CompletionUserInfo({ userData }: CompletionUserInfoProps) {
