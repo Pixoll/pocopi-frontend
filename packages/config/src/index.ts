@@ -230,8 +230,6 @@ function flattenConfig(config: RawMergedConfig): FlatRawConfig {
             });
 
             return {
-                allowPreviousQuestion: phase.allowPreviousQuestion,
-                allowSkipQuestion: phase.allowSkipQuestion,
                 randomize: phase.randomize,
                 questions,
             };
@@ -242,6 +240,8 @@ function flattenConfig(config: RawMergedConfig): FlatRawConfig {
             protocol: {
                 allowPreviousPhase: protocol.allowPreviousPhase,
                 allowSkipPhase: protocol.allowSkipPhase,
+                allowPreviousQuestion: protocol.allowPreviousQuestion,
+                allowSkipQuestion: protocol.allowSkipQuestion,
                 randomize: protocol.randomize,
                 phases,
             },

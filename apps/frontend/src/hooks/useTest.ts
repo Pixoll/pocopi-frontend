@@ -44,8 +44,8 @@ export function useTest(
     analyticsRef.current = new TestAnalytics(userData.id, phaseIndex + 1, questionIndex + 1);
   }, [userData.id, phaseIndex, questionIndex]);
 
-  const { phases, allowPreviousPhase, allowSkipPhase } = group.protocol;
-  const { questions, allowPreviousQuestion, allowSkipQuestion } = phases[phaseIndex];
+  const { phases, allowPreviousPhase, allowSkipPhase, allowPreviousQuestion, allowSkipQuestion } = group.protocol;
+  const { questions } = phases[phaseIndex];
   const { text: questionText, image: questionImage, options: tempOptions } = questions[questionIndex];
 
   const phasesCount = group.protocol.phases.length;
