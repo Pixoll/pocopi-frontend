@@ -1,7 +1,7 @@
 import api, { type FormAnswerDto, type User } from "@/api";
-import { SelectMultipleQuestion } from "@/components/FormPage/SelectMultipleQuestion";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
+import styles from "@/styles/FormPage/FormPage.module.css";
 import { config, FormQuestionType } from "@pocopi/config";
 import { type FormEvent, useEffect, useState } from "react";
 
@@ -78,37 +78,41 @@ export function FormPage({
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 900, margin: "0 auto", padding: 32 }}>
-      <h2>{title}</h2>
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>{title}</h1>
 
-      {questions.map((question, idx) => {
-        switch (question.type) {
-          case FormQuestionType.SELECT_ONE:
-            return <SelectOneQuestion
-              key={idx}
-              question={question}
-              answer={answers[idx].answers[0]}
-              setAnswer={(value) => handleChange(idx, [value])}
-            />;
+        <form onSubmit={handleSubmit} className={styles.form}>
+          {questions.map((question, idx) => {
+            switch (question.type) {
+              case FormQuestionType.SELECT_ONE:
+                return <SelectOneQuestion
+                  key={idx}
+                  question={question}
+                  answer={answers[idx].answers[0]}
+                  setAnswer={(value) => handleChange(idx, [value])}
+                />;
 
-          case FormQuestionType.SLIDER:
-            return <SliderQuestion
-              key={idx}
-              question={question}
-              answer={answers[idx].answers[0]}
-              setAnswer={(value) => handleChange(idx, [value])}
-            />;
+              case FormQuestionType.SLIDER:
+                return <SliderQuestion
+                  key={idx}
+                  question={question}
+                  answer={answers[idx].answers[0]}
+                  setAnswer={(value) => handleChange(idx, [value])}
+                />;
 
-          default:
-            return null;
-        }
-      })}
+              default:
+                return null;
+            }
+          })}
 
-      {error && <div>{error}</div>}
+          {error && <div>{error}</div>}
 
-      <button type="submit" disabled={sending}>
-        {sending ? "Enviando respuestas..." : "Enviar respuestas"}
-      </button>
-    </form>
+          <button type="submit" disabled={sending}>
+            {sending ? "Enviando respuestas..." : "Enviar respuestas"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }

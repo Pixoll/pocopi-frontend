@@ -1,0 +1,27 @@
+.questionText {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.optionText {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  width: fit-content;
+}
+
+.otherField {
+  background-color: transparent;
+  border-bottom: 1px solid #cccccc;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  min-width: 200px;
+  outline: 0;
+}

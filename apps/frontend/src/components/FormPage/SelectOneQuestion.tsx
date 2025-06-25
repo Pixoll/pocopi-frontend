@@ -1,3 +1,4 @@
+import styles from "@/styles/FormPage/SelectOneQuestion.module.css";
 import type { FormQuestionSelectOne } from "@pocopi/config";
 import { useState } from "react";
 
@@ -23,46 +24,40 @@ export function SelectOneQuestion({ question, answer, setAnswer }: SelectOneQues
   };
 
   return (
-    <div style={{ margin: "32px 0" }}>
-      <label style={{ display: "block", marginBottom: 16, fontWeight: "bold" }}>
+    <div>
+      <label className={styles.questionText}>
         {question.text}
       </label>
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <div className={styles.optionsContainer}>
         {question.options?.map((opt, i) => (
-          <label key={i} style={{ display: "flex", alignItems: "center", gap: "8px", width: "fit-content" }}>
+          <label key={i} className={styles.optionText}>
             <input
               type="radio"
-              name={`question-${question.text}`}
-              value={opt.text ?? ""}
-              checked={answer === (opt.text ?? "")}
+              name={`question-${question.text}-${opt.text}`}
+              value={opt.text}
+              checked={answer === opt.text}
               onChange={(e) => handleOptionChange(e.target.value)}
             />
-            <span>{opt.text ?? ""}</span>
+            <span>{opt.text}</span>
           </label>
         ))}
         {question.other && (
-          <label style={{ display: "flex", alignItems: "center", gap: "8px", width: "fit-content" }}>
+          <label className={styles.optionText}>
             <input
               type="radio"
-              name={`question-${question.text}`}
+              name={`question-${question.text}-other`}
               value="other"
-              checked={answer !== "" && !question.options?.some(opt => opt.text === answer)}
+              checked={answer !== "" && !question.options.some(opt => opt.text === answer)}
               onChange={() => handleOptionChange("other")}
             />
             <span>Otro:</span>
             <input
               type="text"
+              name={`question-${question.text}-other-text`}
+              placeholder="Especifique..."
               value={otherText}
               onChange={(e) => handleOtherTextChange(e.target.value)}
-              placeholder="Especifique..."
-              style={{
-                marginLeft: "8px",
-                padding: "4px 8px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                width: "200px"
-              }}
-              disabled={answer !== "" && question.options?.some(opt => opt.text === answer)}
+              className={styles.otherField}
             />
           </label>
         )}

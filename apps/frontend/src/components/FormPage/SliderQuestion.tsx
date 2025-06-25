@@ -17,7 +17,7 @@ export function SliderQuestion({ question, answer, setAnswer }: SliderQuestionPr
   }
 
   return (
-    <div className={styles.questionContainer}>
+    <div>
       <label className={styles.questionText}>
         {question.text}
       </label>
@@ -29,7 +29,7 @@ export function SliderQuestion({ question, answer, setAnswer }: SliderQuestionPr
           step={question.step || 1}
           value={answer || question.min}
           onChange={(e) => setAnswer(e.target.value)}
-          onClick={(e) => setAnswer(e.target.value)}
+          onClick={(e) => setAnswer((e.target as HTMLInputElement).value)}
           list={datalistId}
           className={[
             styles.slider,
