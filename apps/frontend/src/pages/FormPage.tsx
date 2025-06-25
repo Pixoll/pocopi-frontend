@@ -35,7 +35,9 @@ export function FormPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const title = type === "pre-test" ? "Pre-Test Form" : "Post-Test Form";
+  const title = type === "pre-test"
+    ? config.t("preTest.title")
+    : config.t("postTest.title");
 
   const handleChange = (questionIndex: number, values: string[]) => {
     answers[questionIndex] = {
@@ -52,7 +54,7 @@ export function FormPage({
 
     if (answers.some(a => a.answers.some(b => b.length === 0))) {
       setSending(false);
-      setError("Debes responder todas las preguntas.");
+      setError(config.t("form.youMustAnswerEverything"));
       return;
     }
 
@@ -115,11 +117,11 @@ export function FormPage({
             <button type="submit" disabled={sending} className={styles.sendButton}>
               {sending
                 ? <>
-                  Enviando respuestas...
+                  {config.t("form.sendingAnswers")}
                   <Spinner/>
                 </>
                 : <>
-                  Enviar respuestas
+                  {config.t("form.sendAnswers")}
                   <FontAwesomeIcon icon={faArrowRight}/>
                 </>}
             </button>

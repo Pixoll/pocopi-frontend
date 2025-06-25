@@ -1,6 +1,7 @@
 import styles from "@/styles/TestGreetingPage/TestGreetingPage.module.css";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@pocopi/config";
 import { useEffect } from "react";
 import Markdown from "react-markdown";
 
@@ -20,10 +21,12 @@ export function TestGreetingPage({ groupGreeting, goToNextPage }: TestInformatio
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Test Information</h1>
+        <h1 className={styles.title}>
+          {config.t("greeting.title")}
+        </h1>
         <Markdown>{groupGreeting}</Markdown>
         <button className={styles.button} onClick={goToNextPage}>
-          Start Test
+          {config.t("greeting.startTest")}
           <FontAwesomeIcon icon={faArrowRight}/>
         </button>
       </div>

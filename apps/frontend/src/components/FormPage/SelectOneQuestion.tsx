@@ -1,5 +1,5 @@
 import styles from "@/styles/FormPage/SelectOneQuestion.module.css";
-import type { FormQuestionSelectOne } from "@pocopi/config";
+import { config, type FormQuestionSelectOne } from "@pocopi/config";
 import { useState } from "react";
 
 type SelectOneQuestionProps = {
@@ -54,7 +54,7 @@ export function SelectOneQuestion({ question, answer, setAnswer }: SelectOneQues
             <input
               type="text"
               name={`question-${question.text}-other-text`}
-              placeholder="Especifique..."
+              placeholder={config.t("form.otherPlaceholder")}
               value={otherText}
               onChange={(e) => handleOtherTextChange(e.target.value)}
               className={styles.otherField}

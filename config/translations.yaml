@@ -25,6 +25,22 @@ home:
   cancel: Cancelar
   saveInformation: Guardar Información
 
+form:
+  otherPlaceholder: Especifique...
+  youMustAnswerEverything: Debes responder todas las preguntas.
+  sendAnswers: Enviar respuestas
+  sendingAnswers: Enviando respuestas...
+
+preTest:
+  title: Formulario Pre-Test
+
+postTest:
+  title: Formulario Post-Test
+
+greeting:
+  title: Información del Test
+  startTest: Iniciar Test
+
 test:
   progress: "Progreso:"
   # {0} = current phase
