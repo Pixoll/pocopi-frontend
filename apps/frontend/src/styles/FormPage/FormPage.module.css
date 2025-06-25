@@ -14,7 +14,7 @@
   flex-direction: column;
   max-width: 900px;
   overflow: hidden;
-  padding: 2rem;
+  padding: 3rem;
   width: 100%;
 }
 
@@ -29,4 +29,40 @@
   display: flex;
   flex-direction: column;
   gap: 3rem;
+}
+
+.sendButtonContainer {
+  align-self: center;
+}
+
+.sendButton {
+  align-items: center;
+  background-color: #198754;
+  border: none;
+  border-radius: 100rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  color: white;
+  display: flex;
+  font-size: 1.25rem;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 1rem 3rem;
+  transition: color 0.15s ease-in-out,
+  background-color 0.15s ease-in-out,
+  border-color 0.15s ease-in-out,
+  box-shadow 0.15s ease-in-out;
+  user-select: none;
+}
+
+.sendButton:hover, .sendButton:focus-visible {
+  background-color: #157347;
+}
+
+.sendButton:active {
+  background-color: #146c43;
+}
+
+.sendButton:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(60, 153, 110, 0.5);
+  outline: 0;
 }

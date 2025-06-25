@@ -1,7 +1,10 @@
 import api, { type FormAnswerDto, type User } from "@/api";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
+import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/FormPage/FormPage.module.css";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config, FormQuestionType } from "@pocopi/config";
 import { type FormEvent, useEffect, useState } from "react";
 
@@ -106,11 +109,21 @@ export function FormPage({
             }
           })}
 
-          {error && <div>{error}</div>}
+          <div className={styles.sendButtonContainer}>
+            {error && <div>{error}</div>}
 
-          <button type="submit" disabled={sending}>
-            {sending ? "Enviando respuestas..." : "Enviar respuestas"}
-          </button>
+            <button type="submit" disabled={sending} className={styles.sendButton}>
+              {sending
+                ? <>
+                  Enviando respuestas...
+                  <Spinner/>
+                </>
+                : <>
+                  Enviar respuestas
+                  <FontAwesomeIcon icon={faArrowRight}/>
+                </>}
+            </button>
+          </div>
         </form>
       </div>
     </div>
