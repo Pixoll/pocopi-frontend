@@ -43,21 +43,38 @@
   margin-bottom: 2rem;
 }
 
+.tableDark th,
+.tableDark td {
+  border-bottom: 1px solid #333;
+  color: #eee;
+}
+
+.tableLight th,
+.tableLight td {
+  border-bottom: 1px solid #ccc;
+  color: #222;
+}
+
 .table th,
 .table td {
   padding: 1rem;
   text-align: center;
-  border-bottom: 1px solid #ccc;
   font-size: 1.1rem;
 }
 
 .linkButton {
   background: none;
   border: none;
-  color: #007bff;
   text-decoration: underline;
   cursor: pointer;
   font-weight: bold;
+}
+
+.linkButtonLight {
+  color: #007bff;
+}
+.linkButtonDark {
+  color: #ffd447;
 }
 
 .linkButton:disabled {
@@ -71,13 +88,23 @@
   padding: 1rem;
   font-size: 1.1rem;
   font-weight: bold;
-  background-color: #007bff;
-  color: white;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
+  transition: background 0.2s;
+}
+.continueBtnLight {
+  background-color: #007bff;
+  color: white;
+}
+.continueBtnLight:hover {
+  background-color: #0056b3;
 }
 
-.continueBtn:hover {
-  background-color: #0056b3;
+.continueBtnDark {
+  background-color: #333d55;
+  color: #ffd447;
+}
+.continueBtnDark:hover {
+  background-color: #22293a;
 }

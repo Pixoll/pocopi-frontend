@@ -176,7 +176,7 @@ protocols:
                   src: groupA/question4_option6.webp
                   alt: option 6
   groupB:
-    allowPreviousPhase: false
+    allowPreviousPhase: true
     allowSkipPhase: true
     allowPreviousQuestion: true
     allowSkipQuestion: true

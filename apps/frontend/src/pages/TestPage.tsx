@@ -38,6 +38,7 @@ export function TestPage({
     allowPreviousQuestion,
     isNextQuestionDisabled,
     showSummary,
+    answeredQuestions,
     quitSummaryPhase,
     goToPreviousPhase,
     goToNextPhase,
@@ -70,11 +71,13 @@ export function TestPage({
         <div className={styles.content}>
           <PhaseSummaryModal
             questions={getQuestions()}
+            answeredQuestions={answeredQuestions}
             currentPhase={phaseIndex}
             jumpToQuestion={jumpToQuestion}
             onContinue={() => quitSummaryPhase(goToNextPage, true)}
             onlyCurrentPhase={!allowPreviousPhase}
             allowJump={allowPreviousQuestion}
+            isDarkMode={isDarkMode}
           />
         </div>
       ) : (

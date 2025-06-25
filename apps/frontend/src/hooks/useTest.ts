@@ -24,6 +24,7 @@ type Test = {
   showSummary: boolean;
   allowPreviousQuestion: boolean;
   isNextQuestionDisabled: boolean;
+  answeredQuestions: [number, number][];
   goToPreviousPhase: () => void;
   goToNextPhase: (onFinish: () => void) => void;
   goToPreviousQuestion: () => void;
@@ -44,6 +45,7 @@ export function useTest(
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const analyticsRef = useRef<TestAnalytics | null>(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [answeredQuestions, setAnsweredQuestions] = useState<[number, number][]>([]);
   
   const [questionMap] = useState<[number, number][]>(
     () => group.protocol.phases.flatMap((phase, pIdx) =>
@@ -55,8 +57,8 @@ export function useTest(
     analyticsRef.current = new TestAnalytics(userData.id, phaseIndex + 1, questionIndex + 1);
   }, [userData.id, phaseIndex, questionIndex]);
 
-  const { phases, allowPreviousPhase, allowSkipPhase } = group.protocol;
-  const { questions, allowPreviousQuestion, allowSkipQuestion } = phases[phaseIndex];
+  const { phases, allowPreviousPhase, allowSkipPhase, allowPreviousQuestion, allowSkipQuestion } = group.protocol;
+  const { questions } = phases[phaseIndex];
   const { text: questionText, image: questionImage, options: tempOptions } = questions[questionIndex];
 
   const phasesCount = group.protocol.phases.length;
@@ -89,6 +91,20 @@ export function useTest(
     );
   const progressPercentage = (currentQuestionNumber / totalTestQuestions) * 100;
   
+  const addAnsweredQuestion = (phaseIdx: number, questionIdx: number) => {
+    setAnsweredQuestions(prev => {
+      const exists = prev.some(([p, q]) => p === phaseIdx && q === questionIdx);
+      if (exists) return prev;
+      return [...prev, [phaseIdx, questionIdx]];
+    });
+  };
+  
+  const removeAnsweredQuestion = (phaseIdx: number, questionIdx: number) => {
+    setAnsweredQuestions(prev =>
+      prev.filter(([p, q]) => !(p === phaseIdx && q === questionIdx))
+    );
+  };
+  
   const getQuestions = () => questionMap;
   
   const completeCurrentQuestion = () => {
@@ -111,6 +127,7 @@ export function useTest(
     setPhaseIndex(phaseIndex - 1);
     setQuestionIndex(newQuestionIndex);
     setSelectedOptionId(null);
+    removeAnsweredQuestion(phaseIndex - 1, newQuestionIndex);
   };
   
   const showSummaryPhase = () => {
@@ -132,27 +149,31 @@ export function useTest(
   };
   
   const goToNextPhase = (onFinish: () => void, markedAsComplete: unknown = false) => {
-    
     if (selectedOptionId === null && !allowSkipPhase) {
       return;
     }
-
+    
     if (!markedAsComplete) {
       completeCurrentQuestion();
     }
-
-    if (phaseIndex < phases.length) {
-      if(allowPreviousPhase){
+    
+    if (phaseIndex < phases.length - 1) {
+      if (allowPreviousPhase) {
         setPhaseIndex(phaseIndex + 1);
         setQuestionIndex(0);
         setSelectedOptionId(null);
-      }
-      else {
+        removeAnsweredQuestion(phaseIndex + 1, 0);
+      } else {
         showSummaryPhase();
       }
       return;
     }
-
+    
+    if (phaseIndex === phases.length - 1 && allowPreviousPhase) {
+      showSummaryPhase();
+      return;
+    }
+    
     onFinish();
   };
 
@@ -170,6 +191,7 @@ export function useTest(
 
     setQuestionIndex(questionIndex - 1);
     setSelectedOptionId(null);
+    removeAnsweredQuestion(phaseIndex, questionIndex - 1);
   };
 
   const goToNextQuestion = (onFinish: () => void) => {
@@ -182,6 +204,7 @@ export function useTest(
     if (questionIndex < questions.length - 1) {
       setQuestionIndex(questionIndex + 1);
       setSelectedOptionId(null);
+      removeAnsweredQuestion(phaseIndex, questionIndex + 1);
       return;
     }
 
@@ -199,16 +222,18 @@ export function useTest(
     setPhaseIndex(phaseId);
     setQuestionIndex(questionId);
     setSelectedOptionId(null);
+    removeAnsweredQuestion(phaseId, questionId);
     quitSummaryPhase(() => {}, false);
   };
   
   const handleOptionClick = (id: number) => {
     if (selectedOptionId === id) {
       analyticsRef.current?.recordOptionDeselect(id);
+      removeAnsweredQuestion(phaseIndex, questionIndex);
     } else {
       analyticsRef.current?.recordOptionSelect(id);
+      addAnsweredQuestion(phaseIndex, questionIndex);
     }
-
     setSelectedOptionId((v) => (v === id ? null : id));
   };
 
@@ -232,6 +257,7 @@ export function useTest(
     allowPreviousQuestion,
     isNextQuestionDisabled,
     showSummary,
+    answeredQuestions,
     quitSummaryPhase,
     goToPreviousPhase,
     goToNextPhase,
