@@ -1,28 +1,28 @@
-import { Body, Controller, Post } from "@nestjs/common";
-import { PretestDto } from "./dtos/pretest.dto";
-import { PostestDto } from "./dtos/postest.dto";
 import { ApiResponses } from "@decorators";
+import { Body, Controller, Post } from "@nestjs/common";
+import { PostTestDto, PreTestDto } from "./dtos";
 import { FormsService } from "./forms.service";
 
 @Controller("forms")
 export class FormsController {
-    public constructor(private readonly formsService: FormsService) {}
-
-    @Post("pretest")
-    @ApiResponses({
-    created: "Successfully saved pretest.",
-    badRequest: "Validation errors (body).",
-    })
-    savePreTest(@Body() dto: PretestDto) {
-    @Post("postest")
-    @ApiResponses({
-    created: "Successfully saved postest.",
-    badRequest: "Validation errors (body).",
-    })
-    savePostTest(@Body() dto: PostestDto) {
-    return this.formsService.savePostTest(dto);
+    public constructor(private readonly formsService: FormsService) {
     }
-    savePostTest(@Body() dto: PostestDto) {
-    return this.formsService.savePostTest(dto);
+
+    @Post("pre-test")
+    @ApiResponses({
+        created: "Successfully saved pre-test form.",
+        badRequest: "Validation errors (body).",
+    })
+    public savePreTest(@Body() dto: PreTestDto): void {
+        this.formsService.savePreTest(dto);
+    }
+
+    @Post("post-test")
+    @ApiResponses({
+        created: "Successfully saved post-test form.",
+        badRequest: "Validation errors (body).",
+    })
+    public savePostTest(@Body() dto: PostTestDto): void {
+        this.formsService.savePostTest(dto);
     }
 }
