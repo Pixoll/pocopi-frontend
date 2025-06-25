@@ -1,30 +1,25 @@
-import { Group } from "@pocopi/config";
-import { useEffect } from "react";
 import styles from "@/styles/TestInformationPage/TestInformationPage.module.css";
+import { useEffect } from "react";
+import Markdown from "react-markdown";
 
-//crear pagina con boton de siguiente
 type TestInformationPageProps = {
-    onNext: () => void;
-    group: Group;
-    };
+  groupText: string | undefined;
+  onNext: () => void;
+};
 
-
-
-export function TestInformationPage({ onNext, group }: TestInformationPageProps) {
-   useEffect(() => {
-   console.log(group.text);
-    if (!group.text) {
-        onNext();
+export function TestInformationPage({ groupText, onNext }: TestInformationPageProps) {
+  useEffect(() => {
+    if (!groupText) {
+      onNext();
     }
-   }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    return (
-        <div className={styles["test-information-page"]}>
-            <h1>Test Information</h1>
-            <p>{group.text}</p>
-            <button onClick={onNext}>Next</button>
-        </div>
-    );
-
+  return (
+    <div className={styles.testInformationPage}>
+      <h1>Test Information</h1>
+      <Markdown>{groupText}</Markdown>
+      <button onClick={onNext}>Next</button>
+    </div>
+  );
 }
-

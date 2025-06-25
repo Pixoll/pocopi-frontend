@@ -3,12 +3,12 @@ import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { CompletionModal } from "@/pages/CompletionModal";
 import { HomePage } from "@/pages/HomePage";
+import { TestInformationPage } from "@/pages/TestInformationPage";
 import { TestPage } from "@/pages/TestPage";
 import { config } from "@pocopi/config";
 import mime from "mime";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { TestInformationPage } from "./pages/TestInformationPage";
 
 enum Page {
   HOME,
@@ -16,7 +16,6 @@ enum Page {
   TEST,
   END,
   DASHBOARD,
-
 }
 
 export function App() {
@@ -35,9 +34,13 @@ export function App() {
     head.appendChild(link);
   }, []);
 
-  const startTest = (data: User) => {
+  const goToInformation = (data: User) => {
     setUserData(data);
     setPage(Page.INFORMATION);
+  };
+
+  const goToTest = () => {
+    setPage(Page.TEST);
   };
 
   const goToHome = () => {
@@ -56,9 +59,9 @@ export function App() {
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
-        return <HomePage groupLabel={group.label} onStartTest={startTest} onDashboard={goToDashboard}/>;
+        return <HomePage groupLabel={group.label} onNext={goToInformation} onDashboard={goToDashboard}/>;
       case Page.INFORMATION:
-        return <TestInformationPage group={group} onNext={() => setPage(Page.TEST)} />;
+        return <TestInformationPage groupText={group.text} onNext={goToTest}/>;
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
       case Page.END:

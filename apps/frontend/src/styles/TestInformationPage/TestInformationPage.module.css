@@ -1,4 +1,4 @@
-.test-information-page {
+.testInformationPage {
     min-height: 100vh;
     max-width: 700px;
     margin: 2rem auto;
@@ -36,11 +36,11 @@
     margin-bottom: 1rem;
 }
 
-.test-information-page:hover {
+.testInformationPage:hover {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
-.test-information-page h1 {
+.testInformationPage h1 {
     font-size: 2.25rem;
     font-weight: 700;
     margin-bottom: 1.25rem;
@@ -48,7 +48,7 @@
     letter-spacing: 0.5px;
 }
 
-.test-information-page p {
+.testInformationPage p {
     font-size: 1.1rem;
     line-height: 1.7;
     color: var(--color-text);
@@ -69,8 +69,8 @@
     transition: background 0.2s, box-shadow 0.2s;
 }
 
-.test-information-page button:hover,
-.test-information-page button:focus {
+.testInformationPage button:hover,
+.testInformationPage button:focus {
     background: var(--color-primary-dark);
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     outline: none;
