@@ -69,7 +69,7 @@ export function App() {
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
-        return <HomePage groupLabel={group.label} onNextPage={goToPreTest} onDashboard={goToDashboard}/>;
+        return <HomePage groupLabel={group.label} goToNextPage={goToPreTest} onDashboard={goToDashboard}/>;
       case Page.PRETEST:
         return <FormPage type="pre-test" userData={userData!} goToNextPage={goToGreeting}/>;
       case Page.GREETING:
