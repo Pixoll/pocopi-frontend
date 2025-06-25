@@ -113,7 +113,7 @@ export type FlatRawGroup = Omit<RawGroup, "protocol"> & {
 export type RawGroup = {
     probability: number;
     protocol: string | RawProtocol;
-    text?: string;
+    greeting?: string;
 };
 export type FlatRawProtocol = Omit<RawProtocol, "phases"> & {
     phases: FlatRawPhase[];

@@ -3,7 +3,7 @@ import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { CompletionModal } from "@/pages/CompletionModal";
 import { HomePage } from "@/pages/HomePage";
-import { TestInformationPage } from "@/pages/TestInformationPage";
+import { TestGreetingPage } from "@/pages/TestGreetingPage";
 import { TestPage } from "@/pages/TestPage";
 import { config } from "@pocopi/config";
 import mime from "mime";
@@ -61,7 +61,7 @@ export function App() {
       case Page.HOME:
         return <HomePage groupLabel={group.label} onNext={goToInformation} onDashboard={goToDashboard}/>;
       case Page.INFORMATION:
-        return <TestInformationPage groupText={group.text} onNext={goToTest}/>;
+        return <TestGreetingPage groupGreeting={group.greeting} onNext={goToTest}/>;
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
       case Page.END:

@@ -245,7 +245,7 @@ function flattenConfig(config: RawMergedConfig): FlatRawConfig {
                 randomize: protocol.randomize,
                 phases,
             },
-            text: group.text,
+            greeting: group.greeting,
         };
     }
 

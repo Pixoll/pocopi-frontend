@@ -57,11 +57,6 @@
       "type": "object",
       "description": "A test group.",
       "properties": {
-        "text": {
-        "type": "string",
-        "description": "Text displayed between the pre-test and the test.",
-        "minLength": 1
-      },
         "probability": {
           "type": "number",
           "description": "The chance of this group to be selected. The sum of all the probabilities of all the groups should be 1.",
@@ -79,6 +74,11 @@
               "minLength": 1
             }
           ]
+        },
+        "greeting": {
+          "type": "string",
+          "description": "Text displayed between the pre-test and the test screens.",
+          "minLength": 1
         }
       },
       "required": [
