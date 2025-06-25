@@ -1,13 +1,4 @@
-import { ArrayMinSize, IsArray, IsString, MinLength } from "class-validator";
+import { FormDto } from "@modules/forms/dtos/form.dto";
 
-export class PreTestDto {
-    @MinLength(1)
-    @IsString()
-    public declare userId: string;
-
-    @MinLength(1, { each: true })
-    @IsString({ each: true })
-    @ArrayMinSize(1)
-    @IsArray()
-    public declare answers: string[];
+export class PreTestDto extends FormDto {
 }

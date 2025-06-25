@@ -1,4 +1,5 @@
-import api, { type User } from "@/api";
+import api, { type FormAnswerDto, type User } from "@/api";
+import { SelectMultipleQuestion } from "@/components/FormPage/SelectMultipleQuestion";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
 import { config, FormQuestionType } from "@pocopi/config";
@@ -17,7 +18,10 @@ export function FormPage({
 }: FormPageProps) {
   const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
-  const [answers, setAnswers] = useState<string[]>(Array(questions.length).fill(""));
+  const [answers, setAnswers] = useState<FormAnswerDto[]>(Array.from({ length: questions.length }, (_, i) => ({
+    questionId: i + 1,
+    answers: [""],
+  })));
   const [_sending, setSending] = useState<boolean>(false);
   const [_error, setError] = useState<string | null>(null);
 
@@ -30,11 +34,12 @@ export function FormPage({
 
   const title = type === "pre-test" ? "Pre-Test Form" : "Post-Test Form";
 
-  const handleChange = (index: number) => {
-    return (value: string) => {
-      answers[index] = value;
-      setAnswers([...answers]);
+  const handleChange = (questionIndex: number, values: string[]) => {
+    answers[questionIndex] = {
+      ...answers[questionIndex],
+      answers: values,
     };
+    setAnswers([...answers]);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -43,7 +48,9 @@ export function FormPage({
     setError(null);
 
     try {
-      const result = await api.savePostTest({
+      const endpoint = type === "pre-test" ? api.savePreTest : api.savePostTest;
+
+      const result = await endpoint({
         body: {
           userId: userData.id,
           answers,
@@ -70,20 +77,20 @@ export function FormPage({
 
       {questions.map((question, idx) => {
         switch (question.type) {
-          case FormQuestionType.SLIDER:
-            return <SliderQuestion
-              key={idx}
-              question={question}
-              answer={answers[idx]}
-              setAnswer={handleChange(idx)}
-            />;
-
           case FormQuestionType.SELECT_ONE:
             return <SelectOneQuestion
               key={idx}
               question={question}
-              answer={answers[idx]}
-              setAnswer={handleChange(idx)}
+              answer={answers[idx].answers[0]}
+              setAnswer={(value) => handleChange(idx, [value])}
+            />;
+
+          case FormQuestionType.SLIDER:
+            return <SliderQuestion
+              key={idx}
+              question={question}
+              answer={answers[idx].answers[0]}
+              setAnswer={(value) => handleChange(idx, [value])}
             />;
 
           default:
