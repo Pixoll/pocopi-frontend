@@ -1,32 +1,426 @@
 # $schema: ./schemas/test.json
 
 groups:
-  control:
-    probability: 0.25
-    protocol: control
+  saliente:
+    probability: 0.5
+    protocol: saliente
     greeting: |-
-      Welcome to the control group test. You will be presented with a series of questions.
-      Please answer them to the best of your ability.
-  groupA:
-    probability: 0.25
-    protocol: groupA
+      **¡Hola!**
+
+      Bienvenido/a. Por parte del equipo agradecemos tu participación en el experimento.
+
+      Antes de comenzar una tarea desafiante, contar con una estrategia clara puede marcar una gran diferencia. Es por
+      ello que te sugerimos considerar lo siguiente antes de iniciar:
+
+      1. **Planificar:** Aquí debes pensar brevemente que estrategias utilizaras para resolver la tarea propuesta.
+
+      2. **Desarrollar:** Debes enfocarte en aplicar las estrategias previamente planificadas e ir monitoreando tu
+      desempeño.
+
+      3. **Reflexionar:** Evalúa tu desempeño en base a las estrategias que propusiste y piensa que mejoras puedes hacer
+      para aspirar al óptimo.
+
+      Recuerda que ya has demostrado una gran capacidad para superar desafíos en el pasado, prueba de ello es que estas
+      en una excelente universidad y en una carera desafiante. Esos éxitos pasados son poderosas herramientas para tus
+      logros futuros.
+
+      Tienes la preparación las habilidades y el potencial, cree en ti.
+
+      **¡Tú puedes!**
+
+  contextual:
+    probability: 0.5
+    protocol: contextual
     greeting: |-
-      Welcome to Group A test. This test consists of visual pattern recognition questions.
-      Take your time to analyze each image carefully.
-  groupB:
-    probability: 0.25
-    protocol: groupB
-    greeting: |-
-      Welcome to Group B test. This test consists of visual pattern recognition questions.
-      Take your time to analyze each image carefully.
-  groupC:
-    probability: 0.25
-    protocol: groupC
-    greeting: |-
-      Welcome to Group C test. This is a randomized test where questions and options will appear in different orders.
-      Please focus on each question individually.
+      **¡Hola!**
+
+      Bienvenido/a. Por parte del equipo agradecemos tu participación en el experimento. Su objetivo principal es
+      explorar como las personas enfrentan tareas desafiantes de resolución de problemas, el cual es parte de un estudio
+      que busca medir persistencia.
+
+      La prueba que encontraras a continuación evalúa tu inteligencia fluida, la cual es una capacidad esencial para
+      resolver problemas, a diferencia de la inteligencia cristalizada la cual depende de los conocimientos adquiridos
+      con el tiempo, la inteligencia fluida se considera independiente de la educación formal y experiencia previa.
+
+      Existen distintos tipos de test diseñados para medir esta habilidad, basados en tareas visuales y no verbales, que
+      evitan el uso de lenguaje o las matemáticas, lo que permite evaluar el razonamiento sin influencias culturales o
+      lingüísticas.
+
+      Durante la actividad te encontraras diversos desafíos, en donde debes señalar entre las diferentes opciones la que
+      consideres correcta.
+
+      **¡Gracias por participar!**
+
+#  control:
+#    probability: 0.25
+#    protocol: control
+#    greeting: |-
+#      Welcome to the control group test. You will be presented with a series of questions.
+#      Please answer them to the best of your ability.
+#  groupA:
+#    probability: 0.25
+#    protocol: groupA
+#    greeting: |-
+#      Welcome to Group A test. This test consists of visual pattern recognition questions.
+#      Take your time to analyze each image carefully.
+#  groupB:
+#    probability: 0.25
+#    protocol: groupB
+#    greeting: |-
+#      Welcome to Group B test. This test consists of visual pattern recognition questions.
+#      Take your time to analyze each image carefully.
+#  groupC:
+#    probability: 0.25
+#    protocol: groupC
+#    greeting: |-
+#      Welcome to Group C test. This is a randomized test where questions and options will appear in different orders.
+#      Please focus on each question individually.
 
 protocols:
+  saliente:
+    phases:
+      - questions:
+        - image:
+            src: saliente/practice/1.jpg
+            alt: question image PRACTICA_SALIENTE_1
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+              correct: true
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/practice/2.jpg
+            alt: question image PRACTICA_SALIENTE_2
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+              correct: true
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/practice/3.jpg
+            alt: question image PRACTICA_SALIENTE_3
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+              correct: true
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E1.jpg
+            alt: question image SALIENTE_E1
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+              correct: true
+            - text: "8"
+        - image:
+            src: saliente/questions/E2.jpg
+            alt: question image SALIENTE_E2
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+              correct: true
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E3.jpg
+            alt: question image SALIENTE_E3
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+              correct: true
+        - image:
+            src: saliente/questions/E4.jpg
+            alt: question image SALIENTE_E4
+          options:
+            - text: "1"
+            - text: "2"
+              correct: true
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E5.jpg
+            alt: question image SALIENTE_E5
+          options:
+            - text: "1"
+              correct: true
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E6.jpg
+            alt: question image SALIENTE_E6
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+              correct: true
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E7.jpg
+            alt: question image SALIENTE_E7
+          options:
+            - text: "1"
+              correct: true
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E8.jpg
+            alt: question image SALIENTE_E8
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+              correct: true
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E9.jpg
+            alt: question image SALIENTE_E9
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+              correct: true
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: saliente/questions/E10.jpg
+            alt: question image SALIENTE_E10
+          options:
+            - text: "1"
+            - text: "2"
+              correct: true
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+  contextual:
+    phases:
+      - questions:
+        - image:
+            src: contextual/practice/1.jpg
+            alt: question image PRACTICA_CONTEXTUAL_1
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+              correct: true
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/practice/2.jpg
+            alt: question image PRACTICA_CONTEXTUAL_2
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+              correct: true
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/practice/3.jpg
+            alt: question image PRACTICA_CONTEXTUAL_3
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+              correct: true
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E1.jpg
+            alt: question image CONTEXTUAL_E1
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+              correct: true
+            - text: "8"
+        - image:
+            src: contextual/questions/E2.jpg
+            alt: question image CONTEXTUAL_E2
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+              correct: true
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E3.jpg
+            alt: question image CONTEXTUAL_E3
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+              correct: true
+        - image:
+            src: contextual/questions/E4.jpg
+            alt: question image CONTEXTUAL_E4
+          options:
+            - text: "1"
+            - text: "2"
+              correct: true
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E5.jpg
+            alt: question image CONTEXTUAL_E5
+          options:
+            - text: "1"
+              correct: true
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E6.jpg
+            alt: question image CONTEXTUAL_E6
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+              correct: true
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E7.jpg
+            alt: question image CONTEXTUAL_E7
+          options:
+            - text: "1"
+              correct: true
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E8.jpg
+            alt: question image CONTEXTUAL_E8
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+              correct: true
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E9.jpg
+            alt: question image CONTEXTUAL_E9
+          options:
+            - text: "1"
+            - text: "2"
+            - text: "3"
+              correct: true
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
+        - image:
+            src: contextual/questions/E10.jpg
+            alt: question image CONTEXTUAL_E10
+          options:
+            - text: "1"
+            - text: "2"
+              correct: true
+            - text: "3"
+            - text: "4"
+            - text: "5"
+            - text: "6"
+            - text: "7"
+            - text: "8"
   control:
     phases:
       - control-phase1
