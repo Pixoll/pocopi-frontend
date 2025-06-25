@@ -16,6 +16,21 @@
 .slider {
 }
 
+.unanswered::-webkit-slider-thumb {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.unanswered::-moz-range-thumb {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.unanswered::-ms-thumb {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .labelsContainer {
   align-items: center;
   border-radius: 100rem;

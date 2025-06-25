@@ -27,10 +27,14 @@ export function SliderQuestion({ question, answer, setAnswer }: SliderQuestionPr
           min={question.min}
           max={question.max}
           step={question.step || 1}
-          value={answer}
+          value={answer || question.min}
           onChange={(e) => setAnswer(e.target.value)}
+          onClick={(e) => setAnswer(e.target.value)}
           list={datalistId}
-          className={styles.slider}
+          className={[
+            styles.slider,
+            !answer ? styles.unanswered : "",
+          ].join(" ")}
           style={{ width: `${100 / (length + 1) * length}%` }}
         />
         <datalist
