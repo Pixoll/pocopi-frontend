@@ -22,8 +22,8 @@ export function FormPage({
     questionId: i + 1,
     answers: [""],
   })));
-  const [_sending, setSending] = useState<boolean>(false);
-  const [_error, setError] = useState<string | null>(null);
+  const [sending, setSending] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (questions.length === 0) {
@@ -46,6 +46,12 @@ export function FormPage({
     e.preventDefault();
     setSending(true);
     setError(null);
+
+    if (answers.some(a => a.answers.some(b => b.length === 0))) {
+      setSending(false);
+      setError("Debes responder todas las preguntas.");
+      return;
+    }
 
     try {
       const endpoint = type === "pre-test" ? api.savePreTest : api.savePostTest;
@@ -98,7 +104,11 @@ export function FormPage({
         }
       })}
 
-      <button type="submit">Enviar respuestas</button>
+      {error && <div>{error}</div>}
+
+      <button type="submit" disabled={sending}>
+        {sending ? "Enviando respuestas..." : "Enviar respuestas"}
+      </button>
     </form>
   );
 }
