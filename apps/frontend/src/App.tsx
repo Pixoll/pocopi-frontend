@@ -1,9 +1,8 @@
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { CompletionModal } from "@/pages/CompletionModal";
+import { FormPage } from "@/pages/FormPage";
 import { HomePage } from "@/pages/HomePage";
-import { PostTestPage } from "@/pages/PostTestPage";
-import { PreTestPage } from "@/pages/PreTestPage";
 import { TestPage } from "@/pages/TestPage";
 import { config } from "@pocopi/config";
 import mime from "mime";
@@ -66,11 +65,11 @@ export function App() {
       case Page.HOME:
         return <HomePage groupLabel={group.label} onNextPage={goToPreTest} onDashboard={goToDashboard}/>;
       case Page.PRETEST:
-        return <PreTestPage userData={userData!} goToNextPage={goToTest}/>;
+        return <FormPage type="pre-test" userData={userData!} goToNextPage={goToTest}/>;
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToPostTest} userData={userData!}/>;
       case Page.POSTTEST:
-        return <PostTestPage userData={userData!} goToNextPage={goToEnd}/>;
+        return <FormPage type="post-test" userData={userData!} goToNextPage={goToEnd}/>;
       case Page.END:
         return <CompletionModal userData={userData} onBackToHome={goToHome}/>;
       case Page.DASHBOARD:

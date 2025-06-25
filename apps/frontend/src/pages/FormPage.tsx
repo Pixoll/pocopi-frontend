@@ -2,23 +2,25 @@ import api, { type User } from "@/api";
 import { config, FormQuestionType } from "@pocopi/config";
 import { type FormEvent, useState } from "react";
 
-interface PreTestPageProps {
+type FormPageProps = {
+  type: "pre-test" | "post-test";
   userData: User;
   goToNextPage: () => void;
-}
+};
 
-export function PreTestPage({ userData, goToNextPage }: PreTestPageProps) {
-  const questions = config.preTestForm?.questions ?? [];
-  const [answers, setAnswers] = useState<string[]>(
-    questions.map(q =>
-      q.type === FormQuestionType.SLIDER
-        ? Math.floor(((q.min ?? 1) + (q.max ?? 1)) / 2).toString()
-        : ""
-    )
-  );
+export function FormPage({
+  type,
+  userData,
+  goToNextPage,
+}: FormPageProps) {
+  const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
+  const questions = form?.questions ?? [];
+  const [answers, setAnswers] = useState<string[]>(Array(questions.length).fill(""));
+
+  const title = type === "pre-test" ? "Pre-Test" : "Post-Test";
 
   const handleChange = (idx: number, value: string) => {
-    setAnswers(ans => ans.map((a, i) => (i === idx ? value : a)));
+    setAnswers((ans) => ans.map((a, i) => (i === idx ? value : a)));
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -31,7 +33,7 @@ export function PreTestPage({ userData, goToNextPage }: PreTestPageProps) {
     }
 
     try {
-      const result = await api.savePreTest({
+      const result = await api.savePostTest({
         body: {
           userId: userData.id,
           answers,
@@ -50,21 +52,23 @@ export function PreTestPage({ userData, goToNextPage }: PreTestPageProps) {
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 900, margin: "0 auto", padding: 32 }}>
-      <h2>Pre-Test</h2>
+      <h2>{title}</h2>
       {questions.map((question, idx) => {
         switch (question.type) {
           case FormQuestionType.SLIDER: {
             const labelKeys = Object.keys(question.labels || {}).map(Number).sort((a, b) => a - b);
             return (
               <div key={idx} style={{ margin: "32px 0" }}>
-                <label style={{ display: "block", marginBottom: 8 }}>{question.text}</label>
+                <label style={{ display: "block", marginBottom: 8 }}>
+                  {question.text}
+                </label>
                 <input
                   type="range"
                   min={question.min}
                   max={question.max}
                   step={question.step || 1}
                   value={answers[idx]}
-                  onChange={e => handleChange(idx, e.target.value)}
+                  onChange={(e) => handleChange(idx, e.target.value)}
                   style={{ width: "100%" }}
                 />
                 <div
@@ -103,7 +107,7 @@ export function PreTestPage({ userData, goToNextPage }: PreTestPageProps) {
                 <label style={{ display: "block", marginBottom: 8 }}>{question.text}</label>
                 <select
                   value={answers[idx] as string}
-                  onChange={e => handleChange(idx, e.target.value)}
+                  onChange={(e) => handleChange(idx, e.target.value)}
                   style={{ width: 300 }}
                 >
                   <option value="">Seleccione una opción</option>
