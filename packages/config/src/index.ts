@@ -453,13 +453,16 @@ function validateImage(image: RawImage, yamlPath: string, usedImages: Map<string
         throw new Error(`Image '${src}' not found in images directory.`);
     }
 
-    const dir = path.dirname(path.join(FRONTEND_PUBLIC_PATH, src));
+    const destPath = path.join(FRONTEND_PUBLIC_PATH, src);
+    const dir = path.dirname(destPath);
 
     if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
     }
 
-    linkSync(path.join(IMAGES_DIR, src), path.join(FRONTEND_PUBLIC_PATH, src));
+    if (!existsSync(destPath)) {
+        linkSync(path.join(IMAGES_DIR, src), destPath);
+    }
 
     image.src = `images/${src}`;
     usedImages.set(src, yamlPath);
