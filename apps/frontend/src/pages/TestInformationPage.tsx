@@ -1,4 +1,6 @@
 import styles from "@/styles/TestInformationPage/TestInformationPage.module.css";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect } from "react";
 import Markdown from "react-markdown";
 
@@ -16,10 +18,15 @@ export function TestInformationPage({ groupText, onNext }: TestInformationPagePr
   }, []);
 
   return (
-    <div className={styles.testInformationPage}>
-      <h1>Test Information</h1>
-      <Markdown>{groupText}</Markdown>
-      <button onClick={onNext}>Next</button>
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Test Information</h1>
+        <Markdown>{groupText}</Markdown>
+        <button className={styles.button} onClick={onNext}>
+          Start Test
+          <FontAwesomeIcon icon={faArrowRight}/>
+        </button>
+      </div>
     </div>
   );
 }
