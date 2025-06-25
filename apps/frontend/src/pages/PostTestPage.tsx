@@ -24,6 +24,12 @@ export function PostTestPage({ userData, goToNextPage }: PostTestPageProps) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    // Validar que no haya respuestas vacías
+    if (answers.some(a => a === "")) {
+      alert("Por favor responde todas las preguntas antes de continuar.");
+      return;
+    }
+
     try {
       const result = await api.savePostTest({
         body: {
