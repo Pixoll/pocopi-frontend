@@ -14,8 +14,12 @@ import type {
   GetUserTimelogsData,
   GetUserTimelogsErrors,
   GetUserTimelogsResponses,
-  PingData,
-  PingResponses,
+  SavePostTestData,
+  SavePostTestErrors,
+  SavePostTestResponses,
+  SavePreTestData,
+  SavePreTestErrors,
+  SavePreTestResponses,
   SaveTimelogData,
   SaveTimelogErrors,
   SaveTimelogResponses,
@@ -38,6 +42,28 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
    * used to access values that aren't defined as part of the SDK function.
    */
   meta?: Record<string, unknown>;
+};
+
+export const savePreTest = <ThrowOnError extends boolean = false>(options: Options<SavePreTestData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).post<SavePreTestResponses, SavePreTestErrors, ThrowOnError>({
+    url: "/forms/pre-test",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers
+    }
+  });
+};
+
+export const savePostTest = <ThrowOnError extends boolean = false>(options: Options<SavePostTestData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).post<SavePostTestResponses, SavePostTestErrors, ThrowOnError>({
+    url: "/forms/post-test",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers
+    }
+  });
 };
 
 /**
@@ -114,13 +140,6 @@ export const saveUser = <ThrowOnError extends boolean = false>(options: Options<
 export const getUserTimelogs = <ThrowOnError extends boolean = false>(options: Options<GetUserTimelogsData, ThrowOnError>) => {
   return (options.client ?? _heyApiClient).get<GetUserTimelogsResponses, GetUserTimelogsErrors, ThrowOnError>({
     url: "/users/{id}/timelogs",
-    ...options
-  });
-};
-
-export const ping = <ThrowOnError extends boolean = false>(options?: Options<PingData, ThrowOnError>) => {
-  return (options?.client ?? _heyApiClient).get<PingResponses, unknown, ThrowOnError>({
-    url: "/ping",
     ...options
   });
 };

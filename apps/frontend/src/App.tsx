@@ -2,6 +2,7 @@ import type { User } from "@/api";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { CompletionModal } from "@/pages/CompletionModal";
+import { FormPage } from "@/pages/FormPage";
 import { HomePage } from "@/pages/HomePage";
 import { TestGreetingPage } from "@/pages/TestGreetingPage";
 import { TestPage } from "@/pages/TestPage";
@@ -12,8 +13,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 enum Page {
   HOME,
+  PRETEST,
   GREETING,
   TEST,
+  POSTTEST,
   END,
   DASHBOARD,
 }
@@ -34,13 +37,25 @@ export function App() {
     head.appendChild(link);
   }, []);
 
-  const goToGreeting = (data: User) => {
+  const goToPreTest = (data: User) => {
     setUserData(data);
+    setPage(Page.PRETEST);
+  };
+
+  const goToGreeting = () => {
     setPage(Page.GREETING);
   };
 
   const goToTest = () => {
     setPage(Page.TEST);
+  };
+
+  const goToPostTest = () => {
+    setPage(Page.POSTTEST);
+  };
+
+  const goToEnd = () => {
+    setPage(Page.END);
   };
 
   const goToHome = () => {
@@ -51,19 +66,18 @@ export function App() {
     setPage(Page.DASHBOARD);
   };
 
-  const goToEndPage = () => {
-    setPage(Page.END);
-  };
-
-  // routeless pages
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
-        return <HomePage groupLabel={group.label} goToNextPage={goToGreeting} onDashboard={goToDashboard}/>;
+        return <HomePage groupLabel={group.label} goToNextPage={goToPreTest} onDashboard={goToDashboard}/>;
+      case Page.PRETEST:
+        return <FormPage type="pre-test" userData={userData!} goToNextPage={goToGreeting}/>;
       case Page.GREETING:
         return <TestGreetingPage groupGreeting={group.greeting} goToNextPage={goToTest}/>;
       case Page.TEST:
-        return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
+        return <TestPage group={group} goToNextPage={goToPostTest} userData={userData!}/>;
+      case Page.POSTTEST:
+        return <FormPage type="post-test" userData={userData!} goToNextPage={goToEnd}/>;
       case Page.END:
         return <CompletionModal userData={userData!} onBackToHome={goToHome}/>;
       case Page.DASHBOARD:
