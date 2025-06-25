@@ -100,21 +100,3 @@
 .iconRight {
   margin-left: 0.5rem;
 }
-
-.previousQuestion {
-  left: 50%;
-  position: absolute;
-  transform: translateX(calc(-100% - 0.25rem));
-}
-
-.nextQuestion {
-  position: absolute;
-  right: 50%;
-  transform: translateX(calc(100% + 0.25rem));
-}
-
-.nextQuestionCenter {
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-}

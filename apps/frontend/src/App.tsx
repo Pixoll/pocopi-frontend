@@ -1,3 +1,4 @@
+import type { User } from "@/api";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { CompletionModal } from "@/pages/CompletionModal";
@@ -7,7 +8,6 @@ import { config } from "@pocopi/config";
 import mime from "mime";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { UserData } from "./types/user";
 import { TestInformationPage } from "./pages/TestInformationPage";
 
 enum Page {
@@ -22,7 +22,7 @@ enum Page {
 export function App() {
   const [group] = useState(config.sampleGroup());
   const [page, setPage] = useState<Page>(Page.HOME);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
     document.title = config.title;
@@ -35,7 +35,7 @@ export function App() {
     head.appendChild(link);
   }, []);
 
-  const startTest = (data: UserData) => {
+  const startTest = (data: User) => {
     setUserData(data);
     setPage(Page.INFORMATION);
   };
@@ -62,7 +62,7 @@ export function App() {
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
       case Page.END:
-        return <CompletionModal userData={userData} onBackToHome={goToHome}/>;
+        return <CompletionModal userData={userData!} onBackToHome={goToHome}/>;
       case Page.DASHBOARD:
         return <AnalyticsDashboard onBack={goToHome}/>;
     }

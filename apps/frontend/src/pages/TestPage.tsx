@@ -1,16 +1,16 @@
+import type { User } from "@/api";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
-import { UserData } from "@/types/user";
-import { Group } from "@pocopi/config";
+import type { Group } from "@pocopi/config";
 
 type TestPageProps = {
   group: Group;
   goToNextPage: () => void;
-  userData: UserData;
+  userData: User;
 };
 
 export function TestPage({

@@ -38,7 +38,7 @@ export class UsersController {
         },
     })
     public getUsers(): User[] {
-        return this.usersService.getUsers();
+        return [...this.usersService.getUsers().values()];
     }
 
     /**

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ThemeContext, ThemeContextType } from "@/contexts/ThemeContext";
+import { ThemeContext, type ThemeContextType } from "@/contexts/ThemeContext";
 
 /**
  * Hook personalizado para acceder al contexto del tema

@@ -1,15 +1,15 @@
-import { UserData } from "@/types/user";
+import type { User } from "@/api";
 import { faArrowRight, faFileSignature } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
-import { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import { Accordion, Button, Card, Col, Form, Row, } from "react-bootstrap";
 import Markdown from "react-markdown";
 import styles from "@/styles/HomePage/HomeInfoCard.module.css";
 
 type HomeInfoCardProps = {
   isDarkMode: boolean;
-  userData: UserData | null;
+  userData: User | null;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onStartTest: () => void;

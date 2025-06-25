@@ -1,0 +1,101 @@
+.page {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  width: 100%;
+}
+
+.modal {
+  border-radius: 1rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  flex: 0 0 auto;
+  overflow: hidden;
+  text-align: center;
+  width: 100%;
+}
+
+.modalContentContainer {
+  padding: 1.5rem;
+}
+
+.thankYou {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+.completedTest {
+  font-size: 1.25rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.resultsRecorded {
+  font-size: 0.875em;
+  margin-bottom: 1.5rem;
+}
+
+.resultsRecordedDark {
+  color: rgba(248, 249, 250, 0.75);
+}
+
+.resultsRecordedLight {
+  color: #6c757d;
+}
+
+.homeButton {
+  align-items: center;
+  border: none;
+  border-radius: 50rem;
+  color: white;
+  display: flex;
+  font-size: 1.25rem;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 1rem;
+  transition: color 0.15s ease-in-out,
+  background-color 0.15s ease-in-out,
+  border-color 0.15s ease-in-out,
+  box-shadow 0.15s ease-in-out;
+  user-select: none;
+  width: 100%;
+}
+
+.homeButtonDark {
+  background: linear-gradient(135deg, #7984ff 0%, #5465e6 100%);
+  box-shadow: 0 0 20px rgba(121, 132, 255, 0.4);
+}
+
+.homeButtonLight {
+  background: linear-gradient(135deg, #4cc9a2 0%, #38b385 100%);
+  box-shadow: 0 0 20px rgba(76, 201, 162, 0.3);
+}
+
+@media (min-width: 768px) {
+  .modalContentContainer {
+    padding: 3rem;
+  }
+
+  .modal {
+    flex: 0 0 auto;
+    width: 66.67%;
+  }
+}
+
+@media (min-width: 992px) {
+  .modal {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .modal {
+    flex: 0 0 auto;
+    width: 41.67%;
+  }
+}
