@@ -1,8 +1,8 @@
 import styles from "@/styles/HomePage/InputWithIcon.module.css";
-import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@pocopi/config";
-import { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import { FloatingLabel, Form } from "react-bootstrap";
 
 type InputWithIconProps = {

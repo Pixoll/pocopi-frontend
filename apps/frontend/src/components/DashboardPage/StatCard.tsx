@@ -1,5 +1,5 @@
 import styles from "@/styles/DashboardPage/StatCard.module.css";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type StatCardProps = {

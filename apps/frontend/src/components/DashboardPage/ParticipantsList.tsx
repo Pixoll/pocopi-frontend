@@ -1,4 +1,4 @@
-import api, { Summary, UserSummary } from "@/api";
+import api, { type Summary, type UserSummary } from "@/api";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";

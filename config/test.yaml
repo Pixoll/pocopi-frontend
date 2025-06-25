@@ -4,15 +4,27 @@ groups:
   control:
     probability: 0.25
     protocol: control
+    greeting: |-
+      Welcome to the control group test. You will be presented with a series of questions.
+      Please answer them to the best of your ability.
   groupA:
     probability: 0.25
     protocol: groupA
+    greeting: |-
+      Welcome to Group A test. This test consists of visual pattern recognition questions.
+      Take your time to analyze each image carefully.
   groupB:
     probability: 0.25
     protocol: groupB
+    greeting: |-
+      Welcome to Group B test. This test consists of visual pattern recognition questions.
+      Take your time to analyze each image carefully.
   groupC:
     probability: 0.25
     protocol: groupC
+    greeting: |-
+      Welcome to Group C test. This is a randomized test where questions and options will appear in different orders.
+      Please focus on each question individually.
 
 protocols:
   control:

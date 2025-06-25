@@ -1,11 +1,10 @@
 import { Module } from "@nestjs/common";
-import { DashboardModule, FormsModule, PingModule, TimelogsModule, UsersModule } from "./modules";
+import { FormsModule, SummaryModule, TimelogsModule, UsersModule } from "./modules";
 
 @Module({
     imports: [
-        DashboardModule,
         FormsModule,
-        PingModule,
+        SummaryModule,
         TimelogsModule,
         UsersModule,
     ],
