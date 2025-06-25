@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { CompletionModal } from "@/pages/CompletionModal";
 import { HomePage } from "@/pages/HomePage";
+import { TestGreetingPage } from "@/pages/TestGreetingPage";
 import { TestPage } from "@/pages/TestPage";
 import { config } from "@pocopi/config";
 import mime from "mime";
@@ -11,6 +12,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 enum Page {
   HOME,
+  GREETING,
   TEST,
   END,
   DASHBOARD,
@@ -32,8 +34,12 @@ export function App() {
     head.appendChild(link);
   }, []);
 
-  const startTest = (data: User) => {
+  const goToGreeting = (data: User) => {
     setUserData(data);
+    setPage(Page.GREETING);
+  };
+
+  const goToTest = () => {
     setPage(Page.TEST);
   };
 
@@ -53,7 +59,9 @@ export function App() {
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
-        return <HomePage groupLabel={group.label} onStartTest={startTest} onDashboard={goToDashboard}/>;
+        return <HomePage groupLabel={group.label} goToNextPage={goToGreeting} onDashboard={goToDashboard}/>;
+      case Page.GREETING:
+        return <TestGreetingPage groupGreeting={group.greeting} goToNextPage={goToTest}/>;
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
       case Page.END:

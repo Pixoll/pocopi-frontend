@@ -74,6 +74,11 @@
               "minLength": 1
             }
           ]
+        },
+        "greeting": {
+          "type": "string",
+          "description": "Text displayed between the pre-test and the test screens.",
+          "minLength": 1
         }
       },
       "required": [
