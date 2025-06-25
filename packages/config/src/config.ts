@@ -432,20 +432,15 @@ export type Form = {
     readonly questions: readonly FormQuestion[];
 };
 
-export type FormQuestion = {
-    readonly category: string;
-    readonly text: string;
-    readonly image?: Image;
-} & (
+export type FormQuestion =
     | FormQuestionSelectMultiple
     | FormQuestionSelectOne
     | FormQuestionNumber
     | FormQuestionSlider
     | FormQuestionTextShort
-    | FormQuestionTextLong
-    );
+    | FormQuestionTextLong;
 
-export type FormQuestionSelectMultiple = {
+export type FormQuestionSelectMultiple = FormQuestionBase & {
     readonly type: FormQuestionType.SELECT_MULTIPLE;
     readonly options: readonly FormOption[];
     readonly min: number;
@@ -453,13 +448,13 @@ export type FormQuestionSelectMultiple = {
     readonly other: boolean;
 };
 
-export type FormQuestionSelectOne = {
+export type FormQuestionSelectOne = FormQuestionBase & {
     readonly type: FormQuestionType.SELECT_ONE;
     readonly options: readonly FormOption[];
     readonly other: boolean;
 };
 
-export type FormQuestionNumber = {
+export type FormQuestionNumber = FormQuestionBase & {
     readonly type: FormQuestionType.NUMBER;
     readonly placeholder: string;
     readonly min: number;
@@ -467,7 +462,7 @@ export type FormQuestionNumber = {
     readonly step: number;
 };
 
-export type FormQuestionSlider = {
+export type FormQuestionSlider = FormQuestionBase & {
     readonly type: FormQuestionType.SLIDER;
     readonly min: number;
     readonly max: number;
@@ -475,18 +470,24 @@ export type FormQuestionSlider = {
     readonly labels: readonly SliderLabel[];
 };
 
-export type FormQuestionTextShort = {
+export type FormQuestionTextShort = FormQuestionBase & {
     readonly type: FormQuestionType.TEXT_SHORT;
     readonly placeholder: string;
     readonly minLength: number;
     readonly maxLength: number;
 };
 
-export type FormQuestionTextLong = {
+export type FormQuestionTextLong = FormQuestionBase & {
     readonly type: FormQuestionType.TEXT_LONG;
     readonly placeholder: string;
     readonly minLength: number;
     readonly maxLength: number;
+};
+
+export type FormQuestionBase = {
+    readonly category: string;
+    readonly text: string;
+    readonly image?: Image;
 };
 
 export type FormOption = {

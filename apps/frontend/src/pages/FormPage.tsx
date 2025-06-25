@@ -1,6 +1,8 @@
 import api, { type User } from "@/api";
+import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
+import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
 import { config, FormQuestionType } from "@pocopi/config";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 
 type FormPageProps = {
   type: "pre-test" | "post-test";
@@ -16,21 +18,29 @@ export function FormPage({
   const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
   const [answers, setAnswers] = useState<string[]>(Array(questions.length).fill(""));
+  const [_sending, setSending] = useState<boolean>(false);
+  const [_error, setError] = useState<string | null>(null);
 
-  const title = type === "pre-test" ? "Pre-Test" : "Post-Test";
+  useEffect(() => {
+    if (questions.length === 0) {
+      goToNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleChange = (idx: number, value: string) => {
-    setAnswers((ans) => ans.map((a, i) => (i === idx ? value : a)));
+  const title = type === "pre-test" ? "Pre-Test Form" : "Post-Test Form";
+
+  const handleChange = (index: number) => {
+    return (value: string) => {
+      answers[index] = value;
+      setAnswers([...answers]);
+    };
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // Validar que no haya respuestas vacías
-    if (answers.some(a => a === "")) {
-      alert("Por favor responde todas las preguntas antes de continuar.");
-      return;
-    }
+    setSending(true);
+    setError(null);
 
     try {
       const result = await api.savePostTest({
@@ -41,87 +51,46 @@ export function FormPage({
       });
 
       if (result.error) {
+        setError(result.error.message);
         console.error(result.error);
       } else {
         goToNextPage();
       }
     } catch (error) {
+      setError(error instanceof Error ? error.message : `${error}`);
       console.error(error);
+    } finally {
+      setSending(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 900, margin: "0 auto", padding: 32 }}>
       <h2>{title}</h2>
+
       {questions.map((question, idx) => {
         switch (question.type) {
-          case FormQuestionType.SLIDER: {
-            const labelKeys = Object.keys(question.labels || {}).map(Number).sort((a, b) => a - b);
-            return (
-              <div key={idx} style={{ margin: "32px 0" }}>
-                <label style={{ display: "block", marginBottom: 8 }}>
-                  {question.text}
-                </label>
-                <input
-                  type="range"
-                  min={question.min}
-                  max={question.max}
-                  step={question.step || 1}
-                  value={answers[idx]}
-                  onChange={(e) => handleChange(idx, e.target.value)}
-                  style={{ width: "100%" }}
-                />
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${labelKeys.length}, minmax(60px, 1fr))`,
-                    fontSize: 13,
-                    marginTop: 4,
-                    width: "100%",
-                    gap: 4,
-                  }}
-                >
-                  {labelKeys.map((key) => (
-                    <span
-                      key={key}
-                      style={{
-                        textAlign: "center",
-                        whiteSpace: "pre-line",
-                        wordBreak: "break-word",
-                        padding: "0 2px",
-                      }}
-                    >
-                      {String(question.labels[key].label)}
-                    </span>
-                  ))}
-                </div>
-                <div style={{ marginTop: 8, fontWeight: "bold", textAlign: "center" }}>
-                  Respuesta seleccionada: {answers[idx]}
-                </div>
-              </div>
-            );
-          }
+          case FormQuestionType.SLIDER:
+            return <SliderQuestion
+              key={idx}
+              question={question}
+              answer={answers[idx]}
+              setAnswer={handleChange(idx)}
+            />;
+
           case FormQuestionType.SELECT_ONE:
-            return (
-              <div key={idx} style={{ margin: "32px 0" }}>
-                <label style={{ display: "block", marginBottom: 8 }}>{question.text}</label>
-                <select
-                  value={answers[idx] as string}
-                  onChange={(e) => handleChange(idx, e.target.value)}
-                  style={{ width: 300 }}
-                >
-                  <option value="">Seleccione una opción</option>
-                  {question.options?.map((opt, i) => (
-                    <option key={i} value={opt.text ?? ""}>{opt.text ?? ""}</option>
-                  ))}
-                  {question.other && <option value="other">Otro</option>}
-                </select>
-              </div>
-            );
+            return <SelectOneQuestion
+              key={idx}
+              question={question}
+              answer={answers[idx]}
+              setAnswer={handleChange(idx)}
+            />;
+
           default:
             return null;
         }
       })}
+
       <button type="submit">Enviar respuestas</button>
     </form>
   );
