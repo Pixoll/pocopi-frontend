@@ -6,17 +6,23 @@ import { FormsService } from "./forms.service";
 
 @Controller("forms")
 export class FormsController {
-  constructor(private readonly formsService: FormsService) {}
+    public constructor(private readonly formsService: FormsService) {}
 
-  @Post("pretest")
-  @ApiResponses()
-  savePreTest(@Body() dto: PretestDto) {
-    return this.formsService.savePreTest(dto);
-  }
-
-  @Post("postest")
-  @ApiResponses()
-  savePostTest(@Body() dto: PostestDto) {
+    @Post("pretest")
+    @ApiResponses({
+    created: "Successfully saved pretest.",
+    badRequest: "Validation errors (body).",
+    })
+    savePreTest(@Body() dto: PretestDto) {
+    @Post("postest")
+    @ApiResponses({
+    created: "Successfully saved postest.",
+    badRequest: "Validation errors (body).",
+    })
+    savePostTest(@Body() dto: PostestDto) {
     return this.formsService.savePostTest(dto);
-  }
+    }
+    savePostTest(@Body() dto: PostestDto) {
+    return this.formsService.savePostTest(dto);
+    }
 }
