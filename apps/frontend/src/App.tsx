@@ -12,7 +12,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 enum Page {
   HOME,
-  INFORMATION,
+  GREETING,
   TEST,
   END,
   DASHBOARD,
@@ -34,9 +34,9 @@ export function App() {
     head.appendChild(link);
   }, []);
 
-  const goToInformation = (data: User) => {
+  const goToGreeting = (data: User) => {
     setUserData(data);
-    setPage(Page.INFORMATION);
+    setPage(Page.GREETING);
   };
 
   const goToTest = () => {
@@ -59,9 +59,9 @@ export function App() {
   const renderPage = () => {
     switch (page) {
       case Page.HOME:
-        return <HomePage groupLabel={group.label} onNext={goToInformation} onDashboard={goToDashboard}/>;
-      case Page.INFORMATION:
-        return <TestGreetingPage groupGreeting={group.greeting} onNext={goToTest}/>;
+        return <HomePage groupLabel={group.label} goToNextPage={goToGreeting} onDashboard={goToDashboard}/>;
+      case Page.GREETING:
+        return <TestGreetingPage groupGreeting={group.greeting} goToNextPage={goToTest}/>;
       case Page.TEST:
         return <TestPage group={group} goToNextPage={goToEndPage} userData={userData!}/>;
       case Page.END:

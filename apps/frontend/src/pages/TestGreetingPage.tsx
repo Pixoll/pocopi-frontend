@@ -6,13 +6,13 @@ import Markdown from "react-markdown";
 
 type TestInformationPageProps = {
   groupGreeting: string | undefined;
-  onNext: () => void;
+  goToNextPage: () => void;
 };
 
-export function TestGreetingPage({ groupGreeting, onNext }: TestInformationPageProps) {
+export function TestGreetingPage({ groupGreeting, goToNextPage }: TestInformationPageProps) {
   useEffect(() => {
     if (!groupGreeting) {
-      onNext();
+      goToNextPage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -22,7 +22,7 @@ export function TestGreetingPage({ groupGreeting, onNext }: TestInformationPageP
       <div className={styles.card}>
         <h1 className={styles.title}>Test Information</h1>
         <Markdown>{groupGreeting}</Markdown>
-        <button className={styles.button} onClick={onNext}>
+        <button className={styles.button} onClick={goToNextPage}>
           Start Test
           <FontAwesomeIcon icon={faArrowRight}/>
         </button>
