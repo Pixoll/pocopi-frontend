@@ -247,6 +247,16 @@ export type User = {
   age?: number;
 };
 
+export type PreTestDto = {
+  userId: string;
+  answers: Array<string>;
+};
+
+export type PostTestDto = {
+  userId: string;
+  answers: Array<string>;
+};
+
 export type GetSummaryData = {
   body?: never;
   path?: never;
@@ -371,6 +381,52 @@ export type GetUserTimelogsResponses = {
 };
 
 export type GetUserTimelogsResponse = GetUserTimelogsResponses[keyof GetUserTimelogsResponses];
+
+export type SavePreTestData = {
+  body: PreTestDto;
+  path?: never;
+  query?: never;
+  url: "/forms/pre-test";
+};
+
+export type SavePreTestErrors = {
+  /**
+   * Validation errors (body).
+   */
+  400: HttpException;
+};
+
+export type SavePreTestError = SavePreTestErrors[keyof SavePreTestErrors];
+
+export type SavePreTestResponses = {
+  /**
+   * Successfully saved pre-test form.
+   */
+  201: unknown;
+};
+
+export type SavePostTestData = {
+  body: PostTestDto;
+  path?: never;
+  query?: never;
+  url: "/forms/post-test";
+};
+
+export type SavePostTestErrors = {
+  /**
+   * Validation errors (body).
+   */
+  400: HttpException;
+};
+
+export type SavePostTestError = SavePostTestErrors[keyof SavePostTestErrors];
+
+export type SavePostTestResponses = {
+  /**
+   * Successfully saved post-test form.
+   */
+  201: unknown;
+};
 
 export type PingData = {
   body?: never;

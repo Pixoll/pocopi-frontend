@@ -1,10 +1,13 @@
-import { IsArray, IsString, MinLength } from "class-validator";
+import { ArrayMinSize, IsArray, IsString, MinLength } from "class-validator";
 
 export class PreTestDto {
     @MinLength(1)
     @IsString()
     public declare userId: string;
 
+    @MinLength(1, { each: true })
+    @IsString({ each: true })
+    @ArrayMinSize(1)
     @IsArray()
-    public declare answers: Array<string | number>;
+    public declare answers: string[];
 }

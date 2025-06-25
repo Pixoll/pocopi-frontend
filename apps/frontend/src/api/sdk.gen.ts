@@ -14,6 +14,12 @@ import type {
   GetUserTimelogsResponses,
   PingData,
   PingResponses,
+  SavePostTestData,
+  SavePostTestErrors,
+  SavePostTestResponses,
+  SavePreTestData,
+  SavePreTestErrors,
+  SavePreTestResponses,
   SaveTimelogData,
   SaveTimelogErrors,
   SaveTimelogResponses,
@@ -103,6 +109,28 @@ export const getUserTimelogs = <ThrowOnError extends boolean = false>(options: O
   return (options.client ?? _heyApiClient).get<GetUserTimelogsResponses, GetUserTimelogsErrors, ThrowOnError>({
     url: "/users/{id}/timelogs",
     ...options
+  });
+};
+
+export const savePreTest = <ThrowOnError extends boolean = false>(options: Options<SavePreTestData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).post<SavePreTestResponses, SavePreTestErrors, ThrowOnError>({
+    url: "/forms/pre-test",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers
+    }
+  });
+};
+
+export const savePostTest = <ThrowOnError extends boolean = false>(options: Options<SavePostTestData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).post<SavePostTestResponses, SavePostTestErrors, ThrowOnError>({
+    url: "/forms/post-test",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers
+    }
   });
 };
 

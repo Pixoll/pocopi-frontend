@@ -1,35 +1,45 @@
-import { config } from "@pocopi/config";
-import { FormQuestionType } from "@pocopi/config";
-import { useState } from "react";
-import { savePreTest } from "@/api/forms"; 
-import { useUserData } from "@/hooks/useUserData"; 
+import api, { type User } from "@/api";
+import { config, FormQuestionType } from "@pocopi/config";
+import { type FormEvent, useState } from "react";
 
 interface PreTestPageProps {
-  onSubmit?: (answers: (string | number)[]) => void;
+  userData: User;
+  goToNextPage: () => void;
 }
 
-export function PreTestPage({ onSubmit }: PreTestPageProps = {}) {
-  const { questions } = config.preTestForm!;
-  const { userData } = useUserData("your-group-label"); 
-  const [answers, setAnswers] = useState<(string | number)[]>(
+export function PreTestPage({ userData, goToNextPage }: PreTestPageProps) {
+  const questions = config.preTestForm?.questions ?? [];
+  const [answers, setAnswers] = useState<string[]>(
     questions.map(q =>
       q.type === FormQuestionType.SLIDER
-        ? Math.floor(((q.min ?? 1) + (q.max ?? 1)) / 2)
+        ? Math.floor(((q.min ?? 1) + (q.max ?? 1)) / 2).toString()
         : ""
     )
   );
 
-  const handleChange = (idx: number, value: string | number) => {
+  const handleChange = (idx: number, value: string) => {
     setAnswers(ans => ans.map((a, i) => (i === idx ? value : a)));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (userData?.id) {
-      await savePreTest(answers, userData.id);
+
+    try {
+      const result = await api.savePreTest({
+        body: {
+          userId: userData.id,
+          answers,
+        }
+      });
+
+      if (result.error) {
+        console.error(result.error);
+      } else {
+        goToNextPage();
+      }
+    } catch (error) {
+      console.error(error);
     }
-    if (onSubmit) onSubmit(answers);
-    else alert("Respuestas: " + JSON.stringify(answers, null, 2));
   };
 
   return (
@@ -47,8 +57,8 @@ export function PreTestPage({ onSubmit }: PreTestPageProps = {}) {
                   min={question.min}
                   max={question.max}
                   step={question.step || 1}
-                  value={answers[idx] as number}
-                  onChange={e => handleChange(idx, Number(e.target.value))}
+                  value={answers[idx]}
+                  onChange={e => handleChange(idx, e.target.value)}
                   style={{ width: "100%" }}
                 />
                 <div
