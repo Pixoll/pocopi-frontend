@@ -1,6 +1,8 @@
 import { config } from "@pocopi/config";
 import { FormQuestionType } from "@pocopi/config";
 import { useState } from "react";
+import { savePreTest } from "@/api/forms"; 
+import { useUserData } from "@/hooks/useUserData"; 
 
 interface PreTestPageProps {
   onSubmit?: (answers: (string | number)[]) => void;
@@ -8,6 +10,7 @@ interface PreTestPageProps {
 
 export function PreTestPage({ onSubmit }: PreTestPageProps = {}) {
   const { questions } = config.preTestForm!;
+  const { userData } = useUserData("your-group-label"); 
   const [answers, setAnswers] = useState<(string | number)[]>(
     questions.map(q =>
       q.type === FormQuestionType.SLIDER
@@ -20,8 +23,11 @@ export function PreTestPage({ onSubmit }: PreTestPageProps = {}) {
     setAnswers(ans => ans.map((a, i) => (i === idx ? value : a)));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (userData?.id) {
+      await savePreTest(answers, userData.id);
+    }
     if (onSubmit) onSubmit(answers);
     else alert("Respuestas: " + JSON.stringify(answers, null, 2));
   };

@@ -1,15 +1,17 @@
 import { config } from "@pocopi/config";
 import { FormQuestionType } from "@pocopi/config";
 import { useState } from "react";
+import { savePostTest } from "@/api/forms"; 
+import { useUserData } from "@/hooks/useUserData"; 
 
 interface PostTestPageProps {
   onSubmit?: (answers: (string | number)[]) => void;
 }
 
 export function PostTestPage({ onSubmit }: PostTestPageProps = {}) {
-  // Solo mostrar preguntas de la 6 a la 15 (índices 5 a 14)
-  const allQuestions = config.postTestForm!.questions;
-  const questions = allQuestions.slice(5, 15);
+  
+  const questions = config.postTestForm!.questions;
+  const { userData } = useUserData("your-group-label"); 
 
   const [answers, setAnswers] = useState<(string | number)[]>(
     questions.map((q) =>
@@ -23,8 +25,11 @@ export function PostTestPage({ onSubmit }: PostTestPageProps = {}) {
     setAnswers((ans) => ans.map((a, i) => (i === idx ? value : a)));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (userData?.id) {
+      await savePostTest(answers, userData.id);
+    }
     if (onSubmit) onSubmit(answers);
     else alert("Respuestas: " + JSON.stringify(answers, null, 2));
   };
