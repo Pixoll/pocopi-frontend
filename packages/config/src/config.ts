@@ -214,13 +214,17 @@ function makeForm(form: RawForm): Form {
  * properties.
  *
  * @param question - The raw form question
+ * @param index - The index of the question
  *
  * @returns An immutable {@link FormQuestion} object
  */
-function makeFormQuestion(question: RawFormQuestion): FormQuestion {
+function makeFormQuestion(question: RawFormQuestion, index: number): FormQuestion {
+    const id = index + 1;
+
     switch (question.type) {
         case FormQuestionType.SELECT_MULTIPLE:
             return Object.freeze({
+                id,
                 category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
@@ -232,6 +236,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.SELECT_ONE:
             return Object.freeze({
+                id,
                 category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
@@ -241,6 +246,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.NUMBER:
             return Object.freeze({
+                id,
                 category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
@@ -252,6 +258,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.SLIDER:
             return Object.freeze({
+                id,
                 category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
@@ -263,6 +270,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.TEXT_SHORT:
             return Object.freeze({
+                id,
                 category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
@@ -273,6 +281,7 @@ function makeFormQuestion(question: RawFormQuestion): FormQuestion {
             });
         case FormQuestionType.TEXT_LONG:
             return Object.freeze({
+                id,
                 category: question.category,
                 text: question.text,
                 ...question.image && { image: Object.freeze(question.image) },
@@ -369,14 +378,16 @@ function makeProtocol(protocol: FlatRawProtocol): Protocol {
  * Creates a {@link Phase} object from a raw phase.
  *
  * @param phase - The raw phase data
+ * @param index - The index of the phase
  *
  * @returns An immutable {@link Phase} object
  */
-function makePhase(phase: FlatRawPhase): Phase {
+function makePhase(phase: FlatRawPhase, index: number): Phase {
     const randomize = phase.randomize ?? defaults.phase.randomize;
     const questions = phase.questions.map(makePhaseQuestion);
 
     return Object.freeze({
+        id: index + 1,
         questions: Object.freeze(randomize ? shuffle(questions) : questions),
     });
 }
@@ -385,14 +396,16 @@ function makePhase(phase: FlatRawPhase): Phase {
  * Creates a {@link PhaseQuestion} object from raw question data.
  *
  * @param question - The raw phase question
+ * @param index - The index of the question
  *
  * @returns An immutable {@link PhaseQuestion} object
  */
-function makePhaseQuestion(question: RawPhaseQuestion): PhaseQuestion {
+function makePhaseQuestion(question: RawPhaseQuestion, index: number): PhaseQuestion {
     const randomize = question.randomize ?? defaults.phaseQuestion.randomize;
     const options = question.options.map(makeTestOption);
 
     return Object.freeze({
+        id: index + 1,
         ...question.text && { text: question.text },
         ...question.image && { image: Object.freeze(question.image) },
         options: Object.freeze(randomize ? shuffle(options) : options),
@@ -403,11 +416,13 @@ function makePhaseQuestion(question: RawPhaseQuestion): PhaseQuestion {
  * Creates a {@link TestOption} object from raw option data.
  *
  * @param option - The raw test option
+ * @param index - The index of the option
  *
  * @returns An immutable {@link TestOption} object
  */
-function makeTestOption(option: RawTestOption): TestOption {
+function makeTestOption(option: RawTestOption, index: number): TestOption {
     return Object.freeze({
+        id: index + 1,
         ...option.text && { text: option.text },
         ...option.image && { image: Object.freeze(option.image) },
         correct: option.correct ?? defaults.testOption.correct,
@@ -485,6 +500,7 @@ export type FormQuestionTextLong = FormQuestionBase & {
 };
 
 export type FormQuestionBase = {
+    readonly id: number;
     readonly category: string;
     readonly text: string;
     readonly image?: Image;
@@ -516,16 +532,19 @@ export type Protocol = {
 };
 
 export type Phase = {
+    readonly id: number;
     readonly questions: readonly PhaseQuestion[];
 };
 
 export type PhaseQuestion = {
+    readonly id: number;
     readonly text?: string;
     readonly image?: Image;
     readonly options: readonly TestOption[];
 };
 
 export type TestOption = {
+    readonly id: number;
     readonly text?: string;
     readonly image?: Image;
     readonly correct: boolean;
