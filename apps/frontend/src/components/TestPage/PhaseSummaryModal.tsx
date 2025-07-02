@@ -56,14 +56,15 @@ export function PhaseSummaryModal({
         >
           <thead>
             <tr>
-              <th>Pregunta</th>
               <th>Fase</th>
+              <th>Pregunta</th>
               <th>Estado</th>
             </tr>
           </thead>
           <tbody>
             {phasesToShow.flatMap((phase, phaseIdx) => phase.questions.map((question, questionIdx) => (
               <tr key={`${phase.id}-${question.id}`}>
+                <td>{phaseIdx + 1}</td>
                 <td>
                   <button
                     className={[
@@ -76,7 +77,6 @@ export function PhaseSummaryModal({
                     {questionIdx + 1}
                   </button>
                 </td>
-                <td>{phaseIdx + 1}</td>
                 <td>
                   {answers[phase.id][question.id] !== null
                     ? "Respondida"

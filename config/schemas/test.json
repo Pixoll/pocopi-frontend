@@ -149,11 +149,6 @@
           "description": "Whether to allow going to the previous phase or not.",
           "default": true
         },
-        "allowSkipPhase": {
-          "type": "boolean",
-          "description": "Whether to allow skipping the current phase without completing it or not.",
-          "default": true
-        },
         "allowPreviousQuestion": {
           "type": "boolean",
           "description": "Whether to allow going to the previous question or not.",

@@ -22,7 +22,6 @@ const defaults = Object.freeze({
     } satisfies Partial<FlatRawConfig>),
     protocol: Object.freeze({
         allowPreviousPhase: true,
-        allowSkipPhase: true,
         allowPreviousQuestion: true,
         allowSkipQuestion: true,
         randomize: false,
@@ -367,7 +366,6 @@ function makeProtocol(protocol: FlatRawProtocol): Protocol {
 
     return Object.freeze({
         allowPreviousPhase: protocol.allowPreviousPhase ?? defaults.protocol.allowPreviousPhase,
-        allowSkipPhase: protocol.allowSkipPhase ?? defaults.protocol.allowSkipPhase,
         allowPreviousQuestion: protocol.allowPreviousQuestion ?? defaults.protocol.allowPreviousQuestion,
         allowSkipQuestion: protocol.allowSkipQuestion ?? defaults.protocol.allowSkipQuestion,
         phases: Object.freeze(randomize ? shuffle(phases) : phases),
@@ -525,7 +523,6 @@ export type Group = {
 
 export type Protocol = {
     readonly allowPreviousPhase: boolean;
-    readonly allowSkipPhase: boolean;
     readonly allowPreviousQuestion: boolean;
     readonly allowSkipQuestion: boolean;
     readonly phases: readonly Phase[];

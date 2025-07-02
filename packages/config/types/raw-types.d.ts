@@ -120,7 +120,6 @@ export type FlatRawProtocol = Omit<RawProtocol, "phases"> & {
 };
 export type RawProtocol = {
     allowPreviousPhase?: boolean;
-    allowSkipPhase?: boolean;
     allowPreviousQuestion?: boolean;
     allowSkipQuestion?: boolean;
     randomize?: boolean;

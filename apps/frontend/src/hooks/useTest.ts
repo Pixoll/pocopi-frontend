@@ -17,15 +17,13 @@ type Test = {
   totalPhaseQuestions: number;
   phasesCount: number;
   allowPreviousPhase: boolean;
-  isNextPhaseHidden: boolean;
   showSummary: boolean;
   allowPreviousQuestion: boolean;
   isNextQuestionDisabled: boolean;
   answers: Answers;
-  goToPreviousPhase: () => void;
-  goToNextPhase: (onFinish: () => void) => void;
+  goToNextPhase: () => void;
   goToPreviousQuestion: () => void;
-  goToNextQuestion: (onFinish: () => void) => void;
+  goToNextQuestion: () => void;
   onOptionClick: (optionId: number) => void;
   onOptionHover: (optionId: number) => void;
   quitSummary: (onFinish: () => void) => void;
@@ -49,7 +47,7 @@ export function useTest(
     )
   ));
 
-  const { phases, allowPreviousPhase, allowSkipPhase, allowPreviousQuestion, allowSkipQuestion } = group.protocol;
+  const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = group.protocol;
   const { id: phaseId, questions } = phases[phaseIndex];
   const { id: questionId, text: questionText, image: questionImage, options } = questions[questionIndex];
 
@@ -60,7 +58,6 @@ export function useTest(
   const phasesCount = group.protocol.phases.length;
   const totalPhaseQuestions = questions.length;
   const optionsColumns = Math.ceil(options.length / 2);
-  const isNextPhaseHidden = !allowSkipPhase;
 
   const isNextQuestionDisabled = allowSkipQuestion
     ? false
@@ -86,17 +83,12 @@ export function useTest(
     analyticsRef.current?.completeQuestion(!!selectedOption, !!selectedOption?.correct);
   };
 
-  const goToPreviousPhase = (goToLastQuestion: unknown = false, markedAsComplete: unknown = false) => {
+  const goToPreviousPhase = () => {
     if (!allowPreviousPhase || phaseIndex <= 0) {
       return;
     }
 
-    const newQuestionIndex = goToLastQuestion === true ? phases[phaseIndex - 1].questions.length - 1 : 0;
-
-    if (!markedAsComplete) {
-      completeCurrentQuestion();
-    }
-
+    const newQuestionIndex = phases[phaseIndex - 1].questions.length - 1;
     const targetPhase = phases[phaseIndex - 1];
     const targetQuestion = targetPhase.questions[newQuestionIndex];
     setPhaseIndex(phaseIndex - 1);
@@ -107,47 +99,53 @@ export function useTest(
   const quitSummary = (onFinish: () => void, shouldAdvancePhase: boolean = true) => {
     setShowSummary(false);
 
-    if (shouldAdvancePhase) {
-      if (phaseIndex < phases.length - 1) {
-        const targetPhase = phases[phaseIndex + 1];
-        const targetQuestion = targetPhase.questions[0];
-        setPhaseIndex(phaseIndex + 1);
-        setQuestionIndex(0);
-        setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
-        return;
-      }
-      onFinish();
-    }
-  };
-
-  const goToNextPhase = (onFinish: () => void, markedAsComplete: unknown = false) => {
-    if (selectedOptionId === null && !allowSkipPhase) {
+    if (!shouldAdvancePhase) {
       return;
     }
 
+    if (phaseIndex < phases.length - 1) {
+      const targetPhase = phases[phaseIndex + 1];
+      const targetQuestion = targetPhase.questions[0];
+      setPhaseIndex(phaseIndex + 1);
+      setQuestionIndex(0);
+      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+      return;
+    }
+
+    onFinish();
+  };
+
+  const goToNextPhase = (markedAsComplete: unknown = false) => {
     if (!markedAsComplete) {
       completeCurrentQuestion();
     }
 
     if (phaseIndex < phases.length - 1) {
-      if (allowPreviousPhase) {
-        const targetPhase = phases[phaseIndex + 1];
-        const targetQuestion = targetPhase.questions[0];
-        setPhaseIndex(phaseIndex + 1);
-        setQuestionIndex(0);
-        setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
-      } else {
+      if (!allowPreviousPhase) {
+        const newQuestionIndex = phases[phaseIndex].questions.length - 1;
+        const targetQuestion = questions[newQuestionIndex];
+        setQuestionIndex(newQuestionIndex);
+        setSelectedOptionId(answers[phaseId][targetQuestion.id]);
         setShowSummary(true);
+        return;
       }
+
+      const targetPhase = phases[phaseIndex + 1];
+      const targetQuestion = targetPhase.questions[0];
+      setPhaseIndex(phaseIndex + 1);
+      setQuestionIndex(0);
+      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
       return;
     }
 
-    if (phaseIndex === phases.length - 1 && allowPreviousPhase) {
-      setShowSummary(true);
-      return;
-    }
-
-    onFinish();
+    const newPhaseIndex = phases.length - 1;
+    const targetPhase = phases[newPhaseIndex];
+    const newQuestionIndex = targetPhase.questions.length - 1;
+    const targetQuestion = targetPhase.questions[newQuestionIndex];
+    setPhaseIndex(newPhaseIndex);
+    setQuestionIndex(newQuestionIndex);
+    setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+    setShowSummary(true);
   };
 
   const goToPreviousQuestion = () => {
@@ -158,7 +156,7 @@ export function useTest(
     completeCurrentQuestion();
 
     if (questionIndex <= 0) {
-      goToPreviousPhase(true, true);
+      goToPreviousPhase();
       return;
     }
 
@@ -167,7 +165,7 @@ export function useTest(
     setSelectedOptionId(answers[phaseId][targetQuestion.id]);
   };
 
-  const goToNextQuestion = (onFinish: () => void) => {
+  const goToNextQuestion = () => {
     if (selectedOptionId === null && !allowSkipQuestion) {
       return;
     }
@@ -181,7 +179,7 @@ export function useTest(
       return;
     }
 
-    goToNextPhase(onFinish, true);
+    goToNextPhase(true);
   };
 
   const jumpToQuestion = (phaseIndex: number, questionIndex: number) => {
@@ -222,13 +220,11 @@ export function useTest(
     totalPhaseQuestions,
     phasesCount,
     allowPreviousPhase,
-    isNextPhaseHidden,
     allowPreviousQuestion,
     isNextQuestionDisabled,
     showSummary,
     answers,
     quitSummary,
-    goToPreviousPhase,
     goToNextPhase,
     goToPreviousQuestion,
     goToNextQuestion,

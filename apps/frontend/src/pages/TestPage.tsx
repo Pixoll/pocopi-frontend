@@ -7,7 +7,6 @@ import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
 import type { Group } from "@pocopi/config";
-import { useEffect } from "react";
 
 type TestPageProps = {
   group: Group;
@@ -34,13 +33,11 @@ export function TestPage({
     totalPhaseQuestions,
     phasesCount,
     allowPreviousPhase,
-    isNextPhaseHidden,
     allowPreviousQuestion,
     isNextQuestionDisabled,
     showSummary,
     answers,
     quitSummary,
-    goToPreviousPhase,
     goToNextPhase,
     goToPreviousQuestion,
     goToNextQuestion,
@@ -48,10 +45,6 @@ export function TestPage({
     onOptionHover,
     jumpToQuestion,
   } = useTest(group, userData);
-  useEffect(() => {
-    console.log("Permite retroceder en preguntas:", allowPreviousQuestion);
-    console.log("Permite retroceder en fases:", allowPreviousPhase);
-  }, [allowPreviousQuestion, allowPreviousPhase]);
 
   return (
     <div className={styles.page}>
@@ -77,60 +70,52 @@ export function TestPage({
             onContinue={() => quitSummary(goToNextPage)}
           />
         </div>
-      ) : (
-        <>
-          {/* main content */}
-          <div className={styles.content}>
-            {/* question */}
-            <div
-              className={[
-                styles.question,
-                isDarkMode ? styles.dark : styles.light,
-              ].join(" ")}
-            >
-              {questionText && (
-                <div className={questionImage ? styles.questionText : ""}>
-                  {questionText}
-                </div>
-              )}
-              {questionImage && (
-                <img
-                  src={questionImage.src}
-                  alt={questionImage.alt}
-                  className={styles.questionImage}
-                  draggable={false}
-                />
-              )}
-            </div>
-
-            {/* options */}
-            <TestOptions
-              options={options}
-              selected={selectedOptionId}
-              onOptionClick={onOptionClick}
-              onOptionHover={onOptionHover}
-              optionsColumns={optionsColumns}
-              isDarkMode={isDarkMode}
-            />
+      ) : <>
+        {/* main content */}
+        <div className={styles.content}>
+          {/* question */}
+          <div
+            className={[
+              styles.question,
+              isDarkMode ? styles.dark : styles.light,
+            ].join(" ")}
+          >
+            {questionText && (
+              <div className={questionImage ? styles.questionText : ""}>
+                {questionText}
+              </div>
+            )}
+            {questionImage && (
+              <img
+                src={questionImage.src}
+                alt={questionImage.alt}
+                className={styles.questionImage}
+                draggable={false}
+              />
+            )}
           </div>
 
-          {/* bottom nav bar */}
-          <TestPageNavigation
-            onPreviousPhase={goToPreviousPhase}
-            onNextPhase={() => goToNextPhase(goToNextPage)}
-            onPreviousQuestion={goToPreviousQuestion}
-            onNextQuestion={() => goToNextQuestion(goToNextPage)}
-            disablePreviousPhase={phaseIndex === 0}
-            disablePreviousQuestion={phaseIndex === 0 && questionIndex === 0}
-            disableNextQuestion={isNextQuestionDisabled}
-            disableNextPhase={phaseIndex >= phasesCount - 1}
-            hidePreviousPhase={!allowPreviousPhase}
-            hidePreviousQuestion={!allowPreviousQuestion}
-            hideNextPhase={isNextPhaseHidden}
+          {/* options */}
+          <TestOptions
+            options={options}
+            selected={selectedOptionId}
+            onOptionClick={onOptionClick}
+            onOptionHover={onOptionHover}
+            optionsColumns={optionsColumns}
             isDarkMode={isDarkMode}
           />
-        </>
-      )}
+        </div>
+
+        {/* bottom nav bar */}
+        <TestPageNavigation
+          disablePreviousQuestion={allowPreviousPhase ? phaseIndex === 0 && questionIndex === 0 : questionIndex === 0}
+          disableNextQuestion={isNextQuestionDisabled}
+          hidePreviousQuestion={!allowPreviousQuestion}
+          onNextPhase={goToNextPhase}
+          onPreviousQuestion={goToPreviousQuestion}
+          onNextQuestion={goToNextQuestion}
+        />
+      </>}
     </div>
   );
 }

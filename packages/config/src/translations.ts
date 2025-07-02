@@ -30,7 +30,7 @@ export type TranslationKey =
     | "test.previousPhase"
     | "test.previousQuestion"
     | "test.nextQuestion"
-    | "test.nextPhase"
+    | "test.endPhase"
     | "completion.testCompleted"
     | "completion.successfullySubmitted"
     | "completion.thankYou"

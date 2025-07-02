@@ -131,7 +131,6 @@ export type Group = {
 };
 export type Protocol = {
     readonly allowPreviousPhase: boolean;
-    readonly allowSkipPhase: boolean;
     readonly allowPreviousQuestion: boolean;
     readonly allowSkipQuestion: boolean;
     readonly phases: readonly Phase[];

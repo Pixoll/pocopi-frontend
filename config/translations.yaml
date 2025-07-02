@@ -51,7 +51,7 @@ test:
   previousPhase: Fase Anterior
   previousQuestion: Anterior
   nextQuestion: Siguiente
-  nextPhase: Fase Siguiente
+  endPhase: Terminar Fase
 
 completion:
   testCompleted: ¡Test Completado!
