@@ -37,31 +37,38 @@ export function App() {
   }, []);
 
   const goToPreTest = (data: User) => {
+    window.scrollTo(0, 0);
     setUserData(data);
     setPage(Page.PRETEST);
   };
 
   const goToGreeting = () => {
+    window.scrollTo(0, 0);
     setPage(Page.GREETING);
   };
 
   const goToTest = () => {
+    window.scrollTo(0, 0);
     setPage(Page.TEST);
   };
 
   const goToPostTest = () => {
+    window.scrollTo(0, 0);
     setPage(Page.POSTTEST);
   };
 
   const goToEnd = () => {
+    window.scrollTo(0, 0);
     setPage(Page.END);
   };
 
   const goToHome = () => {
+    window.scrollTo(0, 0);
     setPage(Page.HOME);
   };
 
   const goToDashboard = () => {
+    window.scrollTo(0, 0);
     setPage(Page.DASHBOARD);
   };
 
