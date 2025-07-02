@@ -1,82 +1,59 @@
 import { TestAnalytics } from "@/analytics/TestAnalytics";
 import type { User } from "@/api";
-import type { Group, Image, TestOption } from "@pocopi/config";
+import type { Protocol } from "@pocopi/config";
 import { useEffect, useRef, useState } from "react";
 
-export type Option = TestOption & {
-  key: string;
-  id: number;
-};
+export type Answers = Record<number, Record<number, number | null>>;
 
 type Test = {
   phaseIndex: number;
   questionIndex: number;
   selectedOptionId: number | null;
-  questionText?: string;
-  questionImage?: Image;
-  options: readonly Option[];
-  optionsColumns: number;
-  progressPercentage: number;
-  totalPhaseQuestions: number;
-  phasesCount: number;
-  allowPreviousPhase: boolean;
-  isNextPhaseHidden: boolean;
-  allowPreviousQuestion: boolean;
-  isNextQuestionDisabled: boolean;
-  goToPreviousPhase: () => void;
-  goToNextPhase: (onFinish: () => void) => void;
+  answers: Answers;
+  showSummary: boolean;
+  showedSummary: boolean;
+  goToSummary: () => void;
   goToPreviousQuestion: () => void;
-  goToNextQuestion: (onFinish: () => void) => void;
-  handleOptionClick: (id: number) => void;
-  handleOptionHover: (id: number) => void;
+  goToNextQuestion: () => void;
+  onOptionClick: (optionId: number) => void;
+  onOptionHover: (optionId: number) => void;
+  quitSummary: (onFinish: () => void) => void;
+  jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
 
 export function useTest(
-  group: Group,
+  protocol: Protocol,
   userData: User,
 ): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const analyticsRef = useRef<TestAnalytics | null>(null);
+  const [showSummary, setShowSummary] = useState(false);
+  const [showedSummary, setShowedSummary] = useState(false);
+  const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
+    protocol.phases.map((phase) =>
+      [phase.id, Object.fromEntries(phase.questions.map((question) =>
+        [question.id, null]
+      ))]
+    )
+  ));
+
+  const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
+  const phase = phases[phaseIndex];
+  const { id: phaseId, questions } = phase;
+  const { id: questionId, options } = questions[questionIndex];
 
   useEffect(() => {
-    analyticsRef.current = new TestAnalytics(userData.id, phaseIndex + 1, questionIndex + 1);
-  }, [userData.id, phaseIndex, questionIndex]);
+    analyticsRef.current = new TestAnalytics(userData.id, phaseId, questionId);
+  }, [userData.id, phaseId, questionId]);
 
-  const { phases, allowPreviousPhase, allowSkipPhase, allowPreviousQuestion, allowSkipQuestion } = group.protocol;
-  const { questions } = phases[phaseIndex];
-  const { text: questionText, image: questionImage, options: tempOptions } = questions[questionIndex];
-
-  const phasesCount = group.protocol.phases.length;
-
-  const isNextPhaseHidden = !allowSkipPhase;
-
-  const isNextQuestionDisabled = allowSkipQuestion
-    ? false
-    : selectedOptionId === null;
-
-  const totalPhaseQuestions = questions.length;
-
-  const options = tempOptions.map<Option>((option, index) => ({
-    key: option.image?.src ?? option.text!,
-    id: index + 1,
-    ...option,
-  }));
-
-  const optionsColumns = Math.ceil(options.length / 2);
-
-  const totalTestQuestions = phases.reduce(
-    (acc, phase) => acc + phase.questions.length,
-    0
-  );
-  const currentQuestionNumber = questionIndex + phases
-    .slice(0, phaseIndex)
-    .reduce(
-      (acc, phase) => acc + phase.questions.length,
-      0
-    );
-  const progressPercentage = (currentQuestionNumber / totalTestQuestions) * 100;
+  const setAnswer = (phaseId: number, questionId: number, optionId: number | null) => {
+    setAnswers((prev) => {
+      prev[phaseId][questionId] = optionId;
+      return { ...prev };
+    });
+  };
 
   const completeCurrentQuestion = () => {
     const selectedOption = options.find(o => o.id === selectedOptionId);
@@ -84,40 +61,71 @@ export function useTest(
     analyticsRef.current?.completeQuestion(!!selectedOption, !!selectedOption?.correct);
   };
 
-  // parameter is meant to be private inside this hook, do not add signature to return value type
-  const goToPreviousPhase = (goToLastQuestion: unknown = false, markedAsComplete: unknown = false) => {
+  const goToPreviousPhase = () => {
     if (!allowPreviousPhase || phaseIndex <= 0) {
       return;
     }
 
-    const newQuestionIndex = goToLastQuestion === true ? phases[phaseIndex - 1].questions.length - 1 : 0;
-
-    if (!markedAsComplete) {
-      completeCurrentQuestion();
-    }
-
+    const newQuestionIndex = phases[phaseIndex - 1].questions.length - 1;
+    const targetPhase = phases[phaseIndex - 1];
+    const targetQuestion = targetPhase.questions[newQuestionIndex];
     setPhaseIndex(phaseIndex - 1);
     setQuestionIndex(newQuestionIndex);
-    setSelectedOptionId(null);
+    setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
   };
 
-  const goToNextPhase = (onFinish: () => void, markedAsComplete: unknown = false) => {
-    if (selectedOptionId === null && !allowSkipPhase) {
+  const quitSummary = (onFinish: () => void, shouldAdvancePhase: boolean = true) => {
+    setShowSummary(false);
+
+    if (!shouldAdvancePhase) {
       return;
     }
 
-    if (!markedAsComplete) {
-      completeCurrentQuestion();
-    }
+    setShowedSummary(false);
 
     if (phaseIndex < phases.length - 1) {
+      const targetPhase = phases[phaseIndex + 1];
+      const targetQuestion = targetPhase.questions[0];
       setPhaseIndex(phaseIndex + 1);
       setQuestionIndex(0);
-      setSelectedOptionId(null);
+      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
       return;
     }
 
     onFinish();
+  };
+
+  const goToSummary = () => {
+    if (!allowPreviousPhase) {
+      const newQuestionIndex = phase.questions.length - 1;
+      const targetQuestion = questions[newQuestionIndex];
+      setQuestionIndex(newQuestionIndex);
+      setSelectedOptionId(answers[phaseId][targetQuestion.id]);
+    } else {
+      const newPhaseIndex = phases.length - 1;
+      const targetPhase = phases[newPhaseIndex];
+      const newQuestionIndex = targetPhase.questions.length - 1;
+      const targetQuestion = targetPhase.questions[newQuestionIndex];
+      setPhaseIndex(newPhaseIndex);
+      setQuestionIndex(newQuestionIndex);
+      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+    }
+
+    setShowSummary(true);
+    setShowedSummary(true);
+  };
+
+  const goToNextPhase = () => {
+    if (allowPreviousPhase && phaseIndex < phases.length - 1) {
+      const targetPhase = phases[phaseIndex + 1];
+      const targetQuestion = targetPhase.questions[0];
+      setPhaseIndex(phaseIndex + 1);
+      setQuestionIndex(0);
+      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+      return;
+    }
+
+    goToSummary();
   };
 
   const goToPreviousQuestion = () => {
@@ -128,15 +136,16 @@ export function useTest(
     completeCurrentQuestion();
 
     if (questionIndex <= 0) {
-      goToPreviousPhase(true, true);
+      goToPreviousPhase();
       return;
     }
 
+    const targetQuestion = phase.questions[questionIndex - 1];
     setQuestionIndex(questionIndex - 1);
-    setSelectedOptionId(null);
+    setSelectedOptionId(answers[phaseId][targetQuestion.id]);
   };
 
-  const goToNextQuestion = (onFinish: () => void) => {
+  const goToNextQuestion = () => {
     if (selectedOptionId === null && !allowSkipQuestion) {
       return;
     }
@@ -144,48 +153,54 @@ export function useTest(
     completeCurrentQuestion();
 
     if (questionIndex < questions.length - 1) {
+      const targetQuestion = phase.questions[questionIndex + 1];
       setQuestionIndex(questionIndex + 1);
-      setSelectedOptionId(null);
+      setSelectedOptionId(answers[phaseId][targetQuestion.id]);
       return;
     }
 
-    goToNextPhase(onFinish, true);
+    goToNextPhase();
   };
 
-  const handleOptionClick = (id: number) => {
-    if (selectedOptionId === id) {
-      analyticsRef.current?.recordOptionDeselect(id);
+  const jumpToQuestion = (phaseIndex: number, questionIndex: number) => {
+    const targetPhase = phases[phaseIndex];
+    const targetQuestion = targetPhase.questions[questionIndex];
+
+    setPhaseIndex(phaseIndex);
+    setQuestionIndex(questionIndex);
+    setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+    quitSummary(() => {
+    }, false);
+  };
+
+  const onOptionClick = (optionId: number) => {
+    if (selectedOptionId === optionId) {
+      analyticsRef.current?.recordOptionDeselect(optionId);
+      setAnswer(phaseId, questionId, null);
     } else {
-      analyticsRef.current?.recordOptionSelect(id);
+      analyticsRef.current?.recordOptionSelect(optionId);
+      setAnswer(phaseId, questionId, optionId);
     }
-
-    setSelectedOptionId((v) => (v === id ? null : id));
+    setSelectedOptionId((v) => (v === optionId ? null : optionId));
   };
 
-  const handleOptionHover = (id: number) => {
-    analyticsRef.current?.recordOptionHover(id);
+  const onOptionHover = (optionId: number) => {
+    analyticsRef.current?.recordOptionHover(optionId);
   };
 
   return {
     phaseIndex,
     questionIndex,
     selectedOptionId,
-    questionText,
-    questionImage,
-    options,
-    optionsColumns,
-    progressPercentage,
-    totalPhaseQuestions,
-    phasesCount,
-    allowPreviousPhase,
-    isNextPhaseHidden,
-    allowPreviousQuestion,
-    isNextQuestionDisabled,
-    goToPreviousPhase,
-    goToNextPhase,
+    answers,
+    showSummary,
+    showedSummary,
+    quitSummary,
+    goToSummary,
     goToPreviousQuestion,
     goToNextQuestion,
-    handleOptionClick,
-    handleOptionHover,
+    onOptionClick,
+    onOptionHover,
+    jumpToQuestion,
   };
 }

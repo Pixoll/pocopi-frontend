@@ -1,7 +1,7 @@
 .navigationContainer {
   align-items: center;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   padding: 1rem 1.5rem;
   position: relative;
 }
@@ -33,11 +33,17 @@
   background-color 0.15s ease-in-out,
   border-color 0.15s ease-in-out,
   box-shadow 0.15s ease-in-out;
+  user-select: none;
 }
 
 .navButton:disabled {
   opacity: 0.65;
   pointer-events: none;
+}
+
+.backToSummaryButton {
+  position: absolute;
+  right: 1.5rem;
 }
 
 .primary {

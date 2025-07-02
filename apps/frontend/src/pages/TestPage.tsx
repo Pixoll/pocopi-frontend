@@ -1,20 +1,21 @@
 import type { User } from "@/api";
+import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
-import type { Group } from "@pocopi/config";
+import type { Protocol } from "@pocopi/config";
 
 type TestPageProps = {
-  group: Group;
+  protocol: Protocol;
   goToNextPage: () => void;
   userData: User;
 };
 
 export function TestPage({
-  group,
+  protocol,
   goToNextPage,
   userData,
 }: TestPageProps) {
@@ -24,86 +25,87 @@ export function TestPage({
     phaseIndex,
     questionIndex,
     selectedOptionId,
-    questionText,
-    questionImage,
-    options,
-    optionsColumns,
-    progressPercentage,
-    totalPhaseQuestions,
-    phasesCount,
-    allowPreviousPhase,
-    isNextPhaseHidden,
-    allowPreviousQuestion,
-    isNextQuestionDisabled,
-    goToPreviousPhase,
-    goToNextPhase,
+    answers,
+    showSummary,
+    showedSummary,
+    quitSummary,
+    goToSummary,
     goToPreviousQuestion,
     goToNextQuestion,
-    handleOptionClick,
-    handleOptionHover,
-  } = useTest(group, userData);
+    onOptionClick,
+    onOptionHover,
+    jumpToQuestion,
+  } = useTest(protocol, userData);
+
+  const { phases } = protocol;
+  const phase = phases[phaseIndex];
+  const question = phase.questions[questionIndex];
 
   return (
     <div className={styles.page}>
       <TestPageHeader
-        isDarkMode={isDarkMode}
-        phase={phaseIndex}
-        phasesCount={phasesCount}
-        question={questionIndex}
-        questionsCount={totalPhaseQuestions}
-        progressPercentage={progressPercentage}
+        phases={phases}
+        phaseIndex={phaseIndex}
+        questionIndex={questionIndex}
+        showSummary={showSummary}
       />
 
-      {/* main content */}
-      <div className={styles.content}>
-        {/* question */}
-        <div
-          className={[
-            styles.question,
-            isDarkMode ? styles.dark : styles.light,
-          ].join(" ")}
-        >
-          {questionText && (
-            <div className={questionImage ? styles.questionText : ""}>
-              {questionText}
-            </div>
-          )}
-          {questionImage && (
-            <img
-              src={questionImage.src}
-              alt={questionImage.alt}
-              className={styles.questionImage}
-              draggable={false}
-            />
-          )}
+      {showSummary ? (
+        <div className={styles.content}>
+          <PhaseSummaryModal
+            protocol={protocol}
+            answers={answers}
+            phaseIndex={phaseIndex}
+            jumpToQuestion={jumpToQuestion}
+            onContinue={() => quitSummary(goToNextPage)}
+          />
+        </div>
+      ) : <>
+        {/* main content */}
+        <div className={styles.content}>
+          {/* question */}
+          <div
+            className={[
+              styles.question,
+              isDarkMode ? styles.dark : styles.light,
+            ].join(" ")}
+          >
+            {question.text && (
+              <div className={question.image ? styles.questionText : ""}>
+                {question.text}
+              </div>
+            )}
+            {question.image && (
+              <img
+                src={question.image.src}
+                alt={question.image.alt}
+                className={styles.questionImage}
+                draggable={false}
+              />
+            )}
+          </div>
+
+          {/* options */}
+          <TestOptions
+            options={question.options}
+            selected={selectedOptionId}
+            onOptionClick={onOptionClick}
+            onOptionHover={onOptionHover}
+          />
         </div>
 
-        {/* options */}
-        <TestOptions
-          options={options}
-          selected={selectedOptionId}
-          onOptionClick={handleOptionClick}
-          onOptionHover={handleOptionHover}
-          optionsColumns={optionsColumns}
-          isDarkMode={isDarkMode}
+        {/* bottom nav bar */}
+        <TestPageNavigation
+          protocol={protocol}
+          phaseIndex={phaseIndex}
+          questionIndex={questionIndex}
+          isOptionSelected={selectedOptionId !== null}
+          showedSummary={showedSummary}
+          goToSummary={goToSummary}
+          onPreviousQuestion={goToPreviousQuestion}
+          onNextQuestion={goToNextQuestion}
         />
-      </div>
-
-      {/* bottom nav bar */}
-      <TestPageNavigation
-        onPreviousPhase={goToPreviousPhase}
-        onNextPhase={() => goToNextPhase(goToNextPage)}
-        onPreviousQuestion={goToPreviousQuestion}
-        onNextQuestion={() => goToNextQuestion(goToNextPage)}
-        disablePreviousPhase={phaseIndex === 0}
-        disablePreviousQuestion={phaseIndex === 0 && questionIndex === 0}
-        disableNextQuestion={isNextQuestionDisabled}
-        disableNextPhase={phaseIndex >= phasesCount - 1}
-        hidePreviousPhase={!allowPreviousPhase}
-        hidePreviousQuestion={!allowPreviousQuestion}
-        hideNextPhase={isNextPhaseHidden}
-        isDarkMode={isDarkMode}
-      />
+      </>}
     </div>
   );
 }

@@ -1,37 +1,39 @@
+import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPageNavigation.module.css";
-import { faAngleLeft, faAngleRight, faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
+import { config, type Protocol } from "@pocopi/config";
 
 type TestPageNavigationProps = {
-  onPreviousPhase: () => void;
-  onNextPhase: () => void;
+  protocol: Protocol;
+  phaseIndex: number;
+  questionIndex: number;
+  isOptionSelected: boolean;
+  showedSummary: boolean;
+  goToSummary: () => void;
   onPreviousQuestion: () => void;
   onNextQuestion: () => void;
-  disablePreviousPhase: boolean;
-  disablePreviousQuestion: boolean;
-  disableNextQuestion: boolean;
-  disableNextPhase: boolean;
-  hidePreviousPhase: boolean;
-  hidePreviousQuestion: boolean;
-  hideNextPhase: boolean;
-  isDarkMode: boolean;
 };
 
 export function TestPageNavigation({
-  onPreviousPhase,
-  onNextPhase,
+  protocol,
+  phaseIndex,
+  questionIndex,
+  isOptionSelected,
+  showedSummary,
+  goToSummary,
   onPreviousQuestion,
   onNextQuestion,
-  disablePreviousPhase,
-  disablePreviousQuestion,
-  disableNextQuestion,
-  disableNextPhase,
-  hidePreviousPhase,
-  hidePreviousQuestion,
-  hideNextPhase,
-  isDarkMode,
 }: TestPageNavigationProps) {
+  const { isDarkMode } = useTheme();
+
+  const { allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
+
+  const disablePreviousQuestion = allowPreviousPhase
+    ? phaseIndex === 0 && questionIndex === 0
+    : questionIndex === 0;
+  const disableNextQuestion = !allowSkipQuestion && !isOptionSelected;
+
   return (
     <div
       className={[
@@ -41,22 +43,10 @@ export function TestPageNavigation({
     >
       <div className={styles.navGroup}>
         <button
-          className={[styles.navButton, styles.secondaryOutline].join(" ")}
-          onClick={onPreviousPhase}
-          disabled={disablePreviousPhase}
-          hidden={hidePreviousPhase}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} className={styles.iconLeft}/>
-          {config.t("test.previousPhase")}
-        </button>
-      </div>
-
-      <div className={styles.navGroup}>
-        <button
           className={[styles.navButton, styles.primaryOutline].join(" ")}
           onClick={onPreviousQuestion}
           disabled={disablePreviousQuestion}
-          hidden={hidePreviousQuestion}
+          hidden={!allowPreviousQuestion}
         >
           <FontAwesomeIcon icon={faAngleLeft} className={styles.iconLeft}/>
           {config.t("test.previousQuestion")}
@@ -72,17 +62,14 @@ export function TestPageNavigation({
         </button>
       </div>
 
-      <div className={styles.navGroup}>
-        <button
-          className={[styles.navButton, styles.secondaryOutline].join(" ")}
-          onClick={onNextPhase}
-          disabled={disableNextPhase}
-          hidden={hideNextPhase}
-        >
-          {config.t("test.nextPhase")}
-          <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
-        </button>
-      </div>
+      <button
+        className={[styles.navButton, styles.secondaryOutline, styles.backToSummaryButton].join(" ")}
+        onClick={goToSummary}
+        hidden={!showedSummary}
+      >
+        {config.t("test.backToSummary")}
+        <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
+      </button>
     </div>
   );
 }

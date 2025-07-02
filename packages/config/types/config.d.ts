@@ -110,6 +110,7 @@ export type FormQuestionTextLong = FormQuestionBase & {
     readonly maxLength: number;
 };
 export type FormQuestionBase = {
+    readonly id: number;
     readonly category: string;
     readonly text: string;
     readonly image?: Image;
@@ -130,20 +131,22 @@ export type Group = {
 };
 export type Protocol = {
     readonly allowPreviousPhase: boolean;
-    readonly allowSkipPhase: boolean;
     readonly allowPreviousQuestion: boolean;
     readonly allowSkipQuestion: boolean;
     readonly phases: readonly Phase[];
 };
 export type Phase = {
+    readonly id: number;
     readonly questions: readonly PhaseQuestion[];
 };
 export type PhaseQuestion = {
+    readonly id: number;
     readonly text?: string;
     readonly image?: Image;
     readonly options: readonly TestOption[];
 };
 export type TestOption = {
+    readonly id: number;
     readonly text?: string;
     readonly image?: Image;
     readonly correct: boolean;

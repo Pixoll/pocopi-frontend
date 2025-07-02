@@ -1,13 +1,12 @@
-import type { Option } from "@/hooks/useTest";
+import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestOptions.module.css";
+import type { TestOption } from "@pocopi/config";
 
 type TestOptionsProps = {
-  options: readonly Option[];
+  options: readonly TestOption[];
   selected: number | null;
   onOptionClick: (id: number) => void;
   onOptionHover: (id: number) => void;
-  optionsColumns: number;
-  isDarkMode: boolean;
 };
 
 export function TestOptions({
@@ -15,13 +14,13 @@ export function TestOptions({
   selected,
   onOptionClick,
   onOptionHover,
-  optionsColumns,
-  isDarkMode,
 }: TestOptionsProps) {
+  const { isDarkMode } = useTheme();
+
   return (
     <div
       className={styles.testOptionsContainer}
-      style={{ gridTemplateColumns: `repeat(${optionsColumns}, 1fr)` }}
+      style={{ gridTemplateColumns: `repeat(${Math.ceil(options.length / 2)}, 1fr)` }}
     >
       {options.map((option) => (
         <div

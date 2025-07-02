@@ -80,347 +80,347 @@ protocols:
   saliente:
     phases:
       - questions:
-        - image:
-            src: saliente/practice/1.jpg
-            alt: question image PRACTICA_SALIENTE_1
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-              correct: true
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/practice/2.jpg
-            alt: question image PRACTICA_SALIENTE_2
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-              correct: true
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/practice/3.jpg
-            alt: question image PRACTICA_SALIENTE_3
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-              correct: true
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E1.jpg
-            alt: question image SALIENTE_E1
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-              correct: true
-            - text: "8"
-        - image:
-            src: saliente/questions/E2.jpg
-            alt: question image SALIENTE_E2
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-              correct: true
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E3.jpg
-            alt: question image SALIENTE_E3
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-              correct: true
-        - image:
-            src: saliente/questions/E4.jpg
-            alt: question image SALIENTE_E4
-          options:
-            - text: "1"
-            - text: "2"
-              correct: true
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E5.jpg
-            alt: question image SALIENTE_E5
-          options:
-            - text: "1"
-              correct: true
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E6.jpg
-            alt: question image SALIENTE_E6
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-              correct: true
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E7.jpg
-            alt: question image SALIENTE_E7
-          options:
-            - text: "1"
-              correct: true
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E8.jpg
-            alt: question image SALIENTE_E8
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-              correct: true
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E9.jpg
-            alt: question image SALIENTE_E9
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-              correct: true
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: saliente/questions/E10.jpg
-            alt: question image SALIENTE_E10
-          options:
-            - text: "1"
-            - text: "2"
-              correct: true
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
+          - image:
+              src: saliente/practice/1.jpg
+              alt: question image PRACTICA_SALIENTE_1
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/practice/2.jpg
+              alt: question image PRACTICA_SALIENTE_2
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/practice/3.jpg
+              alt: question image PRACTICA_SALIENTE_3
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E1.jpg
+              alt: question image SALIENTE_E1
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+                correct: true
+              - text: "8"
+          - image:
+              src: saliente/questions/E2.jpg
+              alt: question image SALIENTE_E2
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E3.jpg
+              alt: question image SALIENTE_E3
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+                correct: true
+          - image:
+              src: saliente/questions/E4.jpg
+              alt: question image SALIENTE_E4
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E5.jpg
+              alt: question image SALIENTE_E5
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E6.jpg
+              alt: question image SALIENTE_E6
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E7.jpg
+              alt: question image SALIENTE_E7
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E8.jpg
+              alt: question image SALIENTE_E8
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E9.jpg
+              alt: question image SALIENTE_E9
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: saliente/questions/E10.jpg
+              alt: question image SALIENTE_E10
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
   contextual:
     phases:
       - questions:
-        - image:
-            src: contextual/practice/1.jpg
-            alt: question image PRACTICA_CONTEXTUAL_1
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-              correct: true
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/practice/2.jpg
-            alt: question image PRACTICA_CONTEXTUAL_2
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-              correct: true
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/practice/3.jpg
-            alt: question image PRACTICA_CONTEXTUAL_3
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-              correct: true
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E1.jpg
-            alt: question image CONTEXTUAL_E1
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-              correct: true
-            - text: "8"
-        - image:
-            src: contextual/questions/E2.jpg
-            alt: question image CONTEXTUAL_E2
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-              correct: true
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E3.jpg
-            alt: question image CONTEXTUAL_E3
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-              correct: true
-        - image:
-            src: contextual/questions/E4.jpg
-            alt: question image CONTEXTUAL_E4
-          options:
-            - text: "1"
-            - text: "2"
-              correct: true
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E5.jpg
-            alt: question image CONTEXTUAL_E5
-          options:
-            - text: "1"
-              correct: true
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E6.jpg
-            alt: question image CONTEXTUAL_E6
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-              correct: true
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E7.jpg
-            alt: question image CONTEXTUAL_E7
-          options:
-            - text: "1"
-              correct: true
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E8.jpg
-            alt: question image CONTEXTUAL_E8
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-              correct: true
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E9.jpg
-            alt: question image CONTEXTUAL_E9
-          options:
-            - text: "1"
-            - text: "2"
-            - text: "3"
-              correct: true
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
-        - image:
-            src: contextual/questions/E10.jpg
-            alt: question image CONTEXTUAL_E10
-          options:
-            - text: "1"
-            - text: "2"
-              correct: true
-            - text: "3"
-            - text: "4"
-            - text: "5"
-            - text: "6"
-            - text: "7"
-            - text: "8"
+          - image:
+              src: contextual/practice/1.jpg
+              alt: question image PRACTICA_CONTEXTUAL_1
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/practice/2.jpg
+              alt: question image PRACTICA_CONTEXTUAL_2
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+                correct: true
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/practice/3.jpg
+              alt: question image PRACTICA_CONTEXTUAL_3
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E1.jpg
+              alt: question image CONTEXTUAL_E1
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+                correct: true
+              - text: "8"
+          - image:
+              src: contextual/questions/E2.jpg
+              alt: question image CONTEXTUAL_E2
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E3.jpg
+              alt: question image CONTEXTUAL_E3
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+                correct: true
+          - image:
+              src: contextual/questions/E4.jpg
+              alt: question image CONTEXTUAL_E4
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E5.jpg
+              alt: question image CONTEXTUAL_E5
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E6.jpg
+              alt: question image CONTEXTUAL_E6
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+                correct: true
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E7.jpg
+              alt: question image CONTEXTUAL_E7
+            options:
+              - text: "1"
+                correct: true
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E8.jpg
+              alt: question image CONTEXTUAL_E8
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+                correct: true
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E9.jpg
+              alt: question image CONTEXTUAL_E9
+            options:
+              - text: "1"
+              - text: "2"
+              - text: "3"
+                correct: true
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
+          - image:
+              src: contextual/questions/E10.jpg
+              alt: question image CONTEXTUAL_E10
+            options:
+              - text: "1"
+              - text: "2"
+                correct: true
+              - text: "3"
+              - text: "4"
+              - text: "5"
+              - text: "6"
+              - text: "7"
+              - text: "8"
   control:
     phases:
       - control-phase1
@@ -583,7 +583,6 @@ protocols:
                   alt: option 6
   groupB:
     allowPreviousPhase: false
-    allowSkipPhase: false
     allowPreviousQuestion: false
     allowSkipQuestion: false
     randomize: true

@@ -239,7 +239,6 @@ function flattenConfig(config: RawMergedConfig): FlatRawConfig {
             probability: group.probability,
             protocol: {
                 allowPreviousPhase: protocol.allowPreviousPhase,
-                allowSkipPhase: protocol.allowSkipPhase,
                 allowPreviousQuestion: protocol.allowPreviousQuestion,
                 allowSkipQuestion: protocol.allowSkipQuestion,
                 randomize: protocol.randomize,
