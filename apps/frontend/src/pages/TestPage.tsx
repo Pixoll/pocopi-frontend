@@ -55,7 +55,7 @@ export function TestPage({
           <PhaseSummaryModal
             protocol={protocol}
             answers={answers}
-            currentPhase={phaseIndex}
+            phaseIndex={phaseIndex}
             jumpToQuestion={jumpToQuestion}
             onContinue={() => quitSummary(goToNextPage)}
           />

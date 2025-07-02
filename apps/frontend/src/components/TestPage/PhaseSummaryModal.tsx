@@ -6,7 +6,7 @@ import type { Protocol } from "@pocopi/config";
 type PhaseSummaryModalProps = {
   protocol: Protocol;
   answers: Answers;
-  currentPhase: number;
+  phaseIndex: number;
   jumpToQuestion: (phaseId: number, questionId: number) => void;
   onContinue: () => void;
 };
@@ -14,23 +14,29 @@ type PhaseSummaryModalProps = {
 export function PhaseSummaryModal({
   protocol,
   answers,
-  currentPhase,
+  phaseIndex,
   jumpToQuestion,
   onContinue,
 }: PhaseSummaryModalProps) {
   const { isDarkMode } = useTheme();
 
-  const phasesStart = !protocol.allowPreviousPhase ? currentPhase : 0;
-  const phasesToShow = protocol.phases.slice(phasesStart, currentPhase + 1);
+  const phasesStart = !protocol.allowPreviousPhase ? phaseIndex : 0;
+  const phasesToShow = protocol.phases.slice(phasesStart, phaseIndex + 1);
 
   const title = !protocol.allowPreviousPhase
-    ? `Resumen de la Fase ${currentPhase + 1}`
+    ? `Resumen de la Fase ${phaseIndex + 1}`
     : "Resumen del Test";
 
-  const isLastPhase = currentPhase === protocol.phases.length - 1;
+  const isLastPhase = phaseIndex === protocol.phases.length - 1;
   const continueText = isLastPhase
     ? "Terminar test"
     : "Continuar a la siguiente fase";
+
+  const onQuestionClick = (phaseIndex: number, questionIndex: number) => {
+    if (protocol.allowPreviousQuestion) {
+      jumpToQuestion(phasesStart + phaseIndex, questionIndex);
+    }
+  };
 
   return (
     <div className={styles.modalWrapper}>
@@ -58,7 +64,7 @@ export function PhaseSummaryModal({
           <tbody>
             {phasesToShow.flatMap((phase, phaseIdx) => phase.questions.map((question, questionIdx) => (
               <tr key={`${phase.id}-${question.id}`}>
-                <td>{phaseIdx + 1}</td>
+                <td>{phasesStart + phaseIdx + 1}</td>
                 <td>
                   <button
                     className={[
@@ -66,7 +72,7 @@ export function PhaseSummaryModal({
                       isDarkMode ? styles.linkButtonDark : styles.linkButtonLight,
                     ].join(" ")}
                     disabled={!protocol.allowPreviousQuestion}
-                    onClick={() => protocol.allowPreviousQuestion && jumpToQuestion(phaseIdx, questionIdx)}
+                    onClick={() => onQuestionClick(phaseIdx, questionIdx)}
                   >
                     {questionIdx + 1}
                   </button>
