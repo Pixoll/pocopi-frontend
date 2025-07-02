@@ -38,24 +38,21 @@ export function TestPage({
     allowPreviousQuestion,
     isNextQuestionDisabled,
     showSummary,
-    answeredQuestions,
-    quitSummaryPhase,
+    answers,
+    quitSummary,
     goToPreviousPhase,
     goToNextPhase,
     goToPreviousQuestion,
     goToNextQuestion,
-    handleOptionClick,
-    handleOptionHover,
+    onOptionClick,
+    onOptionHover,
     jumpToQuestion,
-    getQuestions,
   } = useTest(group, userData);
   useEffect(() => {
     console.log("Permite retroceder en preguntas:", allowPreviousQuestion);
     console.log("Permite retroceder en fases:", allowPreviousPhase);
   }, [allowPreviousQuestion, allowPreviousPhase]);
-  
-  
-  
+
   return (
     <div className={styles.page}>
       <TestPageHeader
@@ -66,18 +63,18 @@ export function TestPage({
         questionsCount={totalPhaseQuestions}
         progressPercentage={progressPercentage}
       />
-      
+
       {showSummary ? (
         <div className={styles.content}>
           <PhaseSummaryModal
-            questions={getQuestions()}
-            answeredQuestions={answeredQuestions}
+            group={group}
+            answers={answers}
             currentPhase={phaseIndex}
-            jumpToQuestion={jumpToQuestion}
-            onContinue={() => quitSummaryPhase(goToNextPage, true)}
+            phasesCount={phasesCount}
             onlyCurrentPhase={!allowPreviousPhase}
             allowJump={allowPreviousQuestion}
-            isDarkMode={isDarkMode}
+            jumpToQuestion={jumpToQuestion}
+            onContinue={() => quitSummary(goToNextPage)}
           />
         </div>
       ) : (
@@ -105,18 +102,18 @@ export function TestPage({
                 />
               )}
             </div>
-            
+
             {/* options */}
             <TestOptions
               options={options}
               selected={selectedOptionId}
-              onOptionClick={handleOptionClick}
-              onOptionHover={handleOptionHover}
+              onOptionClick={onOptionClick}
+              onOptionHover={onOptionHover}
               optionsColumns={optionsColumns}
               isDarkMode={isDarkMode}
             />
           </div>
-          
+
           {/* bottom nav bar */}
           <TestPageNavigation
             onPreviousPhase={goToPreviousPhase}

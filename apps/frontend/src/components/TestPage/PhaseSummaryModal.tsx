@@ -1,46 +1,43 @@
+import type { Answers } from "@/hooks/useTest";
+import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/PhaseSummaryModal.module.css";
+import type { Group } from "@pocopi/config";
 
 type PhaseSummaryModalProps = {
-  questions: [number, number][];
-  answeredQuestions: [number, number][];
+  group: Group;
+  answers: Answers;
   currentPhase: number;
-  jumpToQuestion: (phaseId: number, questionId: number) => void;
-  onContinue: () => void;
+  phasesCount: number;
   onlyCurrentPhase: boolean;
   allowJump: boolean;
-  phasesCount?: number; // Añadido para saber si es la última fase
-  isDarkMode: boolean;  // <-- Recibe el modo oscuro como prop
+  jumpToQuestion: (phaseId: number, questionId: number) => void;
+  onContinue: () => void;
 };
 
 export function PhaseSummaryModal({
-                                    questions,
-                                    answeredQuestions,
-                                    currentPhase,
-                                    jumpToQuestion,
-                                    onContinue,
-                                    onlyCurrentPhase,
-                                    allowJump,
-                                    phasesCount,
-                                    isDarkMode,
-                                  }: PhaseSummaryModalProps) {
-  const questionsToShow = questions.filter(([phaseIdx]) =>
-    onlyCurrentPhase ? phaseIdx === currentPhase : phaseIdx <= currentPhase
-  );
-  
+  group,
+  answers,
+  currentPhase,
+  phasesCount,
+  onlyCurrentPhase,
+  allowJump,
+  jumpToQuestion,
+  onContinue,
+}: PhaseSummaryModalProps) {
+  const { isDarkMode } = useTheme();
+
+  const phasesStart = onlyCurrentPhase ? currentPhase : 0;
+  const phasesToShow = group.protocol.phases.slice(phasesStart, currentPhase + 1);
+
   const title = onlyCurrentPhase
     ? `Resumen de la Fase ${currentPhase + 1}`
     : "Resumen del Test";
-  
-  const isAnswered = (phaseIdx: number, questionIdx: number) =>
-    answeredQuestions.some(
-      ([p, q]) => p === phaseIdx && q === questionIdx
-    );
-  
-  const isLastPhase = phasesCount !== undefined && currentPhase === phasesCount - 1;
+
+  const isLastPhase = currentPhase === phasesCount - 1;
   const continueText = isLastPhase
     ? "Terminar test"
     : "Continuar a la siguiente fase";
-  
+
   return (
     <div className={styles.modalWrapper}>
       <div
@@ -50,7 +47,7 @@ export function PhaseSummaryModal({
         ].join(" ")}
       >
         <h2 className={styles.title}>{title}</h2>
-        
+
         <table
           className={[
             styles.table,
@@ -58,40 +55,38 @@ export function PhaseSummaryModal({
           ].join(" ")}
         >
           <thead>
-          <tr>
-            <th>Pregunta</th>
-            <th>Fase</th>
-            <th>Estado</th>
-          </tr>
+            <tr>
+              <th>Pregunta</th>
+              <th>Fase</th>
+              <th>Estado</th>
+            </tr>
           </thead>
           <tbody>
-          {questionsToShow.map(([phaseIdx, questionIdx]) => (
-            <tr key={`${phaseIdx}-${questionIdx}`}>
-              <td>
-                <button
-                  className={[
-                    styles.linkButton,
-                    isDarkMode ? styles.linkButtonDark : styles.linkButtonLight,
-                  ].join(" ")}
-                  disabled={!allowJump}
-                  onClick={() =>
-                    allowJump && jumpToQuestion(phaseIdx, questionIdx)
-                  }
-                >
-                  {questionIdx + 1}
-                </button>
-              </td>
-              <td>{phaseIdx + 1}</td>
-              <td>
-                {isAnswered(phaseIdx, questionIdx)
-                  ? "Respondida"
-                  : "Sin responder"}
-              </td>
-            </tr>
-          ))}
+            {phasesToShow.flatMap((phase, phaseIdx) => phase.questions.map((question, questionIdx) => (
+              <tr key={`${phase.id}-${question.id}`}>
+                <td>
+                  <button
+                    className={[
+                      styles.linkButton,
+                      isDarkMode ? styles.linkButtonDark : styles.linkButtonLight,
+                    ].join(" ")}
+                    disabled={!allowJump}
+                    onClick={() => allowJump && jumpToQuestion(phaseIdx, questionIdx)}
+                  >
+                    {questionIdx + 1}
+                  </button>
+                </td>
+                <td>{phaseIdx + 1}</td>
+                <td>
+                  {answers[phase.id][question.id] !== null
+                    ? "Respondida"
+                    : "Sin responder"}
+                </td>
+              </tr>
+            )))}
           </tbody>
         </table>
-        
+
         <button
           className={[
             styles.continueBtn,

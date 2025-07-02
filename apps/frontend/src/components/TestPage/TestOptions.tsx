@@ -1,8 +1,8 @@
-import type { Option } from "@/hooks/useTest";
 import styles from "@/styles/TestPage/TestOptions.module.css";
+import type { TestOption } from "@pocopi/config";
 
 type TestOptionsProps = {
-  options: readonly Option[];
+  options: readonly TestOption[];
   selected: number | null;
   onOptionClick: (id: number) => void;
   onOptionHover: (id: number) => void;
