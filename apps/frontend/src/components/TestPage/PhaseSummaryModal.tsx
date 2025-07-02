@@ -38,65 +38,67 @@ export function PhaseSummaryModal({
   };
 
   return (
-    <div className={styles.modalWrapper}>
-      <div
+    <div
+      className={[
+        styles.modal,
+        isDarkMode ? styles.modalDark : styles.modalLight,
+      ].join(" ")}
+    >
+      <h2 className={styles.title}>{title}</h2>
+
+      <table
         className={[
-          styles.modal,
-          isDarkMode ? styles.modalDark : styles.modalLight,
+          styles.table,
+          isDarkMode ? styles.tableDark : styles.tableLight,
         ].join(" ")}
       >
-        <h2 className={styles.title}>{title}</h2>
-
-        <table
-          className={[
-            styles.table,
-            isDarkMode ? styles.tableDark : styles.tableLight,
-          ].join(" ")}
-        >
-          <thead>
-            <tr>
+        <thead>
+          <tr>
+            {protocol.allowPreviousPhase && (
               <th>{config.t("summary.phase")}</th>
-              <th>{config.t("summary.question")}</th>
-              <th>{config.t("summary.status")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {phasesToShow.flatMap((phase, phaseIdx) => phase.questions.map((question, questionIdx) => (
-              <tr key={`${phase.id}-${question.id}`}>
+            )}
+            <th>{config.t("summary.question")}</th>
+            <th>{config.t("summary.status")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {phasesToShow.flatMap((phase, phaseIdx) => phase.questions.map((question, questionIdx) => (
+            <tr key={`${phase.id}-${question.id}`}>
+              {protocol.allowPreviousPhase && (
                 <td>{phasesStart + phaseIdx + 1}</td>
-                <td>
-                  <button
-                    className={[
-                      styles.linkButton,
-                      isDarkMode ? styles.linkButtonDark : styles.linkButtonLight,
-                    ].join(" ")}
-                    disabled={!protocol.allowPreviousQuestion}
-                    onClick={() => onQuestionClick(phaseIdx, questionIdx)}
-                  >
-                    {questionIdx + 1}
-                  </button>
-                </td>
-                <td>
-                  {answers[phase.id][question.id] !== null
-                    ? config.t("summary.answered")
-                    : config.t("summary.notAnswered")
-                  }
-                </td>
-              </tr>
-            )))}
-          </tbody>
-        </table>
+              )}
+              <td>
+                <button
+                  className={[
+                    styles.linkButton,
+                    isDarkMode ? styles.linkButtonDark : styles.linkButtonLight,
+                  ].join(" ")}
+                  disabled={!protocol.allowPreviousQuestion}
+                  onClick={() => onQuestionClick(phaseIdx, questionIdx)}
+                >
+                  {questionIdx + 1}
+                </button>
+              </td>
+              <td>
+                {answers[phase.id][question.id] !== null
+                  ? config.t("summary.answered")
+                  : config.t("summary.notAnswered")
+                }
+              </td>
+            </tr>
+          )))}
+        </tbody>
+      </table>
 
-        <button
-          className={[
-            styles.continueBtn,
-            isDarkMode ? styles.continueBtnDark : styles.continueBtnLight,
-          ].join(" ")}
-          onClick={onContinue}
-        >
-          {continueText}
-        </button>
-      </div>
+      <button
+        className={[
+          styles.continueButton,
+          isDarkMode ? styles.continueButtonDark : styles.continueButtonLight,
+        ].join(" ")}
+        onClick={onContinue}
+      >
+        {continueText}
+      </button>
     </div>
   );
 }

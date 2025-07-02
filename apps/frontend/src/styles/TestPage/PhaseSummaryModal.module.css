@@ -1,28 +1,17 @@
-.modalWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  width: 100%;
-  height: 100%;
-}
-
 .modal {
-  width: 80vw;
-  height: 70vh;
-  max-width: 900px;
-  max-height: 800px;
-  overflow-y: auto;
-  padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  height: 100%;
+  max-height: 800px;
+  max-width: 700px;
+  overflow-y: auto;
+  padding: 2rem;
+  width: 80%;
 }
 
 .modalDark {
-  background-color: #1c1c1c;
   color: white;
 }
 
@@ -32,49 +21,42 @@
 }
 
 .title {
-  text-align: center;
   margin-bottom: 1.5rem;
-  font-size: 2rem;
+  text-align: center;
 }
 
 .table {
-  width: 100%;
   border-collapse: collapse;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .tableDark th,
 .tableDark td {
-  border-bottom: 1px solid #333;
-  color: #eee;
+  border-bottom: 1px solid #333333;
+  color: #eeeeee;
 }
 
 .tableLight th,
 .tableLight td {
-  border-bottom: 1px solid #ccc;
-  color: #222;
+  border-bottom: 1px solid #cccccc;
+  color: #222222;
 }
 
 .table th,
 .table td {
+  font-size: 1.1rem;
   padding: 1rem;
   text-align: center;
-  font-size: 1.1rem;
 }
 
 .linkButton {
   background: none;
   border: none;
-  text-decoration: underline;
+  color: #0d6efd;
   cursor: pointer;
   font-weight: bold;
-}
-
-.linkButtonLight {
-  color: #007bff;
-}
-.linkButtonDark {
-  color: #ffd447;
+  text-decoration: underline;
 }
 
 .linkButton:disabled {
@@ -83,28 +65,29 @@
   text-decoration: none;
 }
 
-.continueBtn {
-  margin-top: auto;
-  padding: 1rem;
-  font-size: 1.1rem;
-  font-weight: bold;
+.continueButton {
+  align-items: center;
+  align-self: center;
+  background-color: #0d6efd;
   border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.continueBtnLight {
-  background-color: #007bff;
+  border-radius: 50rem;
   color: white;
-}
-.continueBtnLight:hover {
-  background-color: #0056b3;
+  font-size: 1.25rem;
+  padding: 1rem 2rem;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+  width: fit-content;
 }
 
-.continueBtnDark {
-  background-color: #333d55;
-  color: #ffd447;
+.continueButton:hover, .continueButton:focus-visible {
+  background-color: #0b5ed7;
 }
-.continueBtnDark:hover {
-  background-color: #22293a;
+
+.continueButton:active {
+  background-color: #0a58ca;
+}
+
+.continueButton:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+  outline: 0;
 }

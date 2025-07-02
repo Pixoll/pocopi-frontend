@@ -34,10 +34,10 @@ export function TestPageHeader({
         isDarkMode ? styles.headerDark : styles.headerLight,
       ].join(" ")}
     >
-      <h4 className={styles.title}>
+      <h5 className={styles.title}>
         <img className={styles.icon} src={config.icon.src} alt={config.icon.alt}/>
         <span>{config.title}</span>
-      </h4>
+      </h5>
       <div className={styles.progressBarContainer}>
         <small className={styles.progressText}>{config.t("test.progress")}</small>
         <div className={styles.progressBar}>
