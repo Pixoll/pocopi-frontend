@@ -53,6 +53,18 @@ test:
   nextQuestion: Siguiente
   backToSummary: Volver al resumen
 
+summary:
+  # {0} = current phase
+  phaseSummary: Resumen de la Fase {0}
+  testSummary: Resumen del Test
+  nextPhase: Continuar a la siguiente fase
+  endTest: Terminar test
+  phase: Fase
+  question: Pregunta
+  status: Estado
+  answered: Respondida
+  notAnswered: Sin responder
+
 completion:
   testCompleted: ¡Test Completado!
   successfullySubmitted: Enviado Exitosamente

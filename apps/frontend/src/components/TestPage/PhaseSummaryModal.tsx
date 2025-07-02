@@ -1,7 +1,7 @@
 import type { Answers } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/PhaseSummaryModal.module.css";
-import type { Protocol } from "@pocopi/config";
+import { config, type Protocol } from "@pocopi/config";
 
 type PhaseSummaryModalProps = {
   protocol: Protocol;
@@ -24,13 +24,12 @@ export function PhaseSummaryModal({
   const phasesToShow = protocol.phases.slice(phasesStart, phaseIndex + 1);
 
   const title = !protocol.allowPreviousPhase
-    ? `Resumen de la Fase ${phaseIndex + 1}`
-    : "Resumen del Test";
+    ? config.t("summary.phaseSummary", `${phaseIndex + 1}`)
+    : config.t("summary.testSummary");
 
-  const isLastPhase = phaseIndex === protocol.phases.length - 1;
-  const continueText = isLastPhase
-    ? "Terminar test"
-    : "Continuar a la siguiente fase";
+  const continueText = phaseIndex < protocol.phases.length - 1
+    ? config.t("summary.nextPhase")
+    : config.t("summary.endTest");
 
   const onQuestionClick = (phaseIndex: number, questionIndex: number) => {
     if (protocol.allowPreviousQuestion) {
@@ -56,9 +55,9 @@ export function PhaseSummaryModal({
         >
           <thead>
             <tr>
-              <th>Fase</th>
-              <th>Pregunta</th>
-              <th>Estado</th>
+              <th>{config.t("summary.phase")}</th>
+              <th>{config.t("summary.question")}</th>
+              <th>{config.t("summary.status")}</th>
             </tr>
           </thead>
           <tbody>
@@ -79,8 +78,9 @@ export function PhaseSummaryModal({
                 </td>
                 <td>
                   {answers[phase.id][question.id] !== null
-                    ? "Respondida"
-                    : "Sin responder"}
+                    ? config.t("summary.answered")
+                    : config.t("summary.notAnswered")
+                  }
                 </td>
               </tr>
             )))}
