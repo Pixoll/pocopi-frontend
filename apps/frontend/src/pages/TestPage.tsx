@@ -27,8 +27,9 @@ export function TestPage({
     selectedOptionId,
     answers,
     showSummary,
+    showedSummary,
     quitSummary,
-    goToNextPhase,
+    goToSummary,
     goToPreviousQuestion,
     goToNextQuestion,
     onOptionClick,
@@ -99,7 +100,8 @@ export function TestPage({
           phaseIndex={phaseIndex}
           questionIndex={questionIndex}
           isOptionSelected={selectedOptionId !== null}
-          onNextPhase={goToNextPhase}
+          showedSummary={showedSummary}
+          goToSummary={goToSummary}
           onPreviousQuestion={goToPreviousQuestion}
           onNextQuestion={goToNextQuestion}
         />

@@ -9,7 +9,8 @@ type TestPageNavigationProps = {
   phaseIndex: number;
   questionIndex: number;
   isOptionSelected: boolean;
-  onNextPhase: () => void;
+  showedSummary: boolean;
+  goToSummary: () => void;
   onPreviousQuestion: () => void;
   onNextQuestion: () => void;
 };
@@ -19,7 +20,8 @@ export function TestPageNavigation({
   phaseIndex,
   questionIndex,
   isOptionSelected,
-  onNextPhase,
+  showedSummary,
+  goToSummary,
   onPreviousQuestion,
   onNextQuestion,
 }: TestPageNavigationProps) {
@@ -61,11 +63,11 @@ export function TestPageNavigation({
       </div>
 
       <button
-        className={[styles.navButton, styles.secondaryOutline, styles.endPhaseButton].join(" ")}
-        onClick={onNextPhase}
-        hidden={disableNextQuestion}
+        className={[styles.navButton, styles.secondaryOutline, styles.backToSummaryButton].join(" ")}
+        onClick={goToSummary}
+        hidden={!showedSummary}
       >
-        {config.t("test.endPhase")}
+        {config.t("test.backToSummary")}
         <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
       </button>
     </div>

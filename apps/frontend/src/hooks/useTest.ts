@@ -11,7 +11,8 @@ type Test = {
   selectedOptionId: number | null;
   answers: Answers;
   showSummary: boolean;
-  goToNextPhase: () => void;
+  showedSummary: boolean;
+  goToSummary: () => void;
   goToPreviousQuestion: () => void;
   goToNextQuestion: () => void;
   onOptionClick: (optionId: number) => void;
@@ -29,6 +30,7 @@ export function useTest(
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const analyticsRef = useRef<TestAnalytics | null>(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [showedSummary, setShowedSummary] = useState(false);
   const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
     protocol.phases.map((phase) =>
       [phase.id, Object.fromEntries(phase.questions.map((question) =>
@@ -79,6 +81,8 @@ export function useTest(
       return;
     }
 
+    setShowedSummary(false);
+
     if (phaseIndex < phases.length - 1) {
       const targetPhase = phases[phaseIndex + 1];
       const targetQuestion = targetPhase.questions[0];
@@ -91,21 +95,28 @@ export function useTest(
     onFinish();
   };
 
-  const goToNextPhase = (markedAsComplete: unknown = false) => {
-    if (!markedAsComplete) {
-      completeCurrentQuestion();
+  const goToSummary = () => {
+    if (!allowPreviousPhase) {
+      const newQuestionIndex = phase.questions.length - 1;
+      const targetQuestion = questions[newQuestionIndex];
+      setQuestionIndex(newQuestionIndex);
+      setSelectedOptionId(answers[phaseId][targetQuestion.id]);
+    } else {
+      const newPhaseIndex = phases.length - 1;
+      const targetPhase = phases[newPhaseIndex];
+      const newQuestionIndex = targetPhase.questions.length - 1;
+      const targetQuestion = targetPhase.questions[newQuestionIndex];
+      setPhaseIndex(newPhaseIndex);
+      setQuestionIndex(newQuestionIndex);
+      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
     }
 
-    if (phaseIndex < phases.length - 1) {
-      if (!allowPreviousPhase) {
-        const newQuestionIndex = phase.questions.length - 1;
-        const targetQuestion = questions[newQuestionIndex];
-        setQuestionIndex(newQuestionIndex);
-        setSelectedOptionId(answers[phaseId][targetQuestion.id]);
-        setShowSummary(true);
-        return;
-      }
+    setShowSummary(true);
+    setShowedSummary(true);
+  };
 
+  const goToNextPhase = () => {
+    if (allowPreviousPhase && phaseIndex < phases.length - 1) {
       const targetPhase = phases[phaseIndex + 1];
       const targetQuestion = targetPhase.questions[0];
       setPhaseIndex(phaseIndex + 1);
@@ -114,14 +125,7 @@ export function useTest(
       return;
     }
 
-    const newPhaseIndex = phases.length - 1;
-    const targetPhase = phases[newPhaseIndex];
-    const newQuestionIndex = targetPhase.questions.length - 1;
-    const targetQuestion = targetPhase.questions[newQuestionIndex];
-    setPhaseIndex(newPhaseIndex);
-    setQuestionIndex(newQuestionIndex);
-    setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
-    setShowSummary(true);
+    goToSummary();
   };
 
   const goToPreviousQuestion = () => {
@@ -155,7 +159,7 @@ export function useTest(
       return;
     }
 
-    goToNextPhase(true);
+    goToNextPhase();
   };
 
   const jumpToQuestion = (phaseIndex: number, questionIndex: number) => {
@@ -190,8 +194,9 @@ export function useTest(
     selectedOptionId,
     answers,
     showSummary,
+    showedSummary,
     quitSummary,
-    goToNextPhase,
+    goToSummary,
     goToPreviousQuestion,
     goToNextQuestion,
     onOptionClick,
