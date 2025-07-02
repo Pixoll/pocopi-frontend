@@ -60,8 +60,9 @@
 }
 
 .linkButton:disabled {
-  color: gray;
+  color: inherit;
   cursor: not-allowed;
+  font-weight: inherit;
   text-decoration: none;
 }
 
