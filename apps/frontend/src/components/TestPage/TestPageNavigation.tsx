@@ -2,26 +2,35 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPageNavigation.module.css";
 import { faAngleLeft, faAngleRight, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
+import { config, type Protocol } from "@pocopi/config";
 
 type TestPageNavigationProps = {
-  disablePreviousQuestion: boolean;
-  disableNextQuestion: boolean;
-  hidePreviousQuestion: boolean;
+  protocol: Protocol;
+  phaseIndex: number;
+  questionIndex: number;
+  isOptionSelected: boolean;
   onNextPhase: () => void;
   onPreviousQuestion: () => void;
   onNextQuestion: () => void;
 };
 
 export function TestPageNavigation({
-  disablePreviousQuestion,
-  disableNextQuestion,
-  hidePreviousQuestion,
+  protocol,
+  phaseIndex,
+  questionIndex,
+  isOptionSelected,
   onNextPhase,
   onPreviousQuestion,
   onNextQuestion,
 }: TestPageNavigationProps) {
   const { isDarkMode } = useTheme();
+
+  const { allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
+
+  const disablePreviousQuestion = allowPreviousPhase
+    ? phaseIndex === 0 && questionIndex === 0
+    : questionIndex === 0;
+  const disableNextQuestion = !allowSkipQuestion && !isOptionSelected;
 
   return (
     <div
@@ -35,7 +44,7 @@ export function TestPageNavigation({
           className={[styles.navButton, styles.primaryOutline].join(" ")}
           onClick={onPreviousQuestion}
           disabled={disablePreviousQuestion}
-          hidden={hidePreviousQuestion}
+          hidden={!allowPreviousQuestion}
         >
           <FontAwesomeIcon icon={faAngleLeft} className={styles.iconLeft}/>
           {config.t("test.previousQuestion")}

@@ -1,5 +1,4 @@
 import type { User } from "@/api";
-import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
 import { CompletionModal } from "@/pages/CompletionModal";
 import { FormPage } from "@/pages/FormPage";
@@ -66,28 +65,20 @@ export function App() {
     setPage(Page.DASHBOARD);
   };
 
-  const renderPage = () => {
-    switch (page) {
-      case Page.HOME:
-        return <HomePage groupLabel={group.label} goToNextPage={goToPreTest} onDashboard={goToDashboard}/>;
-      case Page.PRETEST:
-        return <FormPage type="pre-test" userData={userData!} goToNextPage={goToGreeting}/>;
-      case Page.GREETING:
-        return <TestGreetingPage groupGreeting={group.greeting} goToNextPage={goToTest}/>;
-      case Page.TEST:
-        return <TestPage group={group} goToNextPage={goToPostTest} userData={userData!}/>;
-      case Page.POSTTEST:
-        return <FormPage type="post-test" userData={userData!} goToNextPage={goToEnd}/>;
-      case Page.END:
-        return <CompletionModal userData={userData!} onBackToHome={goToHome}/>;
-      case Page.DASHBOARD:
-        return <AnalyticsDashboard onBack={goToHome}/>;
-    }
-  };
-
-  return (
-    <ThemeProvider>
-      {renderPage()}
-    </ThemeProvider>
-  );
+  switch (page) {
+    case Page.HOME:
+      return <HomePage groupLabel={group.label} goToNextPage={goToPreTest} onDashboard={goToDashboard}/>;
+    case Page.PRETEST:
+      return <FormPage type="pre-test" userData={userData!} goToNextPage={goToGreeting}/>;
+    case Page.GREETING:
+      return <TestGreetingPage groupGreeting={group.greeting} goToNextPage={goToTest}/>;
+    case Page.TEST:
+      return <TestPage protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!}/>;
+    case Page.POSTTEST:
+      return <FormPage type="post-test" userData={userData!} goToNextPage={goToEnd}/>;
+    case Page.END:
+      return <CompletionModal userData={userData!} onBackToHome={goToHome}/>;
+    case Page.DASHBOARD:
+      return <AnalyticsDashboard onBack={goToHome}/>;
+  }
 }

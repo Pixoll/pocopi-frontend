@@ -6,16 +6,16 @@ import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
-import type { Group } from "@pocopi/config";
+import type { Protocol } from "@pocopi/config";
 
 type TestPageProps = {
-  group: Group;
+  protocol: Protocol;
   goToNextPage: () => void;
   userData: User;
 };
 
 export function TestPage({
-  group,
+  protocol,
   goToNextPage,
   userData,
 }: TestPageProps) {
@@ -25,18 +25,8 @@ export function TestPage({
     phaseIndex,
     questionIndex,
     selectedOptionId,
-    questionText,
-    questionImage,
-    options,
-    optionsColumns,
-    progressPercentage,
-    totalPhaseQuestions,
-    phasesCount,
-    allowPreviousPhase,
-    allowPreviousQuestion,
-    isNextQuestionDisabled,
-    showSummary,
     answers,
+    showSummary,
     quitSummary,
     goToNextPhase,
     goToPreviousQuestion,
@@ -44,28 +34,27 @@ export function TestPage({
     onOptionClick,
     onOptionHover,
     jumpToQuestion,
-  } = useTest(group, userData);
+  } = useTest(protocol, userData);
+
+  const { phases } = protocol;
+  const phase = phases[phaseIndex];
+  const question = phase.questions[questionIndex];
 
   return (
     <div className={styles.page}>
       <TestPageHeader
-        isDarkMode={isDarkMode}
-        phase={phaseIndex}
-        phasesCount={phasesCount}
-        question={questionIndex}
-        questionsCount={totalPhaseQuestions}
-        progressPercentage={progressPercentage}
+        phases={phases}
+        phaseIndex={phaseIndex}
+        questionIndex={questionIndex}
+        showSummary={showSummary}
       />
 
       {showSummary ? (
         <div className={styles.content}>
           <PhaseSummaryModal
-            group={group}
+            protocol={protocol}
             answers={answers}
             currentPhase={phaseIndex}
-            phasesCount={phasesCount}
-            onlyCurrentPhase={!allowPreviousPhase}
-            allowJump={allowPreviousQuestion}
             jumpToQuestion={jumpToQuestion}
             onContinue={() => quitSummary(goToNextPage)}
           />
@@ -80,15 +69,15 @@ export function TestPage({
               isDarkMode ? styles.dark : styles.light,
             ].join(" ")}
           >
-            {questionText && (
-              <div className={questionImage ? styles.questionText : ""}>
-                {questionText}
+            {question.text && (
+              <div className={question.image ? styles.questionText : ""}>
+                {question.text}
               </div>
             )}
-            {questionImage && (
+            {question.image && (
               <img
-                src={questionImage.src}
-                alt={questionImage.alt}
+                src={question.image.src}
+                alt={question.image.alt}
                 className={styles.questionImage}
                 draggable={false}
               />
@@ -97,20 +86,19 @@ export function TestPage({
 
           {/* options */}
           <TestOptions
-            options={options}
+            options={question.options}
             selected={selectedOptionId}
             onOptionClick={onOptionClick}
             onOptionHover={onOptionHover}
-            optionsColumns={optionsColumns}
-            isDarkMode={isDarkMode}
           />
         </div>
 
         {/* bottom nav bar */}
         <TestPageNavigation
-          disablePreviousQuestion={allowPreviousPhase ? phaseIndex === 0 && questionIndex === 0 : questionIndex === 0}
-          disableNextQuestion={isNextQuestionDisabled}
-          hidePreviousQuestion={!allowPreviousQuestion}
+          protocol={protocol}
+          phaseIndex={phaseIndex}
+          questionIndex={questionIndex}
+          isOptionSelected={selectedOptionId !== null}
           onNextPhase={goToNextPhase}
           onPreviousQuestion={goToPreviousQuestion}
           onNextQuestion={goToNextQuestion}

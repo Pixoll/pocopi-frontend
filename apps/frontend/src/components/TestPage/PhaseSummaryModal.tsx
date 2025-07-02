@@ -1,39 +1,33 @@
 import type { Answers } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/PhaseSummaryModal.module.css";
-import type { Group } from "@pocopi/config";
+import type { Protocol } from "@pocopi/config";
 
 type PhaseSummaryModalProps = {
-  group: Group;
+  protocol: Protocol;
   answers: Answers;
   currentPhase: number;
-  phasesCount: number;
-  onlyCurrentPhase: boolean;
-  allowJump: boolean;
   jumpToQuestion: (phaseId: number, questionId: number) => void;
   onContinue: () => void;
 };
 
 export function PhaseSummaryModal({
-  group,
+  protocol,
   answers,
   currentPhase,
-  phasesCount,
-  onlyCurrentPhase,
-  allowJump,
   jumpToQuestion,
   onContinue,
 }: PhaseSummaryModalProps) {
   const { isDarkMode } = useTheme();
 
-  const phasesStart = onlyCurrentPhase ? currentPhase : 0;
-  const phasesToShow = group.protocol.phases.slice(phasesStart, currentPhase + 1);
+  const phasesStart = !protocol.allowPreviousPhase ? currentPhase : 0;
+  const phasesToShow = protocol.phases.slice(phasesStart, currentPhase + 1);
 
-  const title = onlyCurrentPhase
+  const title = !protocol.allowPreviousPhase
     ? `Resumen de la Fase ${currentPhase + 1}`
     : "Resumen del Test";
 
-  const isLastPhase = currentPhase === phasesCount - 1;
+  const isLastPhase = currentPhase === protocol.phases.length - 1;
   const continueText = isLastPhase
     ? "Terminar test"
     : "Continuar a la siguiente fase";
@@ -71,8 +65,8 @@ export function PhaseSummaryModal({
                       styles.linkButton,
                       isDarkMode ? styles.linkButtonDark : styles.linkButtonLight,
                     ].join(" ")}
-                    disabled={!allowJump}
-                    onClick={() => allowJump && jumpToQuestion(phaseIdx, questionIdx)}
+                    disabled={!protocol.allowPreviousQuestion}
+                    onClick={() => protocol.allowPreviousQuestion && jumpToQuestion(phaseIdx, questionIdx)}
                   >
                     {questionIdx + 1}
                   </button>

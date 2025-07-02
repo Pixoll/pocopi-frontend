@@ -1,23 +1,32 @@
+import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPageHeader.module.css";
-import { config } from "@pocopi/config";
+import { config, type Phase } from "@pocopi/config";
 
 type TestPageHeaderProps = {
-  isDarkMode: boolean;
-  phase: number;
-  phasesCount: number;
-  question: number;
-  questionsCount: number;
-  progressPercentage: number;
+  phases: readonly Phase[];
+  phaseIndex: number;
+  questionIndex: number;
+  showSummary: boolean;
 };
 
 export function TestPageHeader({
-  isDarkMode,
-  phase,
-  phasesCount,
-  question,
-  questionsCount,
-  progressPercentage,
+  phases,
+  phaseIndex,
+  questionIndex,
+  showSummary,
 }: TestPageHeaderProps) {
+  const { isDarkMode } = useTheme();
+
+  const phase = phases[phaseIndex];
+  const totalTestQuestions = phases.reduce((acc, phase) => acc + phase.questions.length, 0);
+  const currentQuestionNumber = (showSummary ? 1 : 0)
+    + questionIndex
+    + phases
+      .slice(0, phaseIndex)
+      .reduce((acc, phase) => acc + phase.questions.length, 0);
+
+  const progressPercentage = (currentQuestionNumber / totalTestQuestions) * 100;
+
   return (
     <div
       className={[
@@ -45,7 +54,13 @@ export function TestPageHeader({
       </div>
       <div className={styles.progressBadgeContainer}>
         <span className={styles.progressBadge}>
-          {config.t("test.phaseQuestion", `${phase + 1}`, `${phasesCount}`, `${question + 1}`, `${questionsCount}`)}
+          {config.t(
+            "test.phaseQuestion",
+            `${phaseIndex + 1}`,
+            `${phases.length}`,
+            `${questionIndex + 1}`,
+            `${phase.questions.length}`
+          )}
         </span>
       </div>
     </div>
