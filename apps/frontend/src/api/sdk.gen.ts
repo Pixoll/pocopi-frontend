@@ -9,11 +9,17 @@ import type {
   GetSummaryResponses,
   GetUsersData,
   GetUsersResponses,
+  GetUserSummaryData,
+  GetUserSummaryResponses,
   GetUserTimelogsData,
   GetUserTimelogsErrors,
   GetUserTimelogsResponses,
-  PingData,
-  PingResponses,
+  SavePostTestData,
+  SavePostTestErrors,
+  SavePostTestResponses,
+  SavePreTestData,
+  SavePreTestErrors,
+  SavePreTestResponses,
   SaveTimelogData,
   SaveTimelogErrors,
   SaveTimelogResponses,
@@ -38,12 +44,44 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
   meta?: Record<string, unknown>;
 };
 
+export const savePreTest = <ThrowOnError extends boolean = false>(options: Options<SavePreTestData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).post<SavePreTestResponses, SavePreTestErrors, ThrowOnError>({
+    url: "/forms/pre-test",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers
+    }
+  });
+};
+
+export const savePostTest = <ThrowOnError extends boolean = false>(options: Options<SavePostTestData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).post<SavePostTestResponses, SavePostTestErrors, ThrowOnError>({
+    url: "/forms/post-test",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers
+    }
+  });
+};
+
 /**
  * Get user data and timelogs summary for the admin dashboard.
  */
 export const getSummary = <ThrowOnError extends boolean = false>(options?: Options<GetSummaryData, ThrowOnError>) => {
   return (options?.client ?? _heyApiClient).get<GetSummaryResponses, unknown, ThrowOnError>({
-    url: "/dashboard",
+    url: "/summary",
+    ...options
+  });
+};
+
+/**
+ * Get user data and timelogs summary for a single user.
+ */
+export const getUserSummary = <ThrowOnError extends boolean = false>(options: Options<GetUserSummaryData, ThrowOnError>) => {
+  return (options.client ?? _heyApiClient).get<GetUserSummaryResponses, unknown, ThrowOnError>({
+    url: "/summary/{userId}",
     ...options
   });
 };
@@ -102,13 +140,6 @@ export const saveUser = <ThrowOnError extends boolean = false>(options: Options<
 export const getUserTimelogs = <ThrowOnError extends boolean = false>(options: Options<GetUserTimelogsData, ThrowOnError>) => {
   return (options.client ?? _heyApiClient).get<GetUserTimelogsResponses, GetUserTimelogsErrors, ThrowOnError>({
     url: "/users/{id}/timelogs",
-    ...options
-  });
-};
-
-export const ping = <ThrowOnError extends boolean = false>(options?: Options<PingData, ThrowOnError>) => {
-  return (options?.client ?? _heyApiClient).get<PingResponses, unknown, ThrowOnError>({
-    url: "/ping",
     ...options
   });
 };

@@ -1,3 +1,4 @@
+import type { User } from "@/api";
 import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
 import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
@@ -6,18 +7,17 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { useUserData } from "@/hooks/useUserData";
 import styles from "@/styles/HomePage/HomePage.module.css";
-import { UserData } from "@/types/user";
 import { config } from "@pocopi/config";
 
 type HomePageProps = {
   groupLabel: string;
-  onStartTest: (data: UserData) => void;
+  goToNextPage: (data: User) => void;
   onDashboard: () => void;
 };
 
 export function HomePage({
   groupLabel,
-  onStartTest,
+  goToNextPage,
   onDashboard,
 }: HomePageProps) {
   const {
@@ -34,9 +34,9 @@ export function HomePage({
   const startTest = () => {
     if (userData && consentAccepted) {
       if (config.anonymous) {
-        sendUserData(userData, () => onStartTest(userData));
+        sendUserData(userData, () => goToNextPage(userData));
       } else {
-        onStartTest(userData);
+        goToNextPage(userData);
       }
     }
   };

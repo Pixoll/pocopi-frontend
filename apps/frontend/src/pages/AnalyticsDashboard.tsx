@@ -1,4 +1,4 @@
-import api, { Summary } from "@/api";
+import api, { type Summary } from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";
@@ -44,13 +44,13 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
       const response = await api.getSummary();
 
-      if (response.error) {
+      if (!response.data) {
         console.error("error while loading dashboard:", error);
         setError(config.t("dashboard.errorLoadingResults"));
       } else {
-        setSummary(summary);
+        setSummary(response.data);
 
-        if (summary.users.length === 0) {
+        if (response.data.users.length === 0) {
           setError(config.t("dashboard.errorNoResults"));
         }
       }

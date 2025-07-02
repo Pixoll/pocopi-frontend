@@ -1,0 +1,62 @@
+.header {
+  color: white;
+  padding-bottom: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+.headerDark {
+  background-color: #0d6efd;
+}
+
+.headerLight {
+  background-color: #198754;
+}
+
+.headerIcon {
+  border-radius: 50%;
+  display: inline-flex;
+  font-size: 3em;
+  margin-bottom: 1rem;
+  padding: 1.188rem 1rem;
+}
+
+.headerIconDark {
+  background-color: #031633;
+  box-shadow: 0 0 20px rgba(121, 132, 255, 0.4);
+}
+
+.headerIconLight {
+  background-color: #051b11;
+  box-shadow: 0 0 20px rgba(76, 201, 162, 0.4);
+}
+
+.headerTitle {
+  font-size: 1.75rem;
+  margin-bottom: 0;
+}
+
+.headerBadge {
+  border-radius: 0.375rem;
+  display: inline-flex;
+  font-size: 0.75em;
+  font-weight: bold;
+  gap: 0.25rem;
+  line-height: 1;
+  margin-top: 0.5rem;
+  padding: 0.35em 0.65em;
+  text-align: center;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.headerBadgeDark {
+  background-color: #212529;
+  box-shadow: 0 0 10px rgba(121, 132, 255, 0.3);
+  color: #f8f9fa;
+}
+
+.headerBadgeLight {
+  background-color: #f8f9fa;
+  box-shadow: 0 0 10px rgba(76, 201, 162, 0.3);
+  color: #198754;
+}

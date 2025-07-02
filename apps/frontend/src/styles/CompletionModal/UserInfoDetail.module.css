@@ -1,0 +1,47 @@
+.userInfoContainer {
+  align-items: center;
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.iconContainer {
+  align-items: center;
+  border-radius: 50%;
+  display: flex;
+  height: 2.25rem;
+  justify-content: center;
+  margin-right: 1rem;
+  width: 2.25rem;
+}
+
+.iconContainerDark {
+  background-color: rgb(13, 110, 253, 0.1);
+  color: #0d6efd;
+}
+
+.iconContainerLight {
+  background-color: rgb(25, 135, 84, 0.1);
+  color: #198754;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.name {
+  font-size: 0.875em;
+}
+
+.nameDark {
+  color: #6ea8fe;
+}
+
+.nameLight {
+  color: #6c757d;
+}
+
+.valueDark {
+  color: #f8f9fa;
+}

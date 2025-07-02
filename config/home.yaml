@@ -3,54 +3,58 @@
 icon:
   src: icons/app.png
   alt: App Icon
-title: Raven's Progressive Matrices Test
-subtitle: An assessment to measure analytical reasoning and problem-solving skills.
-description: >
-  Raven's Progressive Matrices Test is one of the most widely used tools for assessing non-verbal intelligence and
-  reasoning. In this test, you will be presented with a series of matrices or designs with a missing part. Your task
-  will be to select, from several options, the one that correctly completes the pattern.
+title: Test de Matrices Progresivas de Raven
+subtitle: Instrucciones para completar el Test de Matrices Progresivas de Raven
+description: |-
+  Este test está diseñado para evaluar tu capacidad de razonamiento lógico y abstracto. A continuación, encontrarás 10
+  preguntas tipo matriz, donde deberás identificar el patrón lógico que sigue la secuencia y elegir la opción que
+  completa correctamente la figura.
 
-informationCards:
-  - title: Scientific purpose
-    description: This test is part of academic research in the field of psychometrics.
-    color:
-      r: 13
-      g: 110
-      b: 253
-    icon:
-      src: icons/flask.svg
-      alt: Flask Icon
-  - title: Voluntary participation
-    description: Your participation is completely voluntary, and the data will be treated confidentially.
-    color:
-      r: 25
-      g: 135
-      b: 84
-    icon:
-      src: icons/file_signature.svg
-      alt: File Signature Icon
+  **¿Qué debes hacer?**
 
-informedConsent: >
-  By agreeing to participate in this study, you acknowledge that:
+  1. Observa atentamente cada figura incompleta (matriz) presentada en cada ejercicio.
 
-  - Your participation is completely voluntary.
+  2. Analiza los patrones o relaciones entre las formas, líneas o símbolos en filas y columnas.
 
-  - The data provided will be treated with confidentiality.
+  3. Selecciona, entre las opciones dadas, la que mejor completa la secuencia.
 
-  - The information collected will be used solely for academic purposes.
+  4. Marca tu respuesta claramente.
 
-  - You can leave the test at any time if you wish.
+  5. No necesitas conocimientos previos ni cálculos matemáticos complejos.
 
+  6. Trabaja de forma individual y en silencio.
 
-  The test has no time limit, but it is recommended to complete it without interruptions. If you have any questions
-  about the study, you can contact the research team at [research@example.com](mailto:research@example.com).
+  7. Tienes un tiempo total de 20 minutos para responder las 10 preguntas.
 
-faq:
-  - question: How long does it take to complete the test?
-    answer: The time varies depending on the person, but it generally takes between 20 and 45 minutes.
-  - question: Can I pause the test and continue later?
-    answer: It is recommended to complete the test without interruptions to obtain more accurate results.
-  - question: How will my data be used?
-    answer: The data will be used solely for academic purposes and will be presented anonymously.
-  - question: Will I receive my results?
-    answer: At the end of the test, you will be provided with information about your performance.
+  **Consejos:**
+
+  - No te apresures, pero gestiona bien tu tiempo.
+
+  - Si no sabes una respuesta, pasa a la siguiente y vuelve después si te queda tiempo.
+
+  - No hay penalización por errores.
+
+  - Mantén la concentración durante toda la tarea. Este ejercicio evalúa también tu capacidad de mantener el esfuerzo
+  ante la dificultad.
+
+  **Información importante:**
+
+  - Los primeros tres ejercicios son únicamente de práctica y no serán considerados, su propósito es ayudarte a
+  familiarizarte con el formato y la lógica del test antes de comenzar con los ejercicios experimentales.
+
+  - Los siguientes 10 ejercicios forman parte de la tarea experimental, y tus respuestas serán registradas como parte
+  del estudio.
+
+informedConsent: |-
+  Al aceptar participar en este estudio, usted reconoce que:
+
+  - Su participación es completamente voluntaria.
+
+  - Los datos proporcionados serán tratados con confidencialidad.
+
+  - La información recopilada se utilizará únicamente con fines académicos.
+
+  - Puede abandonar el examen en cualquier momento si lo desea.
+
+  Si tiene alguna pregunta sobre el estudio, puede comunicarse con el equipo de investigación enviando un correo
+  electrónico a [research@example.com](mailto:research@example.com).
