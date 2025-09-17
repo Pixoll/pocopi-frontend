@@ -12,7 +12,9 @@
     "prestart": "tsc -b ./tsconfig.json ./tsconfig.cjs.json ./tsconfig.esm.json",
     "start": "node .",
     "poststart": "tsc -b ./tsconfig.json",
-    "build": "npm start"
+    "build": "npm start",
+    "premigrate": "tsc -b ./tsconfig.json",
+    "migrate": "node dist/migrate.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",

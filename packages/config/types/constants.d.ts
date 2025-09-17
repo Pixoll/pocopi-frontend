@@ -1,0 +1,15 @@
+export declare const ESM_SCRIPT_PATH: string;
+export declare const TRANSLATIONS_TS_PATH: string;
+export declare const CONFIG_DIR: string;
+export declare const JSON_SCHEMAS_DIR: string;
+export declare const FORMS_CONFIG_PATH: string;
+export declare const HOME_CONFIG_PATH: string;
+export declare const TEST_CONFIG_PATH: string;
+export declare const TRANSLATIONS_CONFIG_PATH: string;
+export declare const FORMS_JSON_SCHEMA_PATH: string;
+export declare const HOME_JSON_SCHEMA_PATH: string;
+export declare const TEST_JSON_SCHEMA_PATH: string;
+export declare const TRANSLATIONS_JSON_SCHEMA_PATH: string;
+export declare const FRONTEND_PUBLIC_PATH: string;
+export declare const IMAGES_DIR: string;
+export declare const IMAGE_NAMES: Set<string>;

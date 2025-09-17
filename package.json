@@ -14,6 +14,7 @@
     "start": "pnpm -r start",
     "start:backend": "pnpm run prestart && pnpm --filter ./apps/backend start",
     "start:frontend": "pnpm run prestart && pnpm --filter ./apps/frontend start",
+    "migrate": "pnpm --filter ./packages/config migrate",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "format": "pnpm -r format",
