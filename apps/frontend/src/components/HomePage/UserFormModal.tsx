@@ -2,39 +2,43 @@ import type {CreateUserRequest, Group, SingleConfigResponse} from "@/api";
 import {useTheme} from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
 import {
-  faCakeCandles,
-  faCircleNotch,
-  faEnvelope,
-  faIdCard,
-  faSave,
   faShield,
   faUser,
+  faUserPlus,
+  faSignIn,
   faWarning,
 } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {type ChangeEvent, type FormEvent, useState} from "react";
-import {Form, Modal} from "react-bootstrap";
-import {InputWithIcon} from "./InputWithIcon";
+import {Modal} from "react-bootstrap";
 import {t} from "@/utils/translations.ts";
+import RegisterSection from "./RegisterSection";
+import LoginSection from "./LoginSection";
 
 type UserFormModalProps = {
   config: SingleConfigResponse;
   group: Group;
   show: boolean;
   onHide: () => void;
-  onSubmit: (data: CreateUserRequest, onSaved: () => void, onError: (message: string) => void) => void;
+  onRegister?: (data: CreateUserRequest, onSaved: () => void, onError: (message: string) => void) => void;
+  onLogin?: (username: string, password: string, onSuccess: () => void, onError: (message: string) => void) => void;
 };
+
+type ViewMode = "initial" | "register" | "login" | "anonymous-choice";
 
 export function UserFormModal({
                                 config,
                                 group,
                                 show,
                                 onHide,
-                                onSubmit,
+                                //onRegister,
+                                //onLogin,
                               }: UserFormModalProps) {
   const [validated, setValidated] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("initial");
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const {isDarkMode} = useTheme();
 
   const [formData, setFormData] = useState<CreateUserRequest>({
@@ -47,19 +51,24 @@ export function UserFormModal({
     password: "",
   });
 
+  const [loginData, setLoginData] = useState({
+    username: "",
+    password: "",
+  });
+
   const [emailError, setEmailError] = useState<string | null>(null);
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleRegisterChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {name, value, type} = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "number" ? +value : value,
     }));
-    if (name === "email") {
+    if (name === "email" && !isAnonymous) {
       if (!validateEmail(value)) {
         setEmailError(t(config, "home.pleaseEnterValid", "email"));
       } else {
@@ -68,27 +77,39 @@ export function UserFormModal({
     }
   };
 
-  const onSaved = () => {
+  const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = e.target;
+    setLoginData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  /*const onSaved = () => {
     setSaving(false);
+    resetForm();
+    onHide();
   };
 
   const onSavedError = (message: string) => {
     setSaving(false);
     setError(message);
-  };
+  };*/
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleRegisterSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
     const form = e.currentTarget;
     let valid = true;
-    if (!validateEmail(formData.email || "")) {
+
+    if (!isAnonymous && !validateEmail(formData.email || "")) {
       setEmailError(t(config, "home.pleaseEnterValid", "email"));
       valid = false;
     } else {
       setEmailError(null);
     }
+
     if (!form.checkValidity() || !valid) {
       e.stopPropagation();
       setValidated(true);
@@ -97,13 +118,77 @@ export function UserFormModal({
 
     setValidated(true);
     setSaving(true);
-    onSubmit(formData, onSaved, onSavedError);
+
+    /*const dataToSubmit = {
+      ...formData,
+      anonymous: isAnonymous,
+    };*/
+
+    //onRegister(dataToSubmit, onSaved, onSavedError);
+  };
+
+  const handleLoginSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+
+    const form = e.currentTarget;
+    if (!form.checkValidity()) {
+      e.stopPropagation();
+      setValidated(true);
+      return;
+    }
+
+    setValidated(true);
+    setSaving(true);
+    //onLogin(loginData.username, loginData.password, onSaved, onSavedError);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      anonymous: false,
+      username: "",
+      groupId: group.id,
+      name: "",
+      email: "",
+      age: 0,
+      password: "",
+    });
+    setLoginData({
+      username: "",
+      password: "",
+    });
+    setValidated(false);
+    setError(null);
+    setEmailError(null);
+    setViewMode("initial");
+    setIsAnonymous(false);
+  };
+
+  const handleAnonymousChoice = (anonymous: boolean) => {
+    setIsAnonymous(anonymous);
+    setFormData(prev => ({...prev, anonymous}));
+    setViewMode("register");
+  };
+
+  const getModalTitle = () => {
+    switch (viewMode) {
+      case "login":
+        return "Iniciar sesión";
+      case "register":
+      case "anonymous-choice":
+        return t(config, "home.register", "Registrarse");
+      default:
+        return t(config, "home.participantInformation");
+    }
   };
 
   return (
     <Modal
       show={show}
-      onHide={onHide}
+      onHide={() => {
+        resetForm();
+        onHide();
+      }}
       centered
       backdrop="static"
       size="lg"
@@ -112,12 +197,15 @@ export function UserFormModal({
       <div className={styles.header}>
         <h5 className={styles.headerText}>
           <FontAwesomeIcon icon={faUser}/>
-          {t(config, "home.participantInformation")}
+          {getModalTitle()}
         </h5>
 
         <button
           className={styles.closeButton}
-          onClick={onHide}
+          onClick={() => {
+            resetForm();
+            onHide();
+          }}
         >
           &times;
         </button>
@@ -136,7 +224,9 @@ export function UserFormModal({
           ].join(" ")}
         >
           <FontAwesomeIcon icon={faShield} className={styles.alertIcon}/>
-          {t(config, "home.registrationModalMessage")}
+          {viewMode === "login"
+            ? "Inicia sesión con tu usuario y contraseña"
+            : ""}
         </div>
 
         {error && (
@@ -151,84 +241,88 @@ export function UserFormModal({
           </div>
         )}
 
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <InputWithIcon
-            config={config}
-            icon={faUser}
-            label={t(config, "home.fullName")}
-            name="name"
-            value={formData.name ?? ""}
-            onChange={handleChange}
-            required
-            isDarkMode={isDarkMode}
-          />
-
-          <div className={styles.inputGroup}>
-            <div className={styles.inputGroupMember}>
-              <InputWithIcon
-                config={config}
-                icon={faIdCard}
-                label={t(config, "home.identificationNumber")}
-                name="id"
-                value={formData.username ?? ""}
-                onChange={handleChange}
-                required
-                isDarkMode={isDarkMode}
-              />
-            </div>
-            <div className={styles.inputGroupMember}>
-              <InputWithIcon
-                config={config}
-                icon={faCakeCandles}
-                label={t(config, "home.age")}
-                type="number"
-                name="age"
-                value={(formData.age) && formData.age > 0 ? formData.age.toString() : ""}
-                onChange={handleChange}
-                required
-                min="5"
-                max="100"
-                isDarkMode={isDarkMode}
-              />
-            </div>
+        {viewMode === "initial" && (
+          <div className={styles.buttonsContainer} style={{flexDirection: "column", gap: "1rem"}}>
+            <button
+              className={[styles.button, styles.saveButton].join(" ")}
+              onClick={() => setViewMode("anonymous-choice")}
+              style={{width: "100%"}}
+            >
+              <FontAwesomeIcon icon={faUserPlus}/>
+              {t(config, "home.register", "Registrarse")}
+            </button>
+            <button
+              className={[styles.button, styles.saveButton].join(" ")}
+              onClick={() => setViewMode("login")}
+              style={{width: "100%"}}
+            >
+              <FontAwesomeIcon icon={faSignIn}/>
+              {"Iniciar Sesión"}
+            </button>
           </div>
+        )}
 
-          <InputWithIcon
-            config={config}
-            icon={faEnvelope}
-            label={t(config, "home.email")}
-            type="text"
-            name="email"
-            value={formData.email ?? ""}
-            onChange={handleChange}
-            required
-            isDarkMode={isDarkMode}
-            error={!!emailError}
-          />
-          {emailError && (
-            <div className="text-danger mb-3" style={{fontSize: "0.95em"}}>
-              {emailError}
-            </div>
-          )}
-
-          <div className={styles.buttonsContainer}>
+        {viewMode === "anonymous-choice" && (
+          <div className={styles.buttonsContainer} style={{flexDirection: "column", gap: "1rem"}}>
+            <p style={{textAlign: "center", marginBottom: "1rem"}}>
+              {"¿Deseas registrarte de forma anónima?"}
+            </p>
+            <button
+              className={[styles.button, styles.saveButton].join(" ")}
+              onClick={() => handleAnonymousChoice(true)}
+              style={{width: "100%"}}
+            >
+              {"Sí, usuario anónimo"}
+            </button>
+            <button
+              className={[styles.button, styles.saveButton].join(" ")}
+              onClick={() => handleAnonymousChoice(false)}
+              style={{width: "100%"}}
+            >
+              {"No, con datos completos"}
+            </button>
             <button
               className={[
                 styles.button,
                 styles.cancelButton,
                 isDarkMode ? styles.cancelButtonDark : styles.cancelButtonLight,
               ].join(" ")}
-              onClick={onHide}
+              onClick={() => setViewMode("initial")}
+              style={{width: "100%"}}
             >
-              {t(config, "home.cancel")}
-            </button>
-
-            <button type="submit" className={[styles.button, styles.saveButton].join(" ")}>
-              <FontAwesomeIcon icon={saving ? faCircleNotch : faSave} spin={saving}/>
-              {t(config, "home.saveInformation")}
+              {"Volver"}
             </button>
           </div>
-        </Form>
+        )}
+
+        {viewMode === "register" && (
+          <RegisterSection
+            config={config}
+            userData={formData}
+            handleChange={handleRegisterChange}
+            handleSubmit={handleRegisterSubmit}
+            onHide={() => setViewMode("anonymous-choice")}
+            isDarkMode={isDarkMode}
+            saving={saving}
+            validated={validated}
+            emailError={emailError}
+            isAnonymous={isAnonymous}
+          />
+        )}
+
+        {viewMode === "login" && (
+          <LoginSection
+            config={config}
+            username={loginData.username}
+            password={loginData.password}
+            handleChange={handleLoginChange}
+            handleSubmit={handleLoginSubmit}
+            onHide={() => setViewMode("initial")}
+            isDarkMode={isDarkMode}
+            saving={saving}
+            validated={validated}
+          />
+        )}
       </div>
     </Modal>
   );

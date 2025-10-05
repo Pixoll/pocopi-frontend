@@ -21,7 +21,7 @@ export function useUserData(group: Group, config: SingleConfigResponse): HookedU
     groupId: group.id,
     name: "",
     password: "",
-    anonymous: true,
+    anonymous: false,
   } : null);
 
   const handleOpenModal = () => {

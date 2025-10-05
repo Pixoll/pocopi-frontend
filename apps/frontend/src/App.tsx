@@ -123,8 +123,7 @@ export function App() {
     window.scrollTo(0, 0);
     setPage(Page.DASHBOARD);
   };
-  console.log("Configuracion: ",config)
-  console.log("Grupo: ",group)
+
   if(!group || !config){
     return (<div>Cargando...</div>)
   }

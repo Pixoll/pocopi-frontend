@@ -18,7 +18,7 @@ type HomePageProps = {
 export function HomePage({
   group,
   config,
-  goToNextPage,
+  //goToNextPage,
   onDashboard,
 }: HomePageProps) {
   const {
@@ -28,20 +28,39 @@ export function HomePage({
     handleOpenModal,
     handleCloseModal,
     handleConsentChange,
-    sendUserData,
+    //sendUserData,
   } = useUserData(group, config);
   const { isDarkMode } = useTheme();
 
-  const startTest = () => {
-    if (userData && consentAccepted) {
-      if (config.anonymous) {
+  //deberia ser como: correct sign up + config.anonymous -> go to next page
+  /*const startTest = () => {
+    console.log("config.anonymous:", config.anonymous);
+    console.log("consentAccepted:", consentAccepted);
+
+    if (!consentAccepted) return;
+
+    if (config.anonymous) {
+      if (userData) {
+        console.log("startTest:");
         sendUserData(userData, () => goToNextPage(userData));
       } else {
-        goToNextPage(userData);
+        console.warn("No hay datos de usuario para enviar en modo anónimo");
       }
+    } else {
+      handleOpenModal();
     }
-  };
+  };*/
 
+  const goToPreTest = () => {
+    handleOpenModal();
+  };
+  /*
+  * En vez de iniciar test -> Registrarse(todos los datos) (sign up)
+  * Después pide si es anonimo o no,
+  * Si es anonimo -> login(username y password),
+  * Si no es anonimo pide todos los datos,
+  *
+  * */
   return (
     <div className={styles.container}>
       <HomeHeader config={config} isDarkMode={isDarkMode}/>
@@ -52,8 +71,7 @@ export function HomePage({
         userData={userData}
         consentAccepted={consentAccepted}
         onConsentChange={handleConsentChange}
-        onStartTest={handleOpenModal}
-        onBeginAssessment={startTest}
+        onRegister={goToPreTest}
       />
 
       <UserFormModal
@@ -61,7 +79,6 @@ export function HomePage({
         group={group}
         show={showModal}
         onHide={handleCloseModal}
-        onSubmit={sendUserData}
       />
 
       <DashboardButton config={config} isDarkMode={isDarkMode} onDashboard={onDashboard}/>

@@ -13,8 +13,7 @@ type HomeInfoCardProps = {
   userData: CreateUserRequest | null;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onStartTest: () => void;
-  onBeginAssessment: () => void;
+  onRegister: () => void;
 };
 
 export function HomeInfoCard({
@@ -23,15 +22,14 @@ export function HomeInfoCard({
   userData,
   consentAccepted,
   onConsentChange,
-  onStartTest,
-  onBeginAssessment,
+  onRegister,
 }: HomeInfoCardProps) {
   const infoCardsAmount = config.informationCards.length;
   //const iconOpacity = isDarkMode ? 0.25 : 0.10;
 
   const faqAmount = config.faq.length;
   const lastFaqRowIndex = Math.floor((faqAmount - 1) / 2);
-
+  console.log(config.anonymous)
   return (
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
       {/* Alerta con datos del participante si ya se ingresaron */}
@@ -99,12 +97,12 @@ export function HomeInfoCard({
         </div>
         {/* Botón para iniciar el test o continuar */}
         <div className="text-center mt-4">
-          {!userData && !config.anonymous ? (
+          {!userData ? (
             <Button
               variant="primary"
               size="lg"
               className="px-5 py-3 rounded-pill shadow-sm"
-              onClick={onStartTest}
+              onClick={onRegister}
             >
               <span className="me-2">{t(config, "home.register")}</span>
               <FontAwesomeIcon icon={faArrowRight}/>
@@ -114,7 +112,7 @@ export function HomeInfoCard({
               variant="success"
               size="lg"
               className="px-5 py-3 rounded-pill shadow-sm"
-              onClick={onBeginAssessment}
+              onClick={onRegister}
               disabled={!consentAccepted}
             >
               <span className="me-2">{t(config, "home.startTest")}</span>
