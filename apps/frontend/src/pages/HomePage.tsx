@@ -66,7 +66,7 @@ export function HomePage({
 
       <DashboardButton config={config} isDarkMode={isDarkMode} onDashboard={onDashboard}/>
 
-      <ThemeSwitcher/>
+      <ThemeSwitcher config={config}/>
     </div>
   );
 }
