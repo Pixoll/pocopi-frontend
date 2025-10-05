@@ -21,13 +21,16 @@ enum Page {
 }
 
 function sampleGroup(config: SingleConfigResponse): Group {
+  const groupsArray = Object.values(config.groups);
   const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
   const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
+
   const probabilitySums: Decimal[] = [];
   let lastProbability = new Decimal(0);
 
-  for (const {probability} of Object.values(config.groups)) {
-    lastProbability = lastProbability.add(new Decimal(probability ?? 0 ).div(100));
+  for (const group of groupsArray) {
+    const prob = new Decimal(group.probability ?? 0).div(100);
+    lastProbability = lastProbability.add(prob);
     probabilitySums.push(lastProbability);
   }
 
@@ -47,7 +50,7 @@ function sampleGroup(config: SingleConfigResponse): Group {
     }
   }
 
-  return config.groups[index]!;
+  return groupsArray[index]!;
 }
 
 export function App() {
@@ -60,7 +63,6 @@ export function App() {
   async function getConfig(): Promise<void> {
     try{
       const response = await api.getLastestConfig();
-      console.log(response);
       if(response.data){
         setConfig(response.data);
         setGroup(sampleGroup(response.data));
