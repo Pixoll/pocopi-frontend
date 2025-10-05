@@ -103,7 +103,7 @@ export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) 
         </Tab>
       </Tabs>
 
-      <ThemeSwitcher/>
+      <ThemeSwitcher config={config} />
     </div>
   );
 }
