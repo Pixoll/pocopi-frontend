@@ -1,4 +1,4 @@
-import type { User } from "@/api";
+import type {CreateUserRequest, Protocol, SingleConfigResponse} from "@/api";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
@@ -6,15 +6,16 @@ import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
-import type { Protocol } from "@pocopi/config";
 
 type TestPageProps = {
+  config: SingleConfigResponse;
   protocol: Protocol;
   goToNextPage: () => void;
-  userData: User;
+  userData: CreateUserRequest;
 };
 
 export function TestPage({
+  config,
   protocol,
   goToNextPage,
   userData,
@@ -44,6 +45,7 @@ export function TestPage({
   return (
     <div className={styles.page}>
       <TestPageHeader
+        config={config}
         phases={phases}
         phaseIndex={phaseIndex}
         questionIndex={questionIndex}
@@ -53,6 +55,7 @@ export function TestPage({
       {showSummary ? (
         <div className={styles.content}>
           <PhaseSummaryModal
+            config={config}
             protocol={protocol}
             answers={answers}
             phaseIndex={phaseIndex}
@@ -75,14 +78,14 @@ export function TestPage({
                 {question.text}
               </div>
             )}
-            {question.image && (
+            {/*{question.image && (
               <img
                 src={question.image.src}
                 alt={question.image.alt}
                 className={styles.questionImage}
                 draggable={false}
               />
-            )}
+            )}*/}
           </div>
 
           {/* options */}
@@ -96,6 +99,7 @@ export function TestPage({
 
         {/* bottom nav bar */}
         <TestPageNavigation
+          config={config}
           protocol={protocol}
           phaseIndex={phaseIndex}
           questionIndex={questionIndex}

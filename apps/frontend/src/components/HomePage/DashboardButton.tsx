@@ -1,14 +1,16 @@
 import styles from "@/styles/HomePage/DashboardButton.module.css";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
+import {t} from "@/utils/translations.ts";
+import type {SingleConfigResponse} from "@/api";
 
 type DashboardButtonProps = {
+  config: SingleConfigResponse
   isDarkMode: boolean;
   onDashboard: () => void;
 };
 
-export function DashboardButton({ isDarkMode, onDashboard }: DashboardButtonProps) {
+export function DashboardButton({ config, isDarkMode, onDashboard }: DashboardButtonProps) {
   return (
     <button
       className={[
@@ -16,7 +18,7 @@ export function DashboardButton({ isDarkMode, onDashboard }: DashboardButtonProp
         isDarkMode ? styles.dashboardButtonDark : styles.dashboardButtonLight,
       ].join(" ")}
       onClick={onDashboard}
-      title={config.t("home.dashboardButtonHint")}
+      title={t(config, "home.dashboardButtonHint")}
     >
       <FontAwesomeIcon icon={faChartLine} className={styles.icon}/>
     </button>

@@ -1,15 +1,16 @@
 import styles from "@/styles/DashboardPage/DashboardSummary.module.css";
 import { faChartLine, faCheckCircle, faUser } from "@fortawesome/free-solid-svg-icons";
-import { config } from "@pocopi/config";
 import { StatCard } from "./StatCard";
-import type { Summary } from "@/api";
+import type {SingleConfigResponse, TotalUserSummary} from "@/api";
+import {t} from "@/utils/translations.ts";
 
 type DashboardSummaryProps = {
+  config: SingleConfigResponse;
   isDarkMode: boolean;
-  summary: Summary;
+  summary: TotalUserSummary;
 };
 
-export function DashboardSummary({ isDarkMode, summary }: DashboardSummaryProps) {
+export function DashboardSummary({config, isDarkMode, summary }: DashboardSummaryProps) {
   return (
     <div
       className={[
@@ -18,25 +19,25 @@ export function DashboardSummary({ isDarkMode, summary }: DashboardSummaryProps)
       ].join(" ")}
     >
       <StatCard
-        title={config.t("dashboard.totalParticipants")}
+        title={t(config, "dashboard.totalParticipants")}
         value={summary.users.length.toString()}
         icon={faUser}
         isDarkMode={isDarkMode}
       />
       <StatCard
-        title={config.t("dashboard.averageAccuracy")}
+        title={t(config, "dashboard.averageAccuracy")}
         value={`${summary.averageAccuracy.toFixed(1)}%`}
         icon={faCheckCircle}
         isDarkMode={isDarkMode}
       />
       <StatCard
-        title={config.t("dashboard.averageTimeTaken")}
+        title={t(config, "dashboard.averageTimeTaken")}
         value={`${(summary.averageTimeTaken / 1000).toFixed(1)} seg`}
         icon={faChartLine}
         isDarkMode={isDarkMode}
       />
       <StatCard
-        title={config.t("dashboard.totalQuestionsAnswered")}
+        title={t(config, "dashboard.totalQuestionsAnswered")}
         value={`${summary.totalQuestionsAnswered}`}
         icon={faChartLine}
         isDarkMode={isDarkMode}

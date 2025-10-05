@@ -1,9 +1,10 @@
 import { useTheme } from "@/hooks/useTheme";
+import {type Option } from "@/api";
 import styles from "@/styles/TestPage/TestOptions.module.css";
-import type { TestOption } from "@pocopi/config";
+// import type { TestOption } from "@pocopi/config";
 
 type TestOptionsProps = {
-  options: readonly TestOption[];
+  options: readonly Option[];
   selected: number | null;
   onOptionClick: (id: number) => void;
   onOptionHover: (id: number) => void;
@@ -49,14 +50,14 @@ export function TestOptions({
               </div>
             )
           )}
-          {option.image && (
+          {/*{option.image && (
             <img
               src={option.image.src}
               alt={option.image.alt}
               className={styles.optionImage}
               draggable={false}
             />
-          )}
+          )}*/}
         </div>
       ))}
     </div>

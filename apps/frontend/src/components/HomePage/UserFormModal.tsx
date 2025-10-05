@@ -1,5 +1,5 @@
-import type { User } from "@/api";
-import { useTheme } from "@/hooks/useTheme";
+import type {CreateUserRequest, Group, SingleConfigResponse} from "@/api";
+import {useTheme} from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
 import {
   faCakeCandles,
@@ -11,37 +11,40 @@ import {
   faUser,
   faWarning,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
-import { type ChangeEvent, type FormEvent, useState } from "react";
-import { Form, Modal } from "react-bootstrap";
-import { InputWithIcon } from "./InputWithIcon";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {type ChangeEvent, type FormEvent, useState} from "react";
+import {Form, Modal} from "react-bootstrap";
+import {InputWithIcon} from "./InputWithIcon";
+import {t} from "@/utils/translations.ts";
 
 type UserFormModalProps = {
-  groupLabel: string;
+  config: SingleConfigResponse;
+  group: Group;
   show: boolean;
   onHide: () => void;
-  onSubmit: (data: User, onSaved: () => void, onError: (message: string) => void) => void;
+  onSubmit: (data: CreateUserRequest, onSaved: () => void, onError: (message: string) => void) => void;
 };
 
 export function UserFormModal({
-  groupLabel,
-  show,
-  onHide,
-  onSubmit,
-}: UserFormModalProps) {
+                                config,
+                                group,
+                                show,
+                                onHide,
+                                onSubmit,
+                              }: UserFormModalProps) {
   const [validated, setValidated] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { isDarkMode } = useTheme();
+  const {isDarkMode} = useTheme();
 
-  const [formData, setFormData] = useState<Extract<User, { anonymous: false }>>({
+  const [formData, setFormData] = useState<CreateUserRequest>({
     anonymous: false,
-    id: "",
-    group: groupLabel,
+    username: "",
+    groupId: group.id,
     name: "",
     email: "",
     age: 0,
+    password: "",
   });
 
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -51,14 +54,14 @@ export function UserFormModal({
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
+    const {name, value, type} = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "number" ? +value : value,
     }));
     if (name === "email") {
       if (!validateEmail(value)) {
-        setEmailError(config.t("home.pleaseEnterValid", "email"));
+        setEmailError(t(config, "home.pleaseEnterValid", "email"));
       } else {
         setEmailError(null);
       }
@@ -80,8 +83,8 @@ export function UserFormModal({
 
     const form = e.currentTarget;
     let valid = true;
-    if (!validateEmail(formData.email)) {
-      setEmailError(config.t("home.pleaseEnterValid", "email"));
+    if (!validateEmail(formData.email || "")) {
+      setEmailError(t(config, "home.pleaseEnterValid", "email"));
       valid = false;
     } else {
       setEmailError(null);
@@ -108,8 +111,8 @@ export function UserFormModal({
     >
       <div className={styles.header}>
         <h5 className={styles.headerText}>
-          <FontAwesomeIcon icon={faUser} />
-          {config.t("home.participantInformation")}
+          <FontAwesomeIcon icon={faUser}/>
+          {t(config, "home.participantInformation")}
         </h5>
 
         <button
@@ -132,8 +135,8 @@ export function UserFormModal({
             isDarkMode ? styles.alertDataDark : styles.alertDataLight,
           ].join(" ")}
         >
-          <FontAwesomeIcon icon={faShield} className={styles.alertIcon} />
-          {config.t("home.registrationModalMessage")}
+          <FontAwesomeIcon icon={faShield} className={styles.alertIcon}/>
+          {t(config, "home.registrationModalMessage")}
         </div>
 
         {error && (
@@ -150,10 +153,11 @@ export function UserFormModal({
 
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <InputWithIcon
+            config={config}
             icon={faUser}
-            label={config.t("home.fullName")}
+            label={t(config, "home.fullName")}
             name="name"
-            value={formData.name}
+            value={formData.name ?? ""}
             onChange={handleChange}
             required
             isDarkMode={isDarkMode}
@@ -162,10 +166,11 @@ export function UserFormModal({
           <div className={styles.inputGroup}>
             <div className={styles.inputGroupMember}>
               <InputWithIcon
+                config={config}
                 icon={faIdCard}
-                label={config.t("home.identificationNumber")}
+                label={t(config, "home.identificationNumber")}
                 name="id"
-                value={formData.id}
+                value={formData.username ?? ""}
                 onChange={handleChange}
                 required
                 isDarkMode={isDarkMode}
@@ -173,11 +178,12 @@ export function UserFormModal({
             </div>
             <div className={styles.inputGroupMember}>
               <InputWithIcon
+                config={config}
                 icon={faCakeCandles}
-                label={config.t("home.age")}
+                label={t(config, "home.age")}
                 type="number"
                 name="age"
-                value={formData.age > 0 ? formData.age.toString() : ""}
+                value={(formData.age) && formData.age > 0 ? formData.age.toString() : ""}
                 onChange={handleChange}
                 required
                 min="5"
@@ -188,18 +194,19 @@ export function UserFormModal({
           </div>
 
           <InputWithIcon
+            config={config}
             icon={faEnvelope}
-            label={config.t("home.email")}
+            label={t(config, "home.email")}
             type="text"
             name="email"
-            value={formData.email}
+            value={formData.email ?? ""}
             onChange={handleChange}
             required
             isDarkMode={isDarkMode}
             error={!!emailError}
           />
           {emailError && (
-            <div className="text-danger mb-3" style={{ fontSize: "0.95em" }}>
+            <div className="text-danger mb-3" style={{fontSize: "0.95em"}}>
               {emailError}
             </div>
           )}
@@ -213,12 +220,12 @@ export function UserFormModal({
               ].join(" ")}
               onClick={onHide}
             >
-              {config.t("home.cancel")}
+              {t(config, "home.cancel")}
             </button>
 
             <button type="submit" className={[styles.button, styles.saveButton].join(" ")}>
               <FontAwesomeIcon icon={saving ? faCircleNotch : faSave} spin={saving}/>
-              {config.t("home.saveInformation")}
+              {t(config, "home.saveInformation")}
             </button>
           </div>
         </Form>

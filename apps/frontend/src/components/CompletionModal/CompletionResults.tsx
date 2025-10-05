@@ -1,20 +1,21 @@
-import api, { type User, type UserSummary } from "@/api";
+import api, {type CreateUserRequest, type SingleConfigResponse, type UserSummary} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
 import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
 import { useState } from "react";
+import {t} from "@/utils/translations.ts";
 
 type UserResult = UserSummary & {
   totalQuestions: number;
 };
 
 type CompletionResultsProps = {
-  userData: User;
+  config: SingleConfigResponse;
+  userData: CreateUserRequest;
 };
 
-export function CompletionResults({ userData }: CompletionResultsProps) {
+export function CompletionResults({ config, userData }: CompletionResultsProps) {
   const { isDarkMode } = useTheme();
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,22 +31,22 @@ export function CompletionResults({ userData }: CompletionResultsProps) {
     setError(null);
 
     try {
-      const result = await api.getUserSummary({
+      const result = await api.getUserSummaryById({
         path: {
-          userId: userData.id,
+          userId: +userData.username,
         }
       });
 
       if (!result.data) {
-        setError(config.t("completion.failedToGetResults"));
+        setError(t(config, "completion.failedToGetResults"));
       } else {
         setUserResult({
           ...result.data,
-          totalQuestions: config.getTotalQuestions(result.data.group) ?? result.data.questionsAnswered,
+          totalQuestions: config.groups[result.data.group].protocol.phases.reduce((acc, phase )=>acc+(phase.questions.length), 0) ?? result.data.questionsAnswered,
         });
       }
     } catch {
-      setError(config.t("completion.failedToGetResults"));
+      setError(t(config, "completion.failedToGetResults"));
     } finally {
       setLoading(false);
     }
@@ -68,7 +69,7 @@ export function CompletionResults({ userData }: CompletionResultsProps) {
     >
       <div className={styles.headerContainer}>
         <span className={styles.title}>
-          {config.t("completion.results")}
+          {t(config, "completion.results")}
         </span>
 
         <button
@@ -80,44 +81,44 @@ export function CompletionResults({ userData }: CompletionResultsProps) {
         >
           <FontAwesomeIcon icon={faChartLine}/>
           {showResults
-            ? config.t("completion.hideResults")
-            : config.t("completion.viewResults")
+            ? t(config, "completion.hideResults")
+            : t(config, "completion.viewResults")
           }
         </button>
       </div>
 
       {showResults && <>
-        {loading && <div>{config.t("completion.gettingResults")}</div>}
+        {loading && <div>{t(config, "completion.gettingResults")}</div>}
 
         {error && <div className={styles.error}>{error}</div>}
 
         {!loading && !error && !userResult && (
-          <div>{config.t("completion.noResultsFound")}</div>
+          <div>{t(config, "completion.noResultsFound")}</div>
         )}
 
         {!loading && !error && userResult && <>
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faCheck} className={[styles.resultIcon, styles.correctIcon].join(" ")}/>
-            <strong>{config.t("completion.correctAnswers")}</strong>{" "}
-            {config.t("completion.correctOfTotal", `${userResult.correctQuestions}`, `${userResult.totalQuestions}`)}
+            <strong>{t(config, "completion.correctAnswers")}</strong>{" "}
+            {t(config, "completion.correctOfTotal", `${userResult.correctQuestions}`, `${userResult.totalQuestions}`)}
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faForward} className={[styles.resultIcon, styles.skippedIcon].join(" ")}/>
-            <strong>{config.t("completion.skippedQuestions")}</strong>{" "}
+            <strong>{t(config, "completion.skippedQuestions")}</strong>{" "}
             {userResult.totalQuestions - userResult.questionsAnswered}
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faPercent} className={[styles.resultIcon, styles.accuracyIcon].join(" ")}/>
-            <strong>{config.t("completion.accuracyPercent")}</strong>{" "}
+            <strong>{t(config, "completion.accuracyPercent")}</strong>{" "}
             {userResult.accuracy.toFixed(1)}%
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faClock} className={[styles.resultIcon, styles.timeIcon].join(" ")}/>
-            <strong>{config.t("completion.timeTaken")}</strong>{" "}
-            {config.t("completion.timeSeconds", (userResult.timeTaken / 1000).toFixed(1))}
+            <strong>{t(config, "completion.timeTaken")}</strong>{" "}
+            {t(config, "completion.timeSeconds", (userResult.timeTaken / 1000).toFixed(1))}
           </div>
         </>}
       </>}

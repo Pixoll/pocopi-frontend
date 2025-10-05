@@ -3,9 +3,10 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionHeader.module.css";
 import { faCheck, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
+import type {SingleConfigResponse} from "@/api";
+import {t} from "@/utils/translations.ts";
 
-export function CompletionHeader() {
+export function CompletionHeader({config}:{config: SingleConfigResponse}) {
   const { isDarkMode } = useTheme();
 
   return (
@@ -25,7 +26,7 @@ export function CompletionHeader() {
       />
 
       <h2 className={styles.headerTitle}>
-        {config.t("completion.testCompleted")}
+        {t(config, "completion.testCompleted")}
       </h2>
 
       <div
@@ -35,7 +36,7 @@ export function CompletionHeader() {
         ].join(" ")}
       >
         <FontAwesomeIcon icon={faCheck}/>
-        {config.t("completion.successfullySubmitted")}
+        {t(config, "completion.successfullySubmitted")}
       </div>
     </div>
   );

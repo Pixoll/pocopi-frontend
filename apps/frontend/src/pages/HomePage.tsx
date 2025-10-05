@@ -1,4 +1,4 @@
-import type { User } from "@/api";
+import type {CreateUserRequest, Group, SingleConfigResponse} from "@/api";
 import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
 import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
@@ -7,16 +7,17 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { useUserData } from "@/hooks/useUserData";
 import styles from "@/styles/HomePage/HomePage.module.css";
-import { config } from "@pocopi/config";
 
 type HomePageProps = {
-  groupLabel: string;
-  goToNextPage: (data: User) => void;
+  group: Group;
+  config: SingleConfigResponse;
+  goToNextPage: (data: CreateUserRequest) => void;
   onDashboard: () => void;
 };
 
 export function HomePage({
-  groupLabel,
+  group,
+  config,
   goToNextPage,
   onDashboard,
 }: HomePageProps) {
@@ -28,7 +29,7 @@ export function HomePage({
     handleCloseModal,
     handleConsentChange,
     sendUserData,
-  } = useUserData(groupLabel);
+  } = useUserData(group, config);
   const { isDarkMode } = useTheme();
 
   const startTest = () => {
@@ -43,9 +44,10 @@ export function HomePage({
 
   return (
     <div className={styles.container}>
-      <HomeHeader isDarkMode={isDarkMode}/>
+      <HomeHeader config={config} isDarkMode={isDarkMode}/>
 
       <HomeInfoCard
+        config={config}
         isDarkMode={isDarkMode}
         userData={userData}
         consentAccepted={consentAccepted}
@@ -55,13 +57,14 @@ export function HomePage({
       />
 
       <UserFormModal
-        groupLabel={groupLabel}
+        config={config}
+        group={group}
         show={showModal}
         onHide={handleCloseModal}
         onSubmit={sendUserData}
       />
 
-      <DashboardButton isDarkMode={isDarkMode} onDashboard={onDashboard}/>
+      <DashboardButton config={config} isDarkMode={isDarkMode} onDashboard={onDashboard}/>
 
       <ThemeSwitcher/>
     </div>

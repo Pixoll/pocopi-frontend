@@ -1,20 +1,22 @@
 import styles from "@/styles/DashboardPage/DashboardHeader.module.css";
 import { faArrowLeft, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
+import {t} from "@/utils/translations.ts";
+import type {SingleConfigResponse} from "@/api";
 
 type DashboardHeaderProps = {
+  config: SingleConfigResponse;
   isDarkMode: boolean;
   onBack: () => void;
 };
 
-export function DashboardHeader({ isDarkMode, onBack }: DashboardHeaderProps) {
+export function DashboardHeader({ config, isDarkMode, onBack }: DashboardHeaderProps) {
   return (
     <div className={styles.headerContainer}>
       <div className={styles.titleContainer}>
         <h2 className={styles.title}>
           <FontAwesomeIcon icon={faChartLine} className={styles.dashboardIcon}/>
-          {config.t("dashboard.analytics", config.title)}
+          {t(config, "dashboard.analytics", config.title)}
         </h2>
 
         <button
@@ -25,12 +27,12 @@ export function DashboardHeader({ isDarkMode, onBack }: DashboardHeaderProps) {
           ].join(" ")}
         >
           <FontAwesomeIcon icon={faArrowLeft}/>
-          {config.t("dashboard.backToHome")}
+          {t(config, "dashboard.backToHome")}
         </button>
       </div>
 
       <span className={styles.subtitle}>
-        {config.t("dashboard.viewAndExportResults")}
+        {t(config, "dashboard.viewAndExportResults")}
       </span>
     </div>
   );

@@ -14,7 +14,7 @@ export function ThemeSwitcher() {
         isDarkMode ? styles.themeSwitcherDark : styles.themeSwitcherLight,
       ].join(" ")}
       onClick={toggleTheme}
-      aria-label={config.t("home.themeSwitchButtonHint", isDarkMode ? "light" : "dark")}
+      aria-label={t(config, "home.themeSwitchButtonHint", isDarkMode ? "light" : "dark")}
     >
       <FontAwesomeIcon
         icon={isDarkMode ? faSun : faMoon}

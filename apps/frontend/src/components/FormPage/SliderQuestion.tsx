@@ -1,8 +1,9 @@
-import type { FormQuestionSlider } from "@pocopi/config";
+
 import styles from "@/styles/FormPage/SliderQuestion.module.css";
+import type {Slider} from "@/api";
 
 type SliderQuestionProps = {
-  question: FormQuestionSlider;
+  question: Slider;
   answer: string;
   setAnswer: (value: string) => void;
 };

@@ -1,6 +1,5 @@
 import { TestAnalytics } from "@/analytics/TestAnalytics";
-import type { User } from "@/api";
-import type { Protocol } from "@pocopi/config";
+import type {CreateUserRequest, Protocol} from "@/api";
 import { useEffect, useRef, useState } from "react";
 
 export type Answers = Record<number, Record<number, number | null>>;
@@ -23,7 +22,7 @@ type Test = {
 
 export function useTest(
   protocol: Protocol,
-  userData: User,
+  userData: CreateUserRequest,
 ): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -32,8 +31,8 @@ export function useTest(
   const [showSummary, setShowSummary] = useState(false);
   const [showedSummary, setShowedSummary] = useState(false);
   const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
-    protocol.phases.map((phase) =>
-      [phase.id, Object.fromEntries(phase.questions.map((question) =>
+    protocol.phases?.map((phase) =>
+      [phase, Object.fromEntries(phase.questions.map((question) =>
         [question.id, null]
       ))]
     )
@@ -45,8 +44,8 @@ export function useTest(
   const { id: questionId, options } = questions[questionIndex];
 
   useEffect(() => {
-    analyticsRef.current = new TestAnalytics(userData.id, phaseId, questionId);
-  }, [userData.id, phaseId, questionId]);
+    analyticsRef.current = new TestAnalytics(userData.username?.toString() ?? "", phaseId, questionId);
+  }, [userData.username, phaseId, questionId]);
 
   const setAnswer = (phaseId: number, questionId: number, optionId: number | null) => {
     setAnswers((prev) => {

@@ -1,4 +1,4 @@
-import api, { type Summary } from "@/api";
+import api, {type SingleConfigResponse, type TotalUserSummary} from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";
@@ -8,9 +8,9 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/DashboardPage/DashboardPage.module.css";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
 import { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import {t} from "@/utils/translations.ts";
 
 enum DashboardTab {
   PARTICIPANTS = "participants",
@@ -18,11 +18,12 @@ enum DashboardTab {
 }
 
 type AnalyticsDashboardProps = {
+  config: SingleConfigResponse;
   onBack: () => void;
 };
 
-export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
-  const [summary, setSummary] = useState<Summary>({
+export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) {
+  const [summary, setSummary] = useState<TotalUserSummary>({
     averageAccuracy: 0,
     averageTimeTaken: 0,
     totalQuestionsAnswered: 0,
@@ -42,21 +43,24 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       setLoadingSummary(true);
       setError(null);
 
-      const response = await api.getSummary();
+      const response = await api.getAllUserSummaries();
 
       if (!response.data) {
         console.error("error while loading dashboard:", error);
-        setError(config.t("dashboard.errorLoadingResults"));
+        setError(t(config, "dashboard.errorLoadingResults"));
       } else {
         setSummary(response.data);
 
-        if (response.data.users.length === 0) {
-          setError(config.t("dashboard.errorNoResults"));
+        if (response.data.users) {
+            if(response.data.users.length === 0){
+                setError(t(config, "dashboard.errorNoResults"));
+            }
+
         }
       }
     } catch (error) {
       console.error("error while loading dashboard:", error);
-      setError(config.t("dashboard.errorLoadingResults"));
+      setError(t(config, "dashboard.errorLoadingResults"));
     } finally {
       setLoadingSummary(false);
     }
@@ -69,7 +73,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
         isDarkMode ? styles.containerDark : styles.containerLight,
       ].join(" ")}
     >
-      <DashboardHeader isDarkMode={isDarkMode} onBack={onBack}/>
+      <DashboardHeader config={config} isDarkMode={isDarkMode} onBack={onBack}/>
 
       {error && (
         <div
@@ -84,17 +88,17 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       )}
 
       <Tabs>
-        <Tab eventKey={DashboardTab.PARTICIPANTS} title={config.t("dashboard.participantsList")}>
+        <Tab eventKey={DashboardTab.PARTICIPANTS} title={t(config, "dashboard.participantsList")}>
           {loadingSummary
-            ? <LoadingIndicator/>
-            : <ParticipantsList isDarkMode={isDarkMode} summary={summary} setError={setError}/>
+            ? <LoadingIndicator config={config}/>
+            : <ParticipantsList config={config} isDarkMode={isDarkMode} summary={summary} setError={setError}/>
           }
         </Tab>
 
-        <Tab eventKey={DashboardTab.SUMMARY} title={config.t("dashboard.summary")}>
+        <Tab eventKey={DashboardTab.SUMMARY} title={t(config, "dashboard.summary")}>
           {loadingSummary
-            ? <LoadingIndicator/>
-            : <DashboardSummary isDarkMode={isDarkMode} summary={summary}/>
+            ? <LoadingIndicator config={config} />
+            : <DashboardSummary config={config} isDarkMode={isDarkMode} summary={summary}/>
           }
         </Tab>
       </Tabs>
@@ -104,11 +108,11 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   );
 }
 
-function LoadingIndicator() {
+function LoadingIndicator({config}: { config:SingleConfigResponse }) {
   return (
     <div className={styles.loadingIndicator}>
       <Spinner className={styles.spinner}/>
-      <p>{config.t("dashboard.loadingResults")}</p>
+      <p>{t(config, "dashboard.loadingResults")}</p>
     </div>
   );
 }

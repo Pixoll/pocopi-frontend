@@ -1,15 +1,16 @@
-import type { User } from "@/api";
+import type {CreateUserRequest, SingleConfigResponse} from "@/api";
 import { faArrowRight, faFileSignature } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
 import type { ChangeEvent } from "react";
 import { Accordion, Button, Card, Col, Form, Row, } from "react-bootstrap";
 import Markdown from "react-markdown";
 import styles from "@/styles/HomePage/HomeInfoCard.module.css";
+import {t} from "@/utils/translations.ts";
 
 type HomeInfoCardProps = {
+  config: SingleConfigResponse
   isDarkMode: boolean;
-  userData: User | null;
+  userData: CreateUserRequest | null;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onStartTest: () => void;
@@ -17,6 +18,7 @@ type HomeInfoCardProps = {
 };
 
 export function HomeInfoCard({
+  config,
   isDarkMode,
   userData,
   consentAccepted,
@@ -25,7 +27,7 @@ export function HomeInfoCard({
   onBeginAssessment,
 }: HomeInfoCardProps) {
   const infoCardsAmount = config.informationCards.length;
-  const iconOpacity = isDarkMode ? 0.25 : 0.10;
+  //const iconOpacity = isDarkMode ? 0.25 : 0.10;
 
   const faqAmount = config.faq.length;
   const lastFaqRowIndex = Math.floor((faqAmount - 1) / 2);
@@ -48,18 +50,18 @@ export function HomeInfoCard({
           >
             <FontAwesomeIcon icon={faFileSignature}/>
           </div>
-          {config.t("home.participant", userData.name, userData.id)}
+          {t(config, "home.participant", userData.name, userData.username)}
         </div>
       )}
       <Card.Body className="p-4 p-md-5">
         {/* Información sobre el test */}
-        <h2 className="h4 mb-4">{config.t("home.aboutThisTest")}</h2>
+        <h2 className="h4 mb-4">{t(config, "home.aboutThisTest")}</h2>
         <div className="mb-4">
           <Markdown>{config.description}</Markdown>
         </div>
         {Array.from({ length: Math.ceil(infoCardsAmount / 2) }, (_, i) => (
           <Row key={`info-row-${i}`} className="gx-4 mb-4">
-            {config.informationCards.slice(i * 2, i * 2 + 2).map(({ title, description, color, icon }, index) => (
+            {config.informationCards.slice(i * 2, i * 2 + 2).map(({ title, /*, color, icon */}, index) => (
               <Col key={`info-card-${i * 2 + index}`} md={6}>
                 <div className="d-flex h-100">
                   <div
@@ -67,14 +69,14 @@ export function HomeInfoCard({
                     style={{
                       height: "40px",
                       width: "40px",
-                      backgroundColor: `rgba(${color?.r ?? 255}, ${color?.g ?? 255}, ${color?.b ?? 255}, ${iconOpacity})`,
+                    /*backgroundColor: `rgba(${color?.r ?? 255}, ${color?.g ?? 255}, ${color?.b ?? 255}, ${iconOpacity})`,*/
                     }}
                   >
-                    {icon && <img src={icon.src} alt={icon.alt} style={{ height: "1em" }}/>}
+                    {/*{icon && <img src={icon.src} alt={icon.alt} style={{ height: "1em" }}/>}*/}
                   </div>
                   <div>
                     <h5 className="h6 mb-2">{title}</h5>
-                    <p className="small text-secondary mb-0">{description}</p>
+                    {/*<p className="small text-secondary mb-0">{description}</p>*/}
                   </div>
                 </div>
               </Col>
@@ -83,14 +85,14 @@ export function HomeInfoCard({
         ))}
         {/* Consentimiento informado */}
         <div className="border-top pt-4 mb-4">
-          <h3 className="h5 mb-3">{config.t("home.informedConsent")}</h3>
+          <h3 className="h5 mb-3">{t(config, "home.informedConsent")}</h3>
           <div className="mb-4">
             <Markdown>{config.informedConsent}</Markdown>
           </div>
           <Form.Check
             type="checkbox"
             id="consent-checkbox"
-            label={config.t("home.iAcceptInformedConsent")}
+            label={t(config, "home.iAcceptInformedConsent")}
             onChange={onConsentChange}
             className="user-select-none fw-bold"
           />
@@ -104,7 +106,7 @@ export function HomeInfoCard({
               className="px-5 py-3 rounded-pill shadow-sm"
               onClick={onStartTest}
             >
-              <span className="me-2">{config.t("home.register")}</span>
+              <span className="me-2">{t(config, "home.register")}</span>
               <FontAwesomeIcon icon={faArrowRight}/>
             </Button>
           ) : (
@@ -115,7 +117,7 @@ export function HomeInfoCard({
               onClick={onBeginAssessment}
               disabled={!consentAccepted}
             >
-              <span className="me-2">{config.t("home.startTest")}</span>
+              <span className="me-2">{t(config, "home.startTest")}</span>
               <FontAwesomeIcon icon={faArrowRight}/>
             </Button>
           )}
@@ -125,7 +127,7 @@ export function HomeInfoCard({
       {faqAmount > 0 && (
         <Accordion className="border-top" flush>
           <Accordion.Item eventKey="0">
-            <Accordion.Header>{config.t("home.frequentlyAskedQuestions")}</Accordion.Header>
+            <Accordion.Header>{t(config, "home.frequentlyAskedQuestions")}</Accordion.Header>
             <Accordion.Body>
               {Array.from({ length: Math.ceil(faqAmount / 2) }, (_, i) => (
                 <Row key={`faq-row-${i}`} className="g-4">

@@ -1,24 +1,27 @@
-import api, { type User } from "@/api";
-import { config } from "@pocopi/config";
+import api, {type CreateUserRequest, type Group, type SingleConfigResponse} from "@/api";
 import { type ChangeEvent, useState } from "react";
 
 type HookedUserData = {
   showModal: boolean;
   consentAccepted: boolean;
-  userData: User | null;
+  userData: CreateUserRequest | null;
   handleOpenModal: () => void;
   handleCloseModal: () => void;
   handleConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  sendUserData: (data: User, onSaved?: () => void, onError?: (message: string) => void) => void;
+  sendUserData: (data: CreateUserRequest, onSaved?: () => void, onError?: (message: string) => void) => void;
 };
 
-export function useUserData(groupLabel: string): HookedUserData {
+export function useUserData(group: Group, config: SingleConfigResponse): HookedUserData {
   const [showModal, setShowModal] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
-  const [userData, setUserData] = useState<User | null>(config.anonymous ? {
+  const [userData, setUserData] = useState<CreateUserRequest | null>(config.anonymous ? {
+    username: "",
+    age: 0,
+    email: "",
+    groupId: group.id,
+    name: "",
+    password: "",
     anonymous: true,
-    id: getRandomUserId(),
-    group: groupLabel,
   } : null);
 
   const handleOpenModal = () => {
@@ -33,15 +36,15 @@ export function useUserData(groupLabel: string): HookedUserData {
     setConsentAccepted(e.target.checked);
   };
 
-  const sendUserData = async (data: User, onSaved?: () => void, onError?: (message: string) => void) => {
+  const sendUserData = async (data: CreateUserRequest, onSaved?: () => void, onError?: (message: string) => void) => {
     try {
-      const response = await api.saveUser({
+      const response = await api.createUser({
         body: data,
       });
 
       if (response.error) {
         console.error("error when saving user:", response.error);
-        onError?.(response.error.message);
+        onError?.(response.error.message?.toString().toString() as string);
       } else {
         console.log("user saved successfully.");
         setUserData(data);
@@ -63,16 +66,4 @@ export function useUserData(groupLabel: string): HookedUserData {
     handleConsentChange,
     sendUserData,
   };
-}
-
-function getRandomUserId(): string {
-  const bytes = new Uint8Array(1);
-  let value = crypto.getRandomValues(bytes)[0];
-
-  while (value > 79) {
-    value = crypto.getRandomValues(bytes)[0];
-  }
-
-  // now(base36) + random_ascii_char(between 0 and ~)
-  return `${Date.now().toString(36)}${String.fromCharCode(value + 48).replace("\\", "/")}`;
 }

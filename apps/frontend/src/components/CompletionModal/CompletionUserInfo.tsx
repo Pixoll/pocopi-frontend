@@ -1,15 +1,16 @@
-import type { User } from "@/api";
+import type {CreateUserRequest, SingleConfigResponse} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionUserInfo.module.css";
 import { faEnvelope, faIdCard, faUser } from "@fortawesome/free-solid-svg-icons";
-import { config } from "@pocopi/config";
 import { UserInfoDetail } from "./UserInfoDetail";
+import {t} from "@/utils/translations.ts";
 
 type CompletionUserInfoProps = {
-  userData: Extract<User, { anonymous: false }>;
+  config: SingleConfigResponse
+  userData: CreateUserRequest;
 }
 
-export function CompletionUserInfo({ userData }: CompletionUserInfoProps) {
+export function CompletionUserInfo({config, userData }: CompletionUserInfoProps) {
   const { isDarkMode } = useTheme();
 
   return (
@@ -20,24 +21,24 @@ export function CompletionUserInfo({ userData }: CompletionUserInfoProps) {
       ].join(" ")}
     >
       <div className={styles.title}>
-        {config.t("completion.userInfo")}
+        {t(config, "completion.userInfo")}
       </div>
 
       <UserInfoDetail
         icon={faUser}
-        name={config.t("completion.name")}
+        name={t(config, "completion.name")}
         value={userData.name}
       />
 
       <UserInfoDetail
         icon={faIdCard}
-        name={config.t("completion.identification")}
-        value={userData.id}
+        name={t(config, "completion.identification")}
+        value={userData.username}
       />
 
       <UserInfoDetail
         icon={faEnvelope}
-        name={config.t("completion.email")}
+        name={t(config, "completion.email")}
         value={userData.email}
       />
     </div>

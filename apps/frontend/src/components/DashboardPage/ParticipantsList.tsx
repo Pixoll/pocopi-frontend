@@ -1,18 +1,20 @@
-import api, { type Summary, type UserSummary } from "@/api";
+import api, {type SingleConfigResponse, type TotalUserSummary, type UserSummary} from "@/api";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
 import { useState } from "react";
+import {t} from "@/utils/translations.ts";
 
 type ParticipantsListProps = {
+  config: SingleConfigResponse;
   isDarkMode: boolean;
-  summary: Summary;
+  summary: TotalUserSummary;
   setError: (value: string | null) => void;
 };
 
 export function ParticipantsList({
+  config,
   isDarkMode,
   summary,
   setError,
@@ -58,7 +60,7 @@ export function ParticipantsList({
       downloadFile("test_results.csv", rows.join("\n"), "text/csv;charset=utf-8;");
     } catch (error) {
       console.error("error exporting csv:", error);
-      setError(config.t("dashboard.exportCsv"));
+      setError(t(config, "dashboard.exportCsv"));
     } finally {
       setLoadingExportSummary(false);
     }
@@ -77,7 +79,7 @@ export function ParticipantsList({
 
       if (response.error) {
         console.error("error while exporting user:", response.error);
-        setError(config.t("dashboard.errorExportUser", user.id));
+        setError(t(config, "dashboard.errorExportUser", user.id.toString()));
       } else {
         const exportData = {
           participant: user,
@@ -89,7 +91,7 @@ export function ParticipantsList({
       }
     } catch (error) {
       console.error("error while exporting user:", error);
-      setError(config.t("dashboard.errorExportUser", user.id));
+      setError(t(config, "dashboard.errorExportUser", user.id.toString()));
     } finally {
       setLoadingExportUserTimelogs(false);
     }
@@ -103,7 +105,7 @@ export function ParticipantsList({
       ].join(" ")}
     >
       <div className={styles.header}>
-        <h5 className={styles.title}>{config.t("dashboard.testResults")}</h5>
+        <h5 className={styles.title}>{t(config, "dashboard.testResults")}</h5>
         <button
           onClick={exportToCsv}
           className={styles.exportCsvButton}
@@ -113,7 +115,7 @@ export function ParticipantsList({
             ? <Spinner/>
             : <FontAwesomeIcon icon={faDownload}/>
           }
-          {config.t("dashboard.exportCsv")}
+          {t(config, "dashboard.exportCsv")}
         </button>
       </div>
 
@@ -124,7 +126,7 @@ export function ParticipantsList({
             isDarkMode ? styles.noResultsDark : styles.noResultsLight,
           ].join(" ")}
         >
-          {config.t("dashboard.noResults")}
+          {t(config, "dashboard.noResults")}
         </div>
       ) : (
         <div className={styles.tableContainer}>
@@ -136,14 +138,14 @@ export function ParticipantsList({
           >
             <thead>
             <tr>
-              <th>{config.t("dashboard.participant")}</th>
-              <th>{config.t("dashboard.group")}</th>
-              <th>{config.t("dashboard.date")}</th>
-              <th>{config.t("dashboard.timeTaken")}</th>
-              <th>{config.t("dashboard.correct")}</th>
-              <th>{config.t("dashboard.answered")}</th>
-              <th>{config.t("dashboard.accuracy")}</th>
-              <th>{config.t("dashboard.actions")}</th>
+              <th>{t(config, "dashboard.participant")}</th>
+              <th>{t(config, "dashboard.group")}</th>
+              <th>{t(config, "dashboard.date")}</th>
+              <th>{t(config, "dashboard.timeTaken")}</th>
+              <th>{t(config, "dashboard.correct")}</th>
+              <th>{t(config, "dashboard.answered")}</th>
+              <th>{t(config, "dashboard.accuracy")}</th>
+              <th>{t(config, "dashboard.actions")}</th>
             </tr>
             </thead>
             <tbody>
@@ -163,7 +165,7 @@ export function ParticipantsList({
                         {user.name}
                       </div>
                       <small className={styles.userId}>
-                        {config.t("dashboard.id", user.id)}
+                        {t(config, "dashboard.id", user.id.toString())}
                       </small>
                     </div>
                   </div>
@@ -183,7 +185,7 @@ export function ParticipantsList({
                     className={styles.exportUserButton}
                     onClick={() => exportUserTimelogs(user)}
                     disabled={loadingExportUserTimelogs}
-                    title={config.t("dashboard.exportParticipantResult")}
+                    title={t(config, "dashboard.exportParticipantResult")}
                   >
                     {loadingExportUserTimelogs
                       ? <Spinner/>

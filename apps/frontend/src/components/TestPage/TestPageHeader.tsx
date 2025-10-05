@@ -1,8 +1,10 @@
+import {type Phase, type SingleConfigResponse} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPageHeader.module.css";
-import { config, type Phase } from "@pocopi/config";
+import {t} from "@/utils/translations.ts";
 
 type TestPageHeaderProps = {
+  config: SingleConfigResponse;
   phases: readonly Phase[];
   phaseIndex: number;
   questionIndex: number;
@@ -10,6 +12,7 @@ type TestPageHeaderProps = {
 };
 
 export function TestPageHeader({
+  config,
   phases,
   phaseIndex,
   questionIndex,
@@ -35,11 +38,11 @@ export function TestPageHeader({
       ].join(" ")}
     >
       <h5 className={styles.title}>
-        <img className={styles.icon} src={config.icon.src} alt={config.icon.alt}/>
+        {/*<img className={styles.icon} src={config.icon.src} alt={config.icon.alt}/>*/}
         <span>{config.title}</span>
       </h5>
       <div className={styles.progressBarContainer}>
-        <small className={styles.progressText}>{config.t("test.progress")}</small>
+        <small className={styles.progressText}>{t(config, "test.progress")}</small>
         <div className={styles.progressBar}>
           <div
             className={styles.progressBarFill}
@@ -54,7 +57,7 @@ export function TestPageHeader({
       </div>
       <div className={styles.progressBadgeContainer}>
         <span className={styles.progressBadge}>
-          {config.t(
+          {t(config, 
             "test.phaseQuestion",
             `${phaseIndex + 1}`,
             `${phases.length}`,

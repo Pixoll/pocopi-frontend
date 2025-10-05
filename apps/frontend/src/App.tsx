@@ -1,14 +1,14 @@
-import type { User } from "@/api";
-import { AnalyticsDashboard } from "@/pages/AnalyticsDashboard";
-import { CompletionModal } from "@/pages/CompletionModal";
-import { FormPage } from "@/pages/FormPage";
-import { HomePage } from "@/pages/HomePage";
-import { TestGreetingPage } from "@/pages/TestGreetingPage";
-import { TestPage } from "@/pages/TestPage";
-import { config } from "@pocopi/config";
-import mime from "mime";
-import { useEffect, useState } from "react";
+import api, {type CreateUserRequest, type SingleConfigResponse, type Group} from "@/api";
+import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
+import {CompletionModal} from "@/pages/CompletionModal";
+import {FormPage} from "@/pages/FormPage";
+import {HomePage} from "@/pages/HomePage";
+import {TestGreetingPage} from "@/pages/TestGreetingPage";
+import {TestPage} from "@/pages/TestPage";
+//import mime from "mime";
+import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Decimal from "decimal.js";
 
 enum Page {
   HOME,
@@ -20,23 +20,73 @@ enum Page {
   DASHBOARD,
 }
 
+function sampleGroup(config: SingleConfigResponse): Group {
+  const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
+  const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
+  const probabilitySums: Decimal[] = [];
+  let lastProbability = new Decimal(0);
+
+  for (const {probability} of Object.values(config.groups)) {
+    lastProbability = lastProbability.add(new Decimal(probability ?? 0 ).div(100));
+    probabilitySums.push(lastProbability);
+  }
+
+  let left = 0;
+  let right = probabilitySums.length - 1;
+  let index = 0;
+
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+    const value = probabilitySums[mid]!;
+
+    if (value.greaterThan(targetProbability)) {
+      index = mid;
+      right = mid - 1;
+    } else {
+      left = mid + 1;
+    }
+  }
+
+  return config.groups[index]!;
+}
+
 export function App() {
-  const [group] = useState(config.sampleGroup());
+  const [config, setConfig] = useState<SingleConfigResponse | null>(null);
+
+  const [group, setGroup] = useState<Group | null>(null);
   const [page, setPage] = useState<Page>(Page.HOME);
-  const [userData, setUserData] = useState<User | null>(null);
+  const [userData, setUserData] = useState<CreateUserRequest | null>(null);
 
+  async function getConfig(): Promise<void> {
+    try{
+      const response = await api.getLastestConfig();
+      console.log(response);
+      if(response.data){
+        setConfig(response.data);
+        setGroup(sampleGroup(response.data));
+        document.title = response.data.title ?? "";
+        /*if(response.data.icon){
+          const head = document.querySelector("head")!;
+          const link = document.createElement("link");
+          link.rel = "icon";
+          //link.type = mime.getType(response.data.icon.url ?? "")!;
+          //link.href = response.data.icon.url ?? "";
+          head.appendChild(link);
+        }*/
+
+      }else{
+        console.error(response.error);
+
+      }
+    }catch (error){
+      console.error(error);
+    }
+  }
   useEffect(() => {
-    document.title = config.title;
-
-    const head = document.querySelector("head")!;
-    const link = document.createElement("link");
-    link.rel = "icon";
-    link.type = mime.getType(config.icon.src)!;
-    link.href = config.icon.src;
-    head.appendChild(link);
+    getConfig();
   }, []);
 
-  const goToPreTest = (data: User) => {
+  const goToPreTest = (data: CreateUserRequest) => {
     window.scrollTo(0, 0);
     setUserData(data);
     setPage(Page.PRETEST);
@@ -71,21 +121,25 @@ export function App() {
     window.scrollTo(0, 0);
     setPage(Page.DASHBOARD);
   };
-
+  console.log("Configuracion: ",config)
+  console.log("Grupo: ",group)
+  if(!group || !config){
+    return (<div>Cargando...</div>)
+  }
   switch (page) {
     case Page.HOME:
-      return <HomePage groupLabel={group.label} goToNextPage={goToPreTest} onDashboard={goToDashboard}/>;
+      return <HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard}/>;
     case Page.PRETEST:
-      return <FormPage type="pre-test" userData={userData!} goToNextPage={goToGreeting}/>;
+      return <FormPage config={config} type="pre-test" username={userData?.username ?? ""} goToNextPage={goToGreeting}/>;
     case Page.GREETING:
-      return <TestGreetingPage groupGreeting={group.greeting} goToNextPage={goToTest}/>;
+      return <TestGreetingPage config={config} groupGreeting={group.greeting} goToNextPage={goToTest}/>;
     case Page.TEST:
-      return <TestPage protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!}/>;
+      return <TestPage config={config} protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!}/>;
     case Page.POSTTEST:
-      return <FormPage type="post-test" userData={userData!} goToNextPage={goToEnd}/>;
+      return <FormPage config={config} type="post-test" username={userData?.username ?? ""} goToNextPage={goToEnd}/>;
     case Page.END:
-      return <CompletionModal userData={userData!} onBackToHome={goToHome}/>;
+      return <CompletionModal config={config} userData={userData!} onBackToHome={goToHome}/>;
     case Page.DASHBOARD:
-      return <AnalyticsDashboard onBack={goToHome}/>;
+      return <AnalyticsDashboard config={config} onBack={goToHome}/>;
   }
 }

@@ -1,11 +1,13 @@
 import styles from "@/styles/HomePage/InputWithIcon.module.css";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
 import type { ChangeEvent } from "react";
 import { FloatingLabel, Form } from "react-bootstrap";
+import {t} from "@/utils/translations.ts";
+import type {SingleConfigResponse} from "@/api";
 
 type InputWithIconProps = {
+  config: SingleConfigResponse;
   icon: IconDefinition;
   label: string;
   name: string;
@@ -20,6 +22,7 @@ type InputWithIconProps = {
 };
 
 export function InputWithIcon({
+  config,
   icon,
   label,
   type = "text",
@@ -64,7 +67,7 @@ export function InputWithIcon({
         />
         {error && name !== "email" && (
           <Form.Control.Feedback type="invalid">
-              {config.t("home.pleaseEnterValid", label.toLowerCase())}
+              {t(config, "home.pleaseEnterValid", label.toLowerCase())}
           </Form.Control.Feedback>
         )}
       </FloatingLabel>

@@ -1,4 +1,4 @@
-import type { User } from "@/api";
+import type {CreateUserRequest, SingleConfigResponse} from "@/api";
 import { CompletionHeader } from "@/components/CompletionModal/CompletionHeader";
 import { CompletionResults } from "@/components/CompletionModal/CompletionResults";
 import { CompletionUserInfo } from "@/components/CompletionModal/CompletionUserInfo";
@@ -6,14 +6,16 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionModal.module.css";
 import { faHome, } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
+import {t} from "@/utils/translations.ts";
 
 type CompletionModalProps = {
-  userData: User;
+  config: SingleConfigResponse
+  userData: CreateUserRequest;
   onBackToHome: () => void;
 };
 
 export function CompletionModal({
+  config,
   userData,
   onBackToHome,
 }: CompletionModalProps) {
@@ -22,21 +24,19 @@ export function CompletionModal({
   return (
     <div className={styles.page}>
       <div className={styles.modal}>
-        <CompletionHeader/>
+        <CompletionHeader config={config} />
 
         <div className={styles.modalContentContainer}>
           <h5 className={styles.thankYou}>
-            {config.t("completion.thankYou", !userData.anonymous ? userData.name : "")}
+            {t(config, "completion.thankYou") + userData.name}
           </h5>
           <p className={styles.completedTest}>
-            {config.t("completion.successfullyCompleted", config.title)}
+            {t(config, "completion.successfullyCompleted", config.title)}
           </p>
 
-          {!userData.anonymous && (
-            <CompletionUserInfo userData={userData}/>
-          )}
+          <CompletionUserInfo config={config} userData={userData}/>
 
-          <CompletionResults userData={userData}/>
+          <CompletionResults config={config}  userData={userData}/>
 
           <p
             className={[
@@ -44,7 +44,7 @@ export function CompletionModal({
               isDarkMode ? styles.resultsRecordedDark : styles.resultsRecordedLight,
             ].join(" ")}
           >
-            {config.t("completion.resultsRecorded")}
+            {t(config, "completion.resultsRecorded")}
           </p>
 
           <button
@@ -55,7 +55,7 @@ export function CompletionModal({
             onClick={onBackToHome}
           >
             <FontAwesomeIcon icon={faHome}/>
-            {config.t("completion.backToHome")}
+            {t(config, "completion.backToHome")}
           </button>
         </div>
       </div>

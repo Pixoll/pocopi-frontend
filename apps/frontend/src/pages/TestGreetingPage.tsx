@@ -1,16 +1,20 @@
 import styles from "@/styles/TestGreetingPage/TestGreetingPage.module.css";
+
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config } from "@pocopi/config";
+
 import { useEffect } from "react";
 import Markdown from "react-markdown";
+import type {SingleConfigResponse} from "@/api";
+import {t} from "@/utils/translations.ts";
 
 type TestInformationPageProps = {
+  config: SingleConfigResponse;
   groupGreeting: string | undefined;
   goToNextPage: () => void;
 };
 
-export function TestGreetingPage({ groupGreeting, goToNextPage }: TestInformationPageProps) {
+export function TestGreetingPage({config, groupGreeting, goToNextPage }: TestInformationPageProps) {
   useEffect(() => {
     if (!groupGreeting) {
       goToNextPage();
@@ -22,11 +26,11 @@ export function TestGreetingPage({ groupGreeting, goToNextPage }: TestInformatio
     <div className={styles.page}>
       <div className={styles.card}>
         <h1 className={styles.title}>
-          {config.t("greeting.title")}
+          {t(config, "greeting.title")}
         </h1>
         <Markdown>{groupGreeting}</Markdown>
         <button className={styles.button} onClick={goToNextPage}>
-          {config.t("greeting.startTest")}
+          {t(config, "greeting.startTest")}
           <FontAwesomeIcon icon={faArrowRight}/>
         </button>
       </div>

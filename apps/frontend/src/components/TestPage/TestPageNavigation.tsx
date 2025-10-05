@@ -1,10 +1,13 @@
 import { useTheme } from "@/hooks/useTheme";
+import type {Protocol, SingleConfigResponse} from "@/api";
 import styles from "@/styles/TestPage/TestPageNavigation.module.css";
 import { faAngleLeft, faAngleRight, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { config, type Protocol } from "@pocopi/config";
+import {t} from "@/utils/translations.ts";
+// import { config, type Protocol } from "@pocopi/config";
 
 type TestPageNavigationProps = {
+  config: SingleConfigResponse;
   protocol: Protocol;
   phaseIndex: number;
   questionIndex: number;
@@ -16,6 +19,7 @@ type TestPageNavigationProps = {
 };
 
 export function TestPageNavigation({
+  config,
   protocol,
   phaseIndex,
   questionIndex,
@@ -49,7 +53,7 @@ export function TestPageNavigation({
           hidden={!allowPreviousQuestion}
         >
           <FontAwesomeIcon icon={faAngleLeft} className={styles.iconLeft}/>
-          {config.t("test.previousQuestion")}
+          {t(config, "test.previousQuestion")}
         </button>
 
         <button
@@ -57,7 +61,7 @@ export function TestPageNavigation({
           onClick={onNextQuestion}
           disabled={disableNextQuestion}
         >
-          {config.t("test.nextQuestion")}
+          {t(config, "test.nextQuestion")}
           <FontAwesomeIcon icon={faAngleRight} className={styles.iconRight}/>
         </button>
       </div>
@@ -67,7 +71,7 @@ export function TestPageNavigation({
         onClick={goToSummary}
         hidden={!showedSummary}
       >
-        {config.t("test.backToSummary")}
+        {t(config, "test.backToSummary")}
         <FontAwesomeIcon icon={faArrowRight} className={styles.iconRight}/>
       </button>
     </div>

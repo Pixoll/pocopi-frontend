@@ -1,14 +1,16 @@
 import styles from "@/styles/FormPage/SelectOneQuestion.module.css";
-import { config, type FormQuestionSelectOne } from "@pocopi/config";
 import { useState } from "react";
+import type {SingleConfigResponse, SelectOne} from "@/api";
+import {t} from "@/utils/translations.ts";
 
 type SelectOneQuestionProps = {
-  question: FormQuestionSelectOne;
+  config: SingleConfigResponse;
+  question: SelectOne;
   answer: string;
   setAnswer: (value: string) => void;
 };
 
-export function SelectOneQuestion({ question, answer, setAnswer }: SelectOneQuestionProps) {
+export function SelectOneQuestion({ config,question, answer, setAnswer }: SelectOneQuestionProps) {
   const [otherText, setOtherText] = useState("");
 
   const handleOptionChange = (value: string) => {
@@ -54,7 +56,7 @@ export function SelectOneQuestion({ question, answer, setAnswer }: SelectOneQues
             <input
               type="text"
               name={`question-${question.text}-other-text`}
-              placeholder={config.t("form.otherPlaceholder")}
+              placeholder={t(config, "form.otherPlaceholder")}
               value={otherText}
               onChange={(e) => handleOtherTextChange(e.target.value)}
               className={styles.otherField}

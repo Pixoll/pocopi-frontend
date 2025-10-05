@@ -1,9 +1,12 @@
 import type { Answers } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/PhaseSummaryModal.module.css";
-import { config, type Protocol } from "@pocopi/config";
+import {type Protocol, type SingleConfigResponse} from "@/api";
+import {t} from "@/utils/translations.ts";
+
 
 type PhaseSummaryModalProps = {
+  config: SingleConfigResponse;
   protocol: Protocol;
   answers: Answers;
   phaseIndex: number;
@@ -12,6 +15,7 @@ type PhaseSummaryModalProps = {
 };
 
 export function PhaseSummaryModal({
+  config,
   protocol,
   answers,
   phaseIndex,
@@ -24,12 +28,12 @@ export function PhaseSummaryModal({
   const phasesToShow = protocol.phases.slice(phasesStart, phaseIndex + 1);
 
   const title = !protocol.allowPreviousPhase
-    ? config.t("summary.phaseSummary", `${phaseIndex + 1}`)
-    : config.t("summary.testSummary");
+    ? t(config, "summary.phaseSummary", `${phaseIndex + 1}`)
+    : t(config, "summary.testSummary");
 
   const continueText = phaseIndex < protocol.phases.length - 1
-    ? config.t("summary.nextPhase")
-    : config.t("summary.endTest");
+    ? t(config, "summary.nextPhase")
+    : t(config, "summary.endTest");
 
   const onQuestionClick = (phaseIndex: number, questionIndex: number) => {
     if (protocol.allowPreviousQuestion) {
@@ -55,10 +59,10 @@ export function PhaseSummaryModal({
         <thead>
           <tr>
             {protocol.allowPreviousPhase && (
-              <th>{config.t("summary.phase")}</th>
+              <th>{t(config, "summary.phase")}</th>
             )}
-            <th>{config.t("summary.question")}</th>
-            <th>{config.t("summary.status")}</th>
+            <th>{t(config, "summary.question")}</th>
+            <th>{t(config, "summary.status")}</th>
           </tr>
         </thead>
         <tbody>
@@ -81,8 +85,8 @@ export function PhaseSummaryModal({
               </td>
               <td>
                 {answers[phase.id][question.id] !== null
-                  ? config.t("summary.answered")
-                  : config.t("summary.notAnswered")
+                  ? t(config, "summary.answered")
+                  : t(config, "summary.notAnswered")
                 }
               </td>
             </tr>
