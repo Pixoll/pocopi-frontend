@@ -15,7 +15,7 @@ export function HomeHeader({config, isDarkMode }: HomeHeaderProps) {
           isDarkMode ? styles.iconDark : styles.iconLight,
         ].join(" ")}
       >
-        {/*<img className={styles.appIcon} src={config.icon.src} alt={config.icon.alt} />*/}
+        {config.icon && (<img className={styles.appIcon} src={config.icon.url} alt={config.icon.alt} />)}
       </div>
 
       <h1 className={styles.title}>

@@ -160,14 +160,14 @@ export type Group = {
 };
 
 export type Image = {
-    url?: string;
-    alt?: string;
+    url: string;
+    alt: string;
 };
 
 export type InformationCard = {
     title: string;
     description: string;
-    color: string;
+    color: number;
     icon?: Image;
 };
 

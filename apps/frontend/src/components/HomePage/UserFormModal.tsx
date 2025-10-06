@@ -20,8 +20,18 @@ type UserFormModalProps = {
   group: Group;
   show: boolean;
   onHide: () => void;
-  onRegister?: (data: CreateUserRequest, onSaved: () => void, onError: (message: string) => void) => void;
-  onLogin?: (username: string, password: string, onSuccess: () => void, onError: (message: string) => void) => void;
+  onCreateUser: (
+    user: CreateUserRequest,
+    onSaved?: () => void,
+    onError?: (message: string) => void
+  ) => void;
+  goToNextPage: (data: CreateUserRequest) => void;
+  onLogin?: (
+    username: string,
+    password: string,
+    onSuccess: () => void,
+    onError: (message: string) => void
+  ) => void;
 };
 
 type ViewMode = "initial" | "register" | "login" | "anonymous-choice";
@@ -31,8 +41,9 @@ export function UserFormModal({
                                 group,
                                 show,
                                 onHide,
-                                //onRegister,
-                                //onLogin,
+                                onCreateUser,
+                                goToNextPage,
+                                onLogin,
                               }: UserFormModalProps) {
   const [validated, setValidated] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -58,9 +69,8 @@ export function UserFormModal({
 
   const [emailError, setEmailError] = useState<string | null>(null);
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleRegisterChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {name, value, type} = e.target;
@@ -68,6 +78,7 @@ export function UserFormModal({
       ...prev,
       [name]: type === "number" ? +value : value,
     }));
+
     if (name === "email" && !isAnonymous) {
       if (!validateEmail(value)) {
         setEmailError(t(config, "home.pleaseEnterValid", "email"));
@@ -84,17 +95,6 @@ export function UserFormModal({
       [name]: value,
     }));
   };
-
-  /*const onSaved = () => {
-    setSaving(false);
-    resetForm();
-    onHide();
-  };
-
-  const onSavedError = (message: string) => {
-    setSaving(false);
-    setError(message);
-  };*/
 
   const handleRegisterSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -119,12 +119,24 @@ export function UserFormModal({
     setValidated(true);
     setSaving(true);
 
-    /*const dataToSubmit = {
+    const dataToSubmit = {
       ...formData,
       anonymous: isAnonymous,
-    };*/
+    };
 
-    //onRegister(dataToSubmit, onSaved, onSavedError);
+    onCreateUser(
+      dataToSubmit,
+      () => {
+        setSaving(false);
+        resetForm();
+        onHide();
+        goToNextPage(dataToSubmit);
+      },
+      (message) => {
+        setSaving(false);
+        setError(message);
+      }
+    );
   };
 
   const handleLoginSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -140,7 +152,22 @@ export function UserFormModal({
 
     setValidated(true);
     setSaving(true);
-    //onLogin(loginData.username, loginData.password, onSaved, onSavedError);
+
+    if (onLogin) {
+      onLogin(
+        loginData.username,
+        loginData.password,
+        () => {
+          setSaving(false);
+          resetForm();
+          onHide();
+        },
+        (message) => {
+          setSaving(false);
+          setError(message);
+        }
+      );
+    }
   };
 
   const resetForm = () => {
@@ -166,7 +193,7 @@ export function UserFormModal({
 
   const handleAnonymousChoice = (anonymous: boolean) => {
     setIsAnonymous(anonymous);
-    setFormData(prev => ({...prev, anonymous}));
+    setFormData((prev) => ({...prev, anonymous}));
     setViewMode("register");
   };
 
@@ -196,7 +223,7 @@ export function UserFormModal({
     >
       <div className={styles.header}>
         <h5 className={styles.headerText}>
-          <FontAwesomeIcon icon={faUser}/>
+          <FontAwesomeIcon icon={faUser} />
           {getModalTitle()}
         </h5>
 
@@ -223,7 +250,7 @@ export function UserFormModal({
             isDarkMode ? styles.alertDataDark : styles.alertDataLight,
           ].join(" ")}
         >
-          <FontAwesomeIcon icon={faShield} className={styles.alertIcon}/>
+          <FontAwesomeIcon icon={faShield} className={styles.alertIcon} />
           {viewMode === "login"
             ? "Inicia sesión con tu usuario y contraseña"
             : ""}
@@ -236,19 +263,22 @@ export function UserFormModal({
               isDarkMode ? styles.alertErrorDark : styles.alertErrorLight,
             ].join(" ")}
           >
-            <FontAwesomeIcon icon={faWarning} className={styles.alertIcon}/>
+            <FontAwesomeIcon icon={faWarning} className={styles.alertIcon} />
             {error}
           </div>
         )}
 
         {viewMode === "initial" && (
-          <div className={styles.buttonsContainer} style={{flexDirection: "column", gap: "1rem"}}>
+          <div
+            className={styles.buttonsContainer}
+            style={{flexDirection: "column", gap: "1rem"}}
+          >
             <button
               className={[styles.button, styles.saveButton].join(" ")}
               onClick={() => setViewMode("anonymous-choice")}
               style={{width: "100%"}}
             >
-              <FontAwesomeIcon icon={faUserPlus}/>
+              <FontAwesomeIcon icon={faUserPlus} />
               {t(config, "home.register", "Registrarse")}
             </button>
             <button
@@ -256,14 +286,17 @@ export function UserFormModal({
               onClick={() => setViewMode("login")}
               style={{width: "100%"}}
             >
-              <FontAwesomeIcon icon={faSignIn}/>
+              <FontAwesomeIcon icon={faSignIn} />
               {"Iniciar Sesión"}
             </button>
           </div>
         )}
 
         {viewMode === "anonymous-choice" && (
-          <div className={styles.buttonsContainer} style={{flexDirection: "column", gap: "1rem"}}>
+          <div
+            className={styles.buttonsContainer}
+            style={{flexDirection: "column", gap: "1rem"}}
+          >
             <p style={{textAlign: "center", marginBottom: "1rem"}}>
               {"¿Deseas registrarte de forma anónima?"}
             </p>
@@ -285,7 +318,9 @@ export function UserFormModal({
               className={[
                 styles.button,
                 styles.cancelButton,
-                isDarkMode ? styles.cancelButtonDark : styles.cancelButtonLight,
+                isDarkMode
+                  ? styles.cancelButtonDark
+                  : styles.cancelButtonLight,
               ].join(" ")}
               onClick={() => setViewMode("initial")}
               style={{width: "100%"}}

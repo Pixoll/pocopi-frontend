@@ -7,6 +7,7 @@ import Markdown from "react-markdown";
 import styles from "@/styles/HomePage/HomeInfoCard.module.css";
 import {t} from "@/utils/translations.ts";
 
+
 type HomeInfoCardProps = {
   config: SingleConfigResponse
   isDarkMode: boolean;
@@ -25,11 +26,10 @@ export function HomeInfoCard({
   onRegister,
 }: HomeInfoCardProps) {
   const infoCardsAmount = config.informationCards.length;
-  //const iconOpacity = isDarkMode ? 0.25 : 0.10;
+  const iconOpacity = isDarkMode ? 0.25 : 0.10;
 
   const faqAmount = config.faq.length;
   const lastFaqRowIndex = Math.floor((faqAmount - 1) / 2);
-  console.log(config.anonymous)
   return (
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
       {/* Alerta con datos del participante si ya se ingresaron */}
@@ -59,7 +59,7 @@ export function HomeInfoCard({
         </div>
         {Array.from({ length: Math.ceil(infoCardsAmount / 2) }, (_, i) => (
           <Row key={`info-row-${i}`} className="gx-4 mb-4">
-            {config.informationCards.slice(i * 2, i * 2 + 2).map(({ title, /*, color, icon */}, index) => (
+            {config.informationCards.slice(i * 2, i * 2 + 2).map(({ title,description, color, icon }, index) => (
               <Col key={`info-card-${i * 2 + index}`} md={6}>
                 <div className="d-flex h-100">
                   <div
@@ -67,14 +67,14 @@ export function HomeInfoCard({
                     style={{
                       height: "40px",
                       width: "40px",
-                    /*backgroundColor: `rgba(${color?.r ?? 255}, ${color?.g ?? 255}, ${color?.b ?? 255}, ${iconOpacity})`,*/
+                      backgroundColor: `#${color ?? 'ffffff'}${Math.round(iconOpacity * 255).toString(16).padStart(2, '0')}`
                     }}
                   >
-                    {/*{icon && <img src={icon.src} alt={icon.alt} style={{ height: "1em" }}/>}*/}
+                    {icon && <img src={icon.url} alt={icon.alt} style={{ height: "1em" }}/>}
                   </div>
                   <div>
                     <h5 className="h6 mb-2">{title}</h5>
-                    {/*<p className="small text-secondary mb-0">{description}</p>*/}
+                    <p className="small text-secondary mb-0">{description}</p>
                   </div>
                 </div>
               </Col>

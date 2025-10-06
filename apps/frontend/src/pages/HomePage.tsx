@@ -18,7 +18,7 @@ type HomePageProps = {
 export function HomePage({
   group,
   config,
-  //goToNextPage,
+  goToNextPage,
   onDashboard,
 }: HomePageProps) {
   const {
@@ -28,7 +28,7 @@ export function HomePage({
     handleOpenModal,
     handleCloseModal,
     handleConsentChange,
-    //sendUserData,
+    sendUserData,
   } = useUserData(group, config);
   const { isDarkMode } = useTheme();
 
@@ -51,16 +51,8 @@ export function HomePage({
     }
   };*/
 
-  const goToPreTest = () => {
-    handleOpenModal();
-  };
-  /*
-  * En vez de iniciar test -> Registrarse(todos los datos) (sign up)
-  * Después pide si es anonimo o no,
-  * Si es anonimo -> login(username y password),
-  * Si no es anonimo pide todos los datos,
-  *
-  * */
+
+
   return (
     <div className={styles.container}>
       <HomeHeader config={config} isDarkMode={isDarkMode}/>
@@ -71,7 +63,7 @@ export function HomePage({
         userData={userData}
         consentAccepted={consentAccepted}
         onConsentChange={handleConsentChange}
-        onRegister={goToPreTest}
+        onRegister={handleOpenModal}
       />
 
       <UserFormModal
@@ -79,6 +71,8 @@ export function HomePage({
         group={group}
         show={showModal}
         onHide={handleCloseModal}
+        onCreateUser={sendUserData}
+        goToNextPage={goToNextPage}
       />
 
       <DashboardButton config={config} isDarkMode={isDarkMode} onDashboard={onDashboard}/>
