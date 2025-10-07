@@ -91,7 +91,7 @@ export function App() {
   const goToPreTest = (data: CreateUserRequest) => {
     window.scrollTo(0, 0);
     setUserData(data);
-    setPage(Page.PRETEST);
+    setPage(Page.TEST);
   };
 
   const goToGreeting = () => {
