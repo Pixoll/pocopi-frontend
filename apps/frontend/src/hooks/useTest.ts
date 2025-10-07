@@ -1,6 +1,6 @@
-import { TestAnalytics } from "@/analytics/TestAnalytics";
 import type {CreateUserRequest, Protocol} from "@/api";
-import { useEffect, useRef, useState } from "react";
+import {type SendOptionEvent, useWebSocket} from "@/hooks/useWebSocket.ts";
+import { useState } from "react";
 
 export type Answers = Record<number, Record<number, number | null>>;
 
@@ -27,7 +27,6 @@ export function useTest(
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
-  const analyticsRef = useRef<TestAnalytics | null>(null);
   const [showSummary, setShowSummary] = useState(false);
   const [showedSummary, setShowedSummary] = useState(false);
   const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
@@ -38,26 +37,24 @@ export function useTest(
     )
   ));
 
+  const { send: sendWebSocketEvent } = useWebSocket<SendOptionEvent>({
+    onOpen: () => console.log('webSocket connected'),
+    onData: (data) => console.log('response:', data),
+    onError: () => console.error('error WebSocket'),
+    onClose: () => console.log('webSocket closed'),
+  });
+
   const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
   const phase = phases[phaseIndex];
   const { id: phaseId, questions } = phase;
-  const { id: questionId, options } = questions[questionIndex];
-
-  useEffect(() => {
-    analyticsRef.current = new TestAnalytics(userData.username?.toString() ?? "", phaseId, questionId);
-  }, [userData.username, phaseId, questionId]);
+  const { id: questionId/*, options*/ } = questions[questionIndex];
+  const username = userData.username?.toString() ?? "";
 
   const setAnswer = (phaseId: number, questionId: number, optionId: number | null) => {
     setAnswers((prev) => {
       prev[phaseId][questionId] = optionId;
       return { ...prev };
     });
-  };
-
-  const completeCurrentQuestion = () => {
-    const selectedOption = options.find(o => o.id === selectedOptionId);
-
-    analyticsRef.current?.completeQuestion(!!selectedOption, !!selectedOption?.correct);
   };
 
   const goToPreviousPhase = () => {
@@ -132,8 +129,6 @@ export function useTest(
       return;
     }
 
-    completeCurrentQuestion();
-
     if (questionIndex <= 0) {
       goToPreviousPhase();
       return;
@@ -148,8 +143,6 @@ export function useTest(
     if (selectedOptionId === null && !allowSkipQuestion) {
       return;
     }
-
-    completeCurrentQuestion();
 
     if (questionIndex < questions.length - 1) {
       const targetQuestion = phase.questions[questionIndex + 1];
@@ -168,23 +161,37 @@ export function useTest(
     setPhaseIndex(phaseIndex);
     setQuestionIndex(questionIndex);
     setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
-    quitSummary(() => {
-    }, false);
+    quitSummary(() => {}, false);
   };
 
   const onOptionClick = (optionId: number) => {
     if (selectedOptionId === optionId) {
-      analyticsRef.current?.recordOptionDeselect(optionId);
       setAnswer(phaseId, questionId, null);
+
+      sendWebSocketEvent({
+        username,
+        optionId,
+        type: 'deselect'
+      });
     } else {
-      analyticsRef.current?.recordOptionSelect(optionId);
       setAnswer(phaseId, questionId, optionId);
+
+      sendWebSocketEvent({
+        username,
+        optionId,
+        type: 'select'
+      });
     }
+
     setSelectedOptionId((v) => (v === optionId ? null : optionId));
   };
 
   const onOptionHover = (optionId: number) => {
-    analyticsRef.current?.recordOptionHover(optionId);
+    sendWebSocketEvent({
+      username,
+      optionId,
+      type: 'hover'
+    });
   };
 
   return {
