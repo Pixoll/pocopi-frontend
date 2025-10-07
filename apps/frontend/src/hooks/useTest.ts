@@ -32,7 +32,7 @@ export function useTest(
   const [showedSummary, setShowedSummary] = useState(false);
   const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
     protocol.phases?.map((phase) =>
-      [phase, Object.fromEntries(phase.questions.map((question) =>
+      [phase.id, Object.fromEntries(phase.questions.map((question) =>
         [question.id, null]
       ))]
     )
