@@ -1,6 +1,6 @@
 import api, {
   type SingleConfigResponse,
-  type QuestionAnswer, type SelectOne, type Slider, type User
+  type QuestionAnswer, type SelectOne, type Slider
 } from "@/api";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
@@ -35,21 +35,6 @@ export function FormPage({
       answer: "",
     }))
   );
-
-  const [userData, setUserData] = useState<User | null>(null);
-
-  const fetchUser = async () => {
-    try {
-      const result = await api.getUser({path:{username}});
-      if (result.data) {
-        setUserData(result.data)
-      }
-    } catch (err) {
-      console.error(err);
-      setUserData(null);
-    }
-  };
-  fetchUser();
 
   const [sending, setSending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +76,7 @@ export function FormPage({
     try {
       const result = await api.submitFormAnswers({
         body: {
-          userId: userData?.id ? userData?.id : 0,
+          username: username,
           formId: form.id,
           answers: answers,
         }

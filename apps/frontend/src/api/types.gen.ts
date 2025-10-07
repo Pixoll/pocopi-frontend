@@ -67,7 +67,7 @@ export type UploadImageResponse = {
 };
 
 export type FormAnswerRequest = {
-    userId: number;
+    username: string;
     formId: number;
     answers: Array<QuestionAnswer>;
 };
