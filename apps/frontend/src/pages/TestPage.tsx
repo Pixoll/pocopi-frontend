@@ -78,14 +78,14 @@ export function TestPage({
                 {question.text}
               </div>
             )}
-            {/*{question.image && (
+            {question.image && (
               <img
-                src={question.image.src}
+                src={question.image.url}
                 alt={question.image.alt}
                 className={styles.questionImage}
                 draggable={false}
               />
-            )}*/}
+            )}
           </div>
 
           {/* options */}

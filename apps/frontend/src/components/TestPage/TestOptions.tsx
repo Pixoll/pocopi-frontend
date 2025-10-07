@@ -50,14 +50,14 @@ export function TestOptions({
               </div>
             )
           )}
-          {/*{option.image && (
+          {option.image && (
             <img
-              src={option.image.src}
+              src={option.image.url}
               alt={option.image.alt}
               className={styles.optionImage}
               draggable={false}
             />
-          )}*/}
+          )}
         </div>
       ))}
     </div>
