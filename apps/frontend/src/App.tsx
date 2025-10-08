@@ -1,10 +1,11 @@
 import api, {type CreateUserRequest, type SingleConfigResponse, type Group} from "@/api";
-import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
+//import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
 import {CompletionModal} from "@/pages/CompletionModal";
 import {FormPage} from "@/pages/FormPage";
 import {HomePage} from "@/pages/HomePage";
 import {TestGreetingPage} from "@/pages/TestGreetingPage";
 import {TestPage} from "@/pages/TestPage";
+import {AdminPage} from "@/pages/AdminPage";
 //import mime from "mime";
 import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -141,6 +142,8 @@ export function App() {
     case Page.END:
       return <CompletionModal config={config} userData={userData!} onBackToHome={goToHome}/>;
     case Page.DASHBOARD:
-      return <AnalyticsDashboard config={config} onBack={goToHome}/>;
+      return <AdminPage />
+    //case Page.DASHBOARD:
+      //return <AnalyticsDashboard config={config} onBack={goToHome}/>;
   }
 }
