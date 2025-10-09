@@ -1,0 +1,87 @@
+.optionItem {
+    background: var(--input-bg);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.optionItem:hover {
+    border-color: var(--accent-teal);
+    box-shadow: 0 2px 4px rgba(0, 139, 139, 0.1);
+}
+
+.optionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.smallRemoveButton {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.smallRemoveButton:hover {
+    background: var(--danger-hover);
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-primary);
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.checkboxLabel:hover {
+    background: rgba(0, 139, 139, 0.05);
+}
+
+.checkboxLabel input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--accent-teal);
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    background: var(--card-light);
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.1);
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+}

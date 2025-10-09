@@ -5,7 +5,8 @@ import {FormPage} from "@/pages/FormPage";
 import {HomePage} from "@/pages/HomePage";
 import {TestGreetingPage} from "@/pages/TestGreetingPage";
 import {TestPage} from "@/pages/TestPage";
-import {AdminPage} from "@/pages/AdminPage";
+// import {AdminPage} from "@/pages/AdminPage";
+import {ModifyConfigPage} from "@/pages/ModifyConfigPage";
 //import mime from "mime";
 import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -142,7 +143,7 @@ export function App() {
     case Page.END:
       return <CompletionModal config={config} userData={userData!} onBackToHome={goToHome}/>;
     case Page.DASHBOARD:
-      return <AdminPage />
+      return <ModifyConfigPage initialConfig={config} />
     //case Page.DASHBOARD:
       //return <AnalyticsDashboard config={config} onBack={goToHome}/>;
   }

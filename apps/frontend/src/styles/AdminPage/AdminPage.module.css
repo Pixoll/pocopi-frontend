@@ -31,7 +31,20 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
+.lastConfigSection {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 28px;
 
+    background: #262c38;
+    border: 2px dashed #4095af;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
 .configSection:hover {
     box-shadow: 0 8px 24px rgba(129, 131, 154, 0.15);
 }
@@ -119,34 +132,6 @@
     box-shadow: 0 4px 12px rgba(107, 122, 148, 0.4);
 }
 
-.addButtonContainer {
-    display: flex;
-    justify-content: center;
-    margin-top: 24px;
-    padding: 0 24px;
-}
-
-.addButton {
-    background: linear-gradient(135deg, #1d7a2e 0%, #166024 100%);
-    color: white;
-    border: none;
-    padding: 16px 36px;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 1.05rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(29, 122, 46, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.addButton:hover {
-    background: linear-gradient(135deg, #166024 0%, #0d4018 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(29, 122, 46, 0.4);
-}
-
 
 @media (max-width: 768px) {
     .pageContainer {
@@ -179,9 +164,5 @@
     .buttons button {
         flex: 1;
         min-width: 120px;
-    }
-
-    .addButtonContainer {
-        padding: 0 12px;
     }
 }
