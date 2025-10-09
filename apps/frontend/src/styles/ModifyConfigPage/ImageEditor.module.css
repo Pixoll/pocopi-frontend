@@ -87,3 +87,130 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
+
+.imageEditorCompact {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.imageEditorCompact:hover {
+    border-color: var(--accent-teal);
+}
+
+.toggleButton {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0.625rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.toggleButton:hover {
+    background: rgba(0, 139, 139, 0.05);
+}
+
+.icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.toggleText {
+    flex: 1;
+    text-align: left;
+    font-weight: 500;
+}
+
+.arrow {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+}
+
+.compactContent {
+    padding: 0.75rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--card-light);
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.miniPreview {
+    margin-bottom: 0.625rem;
+    max-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--input-bg);
+    border-radius: 4px;
+    border: 1px dashed var(--border-color);
+    padding: 0.5rem;
+}
+
+.previewImage {
+    max-width: 100%;
+    max-height: 100px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.compactInput {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.compactInput:focus {
+    outline: none;
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 2px rgba(0, 139, 139, 0.1);
+}
+
+.compactInput::placeholder {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.compactRemoveButton {
+    width: 100%;
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.25rem;
+}
+
+.compactRemoveButton:hover {
+    background: var(--danger-hover);
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2);
+}

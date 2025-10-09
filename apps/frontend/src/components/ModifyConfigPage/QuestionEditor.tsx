@@ -45,7 +45,7 @@ export function QuestionEditor({question, index, onChange, onRemove}:QuestionEdi
             }}
             className={styles.addButton}
           >
-            + Añadir opción
+            Añadir opción
           </button>
         </div>
         {question.options?.map((option, idx) => (

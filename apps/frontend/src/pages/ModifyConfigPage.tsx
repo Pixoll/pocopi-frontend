@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {produce} from 'immer'
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import {FormQuestionEditor} from "@/components/ModifyConfigPage/FormQuestionEditor.tsx";
-import {QuestionEditor} from "@/components/ModifyConfigPage/QuestionEditor.tsx";
 import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCardEditor.tsx";
 import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
@@ -15,10 +14,9 @@ import type {
   SelectMultiple,
   Slider,
   TextLong,
-  TextShort,
-  Question,
-  Phase
+  TextShort
 } from "@/api";
+import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 
 
 type ModifyConfigPageProps = {
@@ -68,69 +66,6 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
       }
     ));
 
-  };
-
-  const addPhase = (groupKey: string) => {
-    const newPhase: Phase = {
-      id: Date.now(),
-      questions: []
-    };
-    setConfig((currentConfig) => produce(currentConfig, (draft) => {
-      draft.groups[groupKey].protocol.phases.push(newPhase);
-    }))
-  };
-
-  const addProtocolQuestion = (groupKey: string, phaseIndex: number) => {
-    const newQuestion: Question = {
-      id: Date.now(),
-      text: '',
-      image: {url: '', alt: ''},
-      options: []
-    };
-    setConfig((currentConfig) => produce(currentConfig, (draft) => {
-      draft.groups[groupKey].protocol.phases[phaseIndex].questions.push(newQuestion);
-    }))
-  };
-
-  const updateProtocolQuestion = (
-    groupKey: string,
-    phaseIndex: number,
-    questionIndex: number,
-    updatedQuestion: Question
-  ) => {
-    setConfig((currentConfig) =>
-      produce(currentConfig, (draft) => {
-        draft.groups[groupKey].protocol.phases[phaseIndex].questions[questionIndex] = updatedQuestion;
-      })
-    );
-  };
-
-  const removeProtocolQuestion = (
-    groupKey: string,
-    phaseIndex: number,
-    questionIndex: number
-  ) => {
-    setConfig((currentConfig) =>
-      produce(currentConfig, (draft) => {
-        const group = draft.groups[groupKey];
-        if (!group) return;
-        const phase = group.protocol.phases[phaseIndex];
-        if (!phase) return;
-
-        phase.questions.splice(questionIndex, 1);
-      })
-    );
-  };
-
-  const removePhase = (groupKey: string, phaseIndex: number) => {
-    setConfig((currentConfig) =>
-      produce(currentConfig, (draft) => {
-        const group = draft.groups[groupKey];
-        if (!group) return;
-
-        group.protocol.phases.splice(phaseIndex, 1);
-      })
-    );
   };
 
   const renderContent = () => {
@@ -358,8 +293,6 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
         return (
           <div className={styles.tabContent}>
             <h3>Grupos y Protocolos</h3>
-
-            {/* Selector de grupo */}
             <div className={styles.groupSelector}>
               <label className={styles.label}>Seleccionar Grupo:</label>
               <select
@@ -428,135 +361,24 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
                     }}
                     className={styles.textarea}
                   />
-                  <div className={styles.protocolSection}>
-                    <h5>Configuración del Protocolo</h5>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={config.groups[selectedGroup].protocol?.allowPreviousPhase}
-                        onChange={(e) => {
-                          setConfig({
-                            ...config,
-                            groups: {
-                              ...config.groups,
-                              [selectedGroup]: {
-                                ...config.groups[selectedGroup],
-                                protocol: {
-                                  ...config.groups[selectedGroup].protocol,
-                                  allowPreviousPhase: e.target.checked
-                                }
-                              }
-                            }
-                          });
-                        }}
-                      />
-                      Permitir fase anterior
-                    </label>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={config.groups[selectedGroup].protocol?.allowPreviousQuestion}
-                        onChange={(e) => {
-                          setConfig({
-                            ...config,
-                            groups: {
-                              ...config.groups,
-                              [selectedGroup]: {
-                                ...config.groups[selectedGroup],
-                                protocol: {
-                                  ...config.groups[selectedGroup].protocol,
-                                  allowPreviousQuestion: e.target.checked
-                                }
-                              }
-                            }
-                          });
-                        }}
-                      />
-                      Permitir pregunta anterior
-                    </label>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={config.groups[selectedGroup].protocol?.allowSkipQuestion}
-                        onChange={(e) => {
-                          setConfig({
-                            ...config,
-                            groups: {
-                              ...config.groups,
-                              [selectedGroup]: {
-                                ...config.groups[selectedGroup],
-                                protocol: {
-                                  ...config.groups[selectedGroup].protocol,
-                                  allowSkipQuestion: e.target.checked
-                                }
-                              }
-                            }
-                          });
-                        }}
-                      />
-                      Permitir saltar pregunta
-                    </label>
-                  </div>
                 </div>
 
-                {/* Fases del Protocolo */}
-                <div className={styles.phasesSection}>
-                  <div className={styles.sectionHeader}>
-                    <h4>Fases del Protocolo</h4>
-                    <button
-                      onClick={() => addPhase(selectedGroup)}
-                      className={styles.addButton}
-                    >
-                      + Añadir Fase
-                    </button>
-                  </div>
-
-                  {config.groups[selectedGroup].protocol.phases?.map((phase, phaseIndex) => (
-                    <div key={phase.id} className={styles.phaseCard}>
-                      <div className={styles.cardHeader}>
-                        <h5>Fase {phaseIndex + 1}</h5>
-                        <button
-                          onClick={() => removePhase(selectedGroup, phaseIndex)}
-                          className={styles.removeButton}
-                        >
-                          Eliminar Fase
-                        </button>
-                      </div>
-
-                      <div className={styles.sectionHeader}>
-                        <h6>Preguntas de la Fase</h6>
-                        <button
-                          onClick={() => addProtocolQuestion(selectedGroup, phaseIndex)}
-                          className={styles.addButton}
-                        >
-                          + Añadir Pregunta
-                        </button>
-                      </div>
-
-                      {phase.questions?.length === 0 ? (
-                        <div className={styles.emptyState}>
-                          No hay preguntas en esta fase.
-                        </div>
-                      ) : (
-                        <div className={styles.questionsContainer}>
-                          {phase.questions?.map((question, questionIndex) => (
-                            <QuestionEditor
-                              key={question.id}
-                              question={question}
-                              index={questionIndex}
-                              onChange={(updated) =>
-                                updateProtocolQuestion(selectedGroup, phaseIndex, questionIndex, updated)
-                              }
-                              onRemove={() =>
-                                removeProtocolQuestion(selectedGroup, phaseIndex, questionIndex)
-                              }
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                <ProtocolEditor
+                  key={selectedGroup}
+                  protocol={config.groups[selectedGroup].protocol}
+                  onChange={(protocol) => {
+                    setConfig({
+                      ...config,
+                      groups: {
+                        ...config.groups,
+                        [selectedGroup]: {
+                          ...config.groups[selectedGroup],
+                          protocol
+                        }
+                      }
+                    });
+                  }}
+                />
               </div>
             )}
           </div>

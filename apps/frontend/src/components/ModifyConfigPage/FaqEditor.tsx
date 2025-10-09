@@ -12,24 +12,44 @@ export function FaqEditor({faq, index, onChange, onRemove}:FaqEditorProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
-        <h4>FAQ {index + 1}</h4>
-        <button onClick={onRemove} className={styles.removeButton}>
-          Eliminar
+        <div className={styles.headerLeft}>
+          <h4>FAQ {index + 1}</h4>
+        </div>
+        <button onClick={onRemove} className={styles.removeButton} title="Eliminar FAQ">
+          <span className={styles.removeIcon}>×</span>
         </button>
       </div>
-      <input
-        type="text"
-        placeholder="Pregunta"
-        value={faq.question || ''}
-        onChange={(e) => onChange({...faq, question: e.target.value})}
-        className={styles.input}
-      />
-      <textarea
-        placeholder="Respuesta"
-        value={faq.answer || ''}
-        onChange={(e) => onChange({...faq, answer: e.target.value})}
-        className={styles.textarea}
-      />
+
+      <div className={styles.faqContent}>
+        <div className={styles.fieldGroup}>
+          <label className={styles.label}>
+            <span className={styles.labelText}>Pregunta</span>
+          </label>
+          <input
+            type="text"
+            placeholder="¿Cuál es tu pregunta frecuente?"
+            value={faq.question || ''}
+            onChange={(e) => onChange({...faq, question: e.target.value})}
+            className={styles.input}
+          />
+        </div>
+
+        <div className={styles.fieldGroup}>
+          <label className={styles.label}>
+            <span className={styles.labelText}>Respuesta</span>
+          </label>
+          <textarea
+            placeholder="Escribe la respuesta detallada aquí..."
+            value={faq.answer || ''}
+            onChange={(e) => onChange({...faq, answer: e.target.value})}
+            className={styles.textarea}
+            rows={4}
+          />
+          <div className={styles.charCount}>
+            {(faq.answer || '').length} caracteres
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
