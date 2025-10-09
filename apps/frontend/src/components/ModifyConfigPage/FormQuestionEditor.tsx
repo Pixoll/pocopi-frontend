@@ -153,8 +153,8 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
         <option value="select-one">Select one question</option>
         <option value="select-multiple">Multi select question</option>
         <option value="slider">Slider</option>
-        <option value="text-short">Texto corto</option>
-        <option value="text-long">Texto largo</option>
+        <option value="text-short">Short text</option>
+        <option value="text-long">Long text</option>
       </select>
       {renderTypeSpecificFields()}
     </div>

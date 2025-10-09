@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
+import {produce} from 'immer'
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import {FormQuestionEditor} from "@/components/ModifyConfigPage/FormQuestionEditor.tsx";
 import {QuestionEditor} from "@/components/ModifyConfigPage/QuestionEditor.tsx";
+import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCardEditor.tsx";
+import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
 import type {
@@ -15,16 +18,15 @@ import type {
   TextShort,
   Question,
   Phase
-}  from "@/api";
-import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCardEditor.tsx";
-import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
+} from "@/api";
+
 
 type ModifyConfigPageProps = {
   initialConfig: SingleConfigResponse;
   onSave?: (config: SingleConfigResponse) => void;
 }
 
-export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfig/*, onSave*/ }) => {
+export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig/*, onSave*/}) => {
   const [config, setConfig] = useState<SingleConfigResponse>(initialConfig);
   const [activeTab, setActiveTab] = useState<string>('general');
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
@@ -38,14 +40,11 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
       options: [],
       other: false
     };
-
-    setConfig({
-      ...config,
-      [formType]: {
-        ...config[formType],
-        questions: [...config[formType].questions, newQuestion]
-      }
-    });
+    setConfig((currentConfig) =>
+      produce(currentConfig, (draft) => {
+        draft[formType].questions.push(newQuestion);
+      })
+    );
   };
 
   const updateQuestion = (
@@ -53,26 +52,22 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
     index: number,
     updatedQuestion: SelectMultiple | SelectOne | Slider | TextLong | TextShort
   ) => {
-    const newQuestions = [...config[formType].questions];
-    newQuestions[index] = updatedQuestion;
-    setConfig({
-      ...config,
-      [formType]: {
-        ...config[formType],
-        questions: newQuestions
-      }
-    });
+    setConfig((currentConfig) =>
+      produce(currentConfig, (draft) => {
+        draft[formType].questions[index] = updatedQuestion;
+      })
+    );
   };
 
   const removeQuestion = (formType: 'preTestForm' | 'postTestForm', index: number) => {
     const newQuestions = config[formType].questions.filter((_, i) => i !== index);
-    setConfig({
-      ...config,
-      [formType]: {
-        ...config[formType],
-        questions: newQuestions
+
+    setConfig((currentConfig) => produce(
+      currentConfig, (draft) => {
+        draft[formType].questions = newQuestions
       }
-    });
+    ));
+
   };
 
   const addPhase = (groupKey: string) => {
@@ -80,49 +75,21 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
       id: Date.now(),
       questions: []
     };
-
-    setConfig({
-      ...config,
-      groups: {
-        ...config.groups,
-        [groupKey]: {
-          ...config.groups[groupKey],
-          protocol: {
-            ...config.groups[groupKey].protocol,
-            phases: [...(config.groups[groupKey].protocol.phases || []), newPhase]
-          }
-        }
-      }
-    });
+    setConfig((currentConfig) => produce(currentConfig, (draft) => {
+      draft.groups[groupKey].protocol.phases.push(newPhase);
+    }))
   };
 
   const addProtocolQuestion = (groupKey: string, phaseIndex: number) => {
     const newQuestion: Question = {
       id: Date.now(),
       text: '',
-      image: { url: '', alt: '' },
+      image: {url: '', alt: ''},
       options: []
     };
-
-    const phases = [...config.groups[groupKey].protocol.phases];
-    phases[phaseIndex] = {
-      ...phases[phaseIndex],
-      questions: [...phases[phaseIndex].questions, newQuestion]
-    };
-
-    setConfig({
-      ...config,
-      groups: {
-        ...config.groups,
-        [groupKey]: {
-          ...config.groups[groupKey],
-          protocol: {
-            ...config.groups[groupKey].protocol,
-            phases
-          }
-        }
-      }
-    });
+    setConfig((currentConfig) => produce(currentConfig, (draft) => {
+      draft.groups[groupKey].protocol.phases[phaseIndex].questions.push(newQuestion);
+    }))
   };
 
   const updateProtocolQuestion = (
@@ -131,62 +98,39 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
     questionIndex: number,
     updatedQuestion: Question
   ) => {
-    const phases = [...config.groups[groupKey].protocol.phases];
-    const questions = [...phases[phaseIndex].questions];
-    questions[questionIndex] = updatedQuestion;
-    phases[phaseIndex] = { ...phases[phaseIndex], questions };
-
-    setConfig({
-      ...config,
-      groups: {
-        ...config.groups,
-        [groupKey]: {
-          ...config.groups[groupKey],
-          protocol: {
-            ...config.groups[groupKey].protocol,
-            phases
-          }
-        }
-      }
-    });
+    setConfig((currentConfig) =>
+      produce(currentConfig, (draft) => {
+        draft.groups[groupKey].protocol.phases[phaseIndex].questions[questionIndex] = updatedQuestion;
+      })
+    );
   };
 
-  const removeProtocolQuestion = (groupKey: string, phaseIndex: number, questionIndex: number) => {
-    const phases = [...config.groups[groupKey].protocol.phases];
-    const questions = phases[phaseIndex].questions.filter((_, i) => i !== questionIndex);
-    phases[phaseIndex] = { ...phases[phaseIndex], questions };
+  const removeProtocolQuestion = (
+    groupKey: string,
+    phaseIndex: number,
+    questionIndex: number
+  ) => {
+    setConfig((currentConfig) =>
+      produce(currentConfig, (draft) => {
+        const group = draft.groups[groupKey];
+        if (!group) return;
+        const phase = group.protocol.phases[phaseIndex];
+        if (!phase) return;
 
-    setConfig({
-      ...config,
-      groups: {
-        ...config.groups,
-        [groupKey]: {
-          ...config.groups[groupKey],
-          protocol: {
-            ...config.groups[groupKey].protocol,
-            phases
-          }
-        }
-      }
-    });
+        phase.questions.splice(questionIndex, 1);
+      })
+    );
   };
 
   const removePhase = (groupKey: string, phaseIndex: number) => {
-    const phases = config.groups[groupKey].protocol.phases.filter((_, i) => i !== phaseIndex);
+    setConfig((currentConfig) =>
+      produce(currentConfig, (draft) => {
+        const group = draft.groups[groupKey];
+        if (!group) return;
 
-    setConfig({
-      ...config,
-      groups: {
-        ...config.groups,
-        [groupKey]: {
-          ...config.groups[groupKey],
-          protocol: {
-            ...config.groups[groupKey].protocol,
-            phases
-          }
-        }
-      }
-    });
+        group.protocol.phases.splice(phaseIndex, 1);
+      })
+    );
   };
 
   const renderContent = () => {
@@ -198,7 +142,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
 
             <ImageEditor
               image={config.icon}
-              onChange={(icon) => setConfig({ ...config, icon })}
+              onChange={(icon) => setConfig({...config, icon})}
               label="Icono principal"
             />
 
@@ -207,7 +151,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
               <input
                 type="text"
                 value={config.title || ''}
-                onChange={(e) => setConfig({ ...config, title: e.target.value })}
+                onChange={(e) => setConfig({...config, title: e.target.value})}
                 className={styles.input}
                 placeholder="Título de la configuración"
               />
@@ -218,7 +162,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
               <input
                 type="text"
                 value={config.subtitle || ''}
-                onChange={(e) => setConfig({ ...config, subtitle: e.target.value })}
+                onChange={(e) => setConfig({...config, subtitle: e.target.value})}
                 className={styles.input}
                 placeholder="Subtítulo"
               />
@@ -228,7 +172,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
               <label className={styles.label}>Descripción</label>
               <textarea
                 value={config.description || ''}
-                onChange={(e) => setConfig({ ...config, description: e.target.value })}
+                onChange={(e) => setConfig({...config, description: e.target.value})}
                 className={styles.textarea}
                 placeholder="Descripción"
                 rows={4}
@@ -240,7 +184,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
                 <input
                   type="checkbox"
                   checked={config.anonymous}
-                  onChange={(e) => setConfig({ ...config, anonymous: e.target.checked })}
+                  onChange={(e) => setConfig({...config, anonymous: e.target.checked})}
                 />
                 Anónimo
               </label>
@@ -250,7 +194,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
               <label className={styles.label}>Consentimiento Informado</label>
               <textarea
                 value={config.informedConsent || ''}
-                onChange={(e) => setConfig({ ...config, informedConsent: e.target.value })}
+                onChange={(e) => setConfig({...config, informedConsent: e.target.value})}
                 className={styles.textarea}
                 placeholder="Texto del consentimiento informado"
                 rows={6}
@@ -289,11 +233,11 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
                 onChange={(updated) => {
                   const newCards = [...config.informationCards];
                   newCards[index] = updated;
-                  setConfig({ ...config, informationCards: newCards });
+                  setConfig({...config, informationCards: newCards});
                 }}
                 onRemove={() => {
                   const newCards = config.informationCards.filter((_, i) => i !== index);
-                  setConfig({ ...config, informationCards: newCards });
+                  setConfig({...config, informationCards: newCards});
                 }}
               />
             ))}
@@ -329,11 +273,11 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
                 onChange={(updated) => {
                   const newFaqs = [...config.faq];
                   newFaqs[index] = updated;
-                  setConfig({ ...config, faq: newFaqs });
+                  setConfig({...config, faq: newFaqs});
                 }}
                 onRemove={() => {
                   const newFaqs = config.faq.filter((_, i) => i !== index);
-                  setConfig({ ...config, faq: newFaqs });
+                  setConfig({...config, faq: newFaqs});
                 }}
               />
             ))}
@@ -445,7 +389,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
                         ...config,
                         groups: {
                           ...config.groups,
-                          [selectedGroup]: { ...config.groups[selectedGroup], label: e.target.value }
+                          [selectedGroup]: {...config.groups[selectedGroup], label: e.target.value}
                         }
                       });
                     }}
@@ -461,7 +405,10 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
                         ...config,
                         groups: {
                           ...config.groups,
-                          [selectedGroup]: { ...config.groups[selectedGroup], probability: parseFloat(e.target.value) || 0 }
+                          [selectedGroup]: {
+                            ...config.groups[selectedGroup],
+                            probability: parseFloat(e.target.value) || 0
+                          }
                         }
                       });
                     }}
@@ -475,7 +422,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
                         ...config,
                         groups: {
                           ...config.groups,
-                          [selectedGroup]: { ...config.groups[selectedGroup], greeting: e.target.value }
+                          [selectedGroup]: {...config.groups[selectedGroup], greeting: e.target.value}
                         }
                       });
                     }}
@@ -658,9 +605,9 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({ initialConfi
                   />
                   <button
                     onClick={() => {
-                      const newTranslations = { ...config.translations };
+                      const newTranslations = {...config.translations};
                       delete newTranslations[key];
-                      setConfig({ ...config, translations: newTranslations });
+                      setConfig({...config, translations: newTranslations});
                     }}
                     className={styles.removeButton}
                   >
