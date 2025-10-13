@@ -7,6 +7,7 @@ type OptionEditorProps = {
   index: number;
   onChange: (option: Option) => void;
   onRemove: () => void;
+
 }
 
 export function OptionEditor({ option, index, onChange, onRemove }:OptionEditorProps){

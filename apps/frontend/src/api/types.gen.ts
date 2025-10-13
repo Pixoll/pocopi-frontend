@@ -79,6 +79,171 @@ export type QuestionAnswer = {
     answer: string;
 };
 
+export type PatchFaq = {
+    id: number;
+    question: string;
+    answer: string;
+};
+
+export type PatchForm = {
+    id?: number;
+    /**
+     * Form questions
+     */
+    questions: Array<PatchSelectMultiple | PatchSelectOne | PatchSlider | PatchTextLong | PatchTextShort>;
+};
+
+export type PatchFormOption = {
+    id: number;
+    text?: string;
+};
+
+export type PatchFormQuestion = unknown;
+
+export type PatchGroup = {
+    id?: number;
+    probability?: number;
+    label?: string;
+    greeting?: string;
+    protocol?: PatchProtocol;
+};
+
+export type PatchInformationCard = {
+    id?: number;
+    title: string;
+    description: string;
+    color: number;
+};
+
+export type PatchLastConfig = {
+    version: number;
+    title: string;
+    subtitle: string;
+    description: string;
+    anonymous: boolean;
+    informedConsent: string;
+    informationCards: Array<PatchInformationCard>;
+    faq: Array<PatchFaq>;
+    preTestForm: PatchForm;
+    postTestForm: PatchForm;
+    groups: {
+        [key: string]: PatchGroup;
+    };
+    translations: {
+        [key: string]: string;
+    };
+};
+
+export type PatchOption = {
+    id?: number;
+    text?: string;
+    correct: boolean;
+};
+
+export type PatchPhase = {
+    id?: number;
+    questions: Array<PatchQuestion>;
+};
+
+export type PatchProtocol = {
+    id?: number;
+    label: string;
+    allowPreviousPhase: boolean;
+    allowPreviousQuestion: boolean;
+    allowSkipQuestion: boolean;
+    phases: Array<PatchPhase>;
+};
+
+export type PatchQuestion = {
+    id?: number;
+    text?: string;
+    options: Array<PatchOption>;
+};
+
+export type PatchRequest = {
+    /**
+     * Icon by config
+     */
+    appIcon?: Blob | File;
+    /**
+     * All images from question and options by pre test form
+     */
+    preTestFormQuestionOptionsFiles: Array<Blob | File>;
+    /**
+     * All images from question and options by post test form
+     */
+    postTestFormQuestionOptionsFiles: Array<Blob | File>;
+    /**
+     * All images from question and options each phase and protocol
+     */
+    groupQuestionOptionsFiles: Array<Blob | File>;
+    /**
+     * All images from information cards
+     */
+    informationCardFiles: Array<Blob | File>;
+    /**
+     * Last configuration updated
+     */
+    updateLastConfig: PatchLastConfig;
+};
+
+export type PatchSelectMultiple = PatchFormQuestion & {
+    id: number;
+    category: string;
+    text?: string;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    options: Array<PatchFormOption>;
+    min: number;
+    max: number;
+    other: boolean;
+};
+
+export type PatchSelectOne = PatchFormQuestion & {
+    id: number;
+    category: string;
+    text?: string;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    options: Array<PatchFormOption>;
+    other: boolean;
+};
+
+export type PatchSlider = PatchFormQuestion & {
+    id: number;
+    category: string;
+    text?: string;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    placeholder: string;
+    min: number;
+    max: number;
+    step: number;
+    labels: Array<SliderLabel>;
+};
+
+export type PatchTextLong = PatchFormQuestion & {
+    id: number;
+    category: string;
+    text?: string;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    placeholder: string;
+    minLength: number;
+    maxLength: number;
+};
+
+export type PatchTextShort = PatchFormQuestion & {
+    id: number;
+    category: string;
+    text?: string;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    placeholder: string;
+    minLength: number;
+    maxLength: number;
+};
+
+export type SliderLabel = {
+    number: number;
+    label: string;
+};
+
 export type User = {
     id: number;
     username: string;
@@ -269,11 +434,6 @@ export type Slider = FormQuestion & {
     labels: Array<SliderLabel>;
 };
 
-export type SliderLabel = {
-    number: number;
-    label: string;
-};
-
 export type TextLong = FormQuestion & {
     id: number;
     category: string;
@@ -357,6 +517,22 @@ export type SubmitFormAnswersResponses = {
 };
 
 export type SubmitFormAnswersResponse = SubmitFormAnswersResponses[keyof SubmitFormAnswersResponses];
+
+export type UpdateLastestConfigData = {
+    body: PatchRequest;
+    path?: never;
+    query?: never;
+    url: '/api/config';
+};
+
+export type UpdateLastestConfigResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type UpdateLastestConfigResponse = UpdateLastestConfigResponses[keyof UpdateLastestConfigResponses];
 
 export type GetUserData = {
     body?: never;
