@@ -9,91 +9,130 @@
 
 .label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     font-weight: 500;
     color: var(--text-primary);
     font-size: 0.95rem;
 }
 
-.imagePreview {
-    margin: 1rem 0;
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--input-bg);
-    border-radius: 4px;
-    border: 2px dashed var(--border-color);
-    transition: border-color 0.3s;
+.hiddenInput {
+    display: none;
 }
 
-.imagePreview:hover {
-    border-color: var(--accent-teal);
-}
-
-.preview {
-    max-width: 100%;
-    max-height: 200px;
-    object-fit: contain;
-    border-radius: 4px;
-}
-
-.emptyImage {
-    color: var(--text-muted);
-    font-style: italic;
-    padding: 2rem;
-    text-align: center;
-}
-
-.input {
+.imagePreviewWrapper {
+    position: relative;
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: all 0.2s;
-    box-sizing: border-box;
+    max-width: 400px;
+    border-radius: 6px;
+    overflow: hidden;
     background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+}
+
+.preview,
+.previewImage {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    display: block;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.imagePreviewWrapper:hover .imageOverlay {
+    opacity: 1;
+}
+
+.changeButton,
+.removeButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.changeButton {
+    background: var(--accent-teal);
     color: var(--text-primary);
-    margin-bottom: 0.75rem;
 }
 
-.input:focus {
-    outline: none;
-    border-color: var(--accent-teal);
-    box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.1);
-}
-
-.input::placeholder {
-    color: var(--text-muted);
+.changeButton:hover {
+    background: var(--accent-teal-hover);
+    transform: scale(1.05);
 }
 
 .removeButton {
     background: var(--danger);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    margin-top: 0.5rem;
+    color: var(--text-primary);
 }
 
 .removeButton:hover {
     background: var(--danger-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+    transform: scale(1.05);
+}
+
+.uploadArea {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--input-bg);
+    border-radius: 6px;
+    border: 2px dashed var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.uploadArea:hover {
+    border-color: var(--accent-teal);
+    background: var(--card-light);
+}
+
+.uploadContent {
+    text-align: center;
+    padding: 2rem;
+}
+.uploadText {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.uploadHint {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.85rem;
 }
 
 .imageEditorCompact {
     background: var(--input-bg);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 6px;
     overflow: hidden;
     transition: all 0.2s;
+    margin-bottom: 12px;
 }
 
 .imageEditorCompact:hover {
@@ -104,23 +143,18 @@
     width: 100%;
     background: transparent;
     border: none;
-    padding: 0.625rem 0.75rem;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 10px;
     cursor: pointer;
     transition: background 0.2s;
     color: var(--text-primary);
-    font-size: 0.85rem;
+    font-size: 14px;
 }
 
 .toggleButton:hover {
-    background: rgba(0, 139, 139, 0.05);
-}
-
-.icon {
-    font-size: 1.1rem;
-    line-height: 1;
+    background: rgba(0, 139, 139, 0.1);
 }
 
 .toggleText {
@@ -130,13 +164,19 @@
 }
 
 .arrow {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    transition: transform 0.2s;
+    font-size: 10px;
+    color: var(--text-secondary);
+    transition: transform 0.3s ease;
+    display: inline-block;
+    transform: rotate(-90deg);
+}
+
+.arrowExpanded {
+    transform: rotate(0deg);
 }
 
 .compactContent {
-    padding: 0.75rem;
+    padding: 12px;
     border-top: 1px solid var(--border-color);
     background: var(--card-light);
     animation: slideDown 0.2s ease;
@@ -153,64 +193,62 @@
     }
 }
 
-.miniPreview {
-    margin-bottom: 0.625rem;
-    max-height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--input-bg);
-    border-radius: 4px;
-    border: 1px dashed var(--border-color);
-    padding: 0.5rem;
-}
-
-.previewImage {
+.compactContent .imagePreviewWrapper {
     max-width: 100%;
-    max-height: 100px;
-    object-fit: contain;
-    border-radius: 4px;
+    margin-bottom: 0;
 }
 
-.compactInput {
+.compactContent .previewImage {
+    max-height: 200px;
+}
+
+.uploadButton {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 0.85rem;
-    transition: all 0.2s;
-    box-sizing: border-box;
     background: var(--input-bg);
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-}
-
-.compactInput:focus {
-    outline: none;
-    border-color: var(--accent-teal);
-    box-shadow: 0 0 0 2px rgba(0, 139, 139, 0.1);
-}
-
-.compactInput::placeholder {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-}
-
-.compactRemoveButton {
-    width: 100%;
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
+    border: 2px dashed var(--border-color);
+    padding: 40px 20px;
+    border-radius: 6px;
     cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 14px;
     transition: all 0.2s;
-    margin-top: 0.25rem;
 }
 
-.compactRemoveButton:hover {
-    background: var(--danger-hover);
-    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2);
+.uploadButton:hover {
+    background: var(--secondary-bg);
+    border-color: var(--accent-teal);
+    color: var(--accent-teal);
+}
+
+@media (max-width: 768px) {
+    .imageEditor {
+        padding: 1rem;
+    }
+
+    .imagePreviewWrapper {
+        max-width: 100%;
+    }
+
+    .uploadArea {
+        min-height: 150px;
+    }
+
+    .uploadContent {
+        padding: 1rem;
+    }
+
+    .changeButton,
+    .removeButton {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+}
+
+.changeButton:focus-visible,
+.removeButton:focus-visible,
+.toggleButton:focus-visible,
+.uploadButton:focus-visible {
+    outline: 2px solid var(--accent-teal);
+    outline-offset: 2px;
 }

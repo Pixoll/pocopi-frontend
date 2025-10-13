@@ -1,16 +1,48 @@
 import type {Image} from "@/api";
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import styles from "@/styles/ModifyConfigPage/ImageEditor.module.css";
 
 type ImageEditorProps = {
   image?: Image;
-  onChange: (image?: Image) => void;
+  onChange: (image?: Image, file?: File) => void;
   label: string;
   compact?: boolean;
 }
 
 export function ImageEditor({ image, onChange, label, compact = false }: ImageEditorProps) {
   const [isExpanded, setIsExpanded] = useState(!!image?.url);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const compactFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const imageUrl = URL.createObjectURL(file);
+
+    const fileName = file.name.split('.')[0];
+    const autoAlt = fileName.replace(/[-_]/g, ' ');
+
+    onChange({
+      url: imageUrl,
+      alt: autoAlt
+    }, file);
+  };
+
+  const handleRemoveImage = () => {
+    onChange(undefined, undefined);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (compactFileInputRef.current) compactFileInputRef.current.value = '';
+    if (compact) setIsExpanded(false);
+  };
+
+  const triggerFileInput = () => {
+    if (compact) {
+      compactFileInputRef.current?.click();
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
 
   if (compact) {
     return (
@@ -20,52 +52,50 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
           onClick={() => setIsExpanded(!isExpanded)}
           className={styles.toggleButton}
         >
-          <span className={styles.icon}>{image?.url}</span>
           <span className={styles.toggleText}>
             {image?.url ? 'Imagen agregada' : 'Agregar imagen (opcional)'}
           </span>
-          <span className={styles.arrow}>{isExpanded ? '▼' : '▶'}</span>
+          <span className={`${styles.arrow} ${isExpanded ? styles.arrowExpanded : ''}`}>▼</span>
         </button>
 
         {isExpanded && (
           <div className={styles.compactContent}>
-            {image?.url && (
-              <div className={styles.miniPreview}>
+            {image?.url ? (
+              <div className={styles.imagePreviewWrapper}>
                 <img src={image.url} alt={image.alt || ''} className={styles.previewImage} />
+                <div className={styles.imageOverlay}>
+                  <button
+                    type="button"
+                    onClick={triggerFileInput}
+                    className={styles.changeButton}
+                  >
+                    Cambiar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className={styles.removeButton}
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </div>
-            )}
-            <input
-              type="text"
-              placeholder="URL de la imagen"
-              value={image?.url || ''}
-              onChange={(e) => onChange({
-                url: e.target.value,
-                alt: image?.alt || ''
-              })}
-              className={styles.compactInput}
-            />
-            <input
-              type="text"
-              placeholder="Texto alternativo"
-              value={image?.alt || ''}
-              onChange={(e) => onChange({
-                url: image?.url || '',
-                alt: e.target.value
-              })}
-              className={styles.compactInput}
-            />
-            {image?.url && (
+            ) : (
               <button
                 type="button"
-                onClick={() => {
-                  onChange(undefined);
-                  setIsExpanded(false);
-                }}
-                className={styles.compactRemoveButton}
+                onClick={triggerFileInput}
+                className={styles.uploadButton}
               >
-                Eliminar imagen
+                + Subir imagen
               </button>
             )}
+            <input
+              ref={compactFileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className={styles.hiddenInput}
+            />
           </div>
         )}
       </div>
@@ -75,42 +105,43 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
   return(
     <div className={styles.imageEditor}>
       {label && <label className={styles.label}>{label}</label>}
-      <div className={styles.imagePreview}>
-        {image?.url ? (
+
+      {image?.url ? (
+        <div className={styles.imagePreviewWrapper}>
           <img src={image.url} alt={image.alt || ''} className={styles.preview} />
-        ) : (
-          <div className={styles.emptyImage}>Sin imagen</div>
-        )}
-      </div>
-      <input
-        type="text"
-        placeholder="URL de la imagen"
-        value={image?.url || ''}
-        onChange={(e) => onChange({
-          url: e.target.value,
-          alt: image?.alt || ''
-        })}
-        className={styles.input}
-      />
-      <input
-        type="text"
-        placeholder="Texto alternativo"
-        value={image?.alt || ''}
-        onChange={(e) => onChange({
-          url: image?.url || '',
-          alt: e.target.value
-        })}
-        className={styles.input}
-      />
-      {image?.url && (
-        <button
-          type="button"
-          onClick={() => onChange(undefined)}
-          className={styles.removeButton}
-        >
-          Eliminar imagen
-        </button>
+          <div className={styles.imageOverlay}>
+            <button
+              type="button"
+              onClick={triggerFileInput}
+              className={styles.changeButton}
+            >
+              Cambiar imagen
+            </button>
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className={styles.removeButton}
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.uploadArea} onClick={triggerFileInput}>
+          <div className={styles.uploadContent}>
+            <span className={styles.uploadText}>Click para subir imagen</span>
+            <span className={styles.uploadHint}>PNG, JPG, GIF hasta 10MB</span>
+          </div>
+        </div>
       )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className={styles.hiddenInput}
+      />
     </div>
   )
 }
