@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import type { Protocol, Phase, Question } from '@/api';
 import styles from '@/styles/ModifyConfigPage/ProtocolEditor.module.css';
 import { QuestionEditor } from '@/components/ModifyConfigPage/QuestionEditor.tsx';
+import type {EditablePatchPhase, EditablePatchProtocol, EditablePatchQuestion} from "@/utils/imageCollector.ts";
 
 type ProtocolEditorProps = {
-  protocol: Protocol;
-  onChange: (protocol: Protocol) => void;
+  protocol: EditablePatchProtocol;
+  onChange: (protocol: EditablePatchProtocol) => void;
 };
 
 export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
@@ -24,8 +24,8 @@ export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
   }, [protocol.phases?.length, selectedPhaseIndex]);
 
   const addPhase = () => {
-    const newPhase: Phase = {
-      id: Date.now(),
+    const newPhase: EditablePatchPhase = {
+      id: undefined,
       questions: []
     };
     const newPhases = [...(protocol.phases || []), newPhase];
@@ -48,31 +48,53 @@ export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
   };
 
   const addQuestion = (phaseIndex: number) => {
-    const newQuestion: Question = {
-      id: Date.now(),
+    const newQuestion: EditablePatchQuestion = {
+      id: undefined,
       text: '',
-      image: { url: '', alt: '' },
+      image: undefined,
       options: []
     };
-    const newPhases = [...protocol.phases];
-    newPhases[phaseIndex].questions = [
-      ...(newPhases[phaseIndex].questions || []),
-      newQuestion
-    ];
+
+    const newPhases = protocol.phases.map((phase, idx) => {
+      if (idx === phaseIndex) {
+        return {
+          ...phase,
+          questions: [...(phase.questions || []), newQuestion]
+        };
+      }
+      return phase;
+    });
+
     onChange({ ...protocol, phases: newPhases });
   };
 
-  const updateQuestion = (phaseIndex: number, questionIndex: number, question: Question) => {
-    const newPhases = [...protocol.phases];
-    newPhases[phaseIndex].questions[questionIndex] = question;
+  const updateQuestion = (phaseIndex: number, questionIndex: number, question: EditablePatchQuestion) => {
+    const newPhases = protocol.phases.map((phase, idx) => {
+      if (idx === phaseIndex) {
+        const newQuestions = [...phase.questions];
+        newQuestions[questionIndex] = question;
+        return {
+          ...phase,
+          questions: newQuestions
+        };
+      }
+      return phase;
+    });
+
     onChange({ ...protocol, phases: newPhases });
   };
 
   const removeQuestion = (phaseIndex: number, questionIndex: number) => {
-    const newPhases = [...protocol.phases];
-    newPhases[phaseIndex].questions = newPhases[phaseIndex].questions.filter(
-      (_, i) => i !== questionIndex
-    );
+    const newPhases = protocol.phases.map((phase, idx) => {
+      if (idx === phaseIndex) {
+        return {
+          ...phase,
+          questions: phase.questions.filter((_, i) => i !== questionIndex)
+        };
+      }
+      return phase;
+    });
+
     onChange({ ...protocol, phases: newPhases });
   };
 
@@ -122,7 +144,7 @@ export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
         <div className={styles.phasesSidebar}>
           <div className={styles.sidebarHeader}>
             <h5>Fases ({protocol.phases?.length || 0})</h5>
-            <button onClick={addPhase} className={styles.addButton}>
+            <button onClick={addPhase} className={styles.addButton} type="button">
               + Nueva Fase
             </button>
           </div>
@@ -136,7 +158,8 @@ export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
             ) : (
               protocol.phases.map((phase, index) => (
                 <button
-                  key={phase.id}
+                  key={phase.id ?? `new-phase-${index}`}
+                  type="button"
                   className={`${styles.phaseItem} ${
                     selectedPhaseIndex === index ? styles.active : ''
                   }`}
@@ -170,6 +193,7 @@ export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={() => removePhase(selectedPhaseIndex!)}
                   className={styles.removeButton}
                 >
@@ -181,6 +205,7 @@ export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
                 <div className={styles.questionsSectionHeader}>
                   <h5>Preguntas</h5>
                   <button
+                    type="button"
                     onClick={() => addQuestion(selectedPhaseIndex!)}
                     className={styles.addButton}
                   >
@@ -196,7 +221,7 @@ export function ProtocolEditor({ protocol, onChange }: ProtocolEditorProps) {
                 ) : (
                   <div className={styles.questionsList}>
                     {selectedPhase.questions.map((question, questionIndex) => (
-                      <div key={question.id} className={styles.questionWrapper}>
+                      <div key={question.id ?? `new-question-${questionIndex}`} className={styles.questionWrapper}>
                         <QuestionEditor
                           question={question}
                           index={questionIndex}

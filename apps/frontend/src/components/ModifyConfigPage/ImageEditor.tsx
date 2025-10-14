@@ -1,16 +1,17 @@
-import type {Image} from "@/api";
+import type { ImageState } from "@/utils/imageCollector.ts";
 import React, { useState, useRef } from "react";
 import styles from "@/styles/ModifyConfigPage/ImageEditor.module.css";
 
 type ImageEditorProps = {
-  image?: Image;
-  onChange: (image?: Image, file?: File) => void;
+  image?: ImageState;
+  onChange: (imageState: ImageState) => void;
   label: string;
   compact?: boolean;
 }
 
 export function ImageEditor({ image, onChange, label, compact = false }: ImageEditorProps) {
-  const [isExpanded, setIsExpanded] = useState(!!image?.url);
+  const hasImage = image && image.type !== 'deleted';
+  const [isExpanded, setIsExpanded] = useState(!!hasImage);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const compactFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -18,19 +19,23 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const imageUrl = URL.createObjectURL(file);
-
-    const fileName = file.name.split('.')[0];
-    const autoAlt = fileName.replace(/[-_]/g, ' ');
-
     onChange({
-      url: imageUrl,
-      alt: autoAlt
-    }, file);
+      type: 'new',
+      value: file
+    });
+
+    if (compact && !isExpanded) {
+      setIsExpanded(true);
+    }
   };
 
   const handleRemoveImage = () => {
-    onChange(undefined, undefined);
+    if (image?.type === 'unchanged' && image.value) {
+      onChange({ type: 'deleted' });
+    } else {
+      onChange({ type: 'unchanged', value: undefined });
+    }
+
     if (fileInputRef.current) fileInputRef.current.value = '';
     if (compactFileInputRef.current) compactFileInputRef.current.value = '';
     if (compact) setIsExpanded(false);
@@ -44,6 +49,23 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
     }
   };
 
+  const getPreviewUrl = (): string | null => {
+    if (!image || image.type === 'deleted') return null;
+
+    if (image.type === 'unchanged') {
+      return image.value?.url || null;
+    }
+
+    if (image.type === 'new') {
+      return URL.createObjectURL(image.value);
+    }
+
+    return null;
+  };
+
+  const previewUrl = getPreviewUrl();
+  const altText = image?.type === 'unchanged' ? image.value?.alt : '';
+
   if (compact) {
     return (
       <div className={styles.imageEditorCompact}>
@@ -53,16 +75,16 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
           className={styles.toggleButton}
         >
           <span className={styles.toggleText}>
-            {image?.url ? 'Imagen agregada' : 'Agregar imagen (opcional)'}
+            {previewUrl ? 'Imagen agregada' : 'Agregar imagen (opcional)'}
           </span>
           <span className={`${styles.arrow} ${isExpanded ? styles.arrowExpanded : ''}`}>▼</span>
         </button>
 
         {isExpanded && (
           <div className={styles.compactContent}>
-            {image?.url ? (
+            {previewUrl ? (
               <div className={styles.imagePreviewWrapper}>
-                <img src={image.url} alt={image.alt || ''} className={styles.previewImage} />
+                <img src={previewUrl} alt={altText || ''} className={styles.previewImage} />
                 <div className={styles.imageOverlay}>
                   <button
                     type="button"
@@ -102,13 +124,13 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
     );
   }
 
-  return(
+  return (
     <div className={styles.imageEditor}>
       {label && <label className={styles.label}>{label}</label>}
 
-      {image?.url ? (
+      {previewUrl ? (
         <div className={styles.imagePreviewWrapper}>
-          <img src={image.url} alt={image.alt || ''} className={styles.preview} />
+          <img src={previewUrl} alt={altText || ''} className={styles.preview} />
           <div className={styles.imageOverlay}>
             <button
               type="button"
@@ -143,5 +165,5 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
         className={styles.hiddenInput}
       />
     </div>
-  )
+  );
 }

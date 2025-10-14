@@ -1,12 +1,22 @@
 import { useState } from 'react';
-import type {SelectMultiple, SelectOne, Slider, TextLong, TextShort, FormOption, SliderLabel} from "@/api";
+import type { SliderLabel } from "@/api";
+import type {
+  EditablePatchFormQuestion,
+  EditablePatchSelectOne,
+  EditablePatchSelectMultiple,
+  EditablePatchSlider,
+  EditablePatchTextShort,
+  EditablePatchTextLong,
+  EditablePatchFormOption,
+  ImageState
+} from "@/utils/imageCollector.ts";
 import styles from "@/styles/ModifyConfigPage/FormQuestionEditor.module.css";
-import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
+import { ImageEditor } from "@/components/ModifyConfigPage/ImageEditor.tsx";
 
 type FormQuestionEditorProps = {
-  question: SelectMultiple | SelectOne | Slider | TextLong | TextShort;
+  question: EditablePatchFormQuestion;
   index: number;
-  onChange: (question: unknown) => void;
+  onChange: (question: EditablePatchFormQuestion) => void;
   onRemove: () => void;
 }
 
@@ -19,33 +29,34 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
 
   const handleAddOption = () => {
     if (!hasOptions) return;
-    const currentOptions = (question as SelectOne | SelectMultiple).options || [];
-    const newOption: FormOption = {
-      id: Date.now(),
+    const currentOptions = (question as EditablePatchSelectOne | EditablePatchSelectMultiple).options || [];
+    const newOption: EditablePatchFormOption = {
+      id: undefined,
       text: '',
+      image: undefined
     };
     onChange({
       ...question,
       options: [...currentOptions, newOption]
-    });
+    } as EditablePatchFormQuestion);
   };
 
-  const handleOptionChange = (optionIndex: number, field: keyof FormOption, value: unknown) => {
+  const handleOptionChange = (optionIndex: number, field: keyof EditablePatchFormOption, value: unknown) => {
     if (!hasOptions) return;
-    const currentOptions = [...(question as SelectOne | SelectMultiple).options];
+    const currentOptions = [...(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options];
     currentOptions[optionIndex] = { ...currentOptions[optionIndex], [field]: value };
-    onChange({ ...question, options: currentOptions });
+    onChange({ ...question, options: currentOptions } as EditablePatchFormQuestion);
   };
 
   const handleRemoveOption = (optionIndex: number) => {
     if (!hasOptions) return;
-    const currentOptions = (question as SelectOne | SelectMultiple).options.filter((_, i) => i !== optionIndex);
-    onChange({ ...question, options: currentOptions });
+    const currentOptions = (question as EditablePatchSelectOne | EditablePatchSelectMultiple).options.filter((_, i) => i !== optionIndex);
+    onChange({ ...question, options: currentOptions } as EditablePatchFormQuestion);
   };
 
   const handleAddLabel = () => {
     if (!hasLabels) return;
-    const currentLabels = (question as Slider).labels || [];
+    const currentLabels = (question as EditablePatchSlider).labels || [];
     const newLabel: SliderLabel = {
       number: 0,
       label: '',
@@ -53,26 +64,26 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
     onChange({
       ...question,
       labels: [...currentLabels, newLabel]
-    });
+    } as EditablePatchFormQuestion);
   };
 
   const handleLabelChange = (labelIndex: number, field: keyof SliderLabel, value: unknown) => {
     if (!hasLabels) return;
-    const currentLabels = [...(question as Slider).labels];
+    const currentLabels = [...(question as EditablePatchSlider).labels];
     currentLabels[labelIndex] = { ...currentLabels[labelIndex], [field]: value };
-    onChange({ ...question, labels: currentLabels });
+    onChange({ ...question, labels: currentLabels } as EditablePatchFormQuestion);
   };
 
   const handleRemoveLabel = (labelIndex: number) => {
     if (!hasLabels) return;
-    const currentLabels = (question as Slider).labels.filter((_, i) => i !== labelIndex);
-    onChange({ ...question, labels: currentLabels });
+    const currentLabels = (question as EditablePatchSlider).labels.filter((_, i) => i !== labelIndex);
+    onChange({ ...question, labels: currentLabels } as EditablePatchFormQuestion);
   };
 
   const renderTypeSpecificFields = () => {
     switch (question.type) {
       case 'select-multiple': {
-        const smq = question as SelectMultiple;
+        const smq = question as EditablePatchSelectMultiple;
         return (
           <>
             <div className={styles.row}>
@@ -82,7 +93,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   type="number"
                   placeholder="0"
                   value={smq.min || 0}
-                  onChange={(e) => onChange({ ...question, min: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => onChange({ ...question, min: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
                   className={styles.input}
                 />
               </div>
@@ -92,7 +103,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   type="number"
                   placeholder="0"
                   value={smq.max || 0}
-                  onChange={(e) => onChange({ ...question, max: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => onChange({ ...question, max: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
                   className={styles.input}
                 />
               </div>
@@ -101,7 +112,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
               <input
                 type="checkbox"
                 checked={smq.other}
-                onChange={(e) => onChange({ ...question, other: e.target.checked })}
+                onChange={(e) => onChange({ ...question, other: e.target.checked } as EditablePatchFormQuestion)}
               />
               Permitir opción "Otro"
             </label>
@@ -109,20 +120,20 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
         );
       }
       case 'select-one': {
-        const soq = question as SelectOne;
+        const soq = question as EditablePatchSelectOne;
         return (
           <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={soq.other}
-              onChange={(e) => onChange({ ...question, other: e.target.checked })}
+              onChange={(e) => onChange({ ...question, other: e.target.checked } as EditablePatchFormQuestion)}
             />
             Permitir opción "Otro"
           </label>
         );
       }
       case 'slider': {
-        const slq = question as Slider;
+        const slq = question as EditablePatchSlider;
         return (
           <>
             <div className={styles.inputGroup}>
@@ -131,7 +142,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                 type="text"
                 placeholder="Ej: Selecciona un valor"
                 value={slq.placeholder || ''}
-                onChange={(e) => onChange({ ...question, placeholder: e.target.value })}
+                onChange={(e) => onChange({ ...question, placeholder: e.target.value } as EditablePatchFormQuestion)}
                 className={styles.input}
               />
             </div>
@@ -142,7 +153,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   type="number"
                   placeholder="0"
                   value={slq.min || 0}
-                  onChange={(e) => onChange({ ...question, min: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => onChange({ ...question, min: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
                   className={styles.input}
                 />
               </div>
@@ -152,7 +163,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   type="number"
                   placeholder="100"
                   value={slq.max || 100}
-                  onChange={(e) => onChange({ ...question, max: parseInt(e.target.value) || 100 })}
+                  onChange={(e) => onChange({ ...question, max: parseInt(e.target.value) || 100 } as EditablePatchFormQuestion)}
                   className={styles.input}
                 />
               </div>
@@ -162,7 +173,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   type="number"
                   placeholder="1"
                   value={slq.step || 1}
-                  onChange={(e) => onChange({ ...question, step: parseInt(e.target.value) || 1 })}
+                  onChange={(e) => onChange({ ...question, step: parseInt(e.target.value) || 1 } as EditablePatchFormQuestion)}
                   className={styles.input}
                 />
               </div>
@@ -187,7 +198,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
       }
       case 'text-long':
       case 'text-short': {
-        const tq = question as TextLong | TextShort;
+        const tq = question as EditablePatchTextLong | EditablePatchTextShort;
         return (
           <>
             <div className={styles.inputGroup}>
@@ -196,7 +207,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                 type="text"
                 placeholder="Ej: Escribe tu respuesta aquí"
                 value={tq.placeholder || ''}
-                onChange={(e) => onChange({ ...question, placeholder: e.target.value })}
+                onChange={(e) => onChange({ ...question, placeholder: e.target.value } as EditablePatchFormQuestion)}
                 className={styles.input}
               />
             </div>
@@ -207,7 +218,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   type="number"
                   placeholder="0"
                   value={tq.minLength || 0}
-                  onChange={(e) => onChange({ ...question, minLength: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => onChange({ ...question, minLength: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
                   className={styles.input}
                 />
               </div>
@@ -217,7 +228,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   type="number"
                   placeholder="0"
                   value={tq.maxLength || 0}
-                  onChange={(e) => onChange({ ...question, maxLength: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => onChange({ ...question, maxLength: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
                   className={styles.input}
                 />
               </div>
@@ -241,8 +252,8 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
 
       <ImageEditor
         image={question.image}
-        onChange={(image, file) => {
-          onChange({ ...question, image });
+        onChange={(imageState: ImageState) => {
+          onChange({ ...question, image: imageState } as EditablePatchFormQuestion);
         }}
         label="Imagen de la pregunta"
         compact={true}
@@ -254,7 +265,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
           type="text"
           placeholder="Ej: Información personal"
           value={question.category || ''}
-          onChange={(e) => onChange({ ...question, category: e.target.value })}
+          onChange={(e) => onChange({ ...question, category: e.target.value } as EditablePatchFormQuestion)}
           className={styles.input}
         />
       </div>
@@ -264,7 +275,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
         <textarea
           placeholder="Escribe tu pregunta aquí..."
           value={question.text || ''}
-          onChange={(e) => onChange({ ...question, text: e.target.value })}
+          onChange={(e) => onChange({ ...question, text: e.target.value } as EditablePatchFormQuestion)}
           className={styles.textarea}
           rows={2}
         />
@@ -274,7 +285,36 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
         <label className={styles.inputLabel}>Tipo de pregunta</label>
         <select
           value={question.type}
-          onChange={(e) => onChange({ ...question, type: e.target.value })}
+          onChange={(e) => {
+            const baseQuestion = {
+              id: question.id,
+              category: question.category,
+              text: question.text,
+              image: question.image
+            };
+
+            let newQuestion: EditablePatchFormQuestion;
+            switch (e.target.value) {
+              case 'select-one':
+                newQuestion = { ...baseQuestion, type: 'select-one', options: [], other: false } as EditablePatchSelectOne;
+                break;
+              case 'select-multiple':
+                newQuestion = { ...baseQuestion, type: 'select-multiple', options: [], min: 0, max: 0, other: false } as EditablePatchSelectMultiple;
+                break;
+              case 'slider':
+                newQuestion = { ...baseQuestion, type: 'slider', placeholder: '', min: 0, max: 100, step: 1, labels: [] } as EditablePatchSlider;
+                break;
+              case 'text-short':
+                newQuestion = { ...baseQuestion, type: 'text-short', placeholder: '', minLength: 0, maxLength: 100 } as EditablePatchTextShort;
+                break;
+              case 'text-long':
+                newQuestion = { ...baseQuestion, type: 'text-long', placeholder: '', minLength: 0, maxLength: 1000 } as EditablePatchTextLong;
+                break;
+              default:
+                return;
+            }
+            onChange(newQuestion);
+          }}
           className={styles.select}
         >
           <option value="select-one">Selección única</option>
@@ -296,7 +336,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
               onClick={() => setShowOptions(!showOptions)}
             >
               <span className={`${styles.arrow} ${showOptions ? styles.arrowExpanded : ''}`}>▼</span>
-              <span>Opciones ({(question as SelectOne | SelectMultiple).options?.length || 0})</span>
+              <span>Opciones ({(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.length || 0})</span>
             </button>
             <button type="button" onClick={handleAddOption} className={styles.addButton}>
               + Agregar opción
@@ -305,8 +345,8 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
 
           {showOptions && (
             <div className={styles.optionsList}>
-              {(question as SelectOne | SelectMultiple).options?.map((option, optionIndex) => (
-                <div key={option.id} className={styles.optionCard}>
+              {(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.map((option, optionIndex) => (
+                <div key={option.id ?? `new-option-${optionIndex}`} className={styles.optionCard}>
                   <div className={styles.optionHeader}>
                     <span className={styles.optionNumber}>Opción {optionIndex + 1}</span>
                     <button
@@ -319,9 +359,8 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
                   </div>
 
                   <ImageEditor
-                    image={option.image}
-                    onChange={(image, file) => {
-                      handleOptionChange(optionIndex, 'image', image);
+                    onChange={(imageState: ImageState) => {
+                      handleOptionChange(optionIndex, 'image', imageState);
                     }}
                     label=""
                     compact={true}
@@ -350,7 +389,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
               onClick={() => setShowLabels(!showLabels)}
             >
               <span className={`${styles.arrow} ${showLabels ? styles.arrowExpanded : ''}`}>▼</span>
-              <span>Etiquetas del slider ({(question as Slider).labels?.length || 0})</span>
+              <span>Etiquetas del slider ({(question as EditablePatchSlider).labels?.length || 0})</span>
             </button>
             <button type="button" onClick={handleAddLabel} className={styles.addButton}>
               + Agregar etiqueta
@@ -359,7 +398,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
 
           {showLabels && (
             <div className={styles.labelsList}>
-              {(question as Slider).labels?.map((label, labelIndex) => (
+              {(question as EditablePatchSlider).labels?.map((label, labelIndex) => (
                 <div key={labelIndex} className={styles.labelCard}>
                   <input
                     type="number"

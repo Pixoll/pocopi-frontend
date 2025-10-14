@@ -1,16 +1,16 @@
-import type {Option} from "@/api";
-import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
+
+import { ImageEditor } from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/OptionEditor.module.css";
+import type {EditablePatchOption, ImageState} from "@/utils/imageCollector.ts";
 
 type OptionEditorProps = {
-  option: Option;
+  option: EditablePatchOption;
   index: number;
-  onChange: (option: Option) => void;
+  onChange: (option: EditablePatchOption) => void;
   onRemove: () => void;
-
 }
 
-export function OptionEditor({ option, index, onChange, onRemove }:OptionEditorProps){
+export function OptionEditor({ option, index, onChange, onRemove }: OptionEditorProps) {
   return (
     <div className={styles.optionItem}>
       <div className={styles.optionHeader}>
@@ -24,7 +24,7 @@ export function OptionEditor({ option, index, onChange, onRemove }:OptionEditorP
             />
             <span className={styles.correctLabel}>Correcta</span>
           </label>
-          <button onClick={onRemove} className={styles.smallRemoveButton} title="Eliminar opción">
+          <button onClick={onRemove} className={styles.smallRemoveButton} title="Eliminar opción" type="button">
             ×
           </button>
         </div>
@@ -41,11 +41,11 @@ export function OptionEditor({ option, index, onChange, onRemove }:OptionEditorP
 
         <ImageEditor
           image={option.image}
-          onChange={(image) => onChange({ ...option, image })}
+          onChange={(imageState: ImageState) => onChange({ ...option, image: imageState })}
           label=""
           compact={true}
         />
       </div>
     </div>
-  )
+  );
 }

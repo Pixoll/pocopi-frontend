@@ -1,14 +1,14 @@
-import type {Faq} from "@/api";
+import type { PatchFaq } from "@/api";
 import styles from "@/styles/ModifyConfigPage/FaqEditor.module.css";
 
 type FaqEditorProps = {
-  faq: Faq;
+  faq: PatchFaq;
   index: number;
-  onChange: (faq: Faq) => void;
+  onChange: (faq: PatchFaq) => void;
   onRemove: () => void;
 }
 
-export function FaqEditor({faq, index, onChange, onRemove}:FaqEditorProps) {
+export function FaqEditor({ faq, index, onChange, onRemove }: FaqEditorProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -29,7 +29,7 @@ export function FaqEditor({faq, index, onChange, onRemove}:FaqEditorProps) {
             type="text"
             placeholder="¿Cuál es tu pregunta frecuente?"
             value={faq.question || ''}
-            onChange={(e) => onChange({...faq, question: e.target.value})}
+            onChange={(e) => onChange({ ...faq, question: e.target.value })}
             className={styles.input}
           />
         </div>
@@ -41,7 +41,7 @@ export function FaqEditor({faq, index, onChange, onRemove}:FaqEditorProps) {
           <textarea
             placeholder="Escribe la respuesta detallada aquí..."
             value={faq.answer || ''}
-            onChange={(e) => onChange({...faq, answer: e.target.value})}
+            onChange={(e) => onChange({ ...faq, answer: e.target.value })}
             className={styles.textarea}
             rows={4}
           />
@@ -51,5 +51,5 @@ export function FaqEditor({faq, index, onChange, onRemove}:FaqEditorProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

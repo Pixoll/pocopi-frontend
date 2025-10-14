@@ -1,23 +1,21 @@
 import React, {useState} from 'react';
 import {produce} from 'immer'
+import {
+  toEditablePatchConfig,
+  type EditablePatchConfig,
+  type EditablePatchSelectOne, type EditablePatchFormQuestion, type EditablePatchInformationCard, buildPatchRequest
+} from "@/utils/imageCollector.ts";
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import {FormQuestionEditor} from "@/components/ModifyConfigPage/FormQuestionEditor.tsx";
 import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCardEditor.tsx";
 import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
-import type {
-  SingleConfigResponse,
-  InformationCard,
-  Faq,
-  SelectOne,
-  SelectMultiple,
-  Slider,
-  TextLong,
-  TextShort
+import api, {
+  type SingleConfigResponse,
+  type PatchFaq
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
-
 
 type ModifyConfigPageProps = {
   initialConfig: SingleConfigResponse;
@@ -25,30 +23,49 @@ type ModifyConfigPageProps = {
 }
 
 export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig/*, onSave*/}) => {
-  const [config, setConfig] = useState<SingleConfigResponse>(initialConfig);
+  const [config, setConfig] = useState<EditablePatchConfig>(toEditablePatchConfig(initialConfig));
   const [activeTab, setActiveTab] = useState<string>('general');
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
   const addQuestion = (formType: 'preTestForm' | 'postTestForm') => {
-    const newQuestion: SelectOne = {
-      id: Date.now(),
+    const newQuestion: EditablePatchSelectOne = {
+      id: undefined,
       category: '',
       text: '',
       type: 'select-one',
       options: [],
       other: false
     };
-    setConfig((currentConfig) =>
-      produce(currentConfig, (draft) => {
-        draft[formType].questions.push(newQuestion);
-      })
-    );
+
+    setConfig(produce(config, draft => {
+      draft[formType].questions.push(newQuestion);
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const patchRequest = buildPatchRequest(config);
+      console.log("request: ", patchRequest);
+
+      const { data, error } = await api.updateLastestConfig({
+        body: patchRequest
+      });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+      console.log(data);
+
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const updateQuestion = (
     formType: 'preTestForm' | 'postTestForm',
     index: number,
-    updatedQuestion: SelectMultiple | SelectOne | Slider | TextLong | TextShort
+    updatedQuestion: EditablePatchFormQuestion
   ) => {
     setConfig((currentConfig) =>
       produce(currentConfig, (draft) => {
@@ -77,7 +94,11 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
 
             <ImageEditor
               image={config.icon}
-              onChange={(icon) => setConfig({...config, icon})}
+              onChange={(imageState) => {
+                setConfig(produce(config, (draft) => {
+                  draft.icon = imageState;
+                }));
+              }}
               label="Icono principal"
             />
 
@@ -145,15 +166,16 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
               <h3>Tarjetas de Información</h3>
               <button
                 onClick={() => {
-                  const newCard: InformationCard = {
+                  const newCard: EditablePatchInformationCard = {
+                    id: undefined,
                     title: '',
                     description: '',
-                    color: 0
+                    color: 0,
+                    icon: undefined
                   };
-                  setConfig({
-                    ...config,
-                    informationCards: [...(config.informationCards || []), newCard]
-                  });
+                  setConfig(produce(config, (draft) => {
+                    draft.informationCards.push(newCard);
+                  }));
                 }}
                 className={styles.addButton}
               >
@@ -162,17 +184,18 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
             </div>
             {config.informationCards?.map((card, index) => (
               <InformationCardEditor
-                key={index}
+                key={card.id ?? `new-card-${index}`}
                 card={card}
                 index={index}
                 onChange={(updated) => {
-                  const newCards = [...config.informationCards];
-                  newCards[index] = updated;
-                  setConfig({...config, informationCards: newCards});
+                  setConfig(produce(config, (draft) => {
+                    draft.informationCards[index] = updated;
+                  }));
                 }}
                 onRemove={() => {
-                  const newCards = config.informationCards.filter((_, i) => i !== index);
-                  setConfig({...config, informationCards: newCards});
+                  setConfig(produce(config, (draft) => {
+                    draft.informationCards = draft.informationCards.filter((_, i) => i !== index);
+                  }));
                 }}
               />
             ))}
@@ -186,7 +209,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
               <h3>Preguntas Frecuentes</h3>
               <button
                 onClick={() => {
-                  const newFaq: Faq = {
+                  const newFaq: PatchFaq = {
                     question: '',
                     answer: ''
                   };
@@ -244,7 +267,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
                     question={question}
                     index={index}
                     onChange={(updatedQuestion) =>
-                      updateQuestion('preTestForm', index, updatedQuestion as any)
+                      updateQuestion('preTestForm', index, updatedQuestion as EditablePatchFormQuestion)
                     }
                     onRemove={() => removeQuestion('preTestForm', index)}
                   />
@@ -367,16 +390,9 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
                   key={selectedGroup}
                   protocol={config.groups[selectedGroup].protocol}
                   onChange={(protocol) => {
-                    setConfig({
-                      ...config,
-                      groups: {
-                        ...config.groups,
-                        [selectedGroup]: {
-                          ...config.groups[selectedGroup],
-                          protocol
-                        }
-                      }
-                    });
+                    setConfig(produce(config, (draft) => {
+                      draft.groups[selectedGroup].protocol = protocol;
+                    }));
                   }}
                 />
               </div>
@@ -450,7 +466,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
     <div className={styles.container}>
       <header className={styles.header}>
         <h1>Editor de Configuración</h1>
-        <button /*onClick={() => onSave(config)}*/ className={styles.saveButton}>
+        <button onClick={() => handleSave()} className={styles.saveButton}>
           Guardar Cambios
         </button>
       </header>

@@ -80,7 +80,7 @@ export type QuestionAnswer = {
 };
 
 export type PatchFaq = {
-    id: number;
+    id?: number;
     question: string;
     answer: string;
 };
@@ -94,7 +94,7 @@ export type PatchForm = {
 };
 
 export type PatchFormOption = {
-    id: number;
+    id?: number;
     text?: string;
 };
 
@@ -162,33 +162,33 @@ export type PatchQuestion = {
 
 export type PatchRequest = {
     /**
-     * Icon by config
-     */
+    * Icon by config
+    */
     appIcon?: Blob | File;
     /**
-     * All images from question and options by pre test form
-     */
-    preTestFormQuestionOptionsFiles: Array<Blob | File>;
+    * All images from question and options by pre test form
+    */
+    preTestFormQuestionOptionsFiles: Array<Blob | File | undefined>;
     /**
-     * All images from question and options by post test form
-     */
-    postTestFormQuestionOptionsFiles: Array<Blob | File>;
+    * All images from question and options by post test form
+    */
+    postTestFormQuestionOptionsFiles: Array<Blob | File | undefined>;
     /**
-     * All images from question and options each phase and protocol
-     */
-    groupQuestionOptionsFiles: Array<Blob | File>;
+    * All images from question and options each phase and protocol
+    */
+    groupQuestionOptionsFiles: Array<Blob | File | undefined>;
     /**
-     * All images from information cards
-     */
-    informationCardFiles: Array<Blob | File>;
+    * All images from information cards
+    */
+    informationCardFiles: Array<Blob | File | undefined>;
     /**
-     * Last configuration updated
-     */
+    * Last configuration updated
+    */
     updateLastConfig: PatchLastConfig;
 };
 
 export type PatchSelectMultiple = PatchFormQuestion & {
-    id: number;
+    id?: number;
     category: string;
     text?: string;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
@@ -199,7 +199,7 @@ export type PatchSelectMultiple = PatchFormQuestion & {
 };
 
 export type PatchSelectOne = PatchFormQuestion & {
-    id: number;
+    id?: number;
     category: string;
     text?: string;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
@@ -208,7 +208,7 @@ export type PatchSelectOne = PatchFormQuestion & {
 };
 
 export type PatchSlider = PatchFormQuestion & {
-    id: number;
+    id?: number;
     category: string;
     text?: string;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
@@ -220,7 +220,7 @@ export type PatchSlider = PatchFormQuestion & {
 };
 
 export type PatchTextLong = PatchFormQuestion & {
-    id: number;
+    id?: number;
     category: string;
     text?: string;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
@@ -230,7 +230,7 @@ export type PatchTextLong = PatchFormQuestion & {
 };
 
 export type PatchTextShort = PatchFormQuestion & {
-    id: number;
+    id?: number;
     category: string;
     text?: string;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
@@ -242,6 +242,27 @@ export type PatchTextShort = PatchFormQuestion & {
 export type SliderLabel = {
     number: number;
     label: string;
+};
+
+export type PatchResponse = {
+    configUpdatesSummary: {
+        [key: string]: string;
+    };
+    informationCardUpdatesSummary: {
+        [key: string]: string;
+    };
+    faqUpdatedSummary: {
+        [key: string]: string;
+    };
+    preTestUpdatedSummary: {
+        [key: string]: string;
+    };
+    postTestUpdatedSummary: {
+        [key: string]: string;
+    };
+    groupSummary: {
+        [key: string]: string;
+    };
 };
 
 export type User = {
@@ -292,7 +313,96 @@ export type UserSummary = {
     accuracy: number;
 };
 
+/**
+ * Resultado de una pregunta de test
+ */
+export type TestQuestionResult = {
+    /**
+     * ID de la pregunta
+     */
+    questionId?: number;
+    /**
+     * ID de la fase
+     */
+    phaseId?: number;
+    /**
+     * Timestamp de inicio
+     */
+    startTimestamp?: number;
+    /**
+     * Timestamp de fin
+     */
+    endTimestamp?: number;
+    /**
+     * ¿Fue respondida correctamente?
+     */
+    correct?: boolean;
+    /**
+     * ¿La pregunta fue saltada?
+     */
+    skipped?: boolean;
+    /**
+     * Cantidad de cambios de opción
+     */
+    totalOptionChanges?: number;
+    /**
+     * Cantidad de hovers
+     */
+    totalOptionHovers?: number;
+};
+
+/**
+ * Resultados de test de un usuario
+ */
+export type UserTestResultsResponse = {
+    /**
+     * ID del usuario
+     */
+    userId?: number;
+    /**
+     * Resultados por pregunta
+     */
+    questions?: Array<TestQuestionResult>;
+};
+
+/**
+ * Contiene las respuestas a un formulario especifico.
+ */
+export type FormAnswers = {
+    /**
+     * ID del formulario
+     */
+    formId: number;
+    /**
+     * Título del formulario
+     */
+    formTitle: string;
+    /**
+     * Respuestas a preguntas del formulario
+     */
+    answers: Array<QuestionAnswer>;
+};
+
+/**
+ * Respuestas de los resultados de los formularios(pre-test y post-test)
+ */
+export type UserFormResultsResponse = {
+    /**
+     * ID del usuario
+     */
+    userId: number;
+    /**
+     * Resultados de formularios pre-test
+     */
+    pre: Array<FormAnswers>;
+    /**
+     * Resultados de formularios post-test
+     */
+    post: Array<FormAnswers>;
+};
+
 export type Faq = {
+    id: number;
     question: string;
     answer: string;
 };
@@ -330,6 +440,7 @@ export type Image = {
 };
 
 export type InformationCard = {
+    id: number;
     title: string;
     description: string;
     color: number;
@@ -349,6 +460,8 @@ export type Phase = {
 };
 
 export type Protocol = {
+    id: number;
+    label: string;
     allowPreviousPhase: boolean;
     allowPreviousQuestion: boolean;
     allowSkipQuestion: boolean;
@@ -385,6 +498,10 @@ export type SelectOne = FormQuestion & {
 };
 
 export type SingleConfigResponse = {
+    /**
+     * Configuration version
+     */
+    id: number;
     /**
      * Configuration icon image
      */
@@ -529,7 +646,7 @@ export type UpdateLastestConfigResponses = {
     /**
      * OK
      */
-    200: string;
+    200: PatchResponse;
 };
 
 export type UpdateLastestConfigResponse = UpdateLastestConfigResponses[keyof UpdateLastestConfigResponses];
@@ -635,6 +752,78 @@ export type GetUserSummaryByIdResponses = {
 };
 
 export type GetUserSummaryByIdResponse = GetUserSummaryByIdResponses[keyof GetUserSummaryByIdResponses];
+
+export type GetUserTestResultsData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/results/test/user/{userId}';
+};
+
+export type GetUserTestResultsResponses = {
+    /**
+     * OK
+     */
+    200: UserTestResultsResponse;
+};
+
+export type GetUserTestResultsResponse = GetUserTestResultsResponses[keyof GetUserTestResultsResponses];
+
+export type GetGroupTestResultsZipData = {
+    body?: never;
+    path: {
+        groupId: number;
+    };
+    query?: never;
+    url: '/api/results/test/group/{groupId}/zip';
+};
+
+export type GetGroupTestResultsZipResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetGroupTestResultsZipResponse = GetGroupTestResultsZipResponses[keyof GetGroupTestResultsZipResponses];
+
+export type GetUserFormResultsData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/form-results/user/{userId}';
+};
+
+export type GetUserFormResultsResponses = {
+    /**
+     * OK
+     */
+    200: UserFormResultsResponse;
+};
+
+export type GetUserFormResultsResponse = GetUserFormResultsResponses[keyof GetUserFormResultsResponses];
+
+export type GetGroupFormResultsAsZipData = {
+    body?: never;
+    path: {
+        groupId: number;
+    };
+    query?: never;
+    url: '/api/form-results/group/{groupId}';
+};
+
+export type GetGroupFormResultsAsZipResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetGroupFormResultsAsZipResponse = GetGroupFormResultsAsZipResponses[keyof GetGroupFormResultsAsZipResponses];
 
 export type GetLastestConfigData = {
     body?: never;
