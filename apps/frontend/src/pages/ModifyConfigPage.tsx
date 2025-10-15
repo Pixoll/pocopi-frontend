@@ -11,7 +11,7 @@ import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCa
 import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
-import api, {
+import api,{
   type SingleConfigResponse,
   type PatchFaq
 } from "@/api";
@@ -45,9 +45,9 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
   const handleSave = async () => {
     try {
       const patchRequest = buildPatchRequest(config);
-      console.log("request: ", patchRequest);
+      console.log(patchRequest);
 
-      const { data, error } = await api.updateLastestConfig({
+      const { data, error } = await api.updateConfig({
         body: patchRequest
       });
 

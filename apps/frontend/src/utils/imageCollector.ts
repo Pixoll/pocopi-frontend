@@ -117,6 +117,9 @@ export type EditablePatchConfig = {
     [key: string]: string;
   };
 };
+function createEmptyFile(): File {
+  return new File([], '', { type: 'application/octet-stream' });
+}
 
 function toImageState(image: Image | undefined): ImageState | undefined {
   if (!image) return undefined;
@@ -338,25 +341,43 @@ function resolveImageToFile(imageState: ImageState | undefined): File | undefine
   }
 }
 
-function extractFormImages(questions: EditablePatchFormQuestion[]): Array<File | undefined> {
-  const images: Array<File | undefined> = [];
+function extractFormImages(questions: EditablePatchFormQuestion[]): Record<number, File> {
+  const changes: Record<number, File> = {};
+  let index = 0;
 
   for (const question of questions) {
-    images.push(resolveImageToFile(question.image));
+    const questionFile = resolveImageToFile(question.image);
+    if (questionFile !== undefined) {
+      if (questionFile.size === 0) {
+        changes[index] = createEmptyFile();
+      } else {
+        changes[index] = questionFile;
+      }
+    }
+    index++;
 
     if ('options' in question && question.options) {
       for (const option of question.options) {
-        images.push(resolveImageToFile(option.image));
+        const optionFile = resolveImageToFile(option.image);
+        if (optionFile !== undefined) {
+          if (optionFile.size === 0) {
+            changes[index] = createEmptyFile();
+          } else {
+            changes[index] = optionFile;
+          }
+        }
+        index++;
       }
     }
   }
 
-  return images;
+  return changes;
 }
 
-function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Array<File | undefined> {
-  const images: Array<File | undefined> = [];
+function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Record<number, File> {
+  const changes: Record<number, File> = {};
   const groupKeys = Object.keys(groups).sort();
+  let index = 0;
 
   for (const groupKey of groupKeys) {
     const group = groups[groupKey];
@@ -366,20 +387,49 @@ function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Arra
       if (!phase.questions) continue;
 
       for (const question of phase.questions) {
-        images.push(resolveImageToFile(question.image));
+        const questionFile = resolveImageToFile(question.image);
+        if (questionFile !== undefined) {
+          if (questionFile.size === 0) {
+            changes[index] = createEmptyFile();
+          } else {
+            changes[index] = questionFile;
+          }
+        }
+        index++;
 
         for (const option of question.options) {
-          images.push(resolveImageToFile(option.image));
+          const optionFile = resolveImageToFile(option.image);
+          if (optionFile !== undefined) {
+            if (optionFile.size === 0) {
+              changes[index] = createEmptyFile();
+            } else {
+              changes[index] = optionFile;
+            }
+          }
+          index++;
         }
       }
     }
   }
 
-  return images;
+  return changes;
 }
 
-function extractInformationCardImages(cards: EditablePatchInformationCard[]): Array<File | undefined> {
-  return cards.map(card => resolveImageToFile(card.icon));
+function extractInformationCardImages(cards: EditablePatchInformationCard[]): Record<number, File> {
+  const changes: Record<number, File> = {};
+
+  cards.forEach((card, index) => {
+    const file = resolveImageToFile(card.icon);
+    if (file !== undefined) {
+      if (file.size === 0) {
+        changes[index] = createEmptyFile();
+      } else {
+        changes[index] = file;
+      }
+    }
+  });
+
+  return changes;
 }
 
 export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig {
@@ -553,17 +603,12 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
 export function buildPatchRequest(config: EditablePatchConfig): PatchRequest {
   const appIcon = resolveImageToFile(config.icon);
 
-  const preTestFormImages = extractFormImages(config.preTestForm.questions);
-  const postTestFormImages = extractFormImages(config.postTestForm.questions);
-  const groupImages = extractGroupImages(config.groups);
-  const informationCardImages = extractInformationCardImages(config.informationCards);
-
   return {
-    appIcon,
-    preTestFormQuestionOptionsFiles: preTestFormImages as (File | undefined)[],
-    postTestFormQuestionOptionsFiles: postTestFormImages as (File | undefined)[],
-    groupQuestionOptionsFiles: groupImages as (File | undefined)[],
-    informationCardFiles: informationCardImages as (File | undefined)[],
+    appIcon: appIcon && appIcon.size > 0 ? appIcon : undefined,
+    preTestFormQuestionOptionsFiles: extractFormImages(config.preTestForm.questions) ? extractFormImages(config.preTestForm.questions) : {},
+    postTestFormQuestionOptionsFiles: extractFormImages(config.postTestForm.questions) ? extractFormImages(config.postTestForm.questions) : {},
+    groupQuestionOptionsFiles: extractGroupImages(config.groups) ? extractGroupImages(config.groups) : {},
+    informationCardFiles: extractInformationCardImages(config.informationCards) ? extractInformationCardImages(config.informationCards) : {},
     updateLastConfig: toPatchLastConfig(config)
   };
 }
