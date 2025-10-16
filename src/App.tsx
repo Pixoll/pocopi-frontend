@@ -7,15 +7,13 @@ import {TestGreetingPage} from "@/pages/TestGreetingPage";
 import {TestPage} from "@/pages/TestPage";
 import {AdminPage} from "@/pages/AdminPage";
 import {ModifyConfigPage} from "@/pages/ModifyConfigPage";
+import {LoadingPage} from "@/pages/LoadingPage";
 import { Routes, Route, useNavigate, Navigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Decimal from "decimal.js";
 
-
-
 function sampleGroup(config: SingleConfigResponse): Group {
-
   const groupsArray = Object.values(config.groups);
   const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
   const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
@@ -54,8 +52,10 @@ export function App() {
   const [config, setConfig] = useState<SingleConfigResponse | null>(null);
   const [group, setGroup] = useState<Group | null>(null);
   const [userData, setUserData] = useState<CreateUserRequest | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   async function getConfig(): Promise<void> {
+    setIsLoading(true);
     try {
       const response = await api.getLastestConfig();
       if (response.data) {
@@ -67,19 +67,20 @@ export function App() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
+
   useEffect(() => {
     getConfig();
   }, []);
-
 
   const goToPreTest = (data: CreateUserRequest) => {
     window.scrollTo(0, 0);
     setUserData(data);
     navigate("/pretest");
   };
-
 
   const goToGreeting = () => {
     window.scrollTo(0, 0);
@@ -111,48 +112,51 @@ export function App() {
     navigate("/dashboard");
   };
 
-  if(!group || !config){
-    return (<div>Cargando...</div>)
+  if (isLoading || !group || !config) {
+    return <LoadingPage message="Cargando configuración..." />;
   }
+
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={<HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard} />}
-      />
-      <Route
-        path="/pretest"
-        element={<FormPage config={config} type="pre-test" username={userData?.username ?? ""} goToNextPage={goToGreeting} />}
-      />
-      <Route
-        path="/greeting"
-        element={<TestGreetingPage config={config} groupGreeting={group.greeting} goToNextPage={goToTest} />}
-      />
-      <Route
-        path="/test"
-        element={<TestPage config={config} protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!} />}
-      />
-      <Route
-        path="/posttest"
-        element={<FormPage config={config} type="post-test" username={userData?.username ?? ""} goToNextPage={goToEnd} />}
-      />
-      <Route
-        path="/end"
-        element={<CompletionModal config={config} userData={userData!} onBackToHome={goToHome} />}
-      />
-      <Route
-        path="/dashboard"
-        element={<AnalyticsDashboard config={config} onBack={goToHome}/>}
-      />
-      <Route
-        path="/admin"
-        element={<AdminPage />}
-      />
-      <Route
-        path="/modify-config"
-        element={<ModifyConfigPage initialConfig={config} />}
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route
+          path="/"
+          element={<HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard} />}
+        />
+        <Route
+          path="/pretest"
+          element={<FormPage config={config} type="pre-test" username={userData?.username ?? ""} goToNextPage={goToGreeting} />}
+        />
+        <Route
+          path="/greeting"
+          element={<TestGreetingPage config={config} groupGreeting={group.greeting} goToNextPage={goToTest} />}
+        />
+        <Route
+          path="/test"
+          element={<TestPage config={config} protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!} />}
+        />
+        <Route
+          path="/posttest"
+          element={<FormPage config={config} type="post-test" username={userData?.username ?? ""} goToNextPage={goToEnd} />}
+        />
+        <Route
+          path="/end"
+          element={<CompletionModal config={config} userData={userData!} onBackToHome={goToHome} />}
+        />
+        <Route
+          path="/dashboard"
+          element={<AnalyticsDashboard config={config} onBack={goToHome}/>}
+        />
+        <Route
+          path="/admin"
+          element={<AdminPage />}
+        />
+        <Route
+          path="/modify-config"
+          element={<ModifyConfigPage initialConfig={config} />}
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
