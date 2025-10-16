@@ -7,12 +7,14 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { useUserData } from "@/hooks/useUserData";
 import styles from "@/styles/HomePage/HomePage.module.css";
+import {AdminButton} from "@/components/HomePage/AdminButton.tsx";
 
 type HomePageProps = {
   group: Group;
   config: SingleConfigResponse;
   goToNextPage: (data: CreateUserRequest) => void;
   onDashboard: () => void;
+  onAdmin: () => void;
 };
 
 export function HomePage({
@@ -20,6 +22,7 @@ export function HomePage({
   config,
   goToNextPage,
   onDashboard,
+  onAdmin,
 }: HomePageProps) {
   const {
     showModal,
@@ -75,6 +78,7 @@ export function HomePage({
         goToNextPage={goToNextPage}
       />
 
+      <AdminButton isDarkMode={isDarkMode} onAdmin={onAdmin}/>
       <DashboardButton config={config} isDarkMode={isDarkMode} onDashboard={onDashboard}/>
 
       <ThemeSwitcher config={config}/>

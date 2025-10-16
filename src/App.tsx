@@ -81,6 +81,10 @@ export function App() {
     setUserData(data);
     navigate("/pretest");
   };
+  const goToAdminPage = () => {
+    window.scrollTo(0, 0);
+    navigate("/admin");
+  }
 
   const goToGreeting = () => {
     window.scrollTo(0, 0);
@@ -121,7 +125,7 @@ export function App() {
       <Routes>
         <Route
           path="/"
-          element={<HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard} />}
+          element={<HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard} onAdmin={goToAdminPage}/>}
         />
         <Route
           path="/pretest"

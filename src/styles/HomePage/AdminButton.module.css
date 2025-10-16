@@ -1,0 +1,31 @@
+.adminButton {
+    position: fixed;
+    bottom: 5.5rem; 
+    left: 1rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.adminButtonDark {
+    background-color: #212529;
+    color: white;
+}
+
+.adminButtonLight {
+    background-color: #f8f9fa;
+    color: black;
+}
+
+.icon {
+    color: #0d6efd;
+}
