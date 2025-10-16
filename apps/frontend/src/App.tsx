@@ -1,28 +1,21 @@
 import api, {type CreateUserRequest, type SingleConfigResponse, type Group} from "@/api";
-//import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
+import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
 import {CompletionModal} from "@/pages/CompletionModal";
 import {FormPage} from "@/pages/FormPage";
 import {HomePage} from "@/pages/HomePage";
 import {TestGreetingPage} from "@/pages/TestGreetingPage";
 import {TestPage} from "@/pages/TestPage";
-// import {AdminPage} from "@/pages/AdminPage";
+import {AdminPage} from "@/pages/AdminPage";
 import {ModifyConfigPage} from "@/pages/ModifyConfigPage";
-//import mime from "mime";
+import { Routes, Route, useNavigate, Navigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Decimal from "decimal.js";
 
-enum Page {
-  HOME,
-  PRETEST,
-  GREETING,
-  TEST,
-  POSTTEST,
-  END,
-  DASHBOARD,
-}
+
 
 function sampleGroup(config: SingleConfigResponse): Group {
+
   const groupsArray = Object.values(config.groups);
   const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
   const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
@@ -56,33 +49,23 @@ function sampleGroup(config: SingleConfigResponse): Group {
 }
 
 export function App() {
-  const [config, setConfig] = useState<SingleConfigResponse | null>(null);
+  const navigate = useNavigate();
 
+  const [config, setConfig] = useState<SingleConfigResponse | null>(null);
   const [group, setGroup] = useState<Group | null>(null);
-  const [page, setPage] = useState<Page>(Page.HOME);
   const [userData, setUserData] = useState<CreateUserRequest | null>(null);
 
   async function getConfig(): Promise<void> {
-    try{
+    try {
       const response = await api.getLastestConfig();
-      if(response.data){
+      if (response.data) {
         setConfig(response.data);
         setGroup(sampleGroup(response.data));
         document.title = response.data.title ?? "";
-        /*if(response.data.icon){
-          const head = document.querySelector("head")!;
-          const link = document.createElement("link");
-          link.rel = "icon";
-          //link.type = mime.getType(response.data.icon.url ?? "")!;
-          //link.href = response.data.icon.url ?? "";
-          head.appendChild(link);
-        }*/
-
-      }else{
+      } else {
         console.error(response.error);
-
       }
-    }catch (error){
+    } catch (error) {
       console.error(error);
     }
   }
@@ -90,61 +73,86 @@ export function App() {
     getConfig();
   }, []);
 
+
   const goToPreTest = (data: CreateUserRequest) => {
     window.scrollTo(0, 0);
     setUserData(data);
-    setPage(Page.TEST);
+    navigate("/pretest");
   };
+
 
   const goToGreeting = () => {
     window.scrollTo(0, 0);
-    setPage(Page.GREETING);
+    navigate("/greeting");
   };
 
   const goToTest = () => {
     window.scrollTo(0, 0);
-    setPage(Page.TEST);
+    navigate("/test");
   };
 
   const goToPostTest = () => {
     window.scrollTo(0, 0);
-    setPage(Page.POSTTEST);
+    navigate("/posttest");
   };
 
   const goToEnd = () => {
     window.scrollTo(0, 0);
-    setPage(Page.END);
+    navigate("/end");
   };
 
   const goToHome = () => {
     window.scrollTo(0, 0);
-    setPage(Page.HOME);
+    navigate("/");
   };
 
   const goToDashboard = () => {
     window.scrollTo(0, 0);
-    setPage(Page.DASHBOARD);
+    navigate("/dashboard");
   };
 
   if(!group || !config){
     return (<div>Cargando...</div>)
   }
-  switch (page) {
-    case Page.HOME:
-      return <HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard}/>;
-    case Page.PRETEST:
-      return <FormPage config={config} type="pre-test" username={userData?.username ?? ""} goToNextPage={goToGreeting}/>;
-    case Page.GREETING:
-      return <TestGreetingPage config={config} groupGreeting={group.greeting} goToNextPage={goToTest}/>;
-    case Page.TEST:
-      return <TestPage config={config} protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!}/>;
-    case Page.POSTTEST:
-      return <FormPage config={config} type="post-test" username={userData?.username ?? ""} goToNextPage={goToEnd}/>;
-    case Page.END:
-      return <CompletionModal config={config} userData={userData!} onBackToHome={goToHome}/>;
-    case Page.DASHBOARD:
-      return <ModifyConfigPage initialConfig={config} />
-    //case Page.DASHBOARD:
-      //return <AnalyticsDashboard config={config} onBack={goToHome}/>;
-  }
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard} />}
+      />
+      <Route
+        path="/pretest"
+        element={<FormPage config={config} type="pre-test" username={userData?.username ?? ""} goToNextPage={goToGreeting} />}
+      />
+      <Route
+        path="/greeting"
+        element={<TestGreetingPage config={config} groupGreeting={group.greeting} goToNextPage={goToTest} />}
+      />
+      <Route
+        path="/test"
+        element={<TestPage config={config} protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!} />}
+      />
+      <Route
+        path="/posttest"
+        element={<FormPage config={config} type="post-test" username={userData?.username ?? ""} goToNextPage={goToEnd} />}
+      />
+      <Route
+        path="/end"
+        element={<CompletionModal config={config} userData={userData!} onBackToHome={goToHome} />}
+      />
+      <Route
+        path="/dashboard"
+        element={<AnalyticsDashboard config={config} onBack={goToHome}/>}
+      />
+      <Route
+        path="/admin"
+        element={<AdminPage />}
+      />
+      <Route
+        path="/modify-config"
+        element={<ModifyConfigPage initialConfig={config} />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
