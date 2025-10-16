@@ -1,0 +1,24 @@
+{
+  "name": "config-migration",
+  "version": "1.0.0",
+  "main": "./dist/migrate.js",
+  "scripts": {
+    "start": "node .",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@stylistic/eslint-plugin-ts": "^4.2.0",
+    "@types/node": "^22.14.1",
+    "eslint": "^9.21.0",
+    "globals": "^15.15.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.24.1"
+  },
+  "dependencies": {
+    "decimal.js": "^10.5.0",
+    "fast-xml-parser": "^5.2.1",
+    "jsonschema": "^1.5.0",
+    "yaml": "^2.7.1"
+  }
+}

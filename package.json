@@ -3,25 +3,48 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "pnpm --filter ./packages/config start",
-    "dev": "pnpm --parallel dev",
-    "dev:frontend": "pnpm run predev && pnpm --filter ./apps/frontend dev",
-    "build": "pnpm --filter ./packages/config build && pnpm --filter \"...^@pocopi/config\" -r build",
-    "build:frontend": "pnpm --filter ./apps/frontend build",
-    "prestart": "pnpm --filter ./packages/config start",
-    "start": "pnpm -r start",
-    "start:frontend": "pnpm run prestart && pnpm --filter ./apps/frontend start",
-    "migrate": "pnpm --filter ./packages/config migrate",
-    "test": "pnpm -r test",
-    "lint": "pnpm -r lint",
-    "format": "pnpm -r format",
-    "clean": "pnpm -r clean"
-  },
-  "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=10.8.0"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "start": "vite preview",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src --ext ts,tsx --fix",
+    "clean": "rm -rf node_modules dist",
+    "openapi": "openapi-ts",
+    "migrate": "cd config-migration && npm i && npm run build && npm start"
   },
   "dependencies": {
-    "immer": "^10.1.3"
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "axios": "^1.8.4",
+    "bootstrap": "^5.3.6",
+    "decimal.js": "^10.5.0",
+    "immer": "^10.1.3",
+    "mime": "^4.0.7",
+    "react": "^19.0.0",
+    "react-bootstrap": "^2.10.9",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "react-router": "^7.5.1",
+    "react-router-dom": "^7.9.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@hey-api/openapi-ts": "^0.85.2",
+    "@types/node": "^22.18.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }
