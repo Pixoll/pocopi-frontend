@@ -109,7 +109,7 @@ export function UserFormModal({
       anonymous: isAnonymous,
       name: isAnonymous ? "" : formData.name,
       email: isAnonymous ? "" : formData.email,
-      age: isAnonymous ? "0" : formData.age,
+      age: isAnonymous ? "" : formData.age,
     };
 
     try {
@@ -141,7 +141,6 @@ export function UserFormModal({
 
     try {
       await api.login({body:loginData});
-
       setSaving(false);
       resetForm();
       onHide();
