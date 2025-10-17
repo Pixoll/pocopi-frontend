@@ -1,4 +1,4 @@
-import type {CreateUserRequest, Group, SingleConfigResponse} from "@/api";
+import type {NewUser, Group, SingleConfigResponse} from "@/api";
 import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
 import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
@@ -12,13 +12,12 @@ import {AdminButton} from "@/components/HomePage/AdminButton.tsx";
 type HomePageProps = {
   group: Group;
   config: SingleConfigResponse;
-  goToNextPage: (data: CreateUserRequest) => void;
+  goToNextPage: (data: NewUser) => void;
   onDashboard: () => void;
   onAdmin: () => void;
 };
 
 export function HomePage({
-  group,
   config,
   goToNextPage,
   onDashboard,
@@ -31,30 +30,8 @@ export function HomePage({
     handleOpenModal,
     handleCloseModal,
     handleConsentChange,
-    sendUserData,
-  } = useUserData(group, config);
+  } = useUserData(config);
   const { isDarkMode } = useTheme();
-
-  //deberia ser como: correct sign up + config.anonymous -> go to next page
-  /*const startTest = () => {
-    console.log("config.anonymous:", config.anonymous);
-    console.log("consentAccepted:", consentAccepted);
-
-    if (!consentAccepted) return;
-
-    if (config.anonymous) {
-      if (userData) {
-        console.log("startTest:");
-        sendUserData(userData, () => goToNextPage(userData));
-      } else {
-        console.warn("No hay datos de usuario para enviar en modo anónimo");
-      }
-    } else {
-      handleOpenModal();
-    }
-  };*/
-
-
 
   return (
     <div className={styles.container}>
@@ -71,10 +48,8 @@ export function HomePage({
 
       <UserFormModal
         config={config}
-        group={group}
         show={showModal}
         onHide={handleCloseModal}
-        onCreateUser={sendUserData}
         goToNextPage={goToNextPage}
       />
 

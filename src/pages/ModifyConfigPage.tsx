@@ -11,9 +11,9 @@ import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCa
 import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
-import api,{
+import api, {
+  type PatchFaq,
   type SingleConfigResponse,
-  type PatchFaq
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 
@@ -326,7 +326,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
                 <option value="">-- Selecciona un grupo --</option>
                 {Object.keys(config.groups || {}).map((key) => (
                   <option key={key} value={key}>
-                    {key} - {config.groups[key].label}
+                    {config.groups[key].label}
                   </option>
                 ))}
               </select>

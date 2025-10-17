@@ -1,4 +1,4 @@
-import api, {type CreateUserRequest, type SingleConfigResponse, type Group} from "@/api";
+import api, {type NewUser, type SingleConfigResponse, type Group} from "@/api";
 import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
 import {CompletionModal} from "@/pages/CompletionModal";
 import {FormPage} from "@/pages/FormPage";
@@ -51,7 +51,7 @@ export function App() {
 
   const [config, setConfig] = useState<SingleConfigResponse | null>(null);
   const [group, setGroup] = useState<Group | null>(null);
-  const [userData, setUserData] = useState<CreateUserRequest | null>(null);
+  const [userData, setUserData] = useState<NewUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   async function getConfig(): Promise<void> {
@@ -60,6 +60,7 @@ export function App() {
       const response = await api.getLastestConfig();
       if (response.data) {
         setConfig(response.data);
+        console.log(response.data);
         setGroup(sampleGroup(response.data));
         document.title = response.data.title ?? "";
       } else {
@@ -76,7 +77,11 @@ export function App() {
     getConfig();
   }, []);
 
-  const goToPreTest = (data: CreateUserRequest) => {
+  const goToModifyConfigPage= ()=>{
+    window.scrollTo(0, 0);
+    navigate("/modify-config");
+  }
+  const goToPreTest = (data: NewUser) => {
     window.scrollTo(0, 0);
     setUserData(data);
     navigate("/pretest");
@@ -153,7 +158,7 @@ export function App() {
         />
         <Route
           path="/admin"
-          element={<AdminPage />}
+          element={<AdminPage goToModifyConfigPage={goToModifyConfigPage} />}
         />
         <Route
           path="/modify-config"

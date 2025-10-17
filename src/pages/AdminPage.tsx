@@ -1,7 +1,9 @@
 import styles from "@/styles/AdminPage/AdminPage.module.css";
 import {useState} from "react";
-
-export function AdminPage() {
+type AdminPageProps = {
+  goToModifyConfigPage: () => void;
+}
+export function AdminPage({goToModifyConfigPage}: AdminPageProps){
   const [Ids, setIds] = useState([1, 2, 3, 4, 5]);
   const [max, setMax] = useState(5);
 
@@ -34,7 +36,7 @@ export function AdminPage() {
         <div className={styles.buttonsContainer}>
           {isLast ? (
             <div className={styles.buttonWrapper}>
-              <button className={styles.modifyButton}>
+              <button onClick={goToModifyConfigPage} className={styles.modifyButton}>
                 Modify
               </button>
               <span className={styles.buttonHint}>Edit current configuration</span>

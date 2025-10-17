@@ -22,8 +22,7 @@ import type {
   Image
 } from "@/api";
 
-
- //para trackear cambios en el editor
+//para trackear cambios en el editor
 
 export type ImageState =
   | { type: 'unchanged'; value: Image | undefined } // no cambios
@@ -117,6 +116,7 @@ export type EditablePatchConfig = {
     [key: string]: string;
   };
 };
+
 function createEmptyFile(): File {
   return new File([], '', { type: 'application/octet-stream' });
 }
@@ -341,17 +341,17 @@ function resolveImageToFile(imageState: ImageState | undefined): File | undefine
   }
 }
 
-function extractFormImages(questions: EditablePatchFormQuestion[]): Record<number, File> {
-  const changes: Record<number, File> = {};
+function extractFormImages(questions: EditablePatchFormQuestion[]): Record<string, File> {
+  const changes: Record<string, File> = {};
   let index = 0;
 
   for (const question of questions) {
     const questionFile = resolveImageToFile(question.image);
     if (questionFile !== undefined) {
       if (questionFile.size === 0) {
-        changes[index] = createEmptyFile();
+        changes[index.toString()] = createEmptyFile();
       } else {
-        changes[index] = questionFile;
+        changes[index.toString()] = questionFile;
       }
     }
     index++;
@@ -361,9 +361,9 @@ function extractFormImages(questions: EditablePatchFormQuestion[]): Record<numbe
         const optionFile = resolveImageToFile(option.image);
         if (optionFile !== undefined) {
           if (optionFile.size === 0) {
-            changes[index] = createEmptyFile();
+            changes[index.toString()] = createEmptyFile();
           } else {
-            changes[index] = optionFile;
+            changes[index.toString()] = optionFile;
           }
         }
         index++;
@@ -374,8 +374,8 @@ function extractFormImages(questions: EditablePatchFormQuestion[]): Record<numbe
   return changes;
 }
 
-function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Record<number, File> {
-  const changes: Record<number, File> = {};
+function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Record<string, File> {
+  const changes: Record<string, File> = {};
   const groupKeys = Object.keys(groups).sort();
   let index = 0;
 
@@ -390,9 +390,9 @@ function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Reco
         const questionFile = resolveImageToFile(question.image);
         if (questionFile !== undefined) {
           if (questionFile.size === 0) {
-            changes[index] = createEmptyFile();
+            changes[index.toString()] = createEmptyFile();
           } else {
-            changes[index] = questionFile;
+            changes[index.toString()] = questionFile;
           }
         }
         index++;
@@ -401,9 +401,9 @@ function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Reco
           const optionFile = resolveImageToFile(option.image);
           if (optionFile !== undefined) {
             if (optionFile.size === 0) {
-              changes[index] = createEmptyFile();
+              changes[index.toString()] = createEmptyFile();
             } else {
-              changes[index] = optionFile;
+              changes[index.toString()] = optionFile;
             }
           }
           index++;
@@ -415,16 +415,16 @@ function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Reco
   return changes;
 }
 
-function extractInformationCardImages(cards: EditablePatchInformationCard[]): Record<number, File> {
-  const changes: Record<number, File> = {};
+function extractInformationCardImages(cards: EditablePatchInformationCard[]): Record<string, File> {
+  const changes: Record<string, File> = {};
 
   cards.forEach((card, index) => {
     const file = resolveImageToFile(card.icon);
     if (file !== undefined) {
       if (file.size === 0) {
-        changes[index] = createEmptyFile();
+        changes[index.toString()] = createEmptyFile();
       } else {
-        changes[index] = file;
+        changes[index.toString()] = file;
       }
     }
   });
@@ -605,10 +605,10 @@ export function buildPatchRequest(config: EditablePatchConfig): PatchRequest {
 
   return {
     appIcon: appIcon && appIcon.size > 0 ? appIcon : undefined,
-    preTestFormQuestionOptionsFiles: extractFormImages(config.preTestForm.questions) ? extractFormImages(config.preTestForm.questions) : {},
-    postTestFormQuestionOptionsFiles: extractFormImages(config.postTestForm.questions) ? extractFormImages(config.postTestForm.questions) : {},
-    groupQuestionOptionsFiles: extractGroupImages(config.groups) ? extractGroupImages(config.groups) : {},
-    informationCardFiles: extractInformationCardImages(config.informationCards) ? extractInformationCardImages(config.informationCards) : {},
+    preTestFormQuestionOptionsFiles: extractFormImages(config.preTestForm.questions),
+    postTestFormQuestionOptionsFiles: extractFormImages(config.postTestForm.questions),
+    groupQuestionOptionsFiles: extractGroupImages(config.groups),
+    informationCardFiles: extractInformationCardImages(config.informationCards),
     updateLastConfig: toPatchLastConfig(config)
   };
 }

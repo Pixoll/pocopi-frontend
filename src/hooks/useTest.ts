@@ -1,4 +1,4 @@
-import type {CreateUserRequest, Protocol} from "@/api";
+import type {NewUser, Protocol} from "@/api";
 import {type SendOptionEvent, useWebSocket} from "@/hooks/useWebSocket.ts";
 import { useState } from "react";
 
@@ -22,7 +22,7 @@ type Test = {
 
 export function useTest(
   protocol: Protocol,
-  userData: CreateUserRequest,
+  userData: NewUser,
 ): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);

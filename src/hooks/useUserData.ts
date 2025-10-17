@@ -1,24 +1,23 @@
-import api, {type CreateUserRequest, type Group, type SingleConfigResponse} from "@/api";
+import api, {type NewUser, type SingleConfigResponse} from "@/api";
 import { type ChangeEvent, useState } from "react";
 
 type HookedUserData = {
   showModal: boolean;
   consentAccepted: boolean;
-  userData: CreateUserRequest | null;
+  userData: NewUser | null;
   handleOpenModal: () => void;
   handleCloseModal: () => void;
   handleConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  sendUserData: (data: CreateUserRequest, onSaved?: () => void, onError?: (message: string) => void) => void;
+  sendUserData: (data: NewUser, onSaved?: () => void, onError?: (message: string) => void) => void;
 };
 
-export function useUserData(group: Group, config: SingleConfigResponse): HookedUserData {
+export function useUserData( config: SingleConfigResponse): HookedUserData {
   const [showModal, setShowModal] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
-  const [userData, setUserData] = useState<CreateUserRequest | null>(config.anonymous ? {
+  const [userData, setUserData] = useState<NewUser | null>(config.anonymous ? {
     username: "",
-    age: 0,
+    age: "0",
     email: "",
-    groupId: group.id,
     name: "",
     password: "",
     anonymous: false,
@@ -36,7 +35,7 @@ export function useUserData(group: Group, config: SingleConfigResponse): HookedU
     setConsentAccepted(e.target.checked);
   };
 
-  const sendUserData = async (data: CreateUserRequest, onSaved?: () => void, onError?: (message: string) => void) => {
+  const sendUserData = async (data: NewUser, onSaved?: () => void, onError?: (message: string) => void) => {
     try {
       const response = await api.createUser({
         body: data,

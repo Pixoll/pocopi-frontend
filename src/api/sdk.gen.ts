@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateUserData, CreateUserErrors, CreateUserResponses, GetAllTimeLogsData, GetAllTimeLogsResponses, GetAllUsersData, GetAllUsersResponses, GetAllUserSummariesData, GetAllUserSummariesResponses, GetGroupFormResultsAsZipData, GetGroupFormResultsAsZipResponses, GetGroupTestResultsZipData, GetGroupTestResultsZipResponses, GetLastestConfigData, GetLastestConfigResponses, GetUserData, GetUserFormResultsData, GetUserFormResultsResponses, GetUserResponses, GetUserSummaryByIdData, GetUserSummaryByIdResponses, GetUserTestResultsData, GetUserTestResultsResponses, GetUserTimelogsData, GetUserTimelogsResponses, SubmitFormAnswersData, SubmitFormAnswersResponses, UpdateConfigData, UpdateConfigResponses, UploadImageData, UploadImageResponses } from './types.gen';
+import type { CreateUserData, CreateUserErrors, CreateUserResponses, GetAllTimeLogsData, GetAllTimeLogsResponses, GetAllUsersData, GetAllUsersLatestConfigFormsZipData, GetAllUsersLatestConfigFormsZipResponses, GetAllUsersLatestConfigResultsZipData, GetAllUsersLatestConfigResultsZipResponses, GetAllUsersLatestConfigTestsZipData, GetAllUsersLatestConfigTestsZipResponses, GetAllUsersResponses, GetAllUserSummariesData, GetAllUserSummariesResponses, GetGroupFormResultsZipData, GetGroupFormResultsZipResponses, GetGroupFullResultsZipData, GetGroupFullResultsZipResponses, GetGroupTestResultsZipData, GetGroupTestResultsZipResponses, GetLastestConfigData, GetLastestConfigResponses, GetUserAllResultsData, GetUserAllResultsResponses, GetUserData, GetUserFormResultsData, GetUserFormResultsResponses, GetUserResponses, GetUserSummaryByIdData, GetUserSummaryByIdResponses, GetUserTestResultsData, GetUserTestResultsResponses, GetUserTimelogsData, GetUserTimelogsResponses, LoginData, LoginResponses, RegisterData, RegisterResponses, SubmitFormAnswersData, SubmitFormAnswersResponses, UpdateConfigData, UpdateConfigResponses, UploadImageData, UploadImageResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -52,14 +52,36 @@ export const submitFormAnswers = <ThrowOnError extends boolean = false>(options:
     });
 };
 
-export const updateConfig = <ThrowOnError extends boolean = false>(options: Options<UpdateConfigData, ThrowOnError>) => {
-    return (options.client ?? client).patch<UpdateConfigResponses, unknown, ThrowOnError>({
+export const register = <ThrowOnError extends boolean = false>(options: Options<RegisterData, ThrowOnError>) => {
+    return (options.client ?? client).post<RegisterResponses, unknown, ThrowOnError>({
+        url: '/api/auth/register',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+export const login = <ThrowOnError extends boolean = false>(options: Options<LoginData, ThrowOnError>) => {
+    return (options.client ?? client).post<LoginResponses, unknown, ThrowOnError>({
+        url: '/api/auth/login',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+export const updateConfig = <ThrowOnError extends boolean = false>(options?: Options<UpdateConfigData, ThrowOnError>) => {
+    return (options?.client ?? client).patch<UpdateConfigResponses, unknown, ThrowOnError>({
         ...formDataBodySerializer,
         url: '/api/config',
         ...options,
         headers: {
             'Content-Type': null,
-            ...options.headers
+            ...options?.headers
         }
     });
 };
@@ -108,28 +130,63 @@ export const getUserSummaryById = <ThrowOnError extends boolean = false>(options
 
 export const getUserTestResults = <ThrowOnError extends boolean = false>(options: Options<GetUserTestResultsData, ThrowOnError>) => {
     return (options.client ?? client).get<GetUserTestResultsResponses, unknown, ThrowOnError>({
-        url: '/api/results/test/user/{userId}',
-        ...options
-    });
-};
-
-export const getGroupTestResultsZip = <ThrowOnError extends boolean = false>(options: Options<GetGroupTestResultsZipData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetGroupTestResultsZipResponses, unknown, ThrowOnError>({
-        url: '/api/results/test/group/{groupId}/zip',
+        url: '/api/results/user/{userId}/tests',
         ...options
     });
 };
 
 export const getUserFormResults = <ThrowOnError extends boolean = false>(options: Options<GetUserFormResultsData, ThrowOnError>) => {
     return (options.client ?? client).get<GetUserFormResultsResponses, unknown, ThrowOnError>({
-        url: '/api/form-results/user/{userId}',
+        url: '/api/results/user/{userId}/forms',
         ...options
     });
 };
 
-export const getGroupFormResultsAsZip = <ThrowOnError extends boolean = false>(options: Options<GetGroupFormResultsAsZipData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetGroupFormResultsAsZipResponses, unknown, ThrowOnError>({
-        url: '/api/form-results/group/{groupId}',
+export const getUserAllResults = <ThrowOnError extends boolean = false>(options: Options<GetUserAllResultsData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetUserAllResultsResponses, unknown, ThrowOnError>({
+        url: '/api/results/user/{userId}/all',
+        ...options
+    });
+};
+
+export const getAllUsersLatestConfigResultsZip = <ThrowOnError extends boolean = false>(options?: Options<GetAllUsersLatestConfigResultsZipData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetAllUsersLatestConfigResultsZipResponses, unknown, ThrowOnError>({
+        url: '/api/results/user/all/latest/zip',
+        ...options
+    });
+};
+
+export const getAllUsersLatestConfigTestsZip = <ThrowOnError extends boolean = false>(options?: Options<GetAllUsersLatestConfigTestsZipData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetAllUsersLatestConfigTestsZipResponses, unknown, ThrowOnError>({
+        url: '/api/results/user/all/latest/tests/zip',
+        ...options
+    });
+};
+
+export const getAllUsersLatestConfigFormsZip = <ThrowOnError extends boolean = false>(options?: Options<GetAllUsersLatestConfigFormsZipData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetAllUsersLatestConfigFormsZipResponses, unknown, ThrowOnError>({
+        url: '/api/results/user/all/latest/forms/zip',
+        ...options
+    });
+};
+
+export const getGroupTestResultsZip = <ThrowOnError extends boolean = false>(options: Options<GetGroupTestResultsZipData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetGroupTestResultsZipResponses, unknown, ThrowOnError>({
+        url: '/api/results/group/{groupId}/tests',
+        ...options
+    });
+};
+
+export const getGroupFormResultsZip = <ThrowOnError extends boolean = false>(options: Options<GetGroupFormResultsZipData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetGroupFormResultsZipResponses, unknown, ThrowOnError>({
+        url: '/api/results/group/{groupId}/forms',
+        ...options
+    });
+};
+
+export const getGroupFullResultsZip = <ThrowOnError extends boolean = false>(options: Options<GetGroupFullResultsZipData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetGroupFullResultsZipResponses, unknown, ThrowOnError>({
+        url: '/api/results/group/{groupId}/all',
         ...options
     });
 };

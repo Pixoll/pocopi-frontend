@@ -1,26 +1,73 @@
 .card {
     background: var(--card-light);
-    padding: 1.5rem;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     margin-bottom: 1rem;
-    border: 1px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.card.expanded {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .cardHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid transparent;
 }
 
-.cardHeader h4,
-.cardHeader h5 {
+.cardHeader:hover {
+    background-color: var(--input-bg);
+}
+
+.card.expanded .cardHeader {
+    border-bottom-color: var(--border-color);
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.chevronIcon {
+    color: var(--accent-teal);
+    font-size: 14px;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.headerInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.headerInfo h5 {
     margin: 0;
-    color: var(--text-primary);
+    font-size: 1rem;
     font-weight: 600;
+    color: var(--text-primary);
+}
+
+.summary {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .removeButton {
@@ -34,6 +81,9 @@
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .removeButton:hover {
@@ -42,31 +92,61 @@
     box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
 
-.input {
+.cardBody {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
     transition: all 0.2s;
     box-sizing: border-box;
     background: var(--input-bg);
     color: var(--text-primary);
-    margin-bottom: 0.75rem;
+    min-height: 80px;
 }
 
-.input:focus {
+.textarea:focus {
     outline: none;
     border-color: var(--accent-teal);
     box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.1);
 }
 
-.input::placeholder {
+.textarea::placeholder {
     color: var(--text-muted);
 }
 
 .section {
-    margin: 1.5rem 0;
+    margin-top: 1.5rem;
     padding: 1rem;
     background: var(--input-bg);
     border-radius: 4px;
@@ -82,11 +162,11 @@
     gap: 1rem;
 }
 
-.sectionHeader h3,
 .sectionHeader h6 {
     margin: 0;
-    color: var(--text-primary);
+    font-size: 0.95rem;
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 .addButton {
@@ -101,10 +181,72 @@
     transition: all 0.2s;
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .addButton:hover {
     background: var(--success-hover);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: var(--card-light);
+    border-radius: 4px;
+    border: 1px dashed var(--border-color);
+}
+
+.emptyState p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.emptyState small {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.optionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .cardHeader {
+        padding: 1rem;
+    }
+
+    .cardBody {
+        padding: 0 1rem 1rem 1rem;
+    }
+
+    .headerInfo h5 {
+        font-size: 0.9rem;
+    }
+
+    .summary {
+        font-size: 0.8rem;
+    }
+
+    .removeButton {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .addButton {
+        width: 100%;
+        justify-content: center;
+    }
 }

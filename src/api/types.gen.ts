@@ -53,17 +53,13 @@ export type MultiFieldException = {
     localizedMessage?: string;
 };
 
-export type CreateUserRequest = {
-    /**
-     * Username by user like rut or other identifier
-     */
+export type NewUser = {
     username: string;
-    groupId: number;
     anonymous: boolean;
     name: string;
     email: string;
-    age: number;
-    password?: string;
+    age: string;
+    password: string;
 };
 
 export type UploadImageResponse = {
@@ -81,6 +77,15 @@ export type QuestionAnswer = {
     optionId: number;
     value: number;
     answer: string;
+};
+
+export type Token = {
+    token: string;
+};
+
+export type Credentials = {
+    username: string;
+    password: string;
 };
 
 export type PatchFaq = {
@@ -173,25 +178,25 @@ export type PatchRequest = {
      * All images from question and options by pre test form
      */
     preTestFormQuestionOptionsFiles: {
-        [key: number]: Blob | File;
+        [key: string]: Blob | File;
     };
     /**
      * All images from question and options by post test form
      */
     postTestFormQuestionOptionsFiles: {
-        [key: number]: Blob | File;
+        [key: string]: Blob | File;
     };
     /**
      * All images from question and options each phase and protocol
      */
     groupQuestionOptionsFiles: {
-        [key: number]: Blob | File;
+        [key: string]: Blob | File;
     };
     /**
      * All images from information cards
      */
     informationCardFiles: {
-        [key: number]: Blob | File;
+        [key: string]: Blob | File;
     };
     /**
      * Last configuration updated
@@ -317,7 +322,6 @@ export type UserSummary = {
     name: string;
     email: string;
     age: number;
-    group: string;
     timestamp: number;
     timeTaken: number;
     correctQuestions: number;
@@ -364,13 +368,35 @@ export type TestQuestionResult = {
 };
 
 /**
- * Resultados de test de un usuario
+ * Datos básicos de un usuario
  */
-export type UserTestResultsResponse = {
+export type UserBasicInfoResponse = {
     /**
      * ID del usuario
      */
-    userId?: number;
+    id?: number;
+    /**
+     * Nombre del usuario
+     */
+    name?: string;
+    /**
+     * Email del usuario
+     */
+    email?: string;
+    /**
+     * Edad del usuario
+     */
+    age?: number;
+};
+
+/**
+ * Resultados de test de un usuario
+ */
+export type UserTestResultsWithInfoResponse = {
+    /**
+     * Información del usuario, incluyendo el ID de grupo de test
+     */
+    user?: UserBasicInfoResponse;
     /**
      * Resultados por pregunta
      */
@@ -396,21 +422,48 @@ export type FormAnswers = {
 };
 
 /**
- * Respuestas de los resultados de los formularios(pre-test y post-test)
+ * Respuestas de los resultados de los formularios (pre-test y post-test) de un usuario
  */
-export type UserFormResultsResponse = {
+export type UserFormWithInfoResultsResponse = {
     /**
-     * ID del usuario
+     * Información del usuario, incluyendo el ID de grupo de test
      */
-    userId: number;
+    user?: UserBasicInfoResponse;
     /**
      * Resultados de formularios pre-test
      */
-    pre: Array<FormAnswers>;
+    pre?: Array<FormAnswers>;
     /**
      * Resultados de formularios post-test
      */
-    post: Array<FormAnswers>;
+    post?: Array<FormAnswers>;
+};
+
+/**
+ * Resultados completos (formularios y tests) de un usuario, con info de usuario unica
+ */
+export type UserAllResultsResponse = {
+    /**
+     * Datos del usuario
+     */
+    user?: UserBasicInfoResponse;
+    /**
+     * Resultados de formularios
+     */
+    forms?: UserFormsPart;
+    /**
+     * Resultados de test
+     */
+    tests?: UserTestsPart;
+};
+
+export type UserFormsPart = {
+    pre?: Array<FormAnswers>;
+    post?: Array<FormAnswers>;
+};
+
+export type UserTestsPart = {
+    questions?: Array<TestQuestionResult>;
 };
 
 export type Faq = {
@@ -586,7 +639,7 @@ export type TextShort = FormQuestion & {
 };
 
 export type CreateUserData = {
-    body: CreateUserRequest;
+    body: NewUser;
     path?: never;
     query?: never;
     url: '/api/users';
@@ -647,8 +700,40 @@ export type SubmitFormAnswersResponses = {
 
 export type SubmitFormAnswersResponse = SubmitFormAnswersResponses[keyof SubmitFormAnswersResponses];
 
+export type RegisterData = {
+    body: NewUser;
+    path?: never;
+    query?: never;
+    url: '/api/auth/register';
+};
+
+export type RegisterResponses = {
+    /**
+     * OK
+     */
+    200: Token;
+};
+
+export type RegisterResponse = RegisterResponses[keyof RegisterResponses];
+
+export type LoginData = {
+    body: Credentials;
+    path?: never;
+    query?: never;
+    url: '/api/auth/login';
+};
+
+export type LoginResponses = {
+    /**
+     * OK
+     */
+    200: Token;
+};
+
+export type LoginResponse = LoginResponses[keyof LoginResponses];
+
 export type UpdateConfigData = {
-    body: PatchRequest;
+    body?: PatchRequest;
     path?: never;
     query?: never;
     url: '/api/config';
@@ -771,17 +856,101 @@ export type GetUserTestResultsData = {
         userId: number;
     };
     query?: never;
-    url: '/api/results/test/user/{userId}';
+    url: '/api/results/user/{userId}/tests';
 };
 
 export type GetUserTestResultsResponses = {
     /**
      * OK
      */
-    200: UserTestResultsResponse;
+    200: UserTestResultsWithInfoResponse;
 };
 
 export type GetUserTestResultsResponse = GetUserTestResultsResponses[keyof GetUserTestResultsResponses];
+
+export type GetUserFormResultsData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/results/user/{userId}/forms';
+};
+
+export type GetUserFormResultsResponses = {
+    /**
+     * OK
+     */
+    200: UserFormWithInfoResultsResponse;
+};
+
+export type GetUserFormResultsResponse = GetUserFormResultsResponses[keyof GetUserFormResultsResponses];
+
+export type GetUserAllResultsData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/results/user/{userId}/all';
+};
+
+export type GetUserAllResultsResponses = {
+    /**
+     * OK
+     */
+    200: UserAllResultsResponse;
+};
+
+export type GetUserAllResultsResponse = GetUserAllResultsResponses[keyof GetUserAllResultsResponses];
+
+export type GetAllUsersLatestConfigResultsZipData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/results/user/all/latest/zip';
+};
+
+export type GetAllUsersLatestConfigResultsZipResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetAllUsersLatestConfigResultsZipResponse = GetAllUsersLatestConfigResultsZipResponses[keyof GetAllUsersLatestConfigResultsZipResponses];
+
+export type GetAllUsersLatestConfigTestsZipData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/results/user/all/latest/tests/zip';
+};
+
+export type GetAllUsersLatestConfigTestsZipResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetAllUsersLatestConfigTestsZipResponse = GetAllUsersLatestConfigTestsZipResponses[keyof GetAllUsersLatestConfigTestsZipResponses];
+
+export type GetAllUsersLatestConfigFormsZipData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/results/user/all/latest/forms/zip';
+};
+
+export type GetAllUsersLatestConfigFormsZipResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetAllUsersLatestConfigFormsZipResponse = GetAllUsersLatestConfigFormsZipResponses[keyof GetAllUsersLatestConfigFormsZipResponses];
 
 export type GetGroupTestResultsZipData = {
     body?: never;
@@ -789,7 +958,7 @@ export type GetGroupTestResultsZipData = {
         groupId: number;
     };
     query?: never;
-    url: '/api/results/test/group/{groupId}/zip';
+    url: '/api/results/group/{groupId}/tests';
 };
 
 export type GetGroupTestResultsZipResponses = {
@@ -801,41 +970,41 @@ export type GetGroupTestResultsZipResponses = {
 
 export type GetGroupTestResultsZipResponse = GetGroupTestResultsZipResponses[keyof GetGroupTestResultsZipResponses];
 
-export type GetUserFormResultsData = {
-    body?: never;
-    path: {
-        userId: number;
-    };
-    query?: never;
-    url: '/api/form-results/user/{userId}';
-};
-
-export type GetUserFormResultsResponses = {
-    /**
-     * OK
-     */
-    200: UserFormResultsResponse;
-};
-
-export type GetUserFormResultsResponse = GetUserFormResultsResponses[keyof GetUserFormResultsResponses];
-
-export type GetGroupFormResultsAsZipData = {
+export type GetGroupFormResultsZipData = {
     body?: never;
     path: {
         groupId: number;
     };
     query?: never;
-    url: '/api/form-results/group/{groupId}';
+    url: '/api/results/group/{groupId}/forms';
 };
 
-export type GetGroupFormResultsAsZipResponses = {
+export type GetGroupFormResultsZipResponses = {
     /**
      * OK
      */
     200: string;
 };
 
-export type GetGroupFormResultsAsZipResponse = GetGroupFormResultsAsZipResponses[keyof GetGroupFormResultsAsZipResponses];
+export type GetGroupFormResultsZipResponse = GetGroupFormResultsZipResponses[keyof GetGroupFormResultsZipResponses];
+
+export type GetGroupFullResultsZipData = {
+    body?: never;
+    path: {
+        groupId: number;
+    };
+    query?: never;
+    url: '/api/results/group/{groupId}/all';
+};
+
+export type GetGroupFullResultsZipResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetGroupFullResultsZipResponse = GetGroupFullResultsZipResponses[keyof GetGroupFullResultsZipResponses];
 
 export type GetLastestConfigData = {
     body?: never;

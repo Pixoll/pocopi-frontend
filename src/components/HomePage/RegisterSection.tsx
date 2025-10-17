@@ -1,4 +1,4 @@
-import type {CreateUserRequest, SingleConfigResponse} from "@/api";
+import type {NewUser, SingleConfigResponse} from "@/api";
 import {InputWithIcon} from "@/components/HomePage/InputWithIcon.tsx";
 import {faCakeCandles, faCircleNotch, faEnvelope, faIdCard, faKey, faSave, faUser} from "@fortawesome/free-solid-svg-icons";
 import {t} from "@/utils/translations.ts";
@@ -9,7 +9,7 @@ import type {ChangeEvent, FormEvent} from "react";
 
 type RegisterSectionProps = {
   config: SingleConfigResponse;
-  userData: CreateUserRequest;
+  userData: NewUser;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onHide: () => void;
@@ -78,7 +78,7 @@ export default function RegisterSection({
                 label={t(config, "home.age")}
                 type="number"
                 name="age"
-                value={(userData.age) && userData.age > 0 ? userData.age.toString() : ""}
+                value={userData.age && userData.age !== "0" ? userData.age : ""}
                 onChange={handleChange}
                 required
                 min="5"
