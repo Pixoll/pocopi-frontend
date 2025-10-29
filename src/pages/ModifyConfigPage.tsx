@@ -12,14 +12,14 @@ import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
 import api, {
-  type PatchFaq,
-  type SingleConfigResponse,
+  type FrequentlyAskedQuestionUpdate,
+  type Config,
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 
 type ModifyConfigPageProps = {
-  initialConfig: SingleConfigResponse;
-  onSave?: (config: SingleConfigResponse) => void;
+  initialConfig: Config;
+  onSave?: (config: Config) => void;
 }
 
 export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig/*, onSave*/}) => {
@@ -209,7 +209,7 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
               <h3>Preguntas Frecuentes</h3>
               <button
                 onClick={() => {
-                  const newFaq: PatchFaq = {
+                  const newFaq: FrequentlyAskedQuestionUpdate = {
                     question: '',
                     answer: ''
                   };

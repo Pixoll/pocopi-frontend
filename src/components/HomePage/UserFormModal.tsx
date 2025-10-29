@@ -1,4 +1,4 @@
-import api, {type NewUser, type Credentials, type SingleConfigResponse} from "@/api";
+import api, {type NewUser, type Credentials, type Config} from "@/api";
 import {useTheme} from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
 import {
@@ -16,7 +16,7 @@ import RegisterSection from "./RegisterSection";
 import LoginSection from "./LoginSection";
 
 type UserFormModalProps = {
-  config: SingleConfigResponse;
+  config: Config;
   show: boolean;
   onHide: () => void;
   goToNextPage: (data: NewUser) => void;

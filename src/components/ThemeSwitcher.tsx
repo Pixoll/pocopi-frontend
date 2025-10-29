@@ -3,9 +3,9 @@ import styles from "@/styles/ThemeSwitcher.module.css";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {t} from "@/utils/translations.ts";
-import type {SingleConfigResponse} from "@/api";
+import type {Config} from "@/api";
 
-export function ThemeSwitcher({config}:{config:SingleConfigResponse}) {
+export function ThemeSwitcher({config}:{config:Config}) {
   const { isDarkMode, toggleTheme } = useTheme();
 
   return (

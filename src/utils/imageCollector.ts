@@ -1,24 +1,24 @@
 import type {
-  SingleConfigResponse,
+  Config,
   SelectOne,
   SelectMultiple,
   Slider,
   TextShort,
   TextLong,
-  PatchRequest,
-  PatchLastConfig,
-  PatchFormOption,
-  PatchOption,
-  PatchSelectOne,
-  PatchSelectMultiple,
-  PatchSlider,
-  PatchTextShort,
-  PatchTextLong,
-  PatchQuestion,
-  PatchPhase,
-  PatchGroup,
-  PatchInformationCard,
-  PatchFaq,
+  ConfigUpdateWithFiles,
+  ConfigUpdate,
+  FormOptionUpdate,
+  TestOptionUpdate,
+  SelectOneUpdate,
+  SelectMultipleUpdate,
+  SliderUpdate,
+  TextShortUpdate,
+  TextLongUpdate,
+  TestQuestionUpdate,
+  TestPhaseUpdate,
+  TestGroupUpdate,
+  InformationCardUpdate,
+  FrequentlyAskedQuestionUpdate,
   Image
 } from "@/api";
 
@@ -29,33 +29,33 @@ export type ImageState =
   | { type: 'new'; value: File } // nueva o reemplazo
   | { type: 'deleted' }; // eliminada
 
-export type EditablePatchFormOption = PatchFormOption & {
+export type EditablePatchFormOption = FormOptionUpdate & {
   image?: ImageState;
 };
 
-export type EditablePatchOption = PatchOption & {
+export type EditablePatchOption = TestOptionUpdate & {
   image?: ImageState;
 };
 
-export type EditablePatchSelectOne = PatchSelectOne & {
-  image?: ImageState;
-  options: EditablePatchFormOption[];
-};
-
-export type EditablePatchSelectMultiple = PatchSelectMultiple & {
+export type EditablePatchSelectOne = SelectOneUpdate & {
   image?: ImageState;
   options: EditablePatchFormOption[];
 };
 
-export type EditablePatchSlider = PatchSlider & {
+export type EditablePatchSelectMultiple = SelectMultipleUpdate & {
+  image?: ImageState;
+  options: EditablePatchFormOption[];
+};
+
+export type EditablePatchSlider = SliderUpdate & {
   image?: ImageState;
 };
 
-export type EditablePatchTextShort = PatchTextShort & {
+export type EditablePatchTextShort = TextShortUpdate & {
   image?: ImageState;
 };
 
-export type EditablePatchTextLong = PatchTextLong & {
+export type EditablePatchTextLong = TextLongUpdate & {
   image?: ImageState;
 };
 
@@ -71,12 +71,12 @@ export type EditablePatchForm = {
   questions: EditablePatchFormQuestion[];
 };
 
-export type EditablePatchQuestion = PatchQuestion & {
+export type EditablePatchQuestion = TestQuestionUpdate & {
   image?: ImageState;
   options: EditablePatchOption[];
 };
 
-export type EditablePatchPhase = Omit<PatchPhase, 'questions'> & {
+export type EditablePatchPhase = Omit<TestPhaseUpdate, 'questions'> & {
   questions: EditablePatchQuestion[];
 };
 
@@ -89,11 +89,11 @@ export type EditablePatchProtocol = {
   phases: EditablePatchPhase[];
 };
 
-export type EditablePatchGroup = Omit<PatchGroup, 'protocol'> & {
+export type EditablePatchGroup = Omit<TestQuestionUpdate, 'protocol'> & {
   protocol: EditablePatchProtocol;
 };
 
-export type EditablePatchInformationCard = PatchInformationCard & {
+export type EditablePatchInformationCard = InformationCardUpdate & {
   icon?: ImageState;
 };
 
@@ -106,7 +106,7 @@ export type EditablePatchConfig = {
   anonymous: boolean;
   informationCards: EditablePatchInformationCard[];
   informedConsent: string;
-  faq: PatchFaq[];
+  faq: FrequentlyAskedQuestionUpdate[];
   preTestForm: EditablePatchForm;
   postTestForm: EditablePatchForm;
   groups: {
@@ -126,7 +126,7 @@ function toImageState(image: Image | undefined): ImageState | undefined {
   return { type: 'unchanged', value: image };
 }
 
-export function toEditablePatchConfig(serverConfig: SingleConfigResponse): EditablePatchConfig {
+export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig {
   return {
     version: serverConfig.id,
     icon: toImageState(serverConfig.icon),
@@ -144,7 +144,7 @@ export function toEditablePatchConfig(serverConfig: SingleConfigResponse): Edita
       icon: toImageState(card.icon)
     })),
 
-    faq: serverConfig.faq.map(f => ({
+    faq: serverConfig.frequentlyAskedQuestion.map(f => ({
       id: f.id,
       question: f.question,
       answer: f.answer
@@ -432,7 +432,7 @@ function extractInformationCardImages(cards: EditablePatchInformationCard[]): Re
   return changes;
 }
 
-export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig {
+export function toPatchLastConfig(config: EditablePatchConfig): ConfigUpdate {
   return {
     version: config.version,
     title: config.title,
@@ -441,7 +441,7 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
     anonymous: config.anonymous,
     informedConsent: config.informedConsent,
 
-    informationCards: config.informationCards.map((card): PatchInformationCard => ({
+    informationCards: config.informationCards.map((card): InformationCardUpdate => ({
       id: card.id,
       title: card.title,
       description: card.description,
@@ -464,7 +464,7 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
           case 'select-one':
             return {
               ...base,
-              options: (q as EditablePatchSelectOne).options.map((opt): PatchFormOption => ({
+              options: (q as EditablePatchSelectOne).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
                 text: opt.text
               })),
@@ -473,7 +473,7 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
           case 'select-multiple':
             return {
               ...base,
-              options: (q as EditablePatchSelectMultiple).options.map((opt): PatchFormOption => ({
+              options: (q as EditablePatchSelectMultiple).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
                 text: opt.text
               })),
@@ -522,7 +522,7 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
           case 'select-one':
             return {
               ...base,
-              options: (q as EditablePatchSelectOne).options.map((opt): PatchFormOption => ({
+              options: (q as EditablePatchSelectOne).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
                 text: opt.text
               })),
@@ -531,7 +531,7 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
           case 'select-multiple':
             return {
               ...base,
-              options: (q as EditablePatchSelectMultiple).options.map((opt): PatchFormOption => ({
+              options: (q as EditablePatchSelectMultiple).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
                 text: opt.text
               })),
@@ -570,7 +570,7 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
       const group = config.groups[key];
       acc[key] = {
         id: group.id,
-        probability: group.probability,
+        probability: group.probability ?? 0,
         label: group.label,
         greeting: group.greeting,
         protocol: group.protocol ? {
@@ -579,12 +579,12 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
           allowPreviousPhase: group.protocol.allowPreviousPhase,
           allowPreviousQuestion: group.protocol.allowPreviousQuestion,
           allowSkipQuestion: group.protocol.allowSkipQuestion,
-          phases: group.protocol.phases.map((phase): PatchPhase => ({
+          phases: group.protocol.phases.map((phase): TestPhaseUpdate => ({
             id: phase.id,
-            questions: phase.questions.map((q): PatchQuestion => ({
+            questions: phase.questions.map((q): TestQuestionUpdate => ({
               id: q.id,
               text: q.text,
-              options: q.options.map((opt): PatchOption => ({
+              options: q.options.map((opt): TestOptionUpdate => ({
                 id: opt.id,
                 text: opt.text,
                 correct: opt.correct
@@ -592,15 +592,15 @@ export function toPatchLastConfig(config: EditablePatchConfig): PatchLastConfig 
             }))
           }))
         } : undefined
-      } as PatchGroup;
+      } as TestGroupUpdate;
       return acc;
-    }, {} as { [key: string]: PatchGroup }),
+    }, {} as { [key: string]: TestGroupUpdate }),
 
     translations: config.translations
   };
 }
 
-export function buildPatchRequest(config: EditablePatchConfig): PatchRequest {
+export function buildPatchRequest(config: EditablePatchConfig): ConfigUpdateWithFiles {
   const appIcon = resolveImageToFile(config.icon);
 
   return {

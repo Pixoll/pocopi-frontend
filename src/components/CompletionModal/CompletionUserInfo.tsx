@@ -1,4 +1,4 @@
-import type {CreateUserRequest, SingleConfigResponse} from "@/api";
+import type {NewUser, Config} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionUserInfo.module.css";
 import { faEnvelope, faIdCard, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -6,8 +6,8 @@ import { UserInfoDetail } from "./UserInfoDetail";
 import {t} from "@/utils/translations.ts";
 
 type CompletionUserInfoProps = {
-  config: SingleConfigResponse
-  userData: CreateUserRequest;
+  config: Config
+  userData: NewUser;
 }
 
 export function CompletionUserInfo({config, userData }: CompletionUserInfoProps) {

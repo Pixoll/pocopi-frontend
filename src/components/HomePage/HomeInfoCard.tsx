@@ -1,4 +1,4 @@
-import type {CreateUserRequest, SingleConfigResponse} from "@/api";
+import type {NewUser, Config} from "@/api";
 import { faArrowRight, faFileSignature } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ChangeEvent } from "react";
@@ -9,9 +9,9 @@ import {t} from "@/utils/translations.ts";
 
 
 type HomeInfoCardProps = {
-  config: SingleConfigResponse
+  config: Config
   isDarkMode: boolean;
-  userData: CreateUserRequest | null;
+  userData: NewUser | null;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onRegister: () => void;
@@ -28,11 +28,10 @@ export function HomeInfoCard({
   const infoCardsAmount = config.informationCards.length;
   const iconOpacity = isDarkMode ? 0.25 : 0.10;
 
-  const faqAmount = config.faq.length;
+  const faqAmount = config.frequentlyAskedQuestion.length;
   const lastFaqRowIndex = Math.floor((faqAmount - 1) / 2);
   return (
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
-      {/* Alerta con datos del participante si ya se ingresaron */}
       {userData && !userData.anonymous && (
         <div
           className={[
@@ -52,7 +51,6 @@ export function HomeInfoCard({
         </div>
       )}
       <Card.Body className="p-4 p-md-5">
-        {/* Información sobre el test */}
         <h2 className="h4 mb-4">{t(config, "home.aboutThisTest")}</h2>
         <div className="mb-4">
           <Markdown>{config.description}</Markdown>
@@ -81,7 +79,6 @@ export function HomeInfoCard({
             ))}
           </Row>
         ))}
-        {/* Consentimiento informado */}
         <div className="border-top pt-4 mb-4">
           <h3 className="h5 mb-3">{t(config, "home.informedConsent")}</h3>
           <div className="mb-4">
@@ -95,7 +92,6 @@ export function HomeInfoCard({
             className="user-select-none fw-bold"
           />
         </div>
-        {/* Botón para iniciar el test o continuar */}
         <div className="text-center mt-4">
           {!userData ? (
             <Button
@@ -121,7 +117,6 @@ export function HomeInfoCard({
           )}
         </div>
       </Card.Body>
-      {/* Preguntas frecuentes en un acordeón */}
       {faqAmount > 0 && (
         <Accordion className="border-top" flush>
           <Accordion.Item eventKey="0">
@@ -129,7 +124,7 @@ export function HomeInfoCard({
             <Accordion.Body>
               {Array.from({ length: Math.ceil(faqAmount / 2) }, (_, i) => (
                 <Row key={`faq-row-${i}`} className="g-4">
-                  {config.faq.slice(i * 2, i * 2 + 2).map((faq, index) => (
+                  {config.frequentlyAskedQuestion.slice(i * 2, i * 2 + 2).map((faq, index) => (
                     <Col key={`faq-${i * 2 + index}`} md={6}>
                       <h5 className="h6 fw-bold">
                         {faq.question}

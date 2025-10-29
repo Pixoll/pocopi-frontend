@@ -1,4 +1,4 @@
-import type {SingleConfigResponse} from "@/api";
+import type {Config} from "@/api";
 import {InputWithIcon} from "@/components/HomePage/InputWithIcon.tsx";
 import {faCircleNotch, faIdCard, faKey, faSignIn} from "@fortawesome/free-solid-svg-icons";
 import {t} from "@/utils/translations.ts";
@@ -8,7 +8,7 @@ import {Form} from "react-bootstrap";
 import type {ChangeEvent, FormEvent} from "react";
 
 type LoginSectionProps = {
-  config: SingleConfigResponse;
+  config: Config;
   username: string;
   password: string;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;

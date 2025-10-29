@@ -2,10 +2,10 @@ import styles from "@/styles/DashboardPage/DashboardHeader.module.css";
 import { faArrowLeft, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {t} from "@/utils/translations.ts";
-import type {SingleConfigResponse} from "@/api";
+import type {Config} from "@/api";
 
 type DashboardHeaderProps = {
-  config: SingleConfigResponse;
+  config: Config;
   isDarkMode: boolean;
   onBack: () => void;
 };

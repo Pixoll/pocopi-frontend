@@ -1,13 +1,13 @@
 import styles from "@/styles/DashboardPage/DashboardSummary.module.css";
 import { faChartLine, faCheckCircle, faUser } from "@fortawesome/free-solid-svg-icons";
 import { StatCard } from "./StatCard";
-import type {SingleConfigResponse, TotalUserSummary} from "@/api";
+import type {Config, UsersSummary} from "@/api";
 import {t} from "@/utils/translations.ts";
 
 type DashboardSummaryProps = {
-  config: SingleConfigResponse;
+  config: Config;
   isDarkMode: boolean;
-  summary: TotalUserSummary;
+  summary: UsersSummary;
 };
 
 export function DashboardSummary({config, isDarkMode, summary }: DashboardSummaryProps) {

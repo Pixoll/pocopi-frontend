@@ -1,8 +1,8 @@
 import styles from "@/styles/HomePage/HomeHeader.module.css";
-import type {SingleConfigResponse} from "@/api";
+import type {Config} from "@/api";
 
 type HomeHeaderProps = {
-  config: SingleConfigResponse;
+  config: Config;
   isDarkMode: boolean;
 };
 

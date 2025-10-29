@@ -1,4 +1,4 @@
-import api, {type SingleConfigResponse, type TotalUserSummary, type UserSummary} from "@/api";
+import api, {type Config, type UsersSummary, type UserSummary} from "@/api";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -7,9 +7,9 @@ import { useState } from "react";
 import {t} from "@/utils/translations.ts";
 
 type ParticipantsListProps = {
-  config: SingleConfigResponse;
+  config: Config;
   isDarkMode: boolean;
-  summary: TotalUserSummary;
+  summary: UsersSummary;
   setError: (value: string | null) => void;
 };
 
@@ -45,7 +45,6 @@ export function ParticipantsList({
       summary.users.forEach((u) => {
         rows.push([
           u.id,
-          u.group,
           escapeCsvValue(u.name),
           escapeCsvValue(u.email ?? "-"),
           u.age ?? "-",
@@ -170,7 +169,6 @@ export function ParticipantsList({
                     </div>
                   </div>
                 </td>
-                <td>{user.group}</td>
                 <td>{new Date(user.timestamp).toLocaleString()}</td>
                 <td>{(user.timeTaken / 1000).toFixed(2)}</td>
                 <td>{user.correctQuestions}</td>

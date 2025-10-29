@@ -1,4 +1,4 @@
-import api, {type CreateUserRequest, type SingleConfigResponse, type UserSummary} from "@/api";
+import api, {type NewUser, type Config, type UserSummary} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
 import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesome/free-solid-svg-icons";
@@ -11,8 +11,8 @@ type UserResult = UserSummary & {
 };
 
 type CompletionResultsProps = {
-  config: SingleConfigResponse;
-  userData: CreateUserRequest;
+  config: Config;
+  userData: NewUser;
 };
 
 export function CompletionResults({ config, userData }: CompletionResultsProps) {

@@ -1,13 +1,13 @@
 import type { Answers } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/PhaseSummaryModal.module.css";
-import {type Protocol, type SingleConfigResponse} from "@/api";
+import {type TestProtocol, type Config} from "@/api";
 import {t} from "@/utils/translations.ts";
 
 
 type PhaseSummaryModalProps = {
-  config: SingleConfigResponse;
-  protocol: Protocol;
+  config: Config;
+  protocol: TestProtocol;
   answers: Answers;
   phaseIndex: number;
   jumpToQuestion: (phaseId: number, questionId: number) => void;

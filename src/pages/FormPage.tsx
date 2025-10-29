@@ -1,6 +1,6 @@
 import api, {
-  type SingleConfigResponse,
-  type QuestionAnswer, type SelectOne, type Slider
+  type Config,
+  type NewFormAnswer, type SelectOne, type Slider
 } from "@/api";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
@@ -12,7 +12,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import {t} from "@/utils/translations.ts";
 
 type FormPageProps = {
-  config: SingleConfigResponse;
+  config: Config;
   type: "pre-test" | "post-test";
   username: string;
   goToNextPage: () => void;
@@ -27,7 +27,7 @@ export function FormPage({
   const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
 
-  const [answers, setAnswers] = useState<QuestionAnswer[]>(
+  const [answers, setAnswers] = useState<NewFormAnswer[]>(
     Array.from({ length: questions.length }, (_, i) => ({
       questionId: questions[i].id,
       optionId: -1,

@@ -1,10 +1,10 @@
-import type { PatchFaq } from "@/api";
+import type { FrequentlyAskedQuestionUpdate } from "@/api";
 import styles from "@/styles/ModifyConfigPage/FaqEditor.module.css";
 
 type FaqEditorProps = {
-  faq: PatchFaq;
+  faq: FrequentlyAskedQuestionUpdate;
   index: number;
-  onChange: (faq: PatchFaq) => void;
+  onChange: (faq: FrequentlyAskedQuestionUpdate) => void;
   onRemove: () => void;
 }
 

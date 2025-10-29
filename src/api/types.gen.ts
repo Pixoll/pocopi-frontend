@@ -4,53 +4,15 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
-export type FieldErrorResponse = {
-    field?: string;
-    message?: string;
+export type ApiHttpError = {
+    code: number;
+    message: string;
+    errors: Array<FieldError>;
 };
 
-export type MultiFieldException = {
-    cause?: {
-        stackTrace?: Array<{
-            classLoaderName?: string;
-            moduleName?: string;
-            moduleVersion?: string;
-            methodName?: string;
-            fileName?: string;
-            lineNumber?: number;
-            className?: string;
-            nativeMethod?: boolean;
-        }>;
-        message?: string;
-        localizedMessage?: string;
-    };
-    stackTrace?: Array<{
-        classLoaderName?: string;
-        moduleName?: string;
-        moduleVersion?: string;
-        methodName?: string;
-        fileName?: string;
-        lineNumber?: number;
-        className?: string;
-        nativeMethod?: boolean;
-    }>;
-    errors?: Array<FieldErrorResponse>;
-    message?: string;
-    suppressed?: Array<{
-        stackTrace?: Array<{
-            classLoaderName?: string;
-            moduleName?: string;
-            moduleVersion?: string;
-            methodName?: string;
-            fileName?: string;
-            lineNumber?: number;
-            className?: string;
-            nativeMethod?: boolean;
-        }>;
-        message?: string;
-        localizedMessage?: string;
-    }>;
-    localizedMessage?: string;
+export type FieldError = {
+    field: string;
+    message: string;
 };
 
 export type NewUser = {
@@ -62,21 +24,21 @@ export type NewUser = {
     password: string;
 };
 
-export type UploadImageResponse = {
+export type ImageUrl = {
     url?: string;
 };
 
-export type FormAnswerRequest = {
-    username: string;
-    formId: number;
-    answers: Array<QuestionAnswer>;
-};
-
-export type QuestionAnswer = {
+export type NewFormAnswer = {
     questionId: number;
     optionId: number;
     value: number;
     answer: string;
+};
+
+export type NewFormAnswers = {
+    username: string;
+    formId: number;
+    answers: Array<NewFormAnswer>;
 };
 
 export type Token = {
@@ -88,88 +50,26 @@ export type Credentials = {
     password: string;
 };
 
-export type PatchFaq = {
-    id?: number;
-    question: string;
-    answer: string;
-};
-
-export type PatchForm = {
-    id?: number;
-    /**
-     * Form questions
-     */
-    questions: Array<PatchSelectMultiple | PatchSelectOne | PatchSlider | PatchTextLong | PatchTextShort>;
-};
-
-export type PatchFormOption = {
-    id?: number;
-    text?: string;
-};
-
-export type PatchFormQuestion = unknown;
-
-export type PatchGroup = {
-    id?: number;
-    probability?: number;
-    label?: string;
-    greeting?: string;
-    protocol?: PatchProtocol;
-};
-
-export type PatchInformationCard = {
-    id?: number;
-    title: string;
-    description: string;
-    color: number;
-};
-
-export type PatchLastConfig = {
+export type ConfigUpdate = {
     version: number;
     title: string;
     subtitle: string;
     description: string;
     anonymous: boolean;
     informedConsent: string;
-    informationCards: Array<PatchInformationCard>;
-    faq: Array<PatchFaq>;
-    preTestForm: PatchForm;
-    postTestForm: PatchForm;
+    informationCards: Array<InformationCardUpdate>;
+    faq: Array<FrequentlyAskedQuestionUpdate>;
+    preTestForm: FormUpdate;
+    postTestForm: FormUpdate;
     groups: {
-        [key: string]: PatchGroup;
+        [key: string]: TestGroupUpdate;
     };
     translations: {
         [key: string]: string;
     };
 };
 
-export type PatchOption = {
-    id?: number;
-    text?: string;
-    correct: boolean;
-};
-
-export type PatchPhase = {
-    id?: number;
-    questions: Array<PatchQuestion>;
-};
-
-export type PatchProtocol = {
-    id?: number;
-    label: string;
-    allowPreviousPhase: boolean;
-    allowPreviousQuestion: boolean;
-    allowSkipQuestion: boolean;
-    phases: Array<PatchPhase>;
-};
-
-export type PatchQuestion = {
-    id?: number;
-    text?: string;
-    options: Array<PatchOption>;
-};
-
-export type PatchRequest = {
+export type ConfigUpdateWithFiles = {
     /**
      * Icon by config
      */
@@ -201,30 +101,63 @@ export type PatchRequest = {
     /**
      * Last configuration updated
      */
-    updateLastConfig: PatchLastConfig;
+    updateLastConfig: ConfigUpdate;
 };
 
-export type PatchSelectMultiple = PatchFormQuestion & {
+export type FormOptionUpdate = {
+    id?: number;
+    text?: string;
+};
+
+export type FormQuestionUpdate = unknown;
+
+export type FormUpdate = {
+    id?: number;
+    /**
+     * Form questions
+     */
+    questions: Array<SelectMultipleUpdate | SelectOneUpdate | SliderUpdate | TextLongUpdate | TextShortUpdate>;
+};
+
+export type FrequentlyAskedQuestionUpdate = {
+    id?: number;
+    question: string;
+    answer: string;
+};
+
+export type InformationCardUpdate = {
+    id?: number;
+    title: string;
+    description: string;
+    color: number;
+};
+
+export type SelectMultipleUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    options: Array<PatchFormOption>;
+    options: Array<FormOptionUpdate>;
     min: number;
     max: number;
     other: boolean;
 };
 
-export type PatchSelectOne = PatchFormQuestion & {
+export type SelectOneUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    options: Array<PatchFormOption>;
+    options: Array<FormOptionUpdate>;
     other: boolean;
 };
 
-export type PatchSlider = PatchFormQuestion & {
+export type SliderLabel = {
+    number: number;
+    label: string;
+};
+
+export type SliderUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
@@ -236,32 +169,61 @@ export type PatchSlider = PatchFormQuestion & {
     labels: Array<SliderLabel>;
 };
 
-export type PatchTextLong = PatchFormQuestion & {
+export type TestGroupUpdate = {
     id?: number;
-    category: string;
-    text?: string;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    placeholder: string;
-    minLength: number;
-    maxLength: number;
+    probability?: number;
+    label?: string;
+    greeting?: string;
+    protocol?: TestProtocolUpdate;
 };
 
-export type PatchTextShort = PatchFormQuestion & {
+export type TestOptionUpdate = {
     id?: number;
-    category: string;
     text?: string;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    placeholder: string;
-    minLength: number;
-    maxLength: number;
+    correct: boolean;
 };
 
-export type SliderLabel = {
-    number: number;
+export type TestPhaseUpdate = {
+    id?: number;
+    questions: Array<TestQuestionUpdate>;
+};
+
+export type TestProtocolUpdate = {
+    id?: number;
     label: string;
+    allowPreviousPhase: boolean;
+    allowPreviousQuestion: boolean;
+    allowSkipQuestion: boolean;
+    phases: Array<TestPhaseUpdate>;
 };
 
-export type PatchResponse = {
+export type TestQuestionUpdate = {
+    id?: number;
+    text?: string;
+    options: Array<TestOptionUpdate>;
+};
+
+export type TextLongUpdate = FormQuestionUpdate & {
+    id?: number;
+    category: string;
+    text?: string;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    placeholder: string;
+    minLength: number;
+    maxLength: number;
+};
+
+export type TextShortUpdate = FormQuestionUpdate & {
+    id?: number;
+    category: string;
+    text?: string;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    placeholder: string;
+    minLength: number;
+    maxLength: number;
+};
+
+export type UpdatedConfig = {
     configUpdatesSummary: {
         [key: string]: string;
     };
@@ -291,12 +253,6 @@ export type User = {
     age: number;
 };
 
-export type Event = {
-    type: string;
-    optionId: number;
-    timestamp: number;
-};
-
 export type TimeLog = {
     userId: number;
     phaseId: number;
@@ -307,14 +263,13 @@ export type TimeLog = {
     correct: boolean;
     totalOptionChanges: number;
     totalOptionHovers: number;
-    events: Array<Event>;
+    events: Array<TimeLogEvent>;
 };
 
-export type TotalUserSummary = {
-    averageAccuracy: number;
-    averageTimeTaken: number;
-    totalQuestionsAnswered: number;
-    users: Array<UserSummary>;
+export type TimeLogEvent = {
+    type: string;
+    optionId: number;
+    timestamp: number;
 };
 
 export type UserSummary = {
@@ -327,6 +282,13 @@ export type UserSummary = {
     correctQuestions: number;
     questionsAnswered: number;
     accuracy: number;
+};
+
+export type UsersSummary = {
+    averageAccuracy: number;
+    averageTimeTaken: number;
+    totalQuestionsAnswered: number;
+    users: Array<UserSummary>;
 };
 
 /**
@@ -368,9 +330,23 @@ export type TestQuestionResult = {
 };
 
 /**
+ * Resultados de test de un usuario
+ */
+export type TestResultByUser = {
+    /**
+     * Información del usuario, incluyendo el ID de grupo de test
+     */
+    user?: UserBasicInfo;
+    /**
+     * Resultados por pregunta
+     */
+    questions?: Array<TestQuestionResult>;
+};
+
+/**
  * Datos básicos de un usuario
  */
-export type UserBasicInfoResponse = {
+export type UserBasicInfo = {
     /**
      * ID del usuario
      */
@@ -390,17 +366,33 @@ export type UserBasicInfoResponse = {
 };
 
 /**
- * Resultados de test de un usuario
+ * Respuesta de un usuario a una pregunta del formulario.
  */
-export type UserTestResultsWithInfoResponse = {
+export type FormAnswer = {
     /**
-     * Información del usuario, incluyendo el ID de grupo de test
+     * ID de la pregunta
      */
-    user?: UserBasicInfoResponse;
+    questionId: number;
     /**
-     * Resultados por pregunta
+     * Texto de la pregunta
      */
-    questions?: Array<TestQuestionResult>;
+    questionText: string;
+    /**
+     * ID de la opcion seleccionada (si es pertinente))
+     */
+    optionId?: number;
+    /**
+     * Texto de la opcion seleccionada (si es pertinente)
+     */
+    optionText?: string;
+    /**
+     * Valor numerico de la respuesta (si es pertinente)
+     */
+    value?: number;
+    /**
+     * Respuesta en texto libre (si es pertinente)
+     */
+    answer?: string;
 };
 
 /**
@@ -418,17 +410,17 @@ export type FormAnswers = {
     /**
      * Respuestas a preguntas del formulario
      */
-    answers: Array<QuestionAnswer>;
+    answers: Array<FormAnswer>;
 };
 
 /**
  * Respuestas de los resultados de los formularios (pre-test y post-test) de un usuario
  */
-export type UserFormWithInfoResultsResponse = {
+export type FormAnswersByUser = {
     /**
      * Información del usuario, incluyendo el ID de grupo de test
      */
-    user?: UserBasicInfoResponse;
+    user?: UserBasicInfo;
     /**
      * Resultados de formularios pre-test
      */
@@ -442,127 +434,31 @@ export type UserFormWithInfoResultsResponse = {
 /**
  * Resultados completos (formularios y tests) de un usuario, con info de usuario unica
  */
-export type UserAllResultsResponse = {
+export type ResultsByUser = {
     /**
      * Datos del usuario
      */
-    user?: UserBasicInfoResponse;
+    user?: UserBasicInfo;
     /**
      * Resultados de formularios
      */
-    forms?: UserFormsPart;
+    forms?: UserFormsResult;
     /**
      * Resultados de test
      */
-    tests?: UserTestsPart;
+    tests?: UserTestsResult;
 };
 
-export type UserFormsPart = {
+export type UserFormsResult = {
     pre?: Array<FormAnswers>;
     post?: Array<FormAnswers>;
 };
 
-export type UserTestsPart = {
+export type UserTestsResult = {
     questions?: Array<TestQuestionResult>;
 };
 
-export type Faq = {
-    id: number;
-    question: string;
-    answer: string;
-};
-
-export type Form = {
-    id: number;
-    /**
-     * Form questions
-     */
-    questions: Array<SelectMultiple | SelectOne | Slider | TextLong | TextShort>;
-};
-
-export type FormOption = {
-    id: number;
-    text?: string;
-    image?: Image;
-};
-
-export type FormQuestion = unknown;
-
-export type Group = {
-    id: number;
-    /**
-     * Probability between 0 and 100
-     */
-    probability: number;
-    label: string;
-    greeting: string;
-    protocol: Protocol;
-};
-
-export type Image = {
-    url: string;
-    alt: string;
-};
-
-export type InformationCard = {
-    id: number;
-    title: string;
-    description: string;
-    color: number;
-    icon?: Image;
-};
-
-export type Option = {
-    id: number;
-    text?: string;
-    image?: Image;
-    correct: boolean;
-};
-
-export type Phase = {
-    id: number;
-    questions: Array<Question>;
-};
-
-export type Protocol = {
-    id: number;
-    label: string;
-    allowPreviousPhase: boolean;
-    allowPreviousQuestion: boolean;
-    allowSkipQuestion: boolean;
-    phases: Array<Phase>;
-};
-
-export type Question = {
-    id: number;
-    text?: string;
-    image: Image;
-    options: Array<Option>;
-};
-
-export type SelectMultiple = FormQuestion & {
-    id: number;
-    category: string;
-    text?: string;
-    image?: Image;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    options: Array<FormOption>;
-    min: number;
-    max: number;
-    other: boolean;
-};
-
-export type SelectOne = FormQuestion & {
-    id: number;
-    category: string;
-    text?: string;
-    image?: Image;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    options: Array<FormOption>;
-    other: boolean;
-};
-
-export type SingleConfigResponse = {
+export type Config = {
     /**
      * Configuration version
      */
@@ -592,15 +488,72 @@ export type SingleConfigResponse = {
      */
     informationCards: Array<InformationCard>;
     informedConsent: string;
-    faq: Array<Faq>;
+    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
     preTestForm: Form;
     postTestForm: Form;
     groups: {
-        [key: string]: Group;
+        [key: string]: TestGroup;
     };
     translations: {
         [key: string]: string;
     };
+};
+
+export type Form = {
+    id: number;
+    /**
+     * Form questions
+     */
+    questions: Array<SelectMultiple | SelectOne | Slider | TextLong | TextShort>;
+};
+
+export type FormOption = {
+    id: number;
+    text?: string;
+    image?: Image;
+};
+
+export type FormQuestion = unknown;
+
+export type FrequentlyAskedQuestion = {
+    id: number;
+    question: string;
+    answer: string;
+};
+
+export type Image = {
+    url: string;
+    alt: string;
+};
+
+export type InformationCard = {
+    id: number;
+    title: string;
+    description: string;
+    color: number;
+    icon?: Image;
+};
+
+export type SelectMultiple = FormQuestion & {
+    id: number;
+    category: string;
+    text?: string;
+    image?: Image;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    options: Array<FormOption>;
+    min: number;
+    max: number;
+    other: boolean;
+};
+
+export type SelectOne = FormQuestion & {
+    id: number;
+    category: string;
+    text?: string;
+    image?: Image;
+    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    options: Array<FormOption>;
+    other: boolean;
 };
 
 export type Slider = FormQuestion & {
@@ -614,6 +567,45 @@ export type Slider = FormQuestion & {
     max: number;
     step: number;
     labels: Array<SliderLabel>;
+};
+
+export type TestGroup = {
+    id: number;
+    /**
+     * Probability between 0 and 100
+     */
+    probability: number;
+    label: string;
+    greeting: string;
+    protocol: TestProtocol;
+};
+
+export type TestOption = {
+    id: number;
+    text?: string;
+    image?: Image;
+    correct: boolean;
+};
+
+export type TestPhase = {
+    id: number;
+    questions: Array<TestQuestion>;
+};
+
+export type TestProtocol = {
+    id: number;
+    label: string;
+    allowPreviousPhase: boolean;
+    allowPreviousQuestion: boolean;
+    allowSkipQuestion: boolean;
+    phases: Array<TestPhase>;
+};
+
+export type TestQuestion = {
+    id: number;
+    text?: string;
+    image: Image;
+    options: Array<TestOption>;
 };
 
 export type TextLong = FormQuestion & {
@@ -649,7 +641,7 @@ export type CreateUserErrors = {
     /**
      * Validation error
      */
-    400: MultiFieldException;
+    400: ApiHttpError;
 };
 
 export type CreateUserError = CreateUserErrors[keyof CreateUserErrors];
@@ -658,10 +650,8 @@ export type CreateUserResponses = {
     /**
      * User created successfully
      */
-    200: string;
+    200: unknown;
 };
-
-export type CreateUserResponse = CreateUserResponses[keyof CreateUserResponses];
 
 export type UploadImageData = {
     body?: never;
@@ -677,13 +667,13 @@ export type UploadImageResponses = {
     /**
      * OK
      */
-    200: UploadImageResponse;
+    200: ImageUrl;
 };
 
-export type UploadImageResponse2 = UploadImageResponses[keyof UploadImageResponses];
+export type UploadImageResponse = UploadImageResponses[keyof UploadImageResponses];
 
 export type SubmitFormAnswersData = {
-    body: FormAnswerRequest;
+    body: NewFormAnswers;
     path?: never;
     query?: never;
     url: '/api/forms/answer';
@@ -733,7 +723,7 @@ export type LoginResponses = {
 export type LoginResponse = LoginResponses[keyof LoginResponses];
 
 export type UpdateConfigData = {
-    body?: PatchRequest;
+    body?: ConfigUpdateWithFiles;
     path?: never;
     query?: never;
     url: '/api/config';
@@ -743,7 +733,7 @@ export type UpdateConfigResponses = {
     /**
      * OK
      */
-    200: PatchResponse;
+    200: UpdatedConfig;
 };
 
 export type UpdateConfigResponse = UpdateConfigResponses[keyof UpdateConfigResponses];
@@ -827,7 +817,7 @@ export type GetAllUserSummariesResponses = {
     /**
      * OK
      */
-    200: TotalUserSummary;
+    200: UsersSummary;
 };
 
 export type GetAllUserSummariesResponse = GetAllUserSummariesResponses[keyof GetAllUserSummariesResponses];
@@ -863,7 +853,7 @@ export type GetUserTestResultsResponses = {
     /**
      * OK
      */
-    200: UserTestResultsWithInfoResponse;
+    200: TestResultByUser;
 };
 
 export type GetUserTestResultsResponse = GetUserTestResultsResponses[keyof GetUserTestResultsResponses];
@@ -881,7 +871,7 @@ export type GetUserFormResultsResponses = {
     /**
      * OK
      */
-    200: UserFormWithInfoResultsResponse;
+    200: FormAnswersByUser;
 };
 
 export type GetUserFormResultsResponse = GetUserFormResultsResponses[keyof GetUserFormResultsResponses];
@@ -899,7 +889,7 @@ export type GetUserAllResultsResponses = {
     /**
      * OK
      */
-    200: UserAllResultsResponse;
+    200: ResultsByUser;
 };
 
 export type GetUserAllResultsResponse = GetUserAllResultsResponses[keyof GetUserAllResultsResponses];
@@ -1017,7 +1007,7 @@ export type GetLastestConfigResponses = {
     /**
      * OK
      */
-    200: SingleConfigResponse;
+    200: Config;
 };
 
 export type GetLastestConfigResponse = GetLastestConfigResponses[keyof GetLastestConfigResponses];

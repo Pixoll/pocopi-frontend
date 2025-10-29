@@ -1,11 +1,11 @@
-import {type Phase, type SingleConfigResponse} from "@/api";
+import {type TestPhase, type Config} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPageHeader.module.css";
 import {t} from "@/utils/translations.ts";
 
 type TestPageHeaderProps = {
-  config: SingleConfigResponse;
-  phases: readonly Phase[];
+  config: Config;
+  phases: readonly TestPhase[];
   phaseIndex: number;
   questionIndex: number;
   showSummary: boolean;

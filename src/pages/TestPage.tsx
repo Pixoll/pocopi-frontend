@@ -1,4 +1,4 @@
-import type {CreateUserRequest, Protocol, SingleConfigResponse} from "@/api";
+import type {NewUser, TestProtocol, Config} from "@/api";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
@@ -8,10 +8,10 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
 
 type TestPageProps = {
-  config: SingleConfigResponse;
-  protocol: Protocol;
+  config: Config;
+  protocol: TestProtocol;
   goToNextPage: () => void;
-  userData: CreateUserRequest;
+  userData: NewUser;
 };
 
 export function TestPage({

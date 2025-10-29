@@ -1,10 +1,10 @@
 import styles from "@/styles/FormPage/SelectOneQuestion.module.css";
 import { useState } from "react";
-import type {SingleConfigResponse, SelectOne} from "@/api";
+import type {Config, SelectOne} from "@/api";
 import {t} from "@/utils/translations.ts";
 
 type SelectOneQuestionProps = {
-  config: SingleConfigResponse;
+  config: Config;
   question: SelectOne;
   answer: string;
   setAnswer: (value: string) => void;

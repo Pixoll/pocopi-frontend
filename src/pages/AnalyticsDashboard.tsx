@@ -1,4 +1,4 @@
-import api, {type SingleConfigResponse, type TotalUserSummary} from "@/api";
+import api, {type Config, type UsersSummary} from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";
@@ -18,12 +18,12 @@ enum DashboardTab {
 }
 
 type AnalyticsDashboardProps = {
-  config: SingleConfigResponse;
+  config: Config;
   onBack: () => void;
 };
 
 export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) {
-  const [summary, setSummary] = useState<TotalUserSummary>({
+  const [summary, setSummary] = useState<UsersSummary>({
     averageAccuracy: 0,
     averageTimeTaken: 0,
     totalQuestionsAnswered: 0,
@@ -108,7 +108,7 @@ export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) 
   );
 }
 
-function LoadingIndicator({config}: { config:SingleConfigResponse }) {
+function LoadingIndicator({config}: { config:Config }) {
   return (
     <div className={styles.loadingIndicator}>
       <Spinner className={styles.spinner}/>

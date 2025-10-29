@@ -1,4 +1,4 @@
-import api, {type NewUser, type SingleConfigResponse, type Group} from "@/api";
+import api, {type NewUser, type Config, type TestGroup} from "@/api";
 import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
 import {CompletionModal} from "@/pages/CompletionModal";
 import {FormPage} from "@/pages/FormPage";
@@ -13,7 +13,7 @@ import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Decimal from "decimal.js";
 
-function sampleGroup(config: SingleConfigResponse): Group {
+function sampleGroup(config: Config): TestGroup {
   const groupsArray = Object.values(config.groups);
   const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
   const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
@@ -49,8 +49,8 @@ function sampleGroup(config: SingleConfigResponse): Group {
 export function App() {
   const navigate = useNavigate();
 
-  const [config, setConfig] = useState<SingleConfigResponse | null>(null);
-  const [group, setGroup] = useState<Group | null>(null);
+  const [config, setConfig] = useState<Config | null>(null);
+  const [group, setGroup] = useState<TestGroup | null>(null);
   const [userData, setUserData] = useState<NewUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

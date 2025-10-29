@@ -1,6 +1,6 @@
-import type {SingleConfigResponse} from "@/api";
+import type {Config} from "@/api";
 
-export function t(config:SingleConfigResponse, key: string, ...args: string[]): string {
+export function t(config:Config, key: string, ...args: string[]): string {
   let value = config.translations[key];
 
   if (!value) {

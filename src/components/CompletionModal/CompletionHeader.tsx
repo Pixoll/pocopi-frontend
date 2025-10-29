@@ -3,10 +3,10 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionHeader.module.css";
 import { faCheck, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type {SingleConfigResponse} from "@/api";
+import type {Config} from "@/api";
 import {t} from "@/utils/translations.ts";
 
-export function CompletionHeader({config}:{config: SingleConfigResponse}) {
+export function CompletionHeader({config}:{config: Config}) {
   const { isDarkMode } = useTheme();
 
   return (

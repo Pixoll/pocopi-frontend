@@ -1,4 +1,4 @@
-import type {NewUser, SingleConfigResponse} from "@/api";
+import type {NewUser, Config} from "@/api";
 import { CompletionHeader } from "@/components/CompletionModal/CompletionHeader";
 import { CompletionResults } from "@/components/CompletionModal/CompletionResults";
 import { CompletionUserInfo } from "@/components/CompletionModal/CompletionUserInfo";
@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {t} from "@/utils/translations.ts";
 
 type CompletionModalProps = {
-  config: SingleConfigResponse
+  config: Config
   userData: NewUser;
   onBackToHome: () => void;
 };
