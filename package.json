@@ -9,8 +9,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext ts,tsx --fix",
     "clean": "rm -rf node_modules dist",
-    "openapi": "openapi-ts",
-    "migrate": "cd config-migration && npm i && npm run build && npm start"
+    "openapi": "openapi-ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
