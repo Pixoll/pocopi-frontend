@@ -60,7 +60,7 @@ export function App() {
       const response = await api.getLastestConfig();
       if (response.data) {
         setConfig(response.data);
-        console.log(response.data);
+        console.log("es anonimo ", response.data.anonymous);
         setGroup(sampleGroup(response.data));
         document.title = response.data.title ?? "";
       } else {
@@ -130,7 +130,7 @@ export function App() {
       <Routes>
         <Route
           path="/"
-          element={<HomePage group={group} config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard} onAdmin={goToAdminPage}/>}
+          element={<HomePage group={group} config={config}  goToNextPage={goToPreTest} onDashboard={goToDashboard} onAdmin={goToAdminPage}/>}
         />
         <Route
           path="/pretest"

@@ -1,12 +1,11 @@
 import type {NewUser, Config} from "@/api";
-import { faArrowRight, faFileSignature } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faFileSignature, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ChangeEvent } from "react";
 import { Accordion, Button, Card, Col, Form, Row, } from "react-bootstrap";
 import Markdown from "react-markdown";
 import styles from "@/styles/HomePage/HomeInfoCard.module.css";
 import {t} from "@/utils/translations.ts";
-
 
 type HomeInfoCardProps = {
   config: Config
@@ -18,18 +17,49 @@ type HomeInfoCardProps = {
 };
 
 export function HomeInfoCard({
-  config,
-  isDarkMode,
-  userData,
-  consentAccepted,
-  onConsentChange,
-  onRegister,
-}: HomeInfoCardProps) {
+                               config,
+                               isDarkMode,
+                               userData,
+                               consentAccepted,
+                               onConsentChange,
+                               onRegister,
+                             }: HomeInfoCardProps) {
   const infoCardsAmount = config.informationCards.length;
   const iconOpacity = isDarkMode ? 0.25 : 0.10;
+  const isAnonymous = config.anonymous;
 
   const faqAmount = config.frequentlyAskedQuestion.length;
   const lastFaqRowIndex = Math.floor((faqAmount - 1) / 2);
+
+  const getButtonProps = () => {
+    if (isAnonymous) {
+      return {
+        text: "Continuar",
+        icon: faArrowRight,
+        variant: "primary" as const,
+        disabled: !consentAccepted
+      };
+    } else {
+      if (!userData) {
+        return {
+          text: "Iniciar Sesión",
+          icon: faSignInAlt,
+          variant: "primary" as const,
+          disabled: false
+        };
+      } else {
+        return {
+          text: t(config, "home.startTest"),
+          icon: faArrowRight,
+          variant: "success" as const,
+          disabled: !consentAccepted
+        };
+      }
+    }
+  };
+
+  const buttonProps = getButtonProps();
+
   return (
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
       {userData && !userData.anonymous && (
@@ -93,28 +123,16 @@ export function HomeInfoCard({
           />
         </div>
         <div className="text-center mt-4">
-          {!userData ? (
-            <Button
-              variant="primary"
-              size="lg"
-              className="px-5 py-3 rounded-pill shadow-sm"
-              onClick={onRegister}
-            >
-              <span className="me-2">{t(config, "home.register")}</span>
-              <FontAwesomeIcon icon={faArrowRight}/>
-            </Button>
-          ) : (
-            <Button
-              variant="success"
-              size="lg"
-              className="px-5 py-3 rounded-pill shadow-sm"
-              onClick={onRegister}
-              disabled={!consentAccepted}
-            >
-              <span className="me-2">{t(config, "home.startTest")}</span>
-              <FontAwesomeIcon icon={faArrowRight}/>
-            </Button>
-          )}
+          <Button
+            variant={buttonProps.variant}
+            size="lg"
+            className="px-5 py-3 rounded-pill shadow-sm"
+            onClick={onRegister}
+            disabled={buttonProps.disabled}
+          >
+            <span className="me-2">{buttonProps.text}</span>
+            <FontAwesomeIcon icon={buttonProps.icon}/>
+          </Button>
         </div>
       </Card.Body>
       {faqAmount > 0 && (
