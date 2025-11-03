@@ -1,5 +1,4 @@
-import type {User, TrimmedConfig, AssignedTestGroup} from "@/api";
-import api from "@/api";
+import type {TrimmedConfig, AssignedTestGroup} from "@/api";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
@@ -8,7 +7,6 @@ import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/contexts/AuthContext.tsx";
 import styles from "@/styles/TestPage/TestPage.module.css";
-import { useEffect, useState } from "react";
 
 type TestPageProps = {
   config: TrimmedConfig;
@@ -23,32 +21,12 @@ export function TestPage({
                          }: TestPageProps) {
   const { isDarkMode } = useTheme();
   const { token } = useAuth();
-  const [userData, setUserData] = useState<User | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (token) {
-        try {
-          const response = await api.getCurrentUser({
-            auth: token
-          });
-          if (response.data) {
-            setUserData(response.data);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    };
-
-    fetchUser();
-  }, [token]);
-
-  if (!userData) {
+  if (!token) {
     return (
       <div className={styles.page}>
         <div className={styles.content}>
-          <p>Cargando información del usuario...</p>
+          <p>Se necesita autenticarse primero</p>
         </div>
       </div>
     );
@@ -58,31 +36,31 @@ export function TestPage({
     return (
       <div className={styles.page}>
         <div className={styles.content}>
-          <p>Cargando preguntas del grupo...</p>
+          <p>Cargando preguntas....</p>
         </div>
       </div>
     );
   }
 
   return <TestPageContent
+    token={token}
     config={config}
     protocol={protocol}
-    userData={userData}
     goToNextPage={goToNextPage}
     isDarkMode={isDarkMode}
   />;
 }
 
 function TestPageContent({
+                           token,
                            config,
                            protocol,
-                           userData,
                            goToNextPage,
                            isDarkMode,
                          }: {
+  token: string
   config: TrimmedConfig;
   protocol: AssignedTestGroup;
-  userData: User;
   goToNextPage: () => void;
   isDarkMode: boolean;
 }) {
@@ -100,7 +78,7 @@ function TestPageContent({
     onOptionClick,
     onOptionHover,
     jumpToQuestion,
-  } = useTest(protocol, userData);
+  } = useTest(protocol,token);
 
   const { phases } = protocol;
   const phase = phases[phaseIndex];

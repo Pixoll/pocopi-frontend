@@ -1,5 +1,4 @@
-import type {AssignedTestGroup, User} from "@/api";
-import {type SendOptionEvent, useWebSocket} from "@/hooks/useWebSocket.ts";
+import api, { type AssignedTestGroup} from "@/api";
 import { useState } from "react";
 
 export type Answers = Record<number, Record<number, number | null>>;
@@ -20,104 +19,95 @@ type Test = {
   jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
 
-export function useTest(
-  protocol: AssignedTestGroup,
-  userData: User,
-): Test {
+async function sendOptionEvent(
+  token: string,
+  optionId: number,
+  type: "select" | "deselect" | "hover"
+) {
+  try {
+    await api.saveOptionEventLog({
+      auth: token,
+      body: {
+        optionId: optionId,
+        type,
+        timestamp: Date.now(),
+      },
+    });
+  } catch (error) {
+    console.error("Error al enviar evento de opción:", error);
+  }
+}
+
+export function useTest(protocol: AssignedTestGroup, token: string): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const [showSummary, setShowSummary] = useState(false);
   const [showedSummary, setShowedSummary] = useState(false);
-  const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
-    protocol.phases?.map((phase) =>
-      [phase.id, Object.fromEntries(phase.questions.map((question) =>
-        [question.id, null]
-      ))]
-    )
-  ));
 
-  const { send: sendWebSocketEvent } = useWebSocket<SendOptionEvent>({
-    onOpen: () => console.log('webSocket connected'),
-    onData: (data) => console.log('response:', data),
-    onError: () => console.error('error WebSocket'),
-    onClose: () => console.log('webSocket closed'),
-  });
+  const [answers, setAnswers] = useState<Answers>(
+    Object.fromEntries(
+      protocol.phases.map((phase, index) => [
+        index,
+        Object.fromEntries(phase.questions.map((q) => [q.id, null])),
+      ])
+    )
+  );
 
   const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
   const phase = phases[phaseIndex];
-  const { id: phaseId, questions } = phase;
-  const { id: questionId, options } = questions[questionIndex];
-  const username = userData.username?.toString() ?? "";
+  const { questions } = phase;
+  const { id: questionId } = questions[questionIndex];
 
-  const setAnswer = (phaseId: number, questionId: number, optionId: number | null) => {
+  const setAnswer = (phaseIdx: number, questionId: number, optionId: number | null) => {
     setAnswers((prev) => {
-      prev[phaseId][questionId] = optionId;
+      prev[phaseIdx][questionId] = optionId;
       return { ...prev };
     });
   };
 
   const goToPreviousPhase = () => {
-    if (!allowPreviousPhase || phaseIndex <= 0) {
-      return;
-    }
-
-    const newQuestionIndex = phases[phaseIndex - 1].questions.length - 1;
-    const targetPhase = phases[phaseIndex - 1];
+    if (!allowPreviousPhase || phaseIndex <= 0) return;
+    const newPhaseIndex = phaseIndex - 1;
+    const targetPhase = phases[newPhaseIndex];
+    const newQuestionIndex = targetPhase.questions.length - 1;
     const targetQuestion = targetPhase.questions[newQuestionIndex];
-    setPhaseIndex(phaseIndex - 1);
+    setPhaseIndex(newPhaseIndex);
     setQuestionIndex(newQuestionIndex);
-    setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+    setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
   };
 
   const quitSummary = (onFinish: () => void, shouldAdvancePhase: boolean = true) => {
     setShowSummary(false);
-
-    if (!shouldAdvancePhase) {
-      return;
-    }
+    if (!shouldAdvancePhase) return;
 
     setShowedSummary(false);
 
     if (phaseIndex < phases.length - 1) {
-      const targetPhase = phases[phaseIndex + 1];
+      const newPhaseIndex = phaseIndex + 1;
+      const targetPhase = phases[newPhaseIndex];
       const targetQuestion = targetPhase.questions[0];
-      setPhaseIndex(phaseIndex + 1);
+      setPhaseIndex(newPhaseIndex);
       setQuestionIndex(0);
-      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
-      return;
+      setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
+    } else {
+      onFinish();
     }
-
-    onFinish();
   };
 
   const goToSummary = () => {
-    if (!allowPreviousPhase) {
-      const newQuestionIndex = phase.questions.length - 1;
-      const targetQuestion = questions[newQuestionIndex];
-      setQuestionIndex(newQuestionIndex);
-      setSelectedOptionId(answers[phaseId][targetQuestion.id]);
-    } else {
-      const newPhaseIndex = phases.length - 1;
-      const targetPhase = phases[newPhaseIndex];
-      const newQuestionIndex = targetPhase.questions.length - 1;
-      const targetQuestion = targetPhase.questions[newQuestionIndex];
-      setPhaseIndex(newPhaseIndex);
-      setQuestionIndex(newQuestionIndex);
-      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
-    }
-
     setShowSummary(true);
     setShowedSummary(true);
   };
 
   const goToNextPhase = () => {
     if (allowPreviousPhase && phaseIndex < phases.length - 1) {
-      const targetPhase = phases[phaseIndex + 1];
+      const newPhaseIndex = phaseIndex + 1;
+      const targetPhase = phases[newPhaseIndex];
       const targetQuestion = targetPhase.questions[0];
-      setPhaseIndex(phaseIndex + 1);
+      setPhaseIndex(newPhaseIndex);
       setQuestionIndex(0);
-      setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+      setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
       return;
     }
 
@@ -125,73 +115,49 @@ export function useTest(
   };
 
   const goToPreviousQuestion = () => {
-    if (!allowPreviousQuestion) {
-      return;
-    }
-
+    if (!allowPreviousQuestion) return;
     if (questionIndex <= 0) {
       goToPreviousPhase();
       return;
     }
-
     const targetQuestion = phase.questions[questionIndex - 1];
     setQuestionIndex(questionIndex - 1);
-    setSelectedOptionId(answers[phaseId][targetQuestion.id]);
+    setSelectedOptionId(answers[phaseIndex][targetQuestion.id]);
   };
 
   const goToNextQuestion = () => {
-    if (selectedOptionId === null && !allowSkipQuestion) {
-      return;
-    }
-
+    if (selectedOptionId === null && !allowSkipQuestion) return;
     if (questionIndex < questions.length - 1) {
       const targetQuestion = phase.questions[questionIndex + 1];
       setQuestionIndex(questionIndex + 1);
-      setSelectedOptionId(answers[phaseId][targetQuestion.id]);
+      setSelectedOptionId(answers[phaseIndex][targetQuestion.id]);
       return;
     }
-
     goToNextPhase();
   };
 
-  const jumpToQuestion = (phaseIndex: number, questionIndex: number) => {
-    const targetPhase = phases[phaseIndex];
-    const targetQuestion = targetPhase.questions[questionIndex];
-
-    setPhaseIndex(phaseIndex);
-    setQuestionIndex(questionIndex);
-    setSelectedOptionId(answers[targetPhase.id][targetQuestion.id]);
+  const jumpToQuestion = (newPhaseIndex: number, newQuestionIndex: number) => {
+    const targetPhase = phases[newPhaseIndex];
+    const targetQuestion = targetPhase.questions[newQuestionIndex];
+    setPhaseIndex(newPhaseIndex);
+    setQuestionIndex(newQuestionIndex);
+    setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
     quitSummary(() => {}, false);
   };
 
-  const onOptionClick = (optionId: number) => {
+  const onOptionClick = async (optionId: number) => {
     if (selectedOptionId === optionId) {
-      setAnswer(phaseId, questionId, null);
-
-      sendWebSocketEvent({
-        username,
-        optionId,
-        type: 'deselect'
-      });
+      setAnswer(phaseIndex, questionId, null);
+      await sendOptionEvent(token, optionId, "deselect");
     } else {
-      setAnswer(phaseId, questionId, optionId);
-
-      sendWebSocketEvent({
-        username,
-        optionId,
-        type: 'select'
-      });
+      setAnswer(phaseIndex, questionId, optionId);
+      await sendOptionEvent(token, optionId, "select");
     }
-
     setSelectedOptionId((v) => (v === optionId ? null : optionId));
   };
 
-  const onOptionHover = (optionId: number) => {
-    sendWebSocketEvent({
-      username,
-      optionId,
-      type: 'hover'
-    });
+  const onOptionHover = async (optionId: number) => {
+    await sendOptionEvent(token, optionId, "hover");
   };
 
   return {

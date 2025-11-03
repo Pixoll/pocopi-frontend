@@ -167,7 +167,7 @@ export function FormPage({
           answers: cleanedAnswers,
         }
       });
-      
+
       if (result.error) {
         setError(result.error);
         console.error(result.error);
