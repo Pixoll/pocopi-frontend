@@ -1,10 +1,10 @@
 import { useTheme } from "@/hooks/useTheme";
-import {type TestOption } from "@/api";
+import {type AssignedTestOption } from "@/api";
 import styles from "@/styles/TestPage/TestOptions.module.css";
 // import type { TestOption } from "@pocopi/config";
 
 type TestOptionsProps = {
-  options: readonly TestOption[];
+  options: readonly AssignedTestOption[];
   selected: number | null;
   onOptionClick: (id: number) => void;
   onOptionHover: (id: number) => void;

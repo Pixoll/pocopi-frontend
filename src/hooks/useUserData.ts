@@ -1,4 +1,4 @@
-import api, {type NewUser, type Config} from "@/api";
+import api, {type NewUser, type TrimmedConfig} from "@/api";
 import { type ChangeEvent, useState } from "react";
 
 type HookedUserData = {
@@ -11,7 +11,7 @@ type HookedUserData = {
   sendUserData: (data: NewUser, onSaved?: () => void, onError?: (message: string) => void) => void;
 };
 
-export function useUserData( config: Config): HookedUserData {
+export function useUserData( config: TrimmedConfig): HookedUserData {
   const [showModal, setShowModal] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [userData, setUserData] = useState<NewUser | null>(config.anonymous ? {

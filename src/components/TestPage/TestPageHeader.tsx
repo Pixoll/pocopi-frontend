@@ -1,11 +1,11 @@
-import {type TestPhase, type Config} from "@/api";
+import {type AssignedTestPhase, type TrimmedConfig} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPageHeader.module.css";
 import {t} from "@/utils/translations.ts";
 
 type TestPageHeaderProps = {
-  config: Config;
-  phases: readonly TestPhase[];
+  config: TrimmedConfig;
+  phases: readonly AssignedTestPhase[];
   phaseIndex: number;
   questionIndex: number;
   showSummary: boolean;

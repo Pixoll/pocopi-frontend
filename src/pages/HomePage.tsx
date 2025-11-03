@@ -1,4 +1,4 @@
-import type {NewUser, TestGroup, Config} from "@/api";
+import type {AssignedTestGroup, TrimmedConfig} from "@/api";
 import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
 import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
@@ -10,9 +10,8 @@ import styles from "@/styles/HomePage/HomePage.module.css";
 import {AdminButton} from "@/components/HomePage/AdminButton.tsx";
 
 type HomePageProps = {
-  group: TestGroup;
-  config: Config;
-  goToNextPage: (data: NewUser) => void;
+  config: TrimmedConfig;
+  goToNextPage: (group: AssignedTestGroup) => void;
   onDashboard: () => void;
   onAdmin: () => void;
 };
@@ -31,6 +30,7 @@ export function HomePage({
     handleCloseModal,
     handleConsentChange,
   } = useUserData(config);
+
   const { isDarkMode } = useTheme();
 
   return (

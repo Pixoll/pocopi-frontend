@@ -1,5 +1,6 @@
 import api, {
-  type Config,
+  type User,
+  type TrimmedConfig,
   type NewFormAnswer, type SelectOne, type Slider
 } from "@/api";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
@@ -10,22 +11,23 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type FormEvent, useEffect, useState } from "react";
 import {t} from "@/utils/translations.ts";
+import {useAuth} from "@/contexts/AuthContext.tsx";
 
 type FormPageProps = {
-  config: Config;
+  config: TrimmedConfig;
   type: "pre-test" | "post-test";
-  username: string;
   goToNextPage: () => void;
 };
 
 export function FormPage({
-  config,
-  type,
-  username,
-  goToNextPage,
-}: FormPageProps) {
+                           config,
+                           type,
+                           goToNextPage,
+                         }: FormPageProps) {
+  const [user, setUser] = useState<User | null>(null);
   const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
+  const {token} = useAuth();
 
   const [answers, setAnswers] = useState<NewFormAnswer[]>(
     Array.from({ length: questions.length }, (_, i) => ({
@@ -40,12 +42,39 @@ export function FormPage({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      if (token) {
+        try {
+          const response = await api.getCurrentUser({
+            auth: token
+          });
+          if (response.data) {
+            setUser(response.data);
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        }
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+  useEffect(() => {
     if (questions.length === 0) {
       goToNextPage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  if(!form){
+    goToNextPage();
+    return (
+      <div>
+      <p>
+        No ay formulario
+      </p>
+    </div>)
+  }
   const title = type === "pre-test"
     ? t(config, "preTest.title")
     : t(config, "postTest.title");
@@ -61,7 +90,6 @@ export function FormPage({
     });
   };
 
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSending(true);
@@ -73,10 +101,16 @@ export function FormPage({
       return;
     }
 
+    if (!user?.username) {
+      setSending(false);
+      setError("User information not available");
+      return;
+    }
+
     try {
       const result = await api.submitFormAnswers({
         body: {
-          username: username,
+          username: user.username,
           formId: form.id,
           answers: answers,
         }
@@ -132,7 +166,6 @@ export function FormPage({
                 return null;
             }
           })}
-
 
           <div className={styles.sendButtonContainer}>
             {error && <div>{error}</div>}

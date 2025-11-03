@@ -1,8 +1,8 @@
 import styles from "@/styles/HomePage/HomeHeader.module.css";
-import type {Config} from "@/api";
+import type {TrimmedConfig} from "@/api";
 
 type HomeHeaderProps = {
-  config: Config;
+  config: TrimmedConfig;
   isDarkMode: boolean;
 };
 

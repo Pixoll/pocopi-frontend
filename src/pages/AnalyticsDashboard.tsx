@@ -1,4 +1,4 @@
-import api, {type Config, type UsersSummary} from "@/api";
+import api, {type TrimmedConfig, type UsersSummary} from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";
@@ -18,7 +18,7 @@ enum DashboardTab {
 }
 
 type AnalyticsDashboardProps = {
-  config: Config;
+  config: TrimmedConfig;
   onBack: () => void;
 };
 
@@ -108,7 +108,7 @@ export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) 
   );
 }
 
-function LoadingIndicator({config}: { config:Config }) {
+function LoadingIndicator({config}: { config:TrimmedConfig }) {
   return (
     <div className={styles.loadingIndicator}>
       <Spinner className={styles.spinner}/>

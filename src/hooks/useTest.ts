@@ -1,4 +1,4 @@
-import type {NewUser, TestProtocol} from "@/api";
+import type {AssignedTestGroup, User} from "@/api";
 import {type SendOptionEvent, useWebSocket} from "@/hooks/useWebSocket.ts";
 import { useState } from "react";
 
@@ -21,8 +21,8 @@ type Test = {
 };
 
 export function useTest(
-  protocol: TestProtocol,
-  userData: NewUser,
+  protocol: AssignedTestGroup,
+  userData: User,
 ): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -47,7 +47,7 @@ export function useTest(
   const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
   const phase = phases[phaseIndex];
   const { id: phaseId, questions } = phase;
-  const { id: questionId/*, options*/ } = questions[questionIndex];
+  const { id: questionId, options } = questions[questionIndex];
   const username = userData.username?.toString() ?? "";
 
   const setAnswer = (phaseId: number, questionId: number, optionId: number | null) => {

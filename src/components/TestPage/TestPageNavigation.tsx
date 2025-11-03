@@ -1,5 +1,5 @@
 import { useTheme } from "@/hooks/useTheme";
-import type {TestProtocol, Config} from "@/api";
+import type {TestProtocol, TrimmedConfig} from "@/api";
 import styles from "@/styles/TestPage/TestPageNavigation.module.css";
 import { faAngleLeft, faAngleRight, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,7 +7,7 @@ import {t} from "@/utils/translations.ts";
 // import { config, type Protocol } from "@pocopi/config";
 
 type TestPageNavigationProps = {
-  config: Config;
+  config: TrimmedConfig;
   protocol: TestProtocol;
   phaseIndex: number;
   questionIndex: number;

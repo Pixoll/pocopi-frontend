@@ -1,4 +1,4 @@
-import api, {type Config, type UsersSummary, type UserSummary} from "@/api";
+import api, {type TrimmedConfig, type UsersSummary, type UserSummary} from "@/api";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +7,7 @@ import { useState } from "react";
 import {t} from "@/utils/translations.ts";
 
 type ParticipantsListProps = {
-  config: Config;
+  config: TrimmedConfig;
   isDarkMode: boolean;
   summary: UsersSummary;
   setError: (value: string | null) => void;

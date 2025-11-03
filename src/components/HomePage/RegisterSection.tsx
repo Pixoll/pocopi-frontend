@@ -1,4 +1,4 @@
-import type {NewUser, Config} from "@/api";
+import type {NewUser, TrimmedConfig} from "@/api";
 import {InputWithIcon} from "@/components/HomePage/InputWithIcon.tsx";
 import {faCakeCandles, faCircleNotch, faEnvelope, faIdCard, faKey, faSave, faUser} from "@fortawesome/free-solid-svg-icons";
 import {t} from "@/utils/translations.ts";
@@ -8,7 +8,7 @@ import {Form} from "react-bootstrap";
 import type {ChangeEvent, FormEvent} from "react";
 
 type RegisterSectionProps = {
-  config: Config;
+  config: TrimmedConfig;
   userData: NewUser;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;

@@ -1,4 +1,4 @@
-import type {NewUser, Config} from "@/api";
+import api, {type AssignedTestGroup, type TrimmedConfig, type User} from "@/api";
 import { CompletionHeader } from "@/components/CompletionModal/CompletionHeader";
 import { CompletionResults } from "@/components/CompletionModal/CompletionResults";
 import { CompletionUserInfo } from "@/components/CompletionModal/CompletionUserInfo";
@@ -7,19 +7,38 @@ import styles from "@/styles/CompletionModal/CompletionModal.module.css";
 import { faHome, } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {t} from "@/utils/translations.ts";
+import {useAuth} from "@/contexts/AuthContext.tsx";
+import {useState, useEffect} from "react";
 
 type CompletionModalProps = {
-  config: Config
-  userData: NewUser;
+  config: TrimmedConfig;
+  group: AssignedTestGroup | null;
   onBackToHome: () => void;
 };
 
 export function CompletionModal({
-  config,
-  userData,
-  onBackToHome,
-}: CompletionModalProps) {
+                                  config,
+                                  group,
+                                  onBackToHome,
+                                }: CompletionModalProps) {
   const { isDarkMode } = useTheme();
+  const { token } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (token) {
+        try {
+          const response = await api.getCurrentUser({auth: token});
+          setUser(response.data ?? null);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    fetchUser();
+  }, [token]);
 
   return (
     <div className={styles.page}>
@@ -28,15 +47,15 @@ export function CompletionModal({
 
         <div className={styles.modalContentContainer}>
           <h5 className={styles.thankYou}>
-            {t(config, "completion.thankYou") + userData.name}
+            {t(config, "completion.thankYou") + (user?.username || '')}
           </h5>
           <p className={styles.completedTest}>
             {t(config, "completion.successfullyCompleted", config.title)}
           </p>
 
-          <CompletionUserInfo config={config} userData={userData}/>
+          <CompletionUserInfo config={config} userData={user}/>
 
-          <CompletionResults config={config}  userData={userData}/>
+          <CompletionResults config={config} userData={user} group={group}/>
 
           <p
             className={[

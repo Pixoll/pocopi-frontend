@@ -1,27 +1,91 @@
-import type {NewUser, TestProtocol, Config} from "@/api";
+import type {User, TrimmedConfig, AssignedTestGroup} from "@/api";
+import api from "@/api";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 import styles from "@/styles/TestPage/TestPage.module.css";
+import { useEffect, useState } from "react";
 
 type TestPageProps = {
-  config: Config;
-  protocol: TestProtocol;
+  config: TrimmedConfig;
+  protocol: AssignedTestGroup | null;
   goToNextPage: () => void;
-  userData: NewUser;
 };
 
 export function TestPage({
-  config,
-  protocol,
-  goToNextPage,
-  userData,
-}: TestPageProps) {
+                           config,
+                           protocol,
+                           goToNextPage,
+                         }: TestPageProps) {
   const { isDarkMode } = useTheme();
+  const { token } = useAuth();
+  const [userData, setUserData] = useState<User | null>(null);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (token) {
+        try {
+          const response = await api.getCurrentUser({
+            auth: token
+          });
+          if (response.data) {
+            setUserData(response.data);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+  if (!userData) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <p>Cargando información del usuario...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!protocol) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <p>Cargando preguntas del grupo...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <TestPageContent
+    config={config}
+    protocol={protocol}
+    userData={userData}
+    goToNextPage={goToNextPage}
+    isDarkMode={isDarkMode}
+  />;
+}
+
+function TestPageContent({
+                           config,
+                           protocol,
+                           userData,
+                           goToNextPage,
+                           isDarkMode,
+                         }: {
+  config: TrimmedConfig;
+  protocol: AssignedTestGroup;
+  userData: User;
+  goToNextPage: () => void;
+  isDarkMode: boolean;
+}) {
   const {
     phaseIndex,
     questionIndex,

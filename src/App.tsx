@@ -1,4 +1,4 @@
-import api, {type NewUser, type Config, type TestGroup} from "@/api";
+import api, {type AssignedTestGroup, type TrimmedConfig} from "@/api";
 import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
 import {CompletionModal} from "@/pages/CompletionModal";
 import {FormPage} from "@/pages/FormPage";
@@ -11,57 +11,21 @@ import {LoadingPage} from "@/pages/LoadingPage";
 import { Routes, Route, useNavigate, Navigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Decimal from "decimal.js";
-
-function sampleGroup(config: Config): TestGroup {
-  const groupsArray = Object.values(config.groups);
-  const randomValue = crypto.getRandomValues(new Uint32Array(1))[0]!;
-  const targetProbability = new Decimal("0." + randomValue.toString().split("").reverse().join(""));
-
-  const probabilitySums: Decimal[] = [];
-  let lastProbability = new Decimal(0);
-
-  for (const group of groupsArray) {
-    const prob = new Decimal(group.probability ?? 0).div(100);
-    lastProbability = lastProbability.add(prob);
-    probabilitySums.push(lastProbability);
-  }
-
-  let left = 0;
-  let right = probabilitySums.length - 1;
-  let index = 0;
-
-  while (left <= right) {
-    const mid = left + Math.floor((right - left) / 2);
-    const value = probabilitySums[mid]!;
-
-    if (value.greaterThan(targetProbability)) {
-      index = mid;
-      right = mid - 1;
-    } else {
-      left = mid + 1;
-    }
-  }
-
-  return groupsArray[index]!;
-}
 
 export function App() {
   const navigate = useNavigate();
 
-  const [config, setConfig] = useState<Config | null>(null);
-  const [group, setGroup] = useState<TestGroup | null>(null);
-  const [userData, setUserData] = useState<NewUser | null>(null);
+  const [config, setConfig] = useState<TrimmedConfig | null>(null);
+  const [group, setGroup] = useState<AssignedTestGroup | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
-      const response = await api.getLastestConfig();
+      const response = await api.getLastestConfigAsUser();
       if (response.data) {
         setConfig(response.data);
         console.log("es anonimo ", response.data.anonymous);
-        setGroup(sampleGroup(response.data));
         document.title = response.data.title ?? "";
       } else {
         console.error(response.error);
@@ -81,10 +45,10 @@ export function App() {
     window.scrollTo(0, 0);
     navigate("/modify-config");
   }
-  const goToPreTest = (data: NewUser) => {
+  const goToPreTest = (group: AssignedTestGroup) => {
+    setGroup(group);
     window.scrollTo(0, 0);
-    setUserData(data);
-    navigate("/pretest");
+    navigate("/pre-test");
   };
   const goToAdminPage = () => {
     window.scrollTo(0, 0);
@@ -103,7 +67,7 @@ export function App() {
 
   const goToPostTest = () => {
     window.scrollTo(0, 0);
-    navigate("/posttest");
+    navigate("/post-test");
   };
 
   const goToEnd = () => {
@@ -121,7 +85,7 @@ export function App() {
     navigate("/dashboard");
   };
 
-  if (isLoading || !group || !config) {
+  if (isLoading || !config) {
     return <LoadingPage message="Cargando configuración..." />;
   }
 
@@ -130,27 +94,27 @@ export function App() {
       <Routes>
         <Route
           path="/"
-          element={<HomePage group={group} config={config}  goToNextPage={goToPreTest} onDashboard={goToDashboard} onAdmin={goToAdminPage}/>}
+          element={<HomePage config={config} goToNextPage={goToPreTest} onDashboard={goToDashboard} onAdmin={goToAdminPage}/>}
         />
         <Route
-          path="/pretest"
-          element={<FormPage config={config} type="pre-test" username={userData?.username ?? ""} goToNextPage={goToGreeting} />}
+          path="/pre-test"
+          element={<FormPage config={config} type="pre-test" goToNextPage={goToGreeting} />}
         />
         <Route
           path="/greeting"
-          element={<TestGreetingPage config={config} groupGreeting={group.greeting} goToNextPage={goToTest} />}
+          element={<TestGreetingPage config={config} groupGreeting={group?.greeting} goToNextPage={goToTest} />}
         />
         <Route
           path="/test"
-          element={<TestPage config={config} protocol={group.protocol} goToNextPage={goToPostTest} userData={userData!} />}
+          element={<TestPage config={config} protocol={group} goToNextPage={goToPostTest} />}
         />
         <Route
-          path="/posttest"
-          element={<FormPage config={config} type="post-test" username={userData?.username ?? ""} goToNextPage={goToEnd} />}
+          path="/post-test"
+          element={<FormPage config={config} type="post-test"  goToNextPage={goToEnd} />}
         />
         <Route
           path="/end"
-          element={<CompletionModal config={config} userData={userData!} onBackToHome={goToHome} />}
+          element={<CompletionModal config={config}  onBackToHome={goToHome} group={group}/>}
         />
         <Route
           path="/dashboard"

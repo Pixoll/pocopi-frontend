@@ -5,12 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useEffect } from "react";
 import Markdown from "react-markdown";
-import type {Config} from "@/api";
+import type {TrimmedConfig} from "@/api";
 import {t} from "@/utils/translations.ts";
 
 type TestInformationPageProps = {
-  config: Config;
-  groupGreeting: string | undefined;
+  config: TrimmedConfig;
+  groupGreeting?: string | null;
   goToNextPage: () => void;
 };
 

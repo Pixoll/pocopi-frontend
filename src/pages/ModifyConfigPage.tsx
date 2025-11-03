@@ -13,13 +13,13 @@ import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
 import api, {
   type FrequentlyAskedQuestionUpdate,
-  type Config,
+  type TrimmedConfig,
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 
 type ModifyConfigPageProps = {
-  initialConfig: Config;
-  onSave?: (config: Config) => void;
+  initialConfig: TrimmedConfig;
+  onSave?: (config: TrimmedConfig) => void;
 }
 
 export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig/*, onSave*/}) => {

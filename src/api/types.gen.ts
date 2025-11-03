@@ -4,28 +4,39 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
-export type ApiHttpError = {
-    code: number;
-    message: string;
-    errors: Array<FieldError>;
+export type AssignedTestGroup = {
+    label: string;
+    greeting?: string | null;
+    allowPreviousPhase: boolean;
+    allowPreviousQuestion: boolean;
+    allowSkipQuestion: boolean;
+    phases: Array<AssignedTestPhase>;
 };
 
-export type FieldError = {
-    field: string;
-    message: string;
+export type AssignedTestOption = {
+    id: number;
+    text?: string | null;
+    image?: Image | null;
 };
 
-export type NewUser = {
-    username: string;
-    anonymous: boolean;
-    name: string;
-    email: string;
-    age: string;
-    password: string;
+export type AssignedTestPhase = {
+    questions: Array<AssignedTestQuestion>;
 };
 
-export type ImageUrl = {
-    url?: string;
+export type AssignedTestQuestion = {
+    id: number;
+    text?: string | null;
+    image?: Image | null;
+    options: Array<AssignedTestOption>;
+};
+
+export type Image = {
+    url: string;
+    alt: string;
+};
+
+export type UserTestAttempt = {
+    assignedGroup: AssignedTestGroup;
 };
 
 export type NewFormAnswer = {
@@ -39,6 +50,26 @@ export type NewFormAnswers = {
     username: string;
     formId: number;
     answers: Array<NewFormAnswer>;
+};
+
+export type NewQuestionEventLog = {
+    questionId: number;
+    timestamp: number;
+    duration: number;
+};
+
+export type NewOptionEventLog = {
+    optionId: number;
+    type: 'deselect' | 'select' | 'hover';
+    timestamp: number;
+};
+
+export type NewUser = {
+    username: string;
+    name?: string;
+    email?: string;
+    age?: number;
+    password: string;
 };
 
 export type Token = {
@@ -87,7 +118,7 @@ export type ConfigUpdateWithFiles = {
         [key: string]: Blob | File;
     };
     /**
-     * All images from question and options each phase and protocol
+     * All images from question and options each phase
      */
     groupQuestionOptionsFiles: {
         [key: string]: Blob | File;
@@ -174,7 +205,10 @@ export type TestGroupUpdate = {
     probability?: number;
     label?: string;
     greeting?: string;
-    protocol?: TestProtocolUpdate;
+    allowPreviousPhase: boolean;
+    allowPreviousQuestion: boolean;
+    allowSkipQuestion: boolean;
+    phases: Array<TestPhaseUpdate>;
 };
 
 export type TestOptionUpdate = {
@@ -186,15 +220,6 @@ export type TestOptionUpdate = {
 export type TestPhaseUpdate = {
     id?: number;
     questions: Array<TestQuestionUpdate>;
-};
-
-export type TestProtocolUpdate = {
-    id?: number;
-    label: string;
-    allowPreviousPhase: boolean;
-    allowPreviousQuestion: boolean;
-    allowSkipQuestion: boolean;
-    phases: Array<TestPhaseUpdate>;
 };
 
 export type TestQuestionUpdate = {
@@ -247,29 +272,10 @@ export type UpdatedConfig = {
 export type User = {
     id: number;
     username: string;
-    name: string;
     anonymous: boolean;
-    email: string;
-    age: number;
-};
-
-export type TimeLog = {
-    userId: number;
-    phaseId: number;
-    questionId: number;
-    startTimestamp: number;
-    endTimestamp: number;
-    skipped: boolean;
-    correct: boolean;
-    totalOptionChanges: number;
-    totalOptionHovers: number;
-    events: Array<TimeLogEvent>;
-};
-
-export type TimeLogEvent = {
-    type: string;
-    optionId: number;
-    timestamp: number;
+    name?: string;
+    email?: string;
+    age?: number;
 };
 
 export type UserSummary = {
@@ -458,59 +464,34 @@ export type UserTestsResult = {
     questions?: Array<TestQuestionResult>;
 };
 
-export type Config = {
-    /**
-     * Configuration version
-     */
-    id: number;
-    /**
-     * Configuration icon image
-     */
-    icon?: Image;
-    /**
-     * Configuration title
-     */
-    title: string;
-    /**
-     * Configuration subtitle
-     */
-    subtitle: string;
-    /**
-     * Configuration description
-     */
-    description: string;
-    /**
-     * Is or not anonymous
-     */
-    anonymous: boolean;
-    /**
-     * Card information by configuration
-     */
-    informationCards: Array<InformationCard>;
-    informedConsent: string;
-    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
-    preTestForm: Form;
-    postTestForm: Form;
-    groups: {
-        [key: string]: TestGroup;
-    };
-    translations: {
-        [key: string]: string;
-    };
+export type OptionEventLog = {
+    type: string;
+    optionId: number;
+    timestamp: number;
+};
+
+export type QuestionEventLog = {
+    userId: number;
+    phaseId: number;
+    questionId: number;
+    startTimestamp: number;
+    endTimestamp: number;
+    skipped: boolean;
+    correct: boolean;
+    totalOptionChanges: number;
+    totalOptionHovers: number;
+    events: Array<OptionEventLog>;
 };
 
 export type Form = {
     id: number;
-    /**
-     * Form questions
-     */
     questions: Array<SelectMultiple | SelectOne | Slider | TextLong | TextShort>;
 };
 
 export type FormOption = {
     id: number;
-    text?: string;
-    image?: Image;
+    text?: string | null;
+    image?: Image | null;
 };
 
 export type FormQuestion = unknown;
@@ -521,24 +502,19 @@ export type FrequentlyAskedQuestion = {
     answer: string;
 };
 
-export type Image = {
-    url: string;
-    alt: string;
-};
-
 export type InformationCard = {
     id: number;
     title: string;
     description: string;
-    color: number;
-    icon?: Image;
+    color?: number | null;
+    icon?: Image | null;
 };
 
 export type SelectMultiple = FormQuestion & {
     id: number;
     category: string;
-    text?: string;
-    image?: Image;
+    text?: string | null;
+    image?: Image | null;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
     options: Array<FormOption>;
     min: number;
@@ -549,8 +525,8 @@ export type SelectMultiple = FormQuestion & {
 export type SelectOne = FormQuestion & {
     id: number;
     category: string;
-    text?: string;
-    image?: Image;
+    text?: string | null;
+    image?: Image | null;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
     options: Array<FormOption>;
     other: boolean;
@@ -559,60 +535,20 @@ export type SelectOne = FormQuestion & {
 export type Slider = FormQuestion & {
     id: number;
     category: string;
-    text?: string;
-    image?: Image;
+    text?: string | null;
+    image?: Image | null;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    placeholder: string;
     min: number;
     max: number;
     step: number;
     labels: Array<SliderLabel>;
 };
 
-export type TestGroup = {
-    id: number;
-    /**
-     * Probability between 0 and 100
-     */
-    probability: number;
-    label: string;
-    greeting: string;
-    protocol: TestProtocol;
-};
-
-export type TestOption = {
-    id: number;
-    text?: string;
-    image?: Image;
-    correct: boolean;
-};
-
-export type TestPhase = {
-    id: number;
-    questions: Array<TestQuestion>;
-};
-
-export type TestProtocol = {
-    id: number;
-    label: string;
-    allowPreviousPhase: boolean;
-    allowPreviousQuestion: boolean;
-    allowSkipQuestion: boolean;
-    phases: Array<TestPhase>;
-};
-
-export type TestQuestion = {
-    id: number;
-    text?: string;
-    image: Image;
-    options: Array<TestOption>;
-};
-
 export type TextLong = FormQuestion & {
     id: number;
     category: string;
-    text?: string;
-    image?: Image;
+    text?: string | null;
+    image?: Image | null;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
     placeholder: string;
     minLength: number;
@@ -622,73 +558,301 @@ export type TextLong = FormQuestion & {
 export type TextShort = FormQuestion & {
     id: number;
     category: string;
-    text?: string;
-    image?: Image;
+    text?: string | null;
+    image?: Image | null;
     type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
     placeholder: string;
     minLength: number;
     maxLength: number;
 };
 
-export type CreateUserData = {
-    body: NewUser;
+export type TrimmedConfig = {
+    icon?: Image | null;
+    title: string;
+    subtitle?: string | null;
+    description: string;
+    anonymous: boolean;
+    informationCards: Array<InformationCard>;
+    informedConsent: string;
+    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
+    preTestForm?: Form | null;
+    postTestForm?: Form | null;
+    translations: {
+        [key: string]: string;
+    };
+};
+
+export type FullConfig = {
+    id: number;
+    icon?: Image | null;
+    title: string;
+    subtitle?: string | null;
+    description: string;
+    anonymous: boolean;
+    informationCards: Array<InformationCard>;
+    informedConsent: string;
+    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
+    preTestForm?: Form | null;
+    postTestForm?: Form | null;
+    groups: Array<TestGroup>;
+    translations: Array<Translation>;
+};
+
+export type TestGroup = {
+    id: number;
+    probability: number;
+    label: string;
+    greeting?: string | null;
+    allowPreviousPhase: boolean;
+    allowPreviousQuestion: boolean;
+    allowSkipQuestion: boolean;
+    randomizePhases: boolean;
+    phases: Array<TestPhase>;
+};
+
+export type TestOption = {
+    id: number;
+    text?: string | null;
+    image?: Image | null;
+    correct: boolean;
+};
+
+export type TestPhase = {
+    id: number;
+    randomizeQuestions: boolean;
+    questions: Array<TestQuestion>;
+};
+
+export type TestQuestion = {
+    id: number;
+    text?: string | null;
+    image?: Image | null;
+    randomizeOptions: boolean;
+    options: Array<TestOption>;
+};
+
+export type Translation = {
+    key: string;
+    value?: string | null;
+    description: string;
+    arguments: Array<string>;
+};
+
+export type ApiHttpError = {
+    code: number;
+    message: string;
+    errors?: Array<FieldError>;
+};
+
+export type FieldError = {
+    field: string;
+    message: string;
+};
+
+export type EndTestData = {
+    body?: never;
     path?: never;
     query?: never;
-    url: '/api/users';
+    url: '/api/test/end';
 };
 
-export type CreateUserErrors = {
+export type EndTestErrors = {
     /**
-     * Validation error
+     * Unauthorized
      */
-    400: ApiHttpError;
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
 };
 
-export type CreateUserError = CreateUserErrors[keyof CreateUserErrors];
+export type EndTestError = EndTestErrors[keyof EndTestErrors];
 
-export type CreateUserResponses = {
+export type EndTestResponses = {
     /**
-     * User created successfully
+     * OK
      */
     200: unknown;
 };
 
-export type UploadImageData = {
+export type DiscardTestData = {
     body?: never;
     path?: never;
-    query: {
-        file: Blob | File;
-        path: string;
-    };
-    url: '/api/images';
+    query?: never;
+    url: '/api/test/discard';
 };
 
-export type UploadImageResponses = {
+export type DiscardTestErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type DiscardTestError = DiscardTestErrors[keyof DiscardTestErrors];
+
+export type DiscardTestResponses = {
     /**
      * OK
      */
-    200: ImageUrl;
+    200: unknown;
 };
 
-export type UploadImageResponse = UploadImageResponses[keyof UploadImageResponses];
+export type ContinueTestData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/test/continue';
+};
+
+export type ContinueTestErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type ContinueTestError = ContinueTestErrors[keyof ContinueTestErrors];
+
+export type ContinueTestResponses = {
+    /**
+     * OK
+     */
+    200: UserTestAttempt;
+};
+
+export type ContinueTestResponse = ContinueTestResponses[keyof ContinueTestResponses];
+
+export type BeginTestData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/test/begin';
+};
+
+export type BeginTestErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type BeginTestError = BeginTestErrors[keyof BeginTestErrors];
+
+export type BeginTestResponses = {
+    /**
+     * OK
+     */
+    200: UserTestAttempt;
+};
+
+export type BeginTestResponse = BeginTestResponses[keyof BeginTestResponses];
 
 export type SubmitFormAnswersData = {
     body: NewFormAnswers;
     path?: never;
     query?: never;
-    url: '/api/forms/answer';
+    url: '/api/forms/answers';
 };
+
+export type SubmitFormAnswersErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type SubmitFormAnswersError = SubmitFormAnswersErrors[keyof SubmitFormAnswersErrors];
 
 export type SubmitFormAnswersResponses = {
     /**
      * OK
      */
-    200: {
-        [key: string]: unknown;
-    };
+    200: unknown;
 };
 
-export type SubmitFormAnswersResponse = SubmitFormAnswersResponses[keyof SubmitFormAnswersResponses];
+export type SaveQuestionEventLogData = {
+    body: NewQuestionEventLog;
+    path?: never;
+    query?: never;
+    url: '/api/event-logs/question';
+};
+
+export type SaveQuestionEventLogErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type SaveQuestionEventLogError = SaveQuestionEventLogErrors[keyof SaveQuestionEventLogErrors];
+
+export type SaveQuestionEventLogResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type SaveOptionEventLogData = {
+    body: NewOptionEventLog;
+    path?: never;
+    query?: never;
+    url: '/api/event-logs/option';
+};
+
+export type SaveOptionEventLogErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type SaveOptionEventLogError = SaveOptionEventLogErrors[keyof SaveOptionEventLogErrors];
+
+export type SaveOptionEventLogResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type RegisterData = {
     body: NewUser;
@@ -696,6 +860,15 @@ export type RegisterData = {
     query?: never;
     url: '/api/auth/register';
 };
+
+export type RegisterErrors = {
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type RegisterError = RegisterErrors[keyof RegisterErrors];
 
 export type RegisterResponses = {
     /**
@@ -713,6 +886,15 @@ export type LoginData = {
     url: '/api/auth/login';
 };
 
+export type LoginErrors = {
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type LoginError = LoginErrors[keyof LoginErrors];
+
 export type LoginResponses = {
     /**
      * OK
@@ -729,6 +911,23 @@ export type UpdateConfigData = {
     url: '/api/config';
 };
 
+export type UpdateConfigErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type UpdateConfigError = UpdateConfigErrors[keyof UpdateConfigErrors];
+
 export type UpdateConfigResponses = {
     /**
      * OK
@@ -738,30 +937,25 @@ export type UpdateConfigResponses = {
 
 export type UpdateConfigResponse = UpdateConfigResponses[keyof UpdateConfigResponses];
 
-export type GetUserData = {
-    body?: never;
-    path: {
-        username: string;
-    };
-    query?: never;
-    url: '/api/users/{username}';
-};
-
-export type GetUserResponses = {
-    /**
-     * OK
-     */
-    200: User;
-};
-
-export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
-
 export type GetAllUsersData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/users/all';
+    url: '/api/users';
 };
+
+export type GetAllUsersErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllUsersError = GetAllUsersErrors[keyof GetAllUsersErrors];
 
 export type GetAllUsersResponses = {
     /**
@@ -772,39 +966,65 @@ export type GetAllUsersResponses = {
 
 export type GetAllUsersResponse = GetAllUsersResponses[keyof GetAllUsersResponses];
 
-export type GetAllTimeLogsData = {
+export type GetUserData = {
+    body?: never;
+    path: {
+        username: string;
+    };
+    query?: never;
+    url: '/api/users/{username}';
+};
+
+export type GetUserErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserError = GetUserErrors[keyof GetUserErrors];
+
+export type GetUserResponses = {
+    /**
+     * OK
+     */
+    200: User;
+};
+
+export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
+
+export type GetCurrentUserData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/timelogs';
+    url: '/api/users/me';
 };
 
-export type GetAllTimeLogsResponses = {
+export type GetCurrentUserErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetCurrentUserError = GetCurrentUserErrors[keyof GetCurrentUserErrors];
+
+export type GetCurrentUserResponses = {
     /**
      * OK
      */
-    200: Array<TimeLog>;
+    200: User;
 };
 
-export type GetAllTimeLogsResponse = GetAllTimeLogsResponses[keyof GetAllTimeLogsResponses];
-
-export type GetUserTimelogsData = {
-    body?: never;
-    path: {
-        userId: number;
-    };
-    query?: never;
-    url: '/api/timelogs/{userId}';
-};
-
-export type GetUserTimelogsResponses = {
-    /**
-     * OK
-     */
-    200: TimeLog;
-};
-
-export type GetUserTimelogsResponse = GetUserTimelogsResponses[keyof GetUserTimelogsResponses];
+export type GetCurrentUserResponse = GetCurrentUserResponses[keyof GetCurrentUserResponses];
 
 export type GetAllUserSummariesData = {
     body?: never;
@@ -812,6 +1032,19 @@ export type GetAllUserSummariesData = {
     query?: never;
     url: '/api/summary';
 };
+
+export type GetAllUserSummariesErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllUserSummariesError = GetAllUserSummariesErrors[keyof GetAllUserSummariesErrors];
 
 export type GetAllUserSummariesResponses = {
     /**
@@ -831,6 +1064,19 @@ export type GetUserSummaryByIdData = {
     url: '/api/summary/{userId}';
 };
 
+export type GetUserSummaryByIdErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserSummaryByIdError = GetUserSummaryByIdErrors[keyof GetUserSummaryByIdErrors];
+
 export type GetUserSummaryByIdResponses = {
     /**
      * OK
@@ -840,6 +1086,35 @@ export type GetUserSummaryByIdResponses = {
 
 export type GetUserSummaryByIdResponse = GetUserSummaryByIdResponses[keyof GetUserSummaryByIdResponses];
 
+export type GetCurrentUserSummaryData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/summary/me';
+};
+
+export type GetCurrentUserSummaryErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetCurrentUserSummaryError = GetCurrentUserSummaryErrors[keyof GetCurrentUserSummaryErrors];
+
+export type GetCurrentUserSummaryResponses = {
+    /**
+     * OK
+     */
+    200: UserSummary;
+};
+
+export type GetCurrentUserSummaryResponse = GetCurrentUserSummaryResponses[keyof GetCurrentUserSummaryResponses];
+
 export type GetUserTestResultsData = {
     body?: never;
     path: {
@@ -848,6 +1123,19 @@ export type GetUserTestResultsData = {
     query?: never;
     url: '/api/results/user/{userId}/tests';
 };
+
+export type GetUserTestResultsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserTestResultsError = GetUserTestResultsErrors[keyof GetUserTestResultsErrors];
 
 export type GetUserTestResultsResponses = {
     /**
@@ -867,6 +1155,19 @@ export type GetUserFormResultsData = {
     url: '/api/results/user/{userId}/forms';
 };
 
+export type GetUserFormResultsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserFormResultsError = GetUserFormResultsErrors[keyof GetUserFormResultsErrors];
+
 export type GetUserFormResultsResponses = {
     /**
      * OK
@@ -885,6 +1186,19 @@ export type GetUserAllResultsData = {
     url: '/api/results/user/{userId}/all';
 };
 
+export type GetUserAllResultsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserAllResultsError = GetUserAllResultsErrors[keyof GetUserAllResultsErrors];
+
 export type GetUserAllResultsResponses = {
     /**
      * OK
@@ -900,6 +1214,19 @@ export type GetAllUsersLatestConfigResultsZipData = {
     query?: never;
     url: '/api/results/user/all/latest/zip';
 };
+
+export type GetAllUsersLatestConfigResultsZipErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllUsersLatestConfigResultsZipError = GetAllUsersLatestConfigResultsZipErrors[keyof GetAllUsersLatestConfigResultsZipErrors];
 
 export type GetAllUsersLatestConfigResultsZipResponses = {
     /**
@@ -917,6 +1244,19 @@ export type GetAllUsersLatestConfigTestsZipData = {
     url: '/api/results/user/all/latest/tests/zip';
 };
 
+export type GetAllUsersLatestConfigTestsZipErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllUsersLatestConfigTestsZipError = GetAllUsersLatestConfigTestsZipErrors[keyof GetAllUsersLatestConfigTestsZipErrors];
+
 export type GetAllUsersLatestConfigTestsZipResponses = {
     /**
      * OK
@@ -932,6 +1272,19 @@ export type GetAllUsersLatestConfigFormsZipData = {
     query?: never;
     url: '/api/results/user/all/latest/forms/zip';
 };
+
+export type GetAllUsersLatestConfigFormsZipErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllUsersLatestConfigFormsZipError = GetAllUsersLatestConfigFormsZipErrors[keyof GetAllUsersLatestConfigFormsZipErrors];
 
 export type GetAllUsersLatestConfigFormsZipResponses = {
     /**
@@ -951,6 +1304,19 @@ export type GetGroupTestResultsZipData = {
     url: '/api/results/group/{groupId}/tests';
 };
 
+export type GetGroupTestResultsZipErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetGroupTestResultsZipError = GetGroupTestResultsZipErrors[keyof GetGroupTestResultsZipErrors];
+
 export type GetGroupTestResultsZipResponses = {
     /**
      * OK
@@ -968,6 +1334,19 @@ export type GetGroupFormResultsZipData = {
     query?: never;
     url: '/api/results/group/{groupId}/forms';
 };
+
+export type GetGroupFormResultsZipErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetGroupFormResultsZipError = GetGroupFormResultsZipErrors[keyof GetGroupFormResultsZipErrors];
 
 export type GetGroupFormResultsZipResponses = {
     /**
@@ -987,6 +1366,19 @@ export type GetGroupFullResultsZipData = {
     url: '/api/results/group/{groupId}/all';
 };
 
+export type GetGroupFullResultsZipErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetGroupFullResultsZipError = GetGroupFullResultsZipErrors[keyof GetGroupFullResultsZipErrors];
+
 export type GetGroupFullResultsZipResponses = {
     /**
      * OK
@@ -996,18 +1388,107 @@ export type GetGroupFullResultsZipResponses = {
 
 export type GetGroupFullResultsZipResponse = GetGroupFullResultsZipResponses[keyof GetGroupFullResultsZipResponses];
 
-export type GetLastestConfigData = {
+export type GetAllEventLogsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/event-logs';
+};
+
+export type GetAllEventLogsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllEventLogsError = GetAllEventLogsErrors[keyof GetAllEventLogsErrors];
+
+export type GetAllEventLogsResponses = {
+    /**
+     * OK
+     */
+    200: Array<QuestionEventLog>;
+};
+
+export type GetAllEventLogsResponse = GetAllEventLogsResponses[keyof GetAllEventLogsResponses];
+
+export type GetUserEventLogsData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/event-logs/{userId}';
+};
+
+export type GetUserEventLogsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserEventLogsError = GetUserEventLogsErrors[keyof GetUserEventLogsErrors];
+
+export type GetUserEventLogsResponses = {
+    /**
+     * OK
+     */
+    200: Array<QuestionEventLog>;
+};
+
+export type GetUserEventLogsResponse = GetUserEventLogsResponses[keyof GetUserEventLogsResponses];
+
+export type GetLastestConfigAsUserData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/config/latest';
 };
 
-export type GetLastestConfigResponses = {
+export type GetLastestConfigAsUserResponses = {
     /**
      * OK
      */
-    200: Config;
+    200: TrimmedConfig;
 };
 
-export type GetLastestConfigResponse = GetLastestConfigResponses[keyof GetLastestConfigResponses];
+export type GetLastestConfigAsUserResponse = GetLastestConfigAsUserResponses[keyof GetLastestConfigAsUserResponses];
+
+export type GetLastestConfigAsAdminData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/config/latest/full';
+};
+
+export type GetLastestConfigAsAdminErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetLastestConfigAsAdminError = GetLastestConfigAsAdminErrors[keyof GetLastestConfigAsAdminErrors];
+
+export type GetLastestConfigAsAdminResponses = {
+    /**
+     * OK
+     */
+    200: FullConfig;
+};
+
+export type GetLastestConfigAsAdminResponse = GetLastestConfigAsAdminResponses[keyof GetLastestConfigAsAdminResponses];

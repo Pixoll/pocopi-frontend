@@ -1,12 +1,12 @@
 import type { Answers } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/PhaseSummaryModal.module.css";
-import {type TestProtocol, type Config} from "@/api";
+import {type TestProtocol, type TrimmedConfig} from "@/api";
 import {t} from "@/utils/translations.ts";
 
 
 type PhaseSummaryModalProps = {
-  config: Config;
+  config: TrimmedConfig;
   protocol: TestProtocol;
   answers: Answers;
   phaseIndex: number;

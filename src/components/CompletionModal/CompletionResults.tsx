@@ -1,4 +1,4 @@
-import api, {type NewUser, type Config, type UserSummary} from "@/api";
+import api, {type AssignedTestGroup, type TrimmedConfig, type User, type UserSummary} from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
 import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesome/free-solid-svg-icons";
@@ -11,17 +11,24 @@ type UserResult = UserSummary & {
 };
 
 type CompletionResultsProps = {
-  config: Config;
-  userData: NewUser;
+  config: TrimmedConfig;
+  userData: User | null;
+  group: AssignedTestGroup | null;
 };
 
-export function CompletionResults({ config, userData }: CompletionResultsProps) {
+export function CompletionResults({ config, userData, group }: CompletionResultsProps) {
   const { isDarkMode } = useTheme();
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userResult, setUserResult] = useState<UserResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  if (!userData) {
+    return(
+      <div>
+        <p>Cargando usuario...</p>
+      </div>
+    )
+  }
   const fetchUserResult = async () => {
     if (userResult) {
       return;
@@ -42,7 +49,7 @@ export function CompletionResults({ config, userData }: CompletionResultsProps) 
       } else {
         setUserResult({
           ...result.data,
-          totalQuestions: config.groups[result.data.group].protocol.phases.reduce((acc, phase )=>acc+(phase.questions.length), 0) ?? result.data.questionsAnswered,
+          totalQuestions: group?.phases.reduce((acc, phase )=>acc+(phase.questions.length), 0) ?? result.data.questionsAnswered,
         });
       }
     } catch {

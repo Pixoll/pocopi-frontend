@@ -2,10 +2,10 @@ import styles from "@/styles/HomePage/DashboardButton.module.css";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {t} from "@/utils/translations.ts";
-import type {Config} from "@/api";
+import type {TrimmedConfig} from "@/api";
 
 type DashboardButtonProps = {
-  config: Config
+  config: TrimmedConfig
   isDarkMode: boolean;
   onDashboard: () => void;
 };

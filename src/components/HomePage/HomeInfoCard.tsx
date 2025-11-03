@@ -1,16 +1,15 @@
-import type {NewUser, Config} from "@/api";
-import { faArrowRight, faFileSignature, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import {type Credentials, type TrimmedConfig} from "@/api";
+import { faArrowRight, faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ChangeEvent } from "react";
 import { Accordion, Button, Card, Col, Form, Row, } from "react-bootstrap";
 import Markdown from "react-markdown";
-import styles from "@/styles/HomePage/HomeInfoCard.module.css";
 import {t} from "@/utils/translations.ts";
 
 type HomeInfoCardProps = {
-  config: Config
+  config: TrimmedConfig
   isDarkMode: boolean;
-  userData: NewUser | null;
+  userData: Credentials | string |  null;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onRegister: () => void;
@@ -34,18 +33,18 @@ export function HomeInfoCard({
   const getButtonProps = () => {
     if (isAnonymous) {
       return {
-        text: "Continuar",
-        icon: faArrowRight,
+        text: t(config, "home.startTest"),
+        icon: faUserPlus,
         variant: "primary" as const,
         disabled: !consentAccepted
       };
     } else {
       if (!userData) {
         return {
-          text: "Iniciar Sesión",
+          text: t(config, "home.startTest"),
           icon: faSignInAlt,
           variant: "primary" as const,
-          disabled: false
+          disabled: !consentAccepted
         };
       } else {
         return {
@@ -62,24 +61,6 @@ export function HomeInfoCard({
 
   return (
     <Card className="shadow-lg border-0 rounded-4 mb-5 overflow-hidden">
-      {userData && !userData.anonymous && (
-        <div
-          className={[
-            styles.participantContainer,
-            isDarkMode ? styles.participantContainerDark : styles.participantContainerLight,
-          ].join(" ")}
-        >
-          <div
-            className={[
-              styles.participantIcon,
-              isDarkMode ? styles.participantIconDark : styles.participantIconLight,
-            ].join(" ")}
-          >
-            <FontAwesomeIcon icon={faFileSignature}/>
-          </div>
-          {t(config, "home.participant", userData.name, userData.username)}
-        </div>
-      )}
       <Card.Body className="p-4 p-md-5">
         <h2 className="h4 mb-4">{t(config, "home.aboutThisTest")}</h2>
         <div className="mb-4">

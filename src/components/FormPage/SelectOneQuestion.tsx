@@ -1,10 +1,10 @@
 import styles from "@/styles/FormPage/SelectOneQuestion.module.css";
 import { useState } from "react";
-import type {Config, SelectOne} from "@/api";
+import type {TrimmedConfig, SelectOne} from "@/api";
 import {t} from "@/utils/translations.ts";
 
 type SelectOneQuestionProps = {
-  config: Config;
+  config: TrimmedConfig;
   question: SelectOne;
   answer: string;
   setAnswer: (value: string) => void;
@@ -36,7 +36,7 @@ export function SelectOneQuestion({ config,question, answer, setAnswer }: Select
             <input
               type="radio"
               name={`question-${question.text}-${opt.text}`}
-              value={opt.text}
+              value={opt.text ?? ""}
               checked={answer === opt.text}
               onChange={(e) => handleOptionChange(e.target.value)}
             />
