@@ -25,7 +25,6 @@ export function App() {
       const response = await api.getLastestConfigAsUser();
       if (response.data) {
         setConfig(response.data);
-        console.log("es anonimo ", response.data.anonymous);
         document.title = response.data.title ?? "";
       } else {
         console.error(response.error);

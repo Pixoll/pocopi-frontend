@@ -1,5 +1,5 @@
 import styles from "@/styles/FormPage/SelectOneQuestion.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type {TrimmedConfig, SelectOne} from "@/api";
 import {t} from "@/utils/translations.ts";
 
@@ -7,22 +7,49 @@ type SelectOneQuestionProps = {
   config: TrimmedConfig;
   question: SelectOne;
   answer: string;
-  setAnswer: (value: string) => void;
+  optionId: number;
+  onOptionChange: (optionId: number, optionText: string) => void;
+  onOtherChange: (otherText: string) => void;
 };
 
-export function SelectOneQuestion({ config,question, answer, setAnswer }: SelectOneQuestionProps) {
+export function SelectOneQuestion({
+                                    config,
+                                    question,
+                                    answer,
+                                    optionId,
+                                    onOptionChange,
+                                    onOtherChange
+                                  }: SelectOneQuestionProps) {
   const [otherText, setOtherText] = useState("");
+  const [isOtherSelected, setIsOtherSelected] = useState(false);
 
-  const handleOptionChange = (value: string) => {
-    setAnswer(value);
-    if (value !== "other") {
+  useEffect(() => {
+    const isAnswerInOptions = question.options.some(opt => opt.text === answer);
+    if (!isAnswerInOptions && answer !== "") {
+      setIsOtherSelected(true);
+      setOtherText(answer);
+    } else {
+      setIsOtherSelected(false);
       setOtherText("");
+    }
+  }, [answer, question.options]);
+
+  const handleOptionSelect = (selectedOptionId: number, selectedOptionText: string) => {
+    setIsOtherSelected(false);
+    setOtherText("");
+    onOptionChange(selectedOptionId, selectedOptionText);
+  };
+
+  const handleOtherSelect = () => {
+    setIsOtherSelected(true);
+    if (otherText) {
+      onOtherChange(otherText);
     }
   };
 
   const handleOtherTextChange = (text: string) => {
     setOtherText(text);
-    setAnswer(text);
+    onOtherChange(text);
   };
 
   return (
@@ -35,10 +62,10 @@ export function SelectOneQuestion({ config,question, answer, setAnswer }: Select
           <label key={i} className={styles.optionText}>
             <input
               type="radio"
-              name={`question-${question.text}-${opt.text}`}
-              value={opt.text ?? ""}
-              checked={answer === opt.text}
-              onChange={(e) => handleOptionChange(e.target.value)}
+              name={`question-${question.id}`}
+              value={opt.id}
+              checked={optionId === opt.id && !isOtherSelected}
+              onChange={() => handleOptionSelect(opt.id, opt.text ?? "")}
             />
             <span>{opt.text}</span>
           </label>
@@ -47,18 +74,19 @@ export function SelectOneQuestion({ config,question, answer, setAnswer }: Select
           <label className={styles.optionText}>
             <input
               type="radio"
-              name={`question-${question.text}-other`}
+              name={`question-${question.id}`}
               value="other"
-              checked={answer !== "" && !question.options.some(opt => opt.text === answer)}
-              onChange={() => handleOptionChange("other")}
+              checked={isOtherSelected}
+              onChange={handleOtherSelect}
             />
             <span>Otro:</span>
             <input
               type="text"
-              name={`question-${question.text}-other-text`}
+              name={`question-${question.id}-other-text`}
               placeholder={t(config, "form.otherPlaceholder")}
               value={otherText}
               onChange={(e) => handleOtherTextChange(e.target.value)}
+              onFocus={handleOtherSelect}
               className={styles.otherField}
             />
           </label>

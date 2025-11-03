@@ -1,17 +1,21 @@
 import api, {
   type User,
   type TrimmedConfig,
-  type NewFormAnswer, type SelectOne, type Slider
+  type NewFormAnswer,
+  type SelectOne,
+  type Slider,
+  type ApiHttpError
 } from "@/api";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
 import { Spinner } from "@/components/Spinner";
+import { ErrorDisplay } from "@/components/ErrorDisplay";
 import styles from "@/styles/FormPage/FormPage.module.css";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type FormEvent, useEffect, useState } from "react";
-import {t} from "@/utils/translations.ts";
-import {useAuth} from "@/contexts/AuthContext.tsx";
+import { t } from "@/utils/translations.ts";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 
 type FormPageProps = {
   config: TrimmedConfig;
@@ -27,7 +31,7 @@ export function FormPage({
   const [user, setUser] = useState<User | null>(null);
   const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
-  const {token} = useAuth();
+  const { token } = useAuth();
 
   const [answers, setAnswers] = useState<NewFormAnswer[]>(
     Array.from({ length: questions.length }, (_, i) => ({
@@ -39,7 +43,7 @@ export function FormPage({
   );
 
   const [sending, setSending] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | ApiHttpError | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -66,18 +70,43 @@ export function FormPage({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if(!form){
+
+  if (!form) {
     goToNextPage();
     return (
       <div>
-      <p>
-        No ay formulario
-      </p>
-    </div>)
+        <p>No hay formulario</p>
+      </div>
+    );
   }
+
   const title = type === "pre-test"
     ? t(config, "preTest.title")
     : t(config, "postTest.title");
+
+  const handleOptionChange = (questionIndex: number, optionId: number, optionText: string) => {
+    setAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[questionIndex] = {
+        ...newAnswers[questionIndex],
+        optionId: optionId,
+        answer: optionText,
+      };
+      return newAnswers;
+    });
+  };
+
+  const handleOtherChange = (questionIndex: number, otherText: string) => {
+    setAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[questionIndex] = {
+        ...newAnswers[questionIndex],
+        optionId: -1,
+        answer: otherText,
+      };
+      return newAnswers;
+    });
+  };
 
   const handleChange = (questionIndex: number, value: string) => {
     setAnswers(prev => {
@@ -107,23 +136,50 @@ export function FormPage({
       return;
     }
 
+    const cleanedAnswers = answers.map((answer, idx) => {
+      const cleaned: any = {
+        questionId: answer.questionId,
+      };
+
+      const question = questions[idx];
+
+      if (question.type === 'select-one' || question.type === 'select-multiple') {
+        if (answer.optionId !== -1) {
+          cleaned.optionId = answer.optionId;
+        } else {
+          cleaned.answer = answer.answer;
+        }
+      } else if (question.type === 'slider') {
+        cleaned.value = +answer.answer || 0;
+      } else {
+        cleaned.answer = answer.answer;
+      }
+
+      return cleaned;
+    });
+
     try {
       const result = await api.submitFormAnswers({
+        auth: token,
         body: {
           username: user.username,
           formId: form.id,
-          answers: answers,
+          answers: cleanedAnswers,
         }
       });
-
+      
       if (result.error) {
-        setError(result.error.toString());
+        setError(result.error);
         console.error(result.error);
       } else {
         goToNextPage();
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : `${error}`);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError(String(error));
+      }
       console.error(error);
     } finally {
       setSending(false);
@@ -146,7 +202,9 @@ export function FormPage({
                     config={config}
                     question={question as SelectOne}
                     answer={answers[idx].answer}
-                    setAnswer={(value) => handleChange(idx, value)}
+                    optionId={answers[idx].optionId}
+                    onOptionChange={(optionId, optionText) => handleOptionChange(idx, optionId, optionText)}
+                    onOtherChange={(otherText) => handleOtherChange(idx, otherText)}
                   />
                 );
 
@@ -168,17 +226,22 @@ export function FormPage({
           })}
 
           <div className={styles.sendButtonContainer}>
-            {error && <div>{error}</div>}
+            {error && (
+              <ErrorDisplay
+                error={error}
+                onClose={() => setError(null)}
+              />
+            )}
 
             <button type="submit" disabled={sending} className={styles.sendButton}>
               {sending
                 ? <>
                   {t(config, "form.sendingAnswers")}
-                  <Spinner/>
+                  <Spinner />
                 </>
                 : <>
                   {t(config, "form.sendAnswers")}
-                  <FontAwesomeIcon icon={faArrowRight}/>
+                  <FontAwesomeIcon icon={faArrowRight} />
                 </>}
             </button>
           </div>
