@@ -1,4 +1,4 @@
-import api, { type AssignedTestGroup} from "@/api";
+import api, { type AssignedTestGroup, type NewOptionEventLog } from "@/api";
 import { useState } from "react";
 
 export type Answers = Record<number, Record<number, number | null>>;
@@ -19,40 +19,20 @@ type Test = {
   jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
 
-function sendOptionEvent(
-  token: string,
-  optionId: number,
-  type: "select" | "deselect" | "hover"
-) {
-  try {
-    api.saveOptionEventLog({
-      auth: token,
-      body: {
-        optionId: optionId,
-        type,
-        timestamp: Date.now(),
-      },
-    });
-  } catch (error) {
-    console.error("Error al enviar evento de opción:", error);
-  }
-}
-
 export function useTest(protocol: AssignedTestGroup, token: string): Test {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const [showSummary, setShowSummary] = useState(false);
   const [showedSummary, setShowedSummary] = useState(false);
+  const [questionTimestamp, setQuestionTimestamp] = useState(() => Date.now());
 
-  const [answers, setAnswers] = useState<Answers>(
-    Object.fromEntries(
-      protocol.phases.map((phase, index) => [
-        index,
-        Object.fromEntries(phase.questions.map((q) => [q.id, null])),
-      ])
-    )
-  );
+  const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
+    protocol.phases.map((phase, index) => [
+      index,
+      Object.fromEntries(phase.questions.map((q) => [q.id, null])),
+    ])
+  ));
 
   const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
   const phase = phases[phaseIndex];
@@ -67,19 +47,29 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
   };
 
   const goToPreviousPhase = () => {
-    if (!allowPreviousPhase || phaseIndex <= 0) return;
+    if (!allowPreviousPhase || phaseIndex <= 0) {
+      return;
+    }
+
     const newPhaseIndex = phaseIndex - 1;
     const targetPhase = phases[newPhaseIndex];
     const newQuestionIndex = targetPhase.questions.length - 1;
     const targetQuestion = targetPhase.questions[newQuestionIndex];
+
     setPhaseIndex(newPhaseIndex);
     setQuestionIndex(newQuestionIndex);
     setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
+
+    sendQuestionEvent(token, questionId, questionTimestamp);
+    setQuestionTimestamp(Date.now());
   };
 
   const quitSummary = (onFinish: () => void, shouldAdvancePhase: boolean = true) => {
     setShowSummary(false);
-    if (!shouldAdvancePhase) return;
+
+    if (!shouldAdvancePhase) {
+      return;
+    }
 
     setShowedSummary(false);
 
@@ -87,9 +77,12 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
       const newPhaseIndex = phaseIndex + 1;
       const targetPhase = phases[newPhaseIndex];
       const targetQuestion = targetPhase.questions[0];
+
       setPhaseIndex(newPhaseIndex);
       setQuestionIndex(0);
       setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
+
+      setQuestionTimestamp(Date.now());
     } else {
       onFinish();
     }
@@ -98,6 +91,9 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
   const goToSummary = () => {
     setShowSummary(true);
     setShowedSummary(true);
+
+    sendQuestionEvent(token, questionId, questionTimestamp);
+    setQuestionTimestamp(Date.now());
   };
 
   const goToNextPhase = () => {
@@ -105,9 +101,14 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
       const newPhaseIndex = phaseIndex + 1;
       const targetPhase = phases[newPhaseIndex];
       const targetQuestion = targetPhase.questions[0];
+
       setPhaseIndex(newPhaseIndex);
       setQuestionIndex(0);
       setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
+
+      sendQuestionEvent(token, questionId, questionTimestamp);
+      setQuestionTimestamp(Date.now());
+
       return;
     }
 
@@ -115,34 +116,56 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
   };
 
   const goToPreviousQuestion = () => {
-    if (!allowPreviousQuestion) return;
+    if (!allowPreviousQuestion) {
+      return;
+    }
+
     if (questionIndex <= 0) {
       goToPreviousPhase();
       return;
     }
+
     const targetQuestion = phase.questions[questionIndex - 1];
+
     setQuestionIndex(questionIndex - 1);
     setSelectedOptionId(answers[phaseIndex][targetQuestion.id]);
+
+    sendQuestionEvent(token, questionId, questionTimestamp);
+    setQuestionTimestamp(Date.now());
   };
 
   const goToNextQuestion = () => {
-    if (selectedOptionId === null && !allowSkipQuestion) return;
-    if (questionIndex < questions.length - 1) {
-      const targetQuestion = phase.questions[questionIndex + 1];
-      setQuestionIndex(questionIndex + 1);
-      setSelectedOptionId(answers[phaseIndex][targetQuestion.id]);
+    if (selectedOptionId === null && !allowSkipQuestion) {
       return;
     }
+
+    if (questionIndex < questions.length - 1) {
+      const targetQuestion = phase.questions[questionIndex + 1];
+
+      setQuestionIndex(questionIndex + 1);
+      setSelectedOptionId(answers[phaseIndex][targetQuestion.id]);
+
+      sendQuestionEvent(token, questionId, questionTimestamp);
+      setQuestionTimestamp(Date.now());
+
+      return;
+    }
+
     goToNextPhase();
   };
 
   const jumpToQuestion = (newPhaseIndex: number, newQuestionIndex: number) => {
     const targetPhase = phases[newPhaseIndex];
     const targetQuestion = targetPhase.questions[newQuestionIndex];
+
     setPhaseIndex(newPhaseIndex);
     setQuestionIndex(newQuestionIndex);
     setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
-    quitSummary(() => {}, false);
+
+    setQuestionTimestamp(Date.now());
+
+    quitSummary(() => {
+    }, false);
   };
 
   const onOptionClick = async (optionId: number) => {
@@ -175,4 +198,36 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
     onOptionHover,
     jumpToQuestion,
   };
+}
+
+function sendQuestionEvent(token: string, questionId: number, timestamp: number): void {
+  try {
+    // noinspection JSIgnoredPromiseFromCall
+    api.saveQuestionEventLog({
+      auth: token,
+      body: {
+        questionId,
+        timestamp,
+        duration: Date.now() - timestamp,
+      },
+    });
+  } catch (error) {
+    console.error("Error al enviar evento de pregunta:", error);
+  }
+}
+
+function sendOptionEvent(token: string, optionId: number, type: NewOptionEventLog["type"]): void {
+  try {
+    // noinspection JSIgnoredPromiseFromCall
+    api.saveOptionEventLog({
+      auth: token,
+      body: {
+        optionId,
+        type,
+        timestamp: Date.now(),
+      },
+    });
+  } catch (error) {
+    console.error("Error al enviar evento de opción:", error);
+  }
 }
