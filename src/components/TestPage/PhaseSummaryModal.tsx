@@ -1,13 +1,13 @@
 import type { Answers } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/PhaseSummaryModal.module.css";
-import {type TestProtocol, type TrimmedConfig} from "@/api";
+import {type AssignedTestGroup, type TrimmedConfig} from "@/api";
 import {t} from "@/utils/translations.ts";
 
 
 type PhaseSummaryModalProps = {
   config: TrimmedConfig;
-  protocol: TestProtocol;
+  protocol: AssignedTestGroup;
   answers: Answers;
   phaseIndex: number;
   jumpToQuestion: (phaseId: number, questionId: number) => void;
@@ -67,7 +67,7 @@ export function PhaseSummaryModal({
         </thead>
         <tbody>
           {phasesToShow.flatMap((phase, phaseIdx) => phase.questions.map((question, questionIdx) => (
-            <tr key={`${phase.id}-${question.id}`}>
+            <tr key={`${phaseIdx}-${question.id}`}>
               {protocol.allowPreviousPhase && (
                 <td>{phasesStart + phaseIdx + 1}</td>
               )}
@@ -84,7 +84,7 @@ export function PhaseSummaryModal({
                 </button>
               </td>
               <td>
-                {answers[phase.id][question.id] !== null
+                {answers[phaseIdx][question.id] !== null
                   ? t(config, "summary.answered")
                   : t(config, "summary.notAnswered")
                 }
