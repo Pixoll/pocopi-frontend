@@ -24,6 +24,7 @@ export function CompletionModal({
   const { isDarkMode } = useTheme();
   const { token } = useAuth();
   const [user, setUser] = useState<User | null>(null);
+  const [_updatedUserData, setUpdatedUserData] = useState<{username?: string, password?: string}>({});
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,6 +41,13 @@ export function CompletionModal({
     fetchUser();
   }, [token]);
 
+  const handleUserDataChange = (field: 'username' | 'password', value: string) => {
+    setUpdatedUserData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.modal}>
@@ -53,7 +61,11 @@ export function CompletionModal({
             {t(config, "completion.successfullyCompleted", config.title)}
           </p>
 
-          <CompletionUserInfo config={config} userData={user}/>
+          <CompletionUserInfo
+            config={config}
+            userData={user}
+            onUserDataChange={handleUserDataChange}
+          />
 
           <CompletionResults config={config} userData={user} group={group}/>
 
