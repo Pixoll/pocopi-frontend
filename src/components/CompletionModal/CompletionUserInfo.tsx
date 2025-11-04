@@ -13,6 +13,12 @@ type CompletionUserInfoProps = {
 export function CompletionUserInfo({config, userData }: CompletionUserInfoProps) {
   const { isDarkMode } = useTheme();
 
+  function changeValues(key: keyof User, value: string) {
+      if(userData && userData[key]) {
+        userData[key] = value;
+      }
+  }
+
   return (
     <div
       className={[

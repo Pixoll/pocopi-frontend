@@ -5,6 +5,7 @@ import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesom
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import {t} from "@/utils/translations.ts";
+import {useAuth} from "@/contexts/AuthContext.tsx";
 
 type UserResult = UserSummary & {
   totalQuestions: number;
@@ -22,6 +23,8 @@ export function CompletionResults({ config, userData, group }: CompletionResults
   const [loading, setLoading] = useState(false);
   const [userResult, setUserResult] = useState<UserResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const {token} = useAuth();
+
   if (!userData) {
     return(
       <div>
@@ -33,15 +36,12 @@ export function CompletionResults({ config, userData, group }: CompletionResults
     if (userResult) {
       return;
     }
-
     setLoading(true);
     setError(null);
 
     try {
-      const result = await api.getUserSummaryById({
-        path: {
-          userId: +userData.username,
-        }
+      const result = await api.getCurrentUserSummary({
+        auth:token
       });
 
       if (!result.data) {

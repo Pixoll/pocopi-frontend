@@ -49,7 +49,6 @@ export function FormPage({
   useEffect(() => {
     const fetchUser = async () => {
       if (!token || !isLoggedIn) {
-        console.warn("No token available to fetch user");
         return;
       }
 
@@ -58,22 +57,15 @@ export function FormPage({
         if (response.data) {
           setUser(response.data);
         } else if (response.error) {
-          console.error("Error fetching user:", response.error);
+          setError(response.error);
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error(error);
       }
     };
 
     fetchUser();
   }, [token, isLoggedIn]);
-
-  useEffect(() => {
-    if (questions.length === 0) {
-      goToNextPage();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (!form) {
     goToNextPage();
@@ -121,6 +113,27 @@ export function FormPage({
       };
       return newAnswers;
     });
+  };
+
+  const submitEndPostForm = async () => {
+    if (token && form && type === "post-test") {
+      try {
+        const response = await api.endTest({ auth: token });
+        if (response.error) {
+          setError(response.error);
+          return false;
+        }
+        return true;
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError(String(error));
+        }
+        return false;
+      }
+    }
+    return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -179,17 +192,24 @@ export function FormPage({
 
       if (result.error) {
         setError(result.error);
-        console.error(result.error);
-      } else {
-        goToNextPage();
+        setSending(false);
+        return;
       }
+
+      if (type === "post-test") {
+        const endTestSuccess = await submitEndPostForm();
+        if (!endTestSuccess) {
+          setSending(false);
+          return;
+        }
+      }
+      goToNextPage();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
         setError(String(error));
       }
-      console.error(error);
     } finally {
       setSending(false);
     }

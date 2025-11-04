@@ -47,7 +47,7 @@ export function CompletionModal({
 
         <div className={styles.modalContentContainer}>
           <h5 className={styles.thankYou}>
-            {t(config, "completion.thankYou") + (user?.username || '')}
+            {t(config, "completion.thankYou", config.anonymous ? "" : user?.username ? user.username : "")}
           </h5>
           <p className={styles.completedTest}>
             {t(config, "completion.successfullyCompleted", config.title)}
