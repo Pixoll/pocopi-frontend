@@ -78,7 +78,7 @@ export const submitFormAnswers = <ThrowOnError extends boolean = false>(options:
                 type: 'http'
             }
         ],
-        url: '/api/forms/answers',
+        url: '/api/forms/{formId}/answers',
         ...options,
         headers: {
             'Content-Type': 'application/json',

@@ -10,12 +10,12 @@ import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
 import { Spinner } from "@/components/Spinner";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
+import { useAuth } from "@/contexts/AuthContext";
+import { t } from "@/utils/translations";
 import styles from "@/styles/FormPage/FormPage.module.css";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type FormEvent, useEffect, useState } from "react";
-import { t } from "@/utils/translations.ts";
-import { useAuth } from "@/contexts/AuthContext.tsx";
 
 type FormPageProps = {
   config: TrimmedConfig;
@@ -28,10 +28,11 @@ export function FormPage({
                            type,
                            goToNextPage,
                          }: FormPageProps) {
+  const { token, isLoggedIn } = useAuth();
   const [user, setUser] = useState<User | null>(null);
+
   const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
-  const { token } = useAuth();
 
   const [answers, setAnswers] = useState<NewFormAnswer[]>(
     Array.from({ length: questions.length }, (_, i) => ({
@@ -47,22 +48,25 @@ export function FormPage({
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (token) {
-        try {
-          const response = await api.getCurrentUser({
-            auth: token
-          });
-          if (response.data) {
-            setUser(response.data);
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
+      if (!token || !isLoggedIn) {
+        console.warn("No token available to fetch user");
+        return;
+      }
+
+      try {
+        const response = await api.getCurrentUser({ auth: token });
+        if (response.data) {
+          setUser(response.data);
+        } else if (response.error) {
+          console.error("Error fetching user:", response.error);
         }
+      } catch (error) {
+        console.error("Error fetching user:", error);
       }
     };
 
     fetchUser();
-  }, [token]);
+  }, [token, isLoggedIn]);
 
   useEffect(() => {
     if (questions.length === 0) {
@@ -130,9 +134,15 @@ export function FormPage({
       return;
     }
 
+    if (!token || !isLoggedIn) {
+      setSending(false);
+      setError("Debes iniciar sesión para enviar respuestas");
+      return;
+    }
+
     if (!user?.username) {
       setSending(false);
-      setError("User information not available");
+      setError("No se pudo obtener información del usuario");
       return;
     }
 
@@ -160,10 +170,9 @@ export function FormPage({
 
     try {
       const result = await api.submitFormAnswers({
+        path: { formId: form.id },
         auth: token,
         body: {
-          username: user.username,
-          formId: form.id,
           answers: cleanedAnswers,
         }
       });

@@ -1,48 +1,55 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import type {Credentials} from "@/api";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { v4 as uuidv4 } from "uuid";
+import type { Credentials } from "@/api";
 
 type AuthContextType = {
-  credentials: Credentials | null;
   token: string | undefined;
-  setCredentials: (credentials: Credentials) => void;
+  isLoggedIn: boolean;
   setToken: (token: string | undefined) => void;
   generateCredentials: () => Credentials;
   clearAuth: () => void;
 };
 
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [credentials, setCredentials] = useState<Credentials | null>(null);
-  const [token, setToken] = useState<string | undefined>(undefined);
+const STORAGE_KEY = "token";
 
-  const generateCredentials = (): Credentials => {
-    const newCredentials = {
-      username:  uuidv4().replace(/-/g, ""),
-      password:  uuidv4().replace(/-/g, ""),
-    };
-    setCredentials(newCredentials);
-    return newCredentials;
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [token, setTokenState] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedToken = localStorage.getItem(STORAGE_KEY);
+    if (storedToken) {
+      setTokenState(storedToken);
+    }
+  }, []);
+
+  const setToken = (newToken: string | undefined) => {
+    setTokenState(newToken);
+    if (typeof window !== "undefined") {
+      if (newToken) {
+        localStorage.setItem(STORAGE_KEY, newToken);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
   };
 
+  const generateCredentials = (): Credentials => ({
+    username: uuidv4().replace(/-/g, ""),
+    password: uuidv4().replace(/-/g, ""),
+
+  });
+
   const clearAuth = () => {
-    setCredentials(null);
     setToken(undefined);
   };
 
+  const isLoggedIn = !!token;
+
   return (
-    <AuthContext.Provider
-      value={{
-        credentials,
-        token,
-        setCredentials,
-        setToken,
-        generateCredentials,
-        clearAuth,
-      }}
-    >
+    <AuthContext.Provider value={{ token, isLoggedIn, setToken, generateCredentials, clearAuth }}>
       {children}
     </AuthContext.Provider>
   );
@@ -51,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

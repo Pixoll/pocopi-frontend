@@ -19,13 +19,13 @@ type Test = {
   jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
 
-async function sendOptionEvent(
+function sendOptionEvent(
   token: string,
   optionId: number,
   type: "select" | "deselect" | "hover"
 ) {
   try {
-    await api.saveOptionEventLog({
+    api.saveOptionEventLog({
       auth: token,
       body: {
         optionId: optionId,
@@ -148,16 +148,16 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
   const onOptionClick = async (optionId: number) => {
     if (selectedOptionId === optionId) {
       setAnswer(phaseIndex, questionId, null);
-      await sendOptionEvent(token, optionId, "deselect");
+      sendOptionEvent(token, optionId, "deselect");
     } else {
       setAnswer(phaseIndex, questionId, optionId);
-      await sendOptionEvent(token, optionId, "select");
+      sendOptionEvent(token, optionId, "select");
     }
     setSelectedOptionId((v) => (v === optionId ? null : optionId));
   };
 
   const onOptionHover = async (optionId: number) => {
-    await sendOptionEvent(token, optionId, "hover");
+    sendOptionEvent(token, optionId, "hover");
   };
 
   return {

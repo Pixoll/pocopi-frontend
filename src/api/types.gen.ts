@@ -47,8 +47,6 @@ export type NewFormAnswer = {
 };
 
 export type NewFormAnswers = {
-    username: string;
-    formId: number;
     answers: Array<NewFormAnswer>;
 };
 
@@ -763,9 +761,11 @@ export type BeginTestResponse = BeginTestResponses[keyof BeginTestResponses];
 
 export type SubmitFormAnswersData = {
     body: NewFormAnswers;
-    path?: never;
+    path: {
+        formId: number;
+    };
     query?: never;
-    url: '/api/forms/answers';
+    url: '/api/forms/{formId}/answers';
 };
 
 export type SubmitFormAnswersErrors = {
