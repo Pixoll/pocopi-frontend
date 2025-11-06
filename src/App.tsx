@@ -1,5 +1,4 @@
 import api, {type AssignedTestGroup, type TrimmedConfig} from "@/api";
-import {AnalyticsDashboard} from "@/pages/AnalyticsDashboard";
 import {CompletionModal} from "@/pages/CompletionModal";
 import {FormPage} from "@/pages/FormPage";
 import {HomePage} from "@/pages/HomePage";
@@ -11,7 +10,7 @@ import {LoadingPage} from "@/pages/LoadingPage";
 import { Routes, Route, useNavigate, Navigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import AnalyticDashboardPage from "@/pages/AnalyticDashboardPage.tsx";
 export function App() {
   const navigate = useNavigate();
 
@@ -117,7 +116,7 @@ export function App() {
         />
         <Route
           path="/dashboard"
-          element={<AnalyticsDashboard config={config} onBack={goToHome}/>}
+          element={<AnalyticDashboardPage config={config} onBack={goToHome}/>}
         />
         <Route
           path="/admin"

@@ -1,10 +1,10 @@
 import api, {type TrimmedConfig, type UsersSummary} from "@/api";
-import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader";
-import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary";
-import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList";
-import { Spinner } from "@/components/Spinner";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import { useTheme } from "@/hooks/useTheme";
+import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader.tsx";
+import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary.tsx";
+import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList.tsx";
+import { Spinner } from "@/components/Spinner.tsx";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher.tsx";
+import { useTheme } from "@/hooks/useTheme.ts";
 import styles from "@/styles/DashboardPage/DashboardPage.module.css";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,9 +20,10 @@ enum DashboardTab {
 type AnalyticsDashboardProps = {
   config: TrimmedConfig;
   onBack: () => void;
+  adminToken: string;
 };
 
-export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ config, onBack, adminToken }: AnalyticsDashboardProps) {
   const [summary, setSummary] = useState<UsersSummary>({
     averageAccuracy: 0,
     averageTimeTaken: 0,
@@ -43,19 +44,14 @@ export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) 
       setLoadingSummary(true);
       setError(null);
 
-      const response = await api.getAllUserSummaries();
+      const response = await api.getAllUserSummaries({ auth: adminToken});
 
       if (!response.data) {
-        console.error("error while loading dashboard:", error);
         setError(t(config, "dashboard.errorLoadingResults"));
       } else {
         setSummary(response.data);
-
-        if (response.data.users) {
-            if(response.data.users.length === 0){
-                setError(t(config, "dashboard.errorNoResults"));
-            }
-
+        if (response.data.users?.length === 0) {
+          setError(t(config, "dashboard.errorNoResults"));
         }
       }
     } catch (error) {

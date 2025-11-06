@@ -70,12 +70,14 @@ export function ParticipantsList({
       setLoadingExportUserTimelogs(true);
       setError(null);
 
-      const response = await api.getUserTimelogs({
+      const response = await api.getUserEventLogs({
         path: {
-          userId: user.id,
+          userId: user.id
         },
       });
-
+      if (response.data) {
+      console.log(response.data);
+      }
       if (response.error) {
         console.error("error while exporting user:", response.error);
         setError(t(config, "dashboard.errorExportUser", user.id.toString()));

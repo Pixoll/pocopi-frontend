@@ -4,6 +4,7 @@ import { faUser, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { LoginModal } from "@/components/HomePage/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
 import type { TrimmedConfig, AssignedTestGroup } from "@/api";
+import styles from "@/styles/LoginButton.module.css";
 
 type LoginButtonProps = {
   config: TrimmedConfig;
@@ -20,7 +21,7 @@ export function LoginButton({
                               variant = "icon",
                               showAnonymousOption = false,
                               onAttemptInProgress,
-                              className = ""
+                              className = "",
                             }: LoginButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const { isLoggedIn } = useAuth();
@@ -36,10 +37,10 @@ export function LoginButton({
       <>
         <button
           onClick={handleClick}
-          className={`p-2 hover:opacity-80 transition ${className}`}
+          className={`${styles.iconButton} ${styles.iconButtonDark} ${className}`}
           title="Iniciar sesión"
         >
-          <FontAwesomeIcon icon={faUser} />
+          <FontAwesomeIcon icon={faUser} className={styles.icon} />
         </button>
 
         <LoginModal
@@ -58,7 +59,7 @@ export function LoginButton({
     <>
       <button
         onClick={handleClick}
-        className={`btn btn-primary ${className}`}
+        className={`${styles.loginButton} ${className}`}
       >
         <FontAwesomeIcon icon={faRightToBracket} /> Iniciar sesión
       </button>

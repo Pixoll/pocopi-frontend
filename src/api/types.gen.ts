@@ -36,6 +36,8 @@ export type Image = {
 };
 
 export type UserTestAttempt = {
+    completedPreTestForm: boolean;
+    lastTestQuestionId: number;
     assignedGroup: AssignedTestGroup;
 };
 
@@ -77,6 +79,15 @@ export type Token = {
 export type Credentials = {
     username: string;
     password: string;
+};
+
+export type User = {
+    id: number;
+    username: string;
+    anonymous: boolean;
+    name?: string;
+    email?: string;
+    age?: number;
 };
 
 export type ConfigUpdate = {
@@ -267,15 +278,6 @@ export type UpdatedConfig = {
     };
 };
 
-export type User = {
-    id: number;
-    username: string;
-    anonymous: boolean;
-    name?: string;
-    email?: string;
-    age?: number;
-};
-
 export type UserSummary = {
     id: number;
     name: string;
@@ -295,42 +297,18 @@ export type UsersSummary = {
     users: Array<UserSummary>;
 };
 
-/**
- * Resultado de una pregunta de test
- */
+export type QuestionTimestamp = {
+    start: number;
+    end: number;
+};
+
 export type TestQuestionResult = {
-    /**
-     * ID de la pregunta
-     */
-    questionId?: number;
-    /**
-     * ID de la fase
-     */
-    phaseId?: number;
-    /**
-     * Timestamp de inicio
-     */
-    startTimestamp?: number;
-    /**
-     * Timestamp de fin
-     */
-    endTimestamp?: number;
-    /**
-     * ¿Fue respondida correctamente?
-     */
-    correct?: boolean;
-    /**
-     * ¿La pregunta fue saltada?
-     */
-    skipped?: boolean;
-    /**
-     * Cantidad de cambios de opción
-     */
-    totalOptionChanges?: number;
-    /**
-     * Cantidad de hovers
-     */
-    totalOptionHovers?: number;
+    questionId: number;
+    timestamps: Array<QuestionTimestamp>;
+    correct: boolean;
+    skipped: boolean;
+    totalOptionChanges: number;
+    totalOptionHovers: number;
 };
 
 /**
@@ -463,19 +441,27 @@ export type UserTestsResult = {
 };
 
 export type OptionEventLog = {
-    type: string;
     optionId: number;
+    type: 'deselect' | 'select' | 'hover';
     timestamp: number;
 };
 
-export type QuestionEventLog = {
+export type QuestionEventLogWithUserId = {
     userId: number;
-    phaseId: number;
     questionId: number;
-    startTimestamp: number;
-    endTimestamp: number;
-    skipped: boolean;
+    timestamps: Array<QuestionTimestamp>;
     correct: boolean;
+    skipped: boolean;
+    totalOptionChanges: number;
+    totalOptionHovers: number;
+    events: Array<OptionEventLog>;
+};
+
+export type QuestionEventLog = {
+    questionId: number;
+    timestamps: Array<QuestionTimestamp>;
+    correct: boolean;
+    skipped: boolean;
     totalOptionChanges: number;
     totalOptionHovers: number;
     events: Array<OptionEventLog>;
@@ -903,6 +889,35 @@ export type LoginResponses = {
 };
 
 export type LoginResponse = LoginResponses[keyof LoginResponses];
+
+export type GetCurrentAdminData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/admin/me';
+};
+
+export type GetCurrentAdminErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetCurrentAdminError = GetCurrentAdminErrors[keyof GetCurrentAdminErrors];
+
+export type GetCurrentAdminResponses = {
+    /**
+     * OK
+     */
+    200: User;
+};
+
+export type GetCurrentAdminResponse = GetCurrentAdminResponses[keyof GetCurrentAdminResponses];
 
 export type UpdateConfigData = {
     body?: ConfigUpdateWithFiles;
@@ -1412,7 +1427,7 @@ export type GetAllEventLogsResponses = {
     /**
      * OK
      */
-    200: Array<QuestionEventLog>;
+    200: Array<QuestionEventLogWithUserId>;
 };
 
 export type GetAllEventLogsResponse = GetAllEventLogsResponses[keyof GetAllEventLogsResponses];

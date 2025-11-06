@@ -22,7 +22,7 @@ export function CompletionModal({
                                   onBackToHome,
                                 }: CompletionModalProps) {
   const { isDarkMode } = useTheme();
-  const { token } = useAuth();
+  const { token, clearAuth } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [_updatedUserData, setUpdatedUserData] = useState<{username?: string, password?: string}>({});
 
@@ -47,7 +47,10 @@ export function CompletionModal({
       [field]: value
     }));
   };
-
+  const goToHome = () =>{
+    clearAuth()
+    onBackToHome()
+  }
   return (
     <div className={styles.page}>
       <div className={styles.modal}>
@@ -83,7 +86,7 @@ export function CompletionModal({
               styles.homeButton,
               isDarkMode ? styles.homeButtonDark : styles.homeButtonLight,
             ].join(" ")}
-            onClick={onBackToHome}
+            onClick={goToHome}
           >
             <FontAwesomeIcon icon={faHome}/>
             {t(config, "completion.backToHome")}
