@@ -21,6 +21,7 @@ import api, {
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 import {LoadingPage} from "@/pages/LoadingPage.tsx";
+import {SavePopup} from "@/components/SavePopup.tsx";
 
 type ModifyConfigPageProps = {
   token: string;
@@ -33,6 +34,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'loading' | 'success' | 'error' | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string>('');
+
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
@@ -77,6 +81,8 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   };
 
   const handleSave = async () => {
+    setSaveStatus('loading');
+
     try {
       const patchRequest = await buildPatchRequest(config);
       const { data, error } = await api.updateLatestConfig({
@@ -86,15 +92,26 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
 
       if (error) {
         console.log(error);
+        setSaveStatus('error');
+        setSaveMessage('Error al guardar los cambios. Por favor, intenta de nuevo.');
         return;
       }
-      if(data){
-        getConfig()
-      }
 
+      if (data) {
+        setSaveStatus('success');
+        setSaveMessage('Configuración guardada exitosamente');
+        await getConfig();
+      }
     } catch (err) {
       console.error(err);
+      setSaveStatus('error');
+      setSaveMessage('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
     }
+  };
+
+  const handleClosePopup = () => {
+    setSaveStatus(null);
+    setSaveMessage('');
   };
 
   const updateQuestion = (
@@ -596,6 +613,11 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
 
   return (
     <div className={styles.container}>
+      <SavePopup
+        status={saveStatus}
+        message={saveMessage}
+        onClose={handleClosePopup}
+      />
       <header className={styles.header}>
         <h1>Editor de Configuración</h1>
         <button onClick={() => handleSave()} className={styles.saveButton}>
