@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { SliderLabel } from "@/api";
+import type {SliderLabel, SliderLabelUpdate} from "@/api";
 import type {
   EditablePatchFormQuestion,
   EditablePatchSelectOne,
@@ -57,7 +57,7 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
   const handleAddLabel = () => {
     if (!hasLabels) return;
     const currentLabels = (question as EditablePatchSlider).labels || [];
-    const newLabel: SliderLabel = {
+    const newLabel: SliderLabelUpdate = {
       number: 0,
       label: '',
     };
@@ -136,16 +136,6 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
         const slq = question as EditablePatchSlider;
         return (
           <>
-            <div className={styles.inputGroup}>
-              <label className={styles.inputLabel}>Placeholder</label>
-              <input
-                type="text"
-                placeholder="Ej: Selecciona un valor"
-                value={slq.placeholder || ''}
-                onChange={(e) => onChange({ ...question, placeholder: e.target.value } as EditablePatchFormQuestion)}
-                className={styles.input}
-              />
-            </div>
             <div className={styles.row}>
               <div className={styles.inputGroup}>
                 <label className={styles.inputLabel}>Valor mínimo</label>

@@ -1,5 +1,6 @@
 import styles from "@/styles/AdminPage/AdminPage.module.css";
 import {useState} from "react";
+
 type AdminPageProps = {
   goToModifyConfigPage: () => void;
 }

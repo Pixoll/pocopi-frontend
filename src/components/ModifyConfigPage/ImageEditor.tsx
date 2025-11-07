@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import styles from "@/styles/ModifyConfigPage/ImageEditor.module.css";
 
 type ImageEditorProps = {
-  image?: ImageState;
+  image?: ImageState | null;
   onChange: (imageState: ImageState) => void;
   label: string;
   compact?: boolean;

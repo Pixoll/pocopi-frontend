@@ -1,9 +1,9 @@
 import { useState } from "react";
-import api, { type AssignedTestGroup, type Credentials, type TrimmedConfig } from "@/api";
+import api, {type AssignedTestGroup, type Credentials, type FullConfig, type TrimmedConfig} from "@/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 type LoginLogicOptions = {
-  config: TrimmedConfig;
+  config: TrimmedConfig | FullConfig;
   onSuccess?: (group: AssignedTestGroup) => void;
   onAttemptInProgress: () => void;
 };

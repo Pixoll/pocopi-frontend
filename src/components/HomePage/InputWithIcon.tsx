@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ChangeEvent } from "react";
 import { FloatingLabel, Form } from "react-bootstrap";
 import {t} from "@/utils/translations.ts";
-import type {TrimmedConfig} from "@/api";
+import type {FullConfig, TrimmedConfig} from "@/api";
 
 type InputWithIconProps = {
-  config: TrimmedConfig;
+  config: TrimmedConfig | FullConfig;
   icon: IconDefinition;
   label: string;
   name: string;

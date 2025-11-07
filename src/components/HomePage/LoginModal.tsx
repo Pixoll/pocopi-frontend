@@ -6,10 +6,10 @@ import LoginSection from "./LoginSection";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faWarning, faUserSecret } from "@fortawesome/free-solid-svg-icons";
-import type { AssignedTestGroup, TrimmedConfig, Credentials } from "@/api";
+import type {AssignedTestGroup, TrimmedConfig, Credentials, FullConfig} from "@/api";
 
 type LoginModalProps = {
-  config: TrimmedConfig;
+  config: TrimmedConfig | FullConfig ;
   show: boolean;
   onHide: () => void;
   goToNextPage?: (group: AssignedTestGroup) => void;

@@ -1,5 +1,5 @@
 import type {
-  Config,
+  FullConfig,
   SelectOne,
   SelectMultiple,
   Slider,
@@ -21,8 +21,6 @@ import type {
   FrequentlyAskedQuestionUpdate,
   Image
 } from "@/api";
-
-//para trackear cambios en el editor
 
 export type ImageState =
   | { type: 'unchanged'; value: Image | undefined } // no cambios
@@ -68,6 +66,7 @@ export type EditablePatchFormQuestion =
 
 export type EditablePatchForm = {
   id?: number;
+  title?: string;
   questions: EditablePatchFormQuestion[];
 };
 
@@ -80,17 +79,8 @@ export type EditablePatchPhase = Omit<TestPhaseUpdate, 'questions'> & {
   questions: EditablePatchQuestion[];
 };
 
-export type EditablePatchProtocol = {
-  id?: number;
-  label: string;
-  allowPreviousPhase: boolean;
-  allowPreviousQuestion: boolean;
-  allowSkipQuestion: boolean;
+export type EditablePatchGroup = Omit<TestGroupUpdate, 'phases'> & {
   phases: EditablePatchPhase[];
-};
-
-export type EditablePatchGroup = Omit<TestQuestionUpdate, 'protocol'> & {
-  protocol: EditablePatchProtocol;
 };
 
 export type EditablePatchInformationCard = InformationCardUpdate & {
@@ -98,40 +88,32 @@ export type EditablePatchInformationCard = InformationCardUpdate & {
 };
 
 export type EditablePatchConfig = {
-  version: number;
-  icon?: ImageState;
+  icon?: ImageState | null;
   title: string;
-  subtitle: string;
+  subtitle?: string | null;
   description: string;
   anonymous: boolean;
   informationCards: EditablePatchInformationCard[];
   informedConsent: string;
   faq: FrequentlyAskedQuestionUpdate[];
-  preTestForm: EditablePatchForm;
-  postTestForm: EditablePatchForm;
-  groups: {
-    [key: string]: EditablePatchGroup;
-  };
+  preTestForm?: EditablePatchForm | null;
+  postTestForm?: EditablePatchForm | null;
+  groups: EditablePatchGroup[];
   translations: {
     [key: string]: string;
   };
 };
 
-function createEmptyFile(): File {
-  return new File([], '', { type: 'application/octet-stream' });
-}
-
-function toImageState(image: Image | undefined): ImageState | undefined {
+function toImageState(image: Image | undefined | null): ImageState | undefined {
   if (!image) return undefined;
   return { type: 'unchanged', value: image };
 }
 
-export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig {
+export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchConfig {
   return {
-    version: serverConfig.id,
     icon: toImageState(serverConfig.icon),
     title: serverConfig.title,
-    subtitle: serverConfig.subtitle,
+    subtitle: serverConfig.subtitle ?? "",
     description: serverConfig.description,
     anonymous: serverConfig.anonymous,
     informedConsent: serverConfig.informedConsent,
@@ -140,7 +122,7 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
       id: card.id,
       title: card.title,
       description: card.description,
-      color: card.color,
+      color: card.color ?? 0,
       icon: toImageState(card.icon)
     })),
 
@@ -150,13 +132,13 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
       answer: f.answer
     })),
 
-    preTestForm: {
+    preTestForm: serverConfig.preTestForm ? {
       id: serverConfig.preTestForm.id,
       questions: serverConfig.preTestForm.questions.map((q): EditablePatchFormQuestion => {
         const base = {
           id: q.id,
           category: q.category,
-          text: q.text,
+          text: q.text ?? "",
           image: toImageState(q.image)
         };
 
@@ -168,7 +150,7 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
               type: 'select-one',
               options: sq.options.map(opt => ({
                 id: opt.id,
-                text: opt.text,
+                text: opt.text ?? "",
                 image: toImageState(opt.image)
               })),
               other: sq.other
@@ -181,7 +163,7 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
               type: 'select-multiple',
               options: mq.options.map(opt => ({
                 id: opt.id,
-                text: opt.text,
+                text: opt.text ?? "",
                 image: toImageState(opt.image)
               })),
               min: mq.min,
@@ -189,45 +171,50 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
               other: mq.other
             } as EditablePatchSelectMultiple;
           }
-          case 'slider':
+          case 'slider': {
+            const sl = q as Slider;
             return {
               ...base,
               type: 'slider',
-              placeholder: (q as Slider).placeholder,
-              min: (q as Slider).min,
-              max: (q as Slider).max,
-              step: (q as Slider).step,
-              labels: (q as Slider).labels
+              min: sl.min,
+              max: sl.max,
+              step: sl.step,
+              labels: sl.labels
             } as EditablePatchSlider;
-          case 'text-short':
+          }
+          case 'text-short': {
+            const ts = q as TextShort;
             return {
               ...base,
               type: 'text-short',
-              placeholder: (q as TextShort).placeholder,
-              minLength: (q as TextShort).minLength,
-              maxLength: (q as TextShort).maxLength
+              placeholder: ts.placeholder,
+              minLength: ts.minLength,
+              maxLength: ts.maxLength
             } as EditablePatchTextShort;
-          case 'text-long':
+          }
+          case 'text-long': {
+            const tl = q as TextLong;
             return {
               ...base,
               type: 'text-long',
-              placeholder: (q as TextLong).placeholder,
-              minLength: (q as TextLong).minLength,
-              maxLength: (q as TextLong).maxLength
+              placeholder: tl.placeholder,
+              minLength: tl.minLength,
+              maxLength: tl.maxLength
             } as EditablePatchTextLong;
+          }
           default:
             throw new Error('Unknown question type');
         }
       })
-    },
+    } : null,
 
-    postTestForm: {
+    postTestForm: serverConfig.postTestForm ? {
       id: serverConfig.postTestForm.id,
       questions: serverConfig.postTestForm.questions.map((q): EditablePatchFormQuestion => {
         const base = {
           id: q.id,
           category: q.category,
-          text: q.text,
+          text: q.text ?? "",
           image: toImageState(q.image)
         };
 
@@ -239,7 +226,7 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
               type: 'select-one',
               options: sq.options.map(opt => ({
                 id: opt.id,
-                text: opt.text,
+                text: opt.text ?? "",
                 image: toImageState(opt.image)
               })),
               other: sq.other
@@ -252,7 +239,7 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
               type: 'select-multiple',
               options: mq.options.map(opt => ({
                 id: opt.id,
-                text: opt.text,
+                text: opt.text ?? "",
                 image: toImageState(opt.image)
               })),
               min: mq.min,
@@ -260,183 +247,156 @@ export function toEditablePatchConfig(serverConfig: Config): EditablePatchConfig
               other: mq.other
             } as EditablePatchSelectMultiple;
           }
-          case 'slider':
+          case 'slider': {
+            const sl = q as Slider;
             return {
               ...base,
               type: 'slider',
-              placeholder: (q as Slider).placeholder,
-              min: (q as Slider).min,
-              max: (q as Slider).max,
-              step: (q as Slider).step,
-              labels: (q as Slider).labels
+              min: sl.min,
+              max: sl.max,
+              step: sl.step,
+              labels: sl.labels
             } as EditablePatchSlider;
-          case 'text-short':
+          }
+          case 'text-short': {
+            const ts = q as TextShort;
             return {
               ...base,
               type: 'text-short',
-              placeholder: (q as TextShort).placeholder,
-              minLength: (q as TextShort).minLength,
-              maxLength: (q as TextShort).maxLength
+              placeholder: ts.placeholder,
+              minLength: ts.minLength,
+              maxLength: ts.maxLength
             } as EditablePatchTextShort;
-          case 'text-long':
+          }
+          case 'text-long': {
+            const tl = q as TextLong;
             return {
               ...base,
               type: 'text-long',
-              placeholder: (q as TextLong).placeholder,
-              minLength: (q as TextLong).minLength,
-              maxLength: (q as TextLong).maxLength
+              placeholder: tl.placeholder,
+              minLength: tl.minLength,
+              maxLength: tl.maxLength
             } as EditablePatchTextLong;
+          }
           default:
             throw new Error('Unknown question type');
         }
       })
-    },
+    } : null,
 
-    groups: Object.keys(serverConfig.groups).reduce((acc, key) => {
-      const group = serverConfig.groups[key];
-      acc[key] = {
-        id: group.id,
-        probability: group.probability,
-        label: group.label,
-        greeting: group.greeting,
-        protocol: {
-          id: group.protocol.id,
-          label: group.protocol.label,
-          allowPreviousPhase: group.protocol.allowPreviousPhase,
-          allowPreviousQuestion: group.protocol.allowPreviousQuestion,
-          allowSkipQuestion: group.protocol.allowSkipQuestion,
-          phases: group.protocol.phases.map((phase): EditablePatchPhase => ({
-            id: phase.id,
-            questions: phase.questions.map((q): EditablePatchQuestion => ({
-              id: q.id,
-              text: q.text,
-              image: toImageState(q.image),
-              options: q.options.map((opt): EditablePatchOption => ({
-                id: opt.id,
-                text: opt.text,
-                correct: opt.correct,
-                image: toImageState(opt.image)
-              }))
-            }))
+    groups: serverConfig.groups.map((group): EditablePatchGroup => ({
+      id: group.id,
+      probability: group.probability,
+      label: group.label,
+      greeting: group.greeting ?? "",
+      allowPreviousPhase: group.allowPreviousPhase,
+      allowPreviousQuestion: group.allowPreviousQuestion,
+      allowSkipQuestion: group.allowSkipQuestion,
+      randomizePhases: group.randomizePhases,
+      phases: group.phases.map((phase): EditablePatchPhase => ({
+        id: phase.id,
+        randomizeQuestions: phase.randomizeQuestions,
+        questions: phase.questions.map((q): EditablePatchQuestion => ({
+          id: q.id,
+          text: q.text ?? "",
+          image: toImageState(q.image),
+          randomizeOptions: q.randomizeOptions,
+          options: q.options.map((opt): EditablePatchOption => ({
+            id: opt.id,
+            text: opt.text ?? "",
+            correct: opt.correct,
+            image: toImageState(opt.image)
           }))
-        }
-      };
-      return acc;
-    }, {} as { [key: string]: EditablePatchGroup }),
+        }))
+      }))
+    })),
 
-    translations: serverConfig.translations
+    translations: serverConfig.translations.reduce((acc, t) => {
+      acc[t.key] = t.value ?? "";
+      return acc;
+    }, {} as { [key: string]: string })
   };
 }
 
-function resolveImageToFile(imageState: ImageState | undefined): File | undefined {
-  if (!imageState) return undefined;
+async function resolveImageToFile(imageState: ImageState | undefined | null): Promise<File> {
+  if (!imageState) {
+    return new File([], ".png");
+  }
 
   switch (imageState.type) {
     case 'unchanged':
-      return undefined;
+      if (imageState.value?.url) {
+        try {
+          const response = await fetch(imageState.value.url);
+          const blob = await response.blob();
+          return new File([blob], ".png", { type: blob.type || 'image/png' });
+        } catch (error) {
+          console.error('Error fetching existing image:', error);
+          return new File([], ".png");
+        }
+      }
+      return new File([], ".png");
+
     case 'new':
-      return imageState.value;
+      return new File([imageState.value], ".png", { type: imageState.value.type });
+
     case 'deleted':
-      return new File([], '', { type: 'application/octet-stream' });
+      return new File([], ".png");
   }
 }
 
-function extractFormImages(questions: EditablePatchFormQuestion[]): Record<string, File> {
-  const changes: Record<string, File> = {};
-  let index = 0;
+async function extractFormImages(questions: EditablePatchFormQuestion[]): Promise<File[]> {
+  const images: File[] = [];
 
   for (const question of questions) {
-    const questionFile = resolveImageToFile(question.image);
-    if (questionFile !== undefined) {
-      if (questionFile.size === 0) {
-        changes[index.toString()] = createEmptyFile();
-      } else {
-        changes[index.toString()] = questionFile;
-      }
-    }
-    index++;
+    images.push(await resolveImageToFile(question.image));
 
     if ('options' in question && question.options) {
       for (const option of question.options) {
-        const optionFile = resolveImageToFile(option.image);
-        if (optionFile !== undefined) {
-          if (optionFile.size === 0) {
-            changes[index.toString()] = createEmptyFile();
-          } else {
-            changes[index.toString()] = optionFile;
-          }
-        }
-        index++;
+        images.push(await resolveImageToFile(option.image));
       }
     }
   }
 
-  return changes;
+  return images;
 }
 
-function extractGroupImages(groups: { [key: string]: EditablePatchGroup }): Record<string, File> {
-  const changes: Record<string, File> = {};
-  const groupKeys = Object.keys(groups).sort();
-  let index = 0;
+async function extractGroupImages(groups: EditablePatchGroup[]): Promise<File[]> {
+  const images: File[] = [];
 
-  for (const groupKey of groupKeys) {
-    const group = groups[groupKey];
-    if (!group.protocol?.phases) continue;
+  for (const group of groups) {
+    if (!group.phases) continue;
 
-    for (const phase of group.protocol.phases) {
+    for (const phase of group.phases) {
       if (!phase.questions) continue;
 
       for (const question of phase.questions) {
-        const questionFile = resolveImageToFile(question.image);
-        if (questionFile !== undefined) {
-          if (questionFile.size === 0) {
-            changes[index.toString()] = createEmptyFile();
-          } else {
-            changes[index.toString()] = questionFile;
-          }
-        }
-        index++;
+        images.push(await resolveImageToFile(question.image));
 
         for (const option of question.options) {
-          const optionFile = resolveImageToFile(option.image);
-          if (optionFile !== undefined) {
-            if (optionFile.size === 0) {
-              changes[index.toString()] = createEmptyFile();
-            } else {
-              changes[index.toString()] = optionFile;
-            }
-          }
-          index++;
+          images.push(await resolveImageToFile(option.image));
         }
       }
     }
   }
 
-  return changes;
+  return images;
 }
 
-function extractInformationCardImages(cards: EditablePatchInformationCard[]): Record<string, File> {
-  const changes: Record<string, File> = {};
+async function extractInformationCardImages(cards: EditablePatchInformationCard[]): Promise<File[]> {
+  const images: File[] = [];
 
-  cards.forEach((card, index) => {
-    const file = resolveImageToFile(card.icon);
-    if (file !== undefined) {
-      if (file.size === 0) {
-        changes[index.toString()] = createEmptyFile();
-      } else {
-        changes[index.toString()] = file;
-      }
-    }
-  });
+  for (const card of cards) {
+    images.push(await resolveImageToFile(card.icon));
+  }
 
-  return changes;
+  return images;
 }
 
-export function toPatchLastConfig(config: EditablePatchConfig): ConfigUpdate {
+export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
   return {
-    version: config.version,
     title: config.title,
-    subtitle: config.subtitle,
+    subtitle: config.subtitle ?? "",
     description: config.description,
     anonymous: config.anonymous,
     informedConsent: config.informedConsent,
@@ -450,8 +410,9 @@ export function toPatchLastConfig(config: EditablePatchConfig): ConfigUpdate {
 
     faq: config.faq,
 
-    preTestForm: {
+    preTestForm: config.preTestForm ? {
       id: config.preTestForm.id,
+      title: config.preTestForm.title,
       questions: config.preTestForm.questions.map((q): any => {
         const base = {
           id: q.id,
@@ -484,7 +445,6 @@ export function toPatchLastConfig(config: EditablePatchConfig): ConfigUpdate {
           case 'slider':
             return {
               ...base,
-              placeholder: (q as EditablePatchSlider).placeholder,
               min: (q as EditablePatchSlider).min,
               max: (q as EditablePatchSlider).max,
               step: (q as EditablePatchSlider).step,
@@ -506,10 +466,11 @@ export function toPatchLastConfig(config: EditablePatchConfig): ConfigUpdate {
             };
         }
       })
-    },
+    } : undefined,
 
-    postTestForm: {
+    postTestForm: config.postTestForm ? {
       id: config.postTestForm.id,
+      title: config.postTestForm.title,
       questions: config.postTestForm.questions.map((q): any => {
         const base = {
           id: q.id,
@@ -542,7 +503,6 @@ export function toPatchLastConfig(config: EditablePatchConfig): ConfigUpdate {
           case 'slider':
             return {
               ...base,
-              placeholder: (q as EditablePatchSlider).placeholder,
               min: (q as EditablePatchSlider).min,
               max: (q as EditablePatchSlider).max,
               step: (q as EditablePatchSlider).step,
@@ -564,51 +524,58 @@ export function toPatchLastConfig(config: EditablePatchConfig): ConfigUpdate {
             };
         }
       })
-    },
+    } : undefined,
 
-    groups: Object.keys(config.groups).reduce((acc, key) => {
-      const group = config.groups[key];
-      acc[key] = {
-        id: group.id,
-        probability: group.probability ?? 0,
-        label: group.label,
-        greeting: group.greeting,
-        protocol: group.protocol ? {
-          id: group.protocol.id,
-          label: group.protocol.label,
-          allowPreviousPhase: group.protocol.allowPreviousPhase,
-          allowPreviousQuestion: group.protocol.allowPreviousQuestion,
-          allowSkipQuestion: group.protocol.allowSkipQuestion,
-          phases: group.protocol.phases.map((phase): TestPhaseUpdate => ({
-            id: phase.id,
-            questions: phase.questions.map((q): TestQuestionUpdate => ({
-              id: q.id,
-              text: q.text,
-              options: q.options.map((opt): TestOptionUpdate => ({
-                id: opt.id,
-                text: opt.text,
-                correct: opt.correct
-              }))
-            }))
+    groups: config.groups.map((group): TestGroupUpdate => ({
+      id: group.id,
+      probability: group.probability ?? 0,
+      label: group.label,
+      greeting: group.greeting,
+      allowPreviousPhase: group.allowPreviousPhase,
+      allowPreviousQuestion: group.allowPreviousQuestion,
+      allowSkipQuestion: group.allowSkipQuestion,
+      randomizePhases: group.randomizePhases,
+      phases: group.phases.map((phase): TestPhaseUpdate => ({
+        id: phase.id,
+        randomizeQuestions: phase.randomizeQuestions,
+        questions: phase.questions.map((q): TestQuestionUpdate => ({
+          id: q.id,
+          text: q.text,
+          randomizeOptions: q.randomizeOptions,
+          options: q.options.map((opt): TestOptionUpdate => ({
+            id: opt.id,
+            text: opt.text,
+            correct: opt.correct
           }))
-        } : undefined
-      } as TestGroupUpdate;
-      return acc;
-    }, {} as { [key: string]: TestGroupUpdate }),
+        }))
+      }))
+    })),
 
     translations: config.translations
   };
 }
 
-export function buildPatchRequest(config: EditablePatchConfig): ConfigUpdateWithFiles {
-  const appIcon = resolveImageToFile(config.icon);
-
+export async function buildPatchRequest(config: EditablePatchConfig): Promise<ConfigUpdateWithFiles> {
+  const [
+    appIcon,
+    preTestFormImages,
+    postTestFormImages,
+    groupImages,
+    informationCardImages
+  ] = await Promise.all([
+    resolveImageToFile(config.icon),
+    extractFormImages(config.preTestForm?.questions ?? []),
+    extractFormImages(config.postTestForm?.questions ?? []),
+    extractGroupImages(config.groups),
+    extractInformationCardImages(config.informationCards)
+  ]);
+  console.log(JSON.stringify(toPatchConfig(config), null, 2))
   return {
-    appIcon: appIcon && appIcon.size > 0 ? appIcon : undefined,
-    preTestFormQuestionOptionsFiles: extractFormImages(config.preTestForm.questions),
-    postTestFormQuestionOptionsFiles: extractFormImages(config.postTestForm.questions),
-    groupQuestionOptionsFiles: extractGroupImages(config.groups),
-    informationCardFiles: extractInformationCardImages(config.informationCards),
-    updateLastConfig: toPatchLastConfig(config)
+    icon: appIcon,
+    preTestFormImages,
+    postTestFormImages,
+    groupImages,
+    informationCardImages,
+    payload: toPatchConfig(config)
   };
 }

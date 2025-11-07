@@ -1,9 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {produce} from 'immer'
 import {
   toEditablePatchConfig,
   type EditablePatchConfig,
-  type EditablePatchSelectOne, type EditablePatchFormQuestion, type EditablePatchInformationCard, buildPatchRequest
+  type EditablePatchSelectOne,
+  type EditablePatchFormQuestion,
+  type EditablePatchInformationCard,
+  type EditablePatchGroup,
+  buildPatchRequest
 } from "@/utils/imageCollector.ts";
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import {FormQuestionEditor} from "@/components/ModifyConfigPage/FormQuestionEditor.tsx";
@@ -13,19 +17,46 @@ import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
 import api, {
   type FrequentlyAskedQuestionUpdate,
-  type TrimmedConfig,
+  type FullConfig,
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
+import {LoadingPage} from "@/pages/LoadingPage.tsx";
 
 type ModifyConfigPageProps = {
-  initialConfig: TrimmedConfig;
-  onSave?: (config: TrimmedConfig) => void;
+  token: string;
+  onSave?: (config: FullConfig) => void;
 }
 
-export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig/*, onSave*/}) => {
-  const [config, setConfig] = useState<EditablePatchConfig>(toEditablePatchConfig(initialConfig));
+export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, onSave*/}) => {
+  const [config, setConfig] = useState<EditablePatchConfig | null>(null);
   const [activeTab, setActiveTab] = useState<string>('general');
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [selectedGroupIndex, setSelectedGroupIndex] = useState<number | null>(null);
+  async function getConfig(): Promise<void> {
+    setIsLoading(true);
+    try {
+      const response = await api.getLastestConfigAsAdmin({auth:token});
+      if (response.data) {
+        setConfig(toEditablePatchConfig(response.data));
+        document.title = response.data.title ?? "";
+      } else {
+        console.error(response.error);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getConfig();
+  }, []);
+
+  if (isLoading || !config) {
+    return <LoadingPage message="Cargando configuración..." />;
+  }
 
   const addQuestion = (formType: 'preTestForm' | 'postTestForm') => {
     const newQuestion: EditablePatchSelectOne = {
@@ -38,24 +69,28 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
     };
 
     setConfig(produce(config, draft => {
-      draft[formType].questions.push(newQuestion);
+      if (!draft[formType]) {
+        draft[formType] = { questions: [] };
+      }
+      draft[formType]!.questions.push(newQuestion);
     }));
   };
 
   const handleSave = async () => {
     try {
-      const patchRequest = buildPatchRequest(config);
-      console.log(patchRequest);
-
-      const { data, error } = await api.updateConfig({
+      const patchRequest = await buildPatchRequest(config);
+      const { data, error } = await api.updateLatestConfig({
+        auth: token,
         body: patchRequest
       });
 
       if (error) {
-        console.error(error);
+        console.log(error);
         return;
       }
-      console.log(data);
+      if(data){
+        getConfig()
+      }
 
     } catch (err) {
       console.error(err);
@@ -69,20 +104,21 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
   ) => {
     setConfig((currentConfig) =>
       produce(currentConfig, (draft) => {
-        draft[formType].questions[index] = updatedQuestion;
+        if (draft) {
+          draft[formType]!.questions[index] = updatedQuestion;
+        }
       })
     );
   };
 
   const removeQuestion = (formType: 'preTestForm' | 'postTestForm', index: number) => {
-    const newQuestions = config[formType].questions.filter((_, i) => i !== index);
-
     setConfig((currentConfig) => produce(
       currentConfig, (draft) => {
-        draft[formType].questions = newQuestions
+        if (draft) {
+          draft[formType]!.questions = draft[formType]!.questions.filter((_, i) => i !== index);
+        }
       }
     ));
-
   };
 
   const renderContent = () => {
@@ -255,15 +291,15 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
               </button>
             </div>
 
-            {config.preTestForm?.questions?.length === 0 ? (
+            {!config.preTestForm || config.preTestForm.questions?.length === 0 ? (
               <div className={styles.emptyState}>
                 No hay preguntas. Haz clic en "Añadir Pregunta" para crear una.
               </div>
             ) : (
               <div className={styles.questionsContainer}>
-                {config.preTestForm?.questions?.map((question, index) => (
+                {config.preTestForm.questions.map((question, index) => (
                   <FormQuestionEditor
-                    key={question.id}
+                    key={question.id ?? `question-${index}`}
                     question={question}
                     index={index}
                     onChange={(updatedQuestion) =>
@@ -290,15 +326,15 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
               </button>
             </div>
 
-            {config.postTestForm?.questions?.length === 0 ? (
+            {!config.postTestForm || config.postTestForm.questions?.length === 0 ? (
               <div className={styles.emptyState}>
                 No hay preguntas. Haz clic en "Añadir Pregunta" para crear una.
               </div>
             ) : (
               <div className={styles.questionsContainer}>
-                {config.postTestForm?.questions?.map((question, index) => (
+                {config.postTestForm.questions.map((question, index) => (
                   <FormQuestionEditor
-                    key={question.id}
+                    key={question.id ?? `question-${index}`}
                     question={question}
                     index={index}
                     onChange={(updatedQuestion) =>
@@ -315,83 +351,179 @@ export const ModifyConfigPage: React.FC<ModifyConfigPageProps> = ({initialConfig
       case 'groups':
         return (
           <div className={styles.tabContent}>
-            <h3>Grupos y Protocolos</h3>
+            <div className={styles.sectionHeader}>
+              <h3>Grupos y Protocolos</h3>
+              <button
+                onClick={() => {
+                  const newGroup: EditablePatchGroup = {
+                    id: undefined,
+                    probability: 0,
+                    label: 'Nuevo Grupo',
+                    greeting: '',
+                    allowPreviousPhase: false,
+                    allowPreviousQuestion: false,
+                    allowSkipQuestion: false,
+                    randomizePhases: false,
+                    phases: []
+                  };
+                  setConfig(produce(config, (draft) => {
+                    draft.groups.push(newGroup);
+                    setSelectedGroupIndex(draft.groups.length - 1);
+                  }));
+                }}
+                className={styles.addButton}
+              >
+                + Añadir Grupo
+              </button>
+            </div>
+
             <div className={styles.groupSelector}>
               <label className={styles.label}>Seleccionar Grupo:</label>
               <select
-                value={selectedGroup || ''}
-                onChange={(e) => setSelectedGroup(e.target.value)}
+                value={selectedGroupIndex !== null ? selectedGroupIndex : ''}
+                onChange={(e) => setSelectedGroupIndex(e.target.value ? parseInt(e.target.value) : null)}
                 className={styles.select}
               >
                 <option value="">-- Selecciona un grupo --</option>
-                {Object.keys(config.groups || {}).map((key) => (
-                  <option key={key} value={key}>
-                    {config.groups[key].label}
+                {config.groups?.map((group, index) => (
+                  <option key={index} value={index}>
+                    {group.label || `Grupo ${index + 1}`}
                   </option>
                 ))}
               </select>
             </div>
 
-            {selectedGroup && config.groups[selectedGroup] && (
+            {selectedGroupIndex !== null && config.groups[selectedGroupIndex] && (
               <div className={styles.groupDetail}>
                 <div className={styles.groupCard}>
-                  <h4>Configuración del Grupo: {selectedGroup}</h4>
-                  <input
-                    type="text"
-                    placeholder="Label"
-                    value={config.groups[selectedGroup].label || ''}
-                    onChange={(e) => {
-                      setConfig({
-                        ...config,
-                        groups: {
-                          ...config.groups,
-                          [selectedGroup]: {...config.groups[selectedGroup], label: e.target.value}
-                        }
-                      });
+                  <h4>Configuración del Grupo: {config.groups[selectedGroupIndex].label}</h4>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Label</label>
+                    <input
+                      type="text"
+                      placeholder="Label del grupo"
+                      value={config.groups[selectedGroupIndex].label || ''}
+                      onChange={(e) => {
+                        setConfig(produce(config, (draft) => {
+                          draft.groups[selectedGroupIndex].label = e.target.value;
+                        }));
+                      }}
+                      className={styles.input}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Probabilidad</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="Probabilidad"
+                      value={config.groups[selectedGroupIndex].probability || 0}
+                      onChange={(e) => {
+                        setConfig(produce(config, (draft) => {
+                          draft.groups[selectedGroupIndex].probability = parseFloat(e.target.value) || 0;
+                        }));
+                      }}
+                      className={styles.input}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Saludo</label>
+                    <textarea
+                      placeholder="Saludo"
+                      value={config.groups[selectedGroupIndex].greeting || ''}
+                      onChange={(e) => {
+                        setConfig(produce(config, (draft) => {
+                          draft.groups[selectedGroupIndex].greeting = e.target.value;
+                        }));
+                      }}
+                      className={styles.textarea}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={config.groups[selectedGroupIndex].allowPreviousPhase}
+                        onChange={(e) => {
+                          setConfig(produce(config, (draft) => {
+                            draft.groups[selectedGroupIndex].allowPreviousPhase = e.target.checked;
+                          }));
+                        }}
+                      />
+                      Permitir fase anterior
+                    </label>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={config.groups[selectedGroupIndex].allowPreviousQuestion}
+                        onChange={(e) => {
+                          setConfig(produce(config, (draft) => {
+                            draft.groups[selectedGroupIndex].allowPreviousQuestion = e.target.checked;
+                          }));
+                        }}
+                      />
+                      Permitir pregunta anterior
+                    </label>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={config.groups[selectedGroupIndex].allowSkipQuestion}
+                        onChange={(e) => {
+                          setConfig(produce(config, (draft) => {
+                            draft.groups[selectedGroupIndex].allowSkipQuestion = e.target.checked;
+                          }));
+                        }}
+                      />
+                      Permitir saltar pregunta
+                    </label>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={config.groups[selectedGroupIndex].randomizePhases}
+                        onChange={(e) => {
+                          setConfig(produce(config, (draft) => {
+                            draft.groups[selectedGroupIndex].randomizePhases = e.target.checked;
+                          }));
+                        }}
+                      />
+                      Aleatorizar fases
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (confirm('¿Estás seguro de eliminar este grupo?')) {
+                        setConfig(produce(config, (draft) => {
+                          draft.groups = draft.groups.filter((_, i) => i !== selectedGroupIndex);
+                        }));
+                        setSelectedGroupIndex(null);
+                      }
                     }}
-                    className={styles.input}
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    placeholder="Probabilidad"
-                    value={config.groups[selectedGroup].probability || 0}
-                    onChange={(e) => {
-                      setConfig({
-                        ...config,
-                        groups: {
-                          ...config.groups,
-                          [selectedGroup]: {
-                            ...config.groups[selectedGroup],
-                            probability: parseFloat(e.target.value) || 0
-                          }
-                        }
-                      });
-                    }}
-                    className={styles.input}
-                  />
-                  <textarea
-                    placeholder="Saludo"
-                    value={config.groups[selectedGroup].greeting || ''}
-                    onChange={(e) => {
-                      setConfig({
-                        ...config,
-                        groups: {
-                          ...config.groups,
-                          [selectedGroup]: {...config.groups[selectedGroup], greeting: e.target.value}
-                        }
-                      });
-                    }}
-                    className={styles.textarea}
-                  />
+                    className={styles.removeButton}
+                  >
+                    Eliminar Grupo
+                  </button>
                 </div>
 
                 <ProtocolEditor
-                  key={selectedGroup}
-                  protocol={config.groups[selectedGroup].protocol}
-                  onChange={(protocol) => {
+                  key={selectedGroupIndex}
+                  phases={config.groups[selectedGroupIndex].phases}
+                  onChange={(phases) => {
                     setConfig(produce(config, (draft) => {
-                      draft.groups[selectedGroup].protocol = protocol;
+                      draft.groups[selectedGroupIndex].phases = phases;
                     }));
                   }}
                 />

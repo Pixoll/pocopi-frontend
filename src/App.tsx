@@ -5,12 +5,12 @@ import {HomePage} from "@/pages/HomePage";
 import {TestGreetingPage} from "@/pages/TestGreetingPage";
 import {TestPage} from "@/pages/TestPage";
 import {AdminPage} from "@/pages/AdminPage";
-import {ModifyConfigPage} from "@/pages/ModifyConfigPage";
 import {LoadingPage} from "@/pages/LoadingPage";
 import { Routes, Route, useNavigate, Navigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AnalyticDashboardPage from "@/pages/AnalyticDashboardPage.tsx";
+import ModifyLatestConfigPage from "@/pages/ModifyLatestConfigPage.tsx";
 export function App() {
   const navigate = useNavigate();
 
@@ -124,7 +124,7 @@ export function App() {
         />
         <Route
           path="/modify-config"
-          element={<ModifyConfigPage initialConfig={config} />}
+          element={<ModifyLatestConfigPage config={config} />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

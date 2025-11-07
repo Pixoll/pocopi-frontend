@@ -91,57 +91,19 @@ export type User = {
 };
 
 export type ConfigUpdate = {
-    version: number;
     title: string;
     subtitle: string;
     description: string;
     anonymous: boolean;
     informedConsent: string;
-    informationCards: Array<InformationCardUpdate>;
-    faq: Array<FrequentlyAskedQuestionUpdate>;
-    preTestForm: FormUpdate;
-    postTestForm: FormUpdate;
-    groups: {
-        [key: string]: TestGroupUpdate;
-    };
+    informationCards?: Array<InformationCardUpdate>;
+    faq?: Array<FrequentlyAskedQuestionUpdate>;
+    preTestForm?: FormUpdate;
+    postTestForm?: FormUpdate;
+    groups: Array<TestGroupUpdate>;
     translations: {
         [key: string]: string;
     };
-};
-
-export type ConfigUpdateWithFiles = {
-    /**
-     * Icon by config
-     */
-    appIcon?: Blob | File;
-    /**
-     * All images from question and options by pre test form
-     */
-    preTestFormQuestionOptionsFiles: {
-        [key: string]: Blob | File;
-    };
-    /**
-     * All images from question and options by post test form
-     */
-    postTestFormQuestionOptionsFiles: {
-        [key: string]: Blob | File;
-    };
-    /**
-     * All images from question and options each phase
-     */
-    groupQuestionOptionsFiles: {
-        [key: string]: Blob | File;
-    };
-    /**
-     * All images from information cards
-     */
-    informationCardFiles: {
-        [key: string]: Blob | File;
-    };
-    /**
-     * Last configuration updated
-     */
-    updateLastConfig: ConfigUpdate;
 };
 
 export type FormOptionUpdate = {
@@ -149,10 +111,12 @@ export type FormOptionUpdate = {
     text?: string;
 };
 
-export type FormQuestionUpdate = unknown;
+export type FormQuestionUpdate = {
+};
 
 export type FormUpdate = {
     id?: number;
+    title?: string;
     /**
      * Form questions
      */
@@ -176,23 +140,24 @@ export type SelectMultipleUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    options: Array<FormOptionUpdate>;
+    type: 'select-multiple';
     min: number;
     max: number;
     other: boolean;
+    options: Array<FormOptionUpdate>;
 };
 
 export type SelectOneUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    options: Array<FormOptionUpdate>;
+    type: 'select-one';
     other: boolean;
+    options: Array<FormOptionUpdate>;
 };
 
-export type SliderLabel = {
+export type SliderLabelUpdate = {
+    id?: number;
     number: number;
     label: string;
 };
@@ -201,22 +166,22 @@ export type SliderUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
-    placeholder: string;
+    type: 'slider';
     min: number;
     max: number;
     step: number;
-    labels: Array<SliderLabel>;
+    labels: Array<SliderLabelUpdate>;
 };
 
 export type TestGroupUpdate = {
     id?: number;
-    probability?: number;
-    label?: string;
+    probability: number;
+    label: string;
     greeting?: string;
     allowPreviousPhase: boolean;
     allowPreviousQuestion: boolean;
     allowSkipQuestion: boolean;
+    randomizePhases: boolean;
     phases: Array<TestPhaseUpdate>;
 };
 
@@ -228,12 +193,14 @@ export type TestOptionUpdate = {
 
 export type TestPhaseUpdate = {
     id?: number;
+    randomizeQuestions: boolean;
     questions: Array<TestQuestionUpdate>;
 };
 
 export type TestQuestionUpdate = {
     id?: number;
     text?: string;
+    randomizeOptions: boolean;
     options: Array<TestOptionUpdate>;
 };
 
@@ -241,7 +208,7 @@ export type TextLongUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    type: 'text-long';
     placeholder: string;
     minLength: number;
     maxLength: number;
@@ -251,31 +218,10 @@ export type TextShortUpdate = FormQuestionUpdate & {
     id?: number;
     category: string;
     text?: string;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    type: 'text-short';
     placeholder: string;
     minLength: number;
     maxLength: number;
-};
-
-export type UpdatedConfig = {
-    configUpdatesSummary: {
-        [key: string]: string;
-    };
-    informationCardUpdatesSummary: {
-        [key: string]: string;
-    };
-    faqUpdatedSummary: {
-        [key: string]: string;
-    };
-    preTestUpdatedSummary: {
-        [key: string]: string;
-    };
-    postTestUpdatedSummary: {
-        [key: string]: string;
-    };
-    groupSummary: {
-        [key: string]: string;
-    };
 };
 
 export type UserSummary = {
@@ -526,6 +472,12 @@ export type Slider = FormQuestion & {
     max: number;
     step: number;
     labels: Array<SliderLabel>;
+};
+
+export type SliderLabel = {
+    id: number;
+    number: number;
+    label: string;
 };
 
 export type TextLong = FormQuestion & {
@@ -919,38 +871,69 @@ export type GetCurrentAdminResponses = {
 
 export type GetCurrentAdminResponse = GetCurrentAdminResponses[keyof GetCurrentAdminResponses];
 
-export type UpdateConfigData = {
-    body?: ConfigUpdateWithFiles;
+export type GetLastestConfigAsUserData = {
+    body?: never;
     path?: never;
     query?: never;
     url: '/api/config';
 };
 
-export type UpdateConfigErrors = {
+export type GetLastestConfigAsUserResponses = {
     /**
-     * Unauthorized
+     * OK
      */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
+    200: TrimmedConfig;
+};
+
+export type GetLastestConfigAsUserResponse = GetLastestConfigAsUserResponses[keyof GetLastestConfigAsUserResponses];
+
+export type UpdateLatestConfigData = {
+    body?: {
+        /**
+         * New application icon
+         */
+        icon?: Blob | File;
+        /**
+         * Every image used in the information cards
+         */
+        informationCardImages?: Array<Blob | File>;
+        /**
+         * Every image used in the pre-test form
+         */
+        preTestFormImages?: Array<Blob | File>;
+        /**
+         * Every image used in the post-test form
+         */
+        postTestFormImages?: Array<Blob | File>;
+        /**
+         * Every image used in the test groups
+         */
+        groupImages?: Array<Blob | File>;
+        /**
+         * Configuration update
+         */
+        payload: ConfigUpdate;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/config';
+};
+
+export type UpdateLatestConfigErrors = {
     /**
      * Validation error
      */
     422: ApiHttpError;
 };
 
-export type UpdateConfigError = UpdateConfigErrors[keyof UpdateConfigErrors];
+export type UpdateLatestConfigError = UpdateLatestConfigErrors[keyof UpdateLatestConfigErrors];
 
-export type UpdateConfigResponses = {
+export type UpdateLatestConfigResponses = {
     /**
      * OK
      */
-    200: UpdatedConfig;
+    200: unknown;
 };
-
-export type UpdateConfigResponse = UpdateConfigResponses[keyof UpdateConfigResponses];
 
 export type GetAllUsersData = {
     body?: never;
@@ -1463,27 +1446,11 @@ export type GetUserEventLogsResponses = {
 
 export type GetUserEventLogsResponse = GetUserEventLogsResponses[keyof GetUserEventLogsResponses];
 
-export type GetLastestConfigAsUserData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/config/latest';
-};
-
-export type GetLastestConfigAsUserResponses = {
-    /**
-     * OK
-     */
-    200: TrimmedConfig;
-};
-
-export type GetLastestConfigAsUserResponse = GetLastestConfigAsUserResponses[keyof GetLastestConfigAsUserResponses];
-
 export type GetLastestConfigAsAdminData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/config/latest/full';
+    url: '/api/config/full';
 };
 
 export type GetLastestConfigAsAdminErrors = {
