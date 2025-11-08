@@ -78,7 +78,7 @@ export default function RegisterSection({
                 label={t(config, "home.age")}
                 type="number"
                 name="age"
-                value={userData.age && userData.age !== "0" ? userData.age : ""}
+                value={userData.age && userData.age ? userData.age : 0}
                 onChange={handleChange}
                 required
                 min="5"

@@ -1,5 +1,5 @@
 import { useTheme } from "@/hooks/useTheme";
-import type {TestProtocol, TrimmedConfig} from "@/api";
+import type {AssignedTestGroup, TrimmedConfig} from "@/api";
 import styles from "@/styles/TestPage/TestPageNavigation.module.css";
 import { faAngleLeft, faAngleRight, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,7 +8,7 @@ import {t} from "@/utils/translations.ts";
 
 type TestPageNavigationProps = {
   config: TrimmedConfig;
-  protocol: TestProtocol;
+  protocol: AssignedTestGroup;
   phaseIndex: number;
   questionIndex: number;
   isOptionSelected: boolean;

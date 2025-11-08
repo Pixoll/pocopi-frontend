@@ -1,6 +1,6 @@
-import type {Config} from "@/api";
+import type {TrimmedConfig} from "@/api";
 
-export function t(config:Config, key: string, ...args: string[]): string {
+export function t(config:TrimmedConfig, key: string, ...args: string[]): string {
   let value = config.translations[key];
 
   if (!value) {

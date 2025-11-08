@@ -4,14 +4,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ChangeEvent } from "react";
 import { FloatingLabel, Form } from "react-bootstrap";
 import {t} from "@/utils/translations.ts";
-import type {FullConfig, TrimmedConfig} from "@/api";
+import type {TrimmedConfig} from "@/api";
 
 type InputWithIconProps = {
-  config: TrimmedConfig | FullConfig;
+  config: TrimmedConfig;
   icon: IconDefinition;
   label: string;
   name: string;
-  value: string;
+  value: string | number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   required?: boolean;
