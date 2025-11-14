@@ -217,7 +217,65 @@
     flex-direction: column;
     gap: 0.75rem;
 }
+.headerActions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
 
+.iconButton {
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.iconButton:hover {
+    background: var(--input-bg);
+    color: var(--accent-teal);
+}
+
+.duplicateIcon {
+    position: absolute;
+    font-size: 10px;
+    top: 2px;
+    right: 2px;
+    color: inherit;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.checkboxLabel:hover {
+    background: rgba(0, 139, 139, 0.05);
+}
+
+.checkboxLabel input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-teal);
+}
+
+.checkboxLabel span {
+    color: var(--text-secondary);
+}
 @media (max-width: 768px) {
     .cardHeader {
         padding: 1rem;

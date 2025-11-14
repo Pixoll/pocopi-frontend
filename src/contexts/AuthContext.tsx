@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { Credentials } from "@/api";
-
 type AuthContextType = {
   token: string | undefined;
   isLoggedIn: boolean;
@@ -20,10 +19,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const storedToken = localStorage.getItem(STORAGE_KEY);
-    if (storedToken) {
-      setTokenState(storedToken);
-    }
+    if (storedToken) setTokenState(storedToken);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === STORAGE_KEY) {
+        setTokenState(event.newValue || undefined);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [token]);
 
   const setToken = (newToken: string | undefined) => {
     setTokenState(newToken);
@@ -39,17 +49,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const generateCredentials = (): Credentials => ({
     username: uuidv4().replace(/-/g, ""),
     password: uuidv4().replace(/-/g, ""),
-
   });
 
-  const clearAuth = () => {
-    setToken(undefined);
-  };
+  const clearAuth = () => setToken(undefined);
 
   const isLoggedIn = !!token;
 
   return (
-    <AuthContext.Provider value={{ token, isLoggedIn, setToken, generateCredentials, clearAuth }}>
+    <AuthContext.Provider
+      value={{ token, isLoggedIn, setToken, generateCredentials, clearAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );

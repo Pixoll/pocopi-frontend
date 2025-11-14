@@ -1,0 +1,140 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: var(#2c3e50);
+    border-radius: 8px;
+    padding: 0;
+    min-width: 400px;
+    max-width: 500px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color, #34495e);
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color, #34495e);
+    background: var(--input-bg, #34495e);
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary, #ecf0f1);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-muted, #95a5a6);
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: var(--text-primary, #ecf0f1);
+}
+
+.modalBody {
+    padding: 20px;
+    background: var(--card-dark, #2c3e50);
+}
+
+.formGroup {
+    margin-bottom: 16px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-primary, #ecf0f1);
+    font-size: 0.9rem;
+}
+
+.select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, #34495e);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: var(--input-bg, #34495e);
+    color: var(--text-primary, #ecf0f1);
+    transition: all 0.2s;
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--accent-teal, #008b8b);
+    box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.2);
+}
+
+.select option {
+    background: var(--input-bg, #34495e);
+    color: var(--text-primary, #ecf0f1);
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid var(--border-color, #34495e);
+    background: var(--input-bg, #34495e);
+}
+
+.cancelButton,
+.confirmButton {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cancelButton {
+    background: var(#2c3e50);
+    border: 1px solid var(--border-color, #34495e);
+    color: var(--text-secondary, #bdc3c7);
+}
+
+.cancelButton:hover {
+    background: var(--input-bg, #34495e);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.confirmButton {
+    background: var(--accent-teal, #008b8b);
+    border: 1px solid var(--accent-teal, #008b8b);
+    color: white;
+}
+
+.confirmButton:hover {
+    background: #007a7a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 139, 139, 0.4);
+}

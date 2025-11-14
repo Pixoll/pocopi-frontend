@@ -4,16 +4,29 @@ import { ImageEditor } from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import { OptionEditor } from "@/components/ModifyConfigPage/OptionEditor.tsx";
 import type {EditablePatchOption, EditablePatchQuestion, ImageState} from "@/utils/imageCollector.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faTrash, faPlus, faCopy, faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 
 type QuestionEditorProps = {
   question: EditablePatchQuestion;
   index: number;
   onChange: (question: EditablePatchQuestion) => void;
   onRemove: () => void;
+  onDuplicate?: () => void;
+  onCopy?: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
-export function QuestionEditor({ question, index, onChange, onRemove }: QuestionEditorProps) {
+export function QuestionEditor({
+                                 question,
+                                 index,
+                                 onChange,
+                                 onRemove,
+                                 onDuplicate,
+                                 onCopy,
+                                 onMoveUp,
+                                 onMoveDown
+                               }: QuestionEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const addOption = () => {
@@ -64,17 +77,72 @@ export function QuestionEditor({ question, index, onChange, onRemove }: Question
             )}
           </div>
         </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-          className={styles.removeButton}
-          type="button"
-          title="Eliminar pregunta"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
+        <div className={styles.headerActions}>
+          {onMoveUp && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveUp();
+              }}
+              className={styles.iconButton}
+              type="button"
+              title="Mover arriba"
+            >
+              <FontAwesomeIcon icon={faArrowUp} />
+            </button>
+          )}
+          {onMoveDown && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveDown();
+              }}
+              className={styles.iconButton}
+              type="button"
+              title="Mover abajo"
+            >
+              <FontAwesomeIcon icon={faArrowDown} />
+            </button>
+          )}
+          {onCopy && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onCopy();
+              }}
+              className={styles.iconButton}
+              type="button"
+              title="Copiar pregunta"
+            >
+              <FontAwesomeIcon icon={faCopy} />
+            </button>
+          )}
+          {onDuplicate && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDuplicate();
+              }}
+              className={styles.iconButton}
+              type="button"
+              title="Duplicar pregunta"
+            >
+              <FontAwesomeIcon icon={faCopy} />
+              <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon} />
+            </button>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className={styles.removeButton}
+            type="button"
+            title="Eliminar pregunta"
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </div>
       </div>
 
       {isExpanded && (
@@ -96,6 +164,17 @@ export function QuestionEditor({ question, index, onChange, onRemove }: Question
               onChange={(imageState: ImageState) => onChange({ ...question, image: imageState })}
               label="Imagen de la pregunta"
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={question.randomizeOptions || false}
+                onChange={(e) => onChange({ ...question, randomizeOptions: e.target.checked })}
+              />
+              <span>Aleatorizar opciones</span>
+            </label>
           </div>
 
           <div className={styles.section}>

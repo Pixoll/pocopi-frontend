@@ -926,7 +926,6 @@ export type UpdateLatestConfigErrors = {
     422: ApiHttpError;
 };
 
-export type UpdateLatestConfigError = UpdateLatestConfigErrors[keyof UpdateLatestConfigErrors];
 
 export type UpdateLatestConfigResponses = {
     /**

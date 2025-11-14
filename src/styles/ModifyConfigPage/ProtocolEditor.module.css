@@ -288,6 +288,127 @@
     box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
 
+.sidebarActions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.phaseItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.phaseItem:hover {
+    border-color: var(--accent-teal);
+    box-shadow: 0 2px 4px rgba(0, 139, 139, 0.15);
+}
+
+.phaseItem.active {
+    border-color: var(--accent-teal);
+    background: rgba(0, 139, 139, 0.15);
+}
+
+.phaseItemButton {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.phaseItemActions {
+    display: flex;
+    gap: 4px;
+    padding: 8px;
+    border-left: 1px solid var(--border-color);
+    background: var(--card-light);
+}
+
+.iconButton {
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.iconButton:hover:not(:disabled) {
+    background: var(--input-bg);
+    color: var(--accent-teal);
+}
+
+.iconButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.duplicateIcon {
+    position: absolute;
+    font-size: 10px;
+    top: 2px;
+    right: 2px;
+    color: inherit;
+}
+
+.pasteButton {
+    background: var(--success, #27ae60);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pasteButton:hover {
+    background: var(--success-hover, #229954);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.4);
+}
+
+.questionsActions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.phaseHeaderActions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.phaseItem.active .phaseNumber {
+    color: var(--accent-teal);
+    font-weight: 700;
+}
+
+.phaseItem.active .questionCount {
+    color: var(--text-secondary);
+}
 @media (max-width: 968px) {
     .protocolLayout {
         grid-template-columns: 1fr;

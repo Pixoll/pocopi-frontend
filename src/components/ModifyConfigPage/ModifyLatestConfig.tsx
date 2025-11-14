@@ -543,6 +543,16 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
                       draft.groups[selectedGroupIndex].phases = phases;
                     }));
                   }}
+                  allGroups={config.groups}
+                  onCrossGroupPaste={(item, targetGroupIndex, targetPhaseIndex) => {
+                    setConfig(produce(config, (draft) => {
+                      if (item?.type === 'phase') {
+                        draft.groups[targetGroupIndex].phases.push(item.data);
+                      } else if (item?.type === 'question' && targetPhaseIndex !== undefined) {
+                        draft.groups[targetGroupIndex].phases[targetPhaseIndex].questions.push(item.data);
+                      }
+                    }));
+                  }}
                 />
               </div>
             )}
