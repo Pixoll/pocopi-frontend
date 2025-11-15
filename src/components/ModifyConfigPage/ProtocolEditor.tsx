@@ -65,6 +65,7 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
     setClipboard({ type: 'phase', data: clonedPhase });
   };
 
+
   const pastePhase = () => {
     if (!clipboard || clipboard.type !== 'phase') return;
 

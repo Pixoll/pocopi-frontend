@@ -23,9 +23,9 @@ import type {
 } from "@/api";
 
 export type ImageState =
-  | { type: 'unchanged'; value: Image | undefined } // no cambios
-  | { type: 'new'; value: File } // nueva o reemplazo
-  | { type: 'deleted' }; // eliminada
+  | { type: 'unchanged'; value: Image | undefined }
+  | { type: 'new'; value: File }
+  | { type: 'deleted' };
 
 export type EditablePatchFormOption = FormOptionUpdate & {
   image?: ImageState;
@@ -104,9 +104,84 @@ export type EditablePatchConfig = {
   };
 };
 
+const imageCache = new Map<string, File>();
+
 function toImageState(image: Image | undefined | null): ImageState | undefined {
   if (!image) return undefined;
   return { type: 'unchanged', value: image };
+}
+
+function extractAllImageUrls(serverConfig: FullConfig): string[] {
+  const urls: string[] = [];
+
+  if (serverConfig.icon?.url) {
+    urls.push(serverConfig.icon.url);
+  }
+
+  serverConfig.informationCards.forEach(card => {
+    if (card.icon?.url) urls.push(card.icon.url);
+  });
+
+  [serverConfig.preTestForm, serverConfig.postTestForm].forEach(form => {
+    if (!form) return;
+    form.questions.forEach(q => {
+      if (q.image?.url) urls.push(q.image.url);
+      if ('options' in q && q.options) {
+        q.options.forEach(opt => {
+          if (opt.image?.url) urls.push(opt.image.url);
+        });
+      }
+    });
+  });
+
+  serverConfig.groups.forEach(group => {
+    group.phases.forEach(phase => {
+      phase.questions.forEach(question => {
+        if (question.image?.url) urls.push(question.image.url);
+        question.options.forEach(option => {
+          if (option.image?.url) urls.push(option.image.url);
+        });
+      });
+    });
+  });
+
+  return urls;
+}
+
+export async function preloadImages(serverConfig: FullConfig): Promise<void> {
+  const urls = extractAllImageUrls(serverConfig);
+  const uniqueUrls = [...new Set(urls)];
+
+
+  const promises = uniqueUrls.map(async (url) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const file = new File([blob], ".png", { type: blob.type || 'image/png' });
+      imageCache.set(url, file);
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  await Promise.all(promises);
+}
+
+export function getImageFile(imageState: ImageState | undefined): File | undefined {
+  if (!imageState || imageState.type === 'deleted') return undefined;
+
+  if (imageState.type === 'unchanged') {
+    if (imageState.value?.url && imageCache.has(imageState.value.url)) {
+      return imageCache.get(imageState.value.url)!;
+    }
+    return undefined;
+  }
+
+  return imageState.value;
+}
+
+export function clearImageCache() {
+  imageCache.clear();
 }
 
 export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchConfig {
@@ -319,26 +394,17 @@ export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchCo
 }
 
 async function resolveImageToFile(imageState: ImageState | undefined | null): Promise<File> {
-  if (!imageState) {
-    return new File([], ".png");
-  }
+  if (!imageState) return new File([], ".png");
 
   switch (imageState.type) {
     case 'unchanged':
-      if (imageState.value?.url) {
-        try {
-          const response = await fetch(imageState.value.url);
-          const blob = await response.blob();
-          return new File([blob], ".png", { type: blob.type || 'image/png' });
-        } catch (error) {
-          console.error('Error fetching existing image:', error);
-          return new File([], ".png");
-        }
+      if (imageState.value?.url && imageCache.has(imageState.value.url)) {
+        return imageCache.get(imageState.value.url)!;
       }
       return new File([], ".png");
 
     case 'new':
-      return new File([imageState.value], ".png", { type: imageState.value.type });
+      return imageState.value;
 
     case 'deleted':
       return new File([], ".png");
@@ -385,11 +451,9 @@ async function extractGroupImages(groups: EditablePatchGroup[]): Promise<File[]>
 
 async function extractInformationCardImages(cards: EditablePatchInformationCard[]): Promise<File[]> {
   const images: File[] = [];
-
   for (const card of cards) {
     images.push(await resolveImageToFile(card.icon));
   }
-
   return images;
 }
 
@@ -569,7 +633,7 @@ export async function buildPatchRequest(config: EditablePatchConfig): Promise<Co
     extractGroupImages(config.groups),
     extractInformationCardImages(config.informationCards)
   ]);
-  console.log(JSON.stringify(toPatchConfig(config), null, 2))
+
   return {
     icon: appIcon,
     preTestFormImages,

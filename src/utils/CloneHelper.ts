@@ -4,15 +4,24 @@ import type {
   EditablePatchOption,
   ImageState
 } from '@/utils/imageCollector.ts';
+import { getImageFile } from '@/utils/imageCollector.ts';
+
+let fileCounter = 0;
+
+function generateUniqueFileName(): string {
+  return `${Date.now()}_${++fileCounter}.png`;
+}
 
 function cloneImageState(image: ImageState | undefined): ImageState | undefined {
   if (!image) return undefined;
 
-  if (image.type === 'unchanged') {
-    return { type: 'unchanged', value: undefined };
-  }
+  if (image.type === 'deleted') return undefined;
 
-  return { ...image };
+  const file = image.type === 'unchanged' ? getImageFile(image) : image.value;
+  if (!file) return undefined;
+
+  const uniqueName = generateUniqueFileName();
+  return { type: 'new', value: new File([file], uniqueName, { type: file.type }) };
 }
 
 export function cloneOption(option: EditablePatchOption): EditablePatchOption {

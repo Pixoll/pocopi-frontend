@@ -7,7 +7,9 @@ import {
   type EditablePatchFormQuestion,
   type EditablePatchInformationCard,
   type EditablePatchGroup,
-  buildPatchRequest
+  buildPatchRequest,
+  preloadImages,
+  clearImageCache
 } from "@/utils/imageCollector.ts";
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import {FormQuestionEditor} from "@/components/ModifyConfigPage/FormQuestionEditor.tsx";
@@ -42,7 +44,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
     try {
       const response = await api.getLastestConfigAsAdmin({auth:token});
       if (response.data) {
+        await preloadImages(response.data);
         setConfig(toEditablePatchConfig(response.data));
+
         document.title = response.data.title ?? "";
       } else {
         console.error(response.error);
@@ -56,6 +60,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
 
   useEffect(() => {
     getConfig();
+    return () => {
+      clearImageCache();
+    };
   }, []);
 
   if (isLoading || !config) {
@@ -355,7 +362,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
                     question={question}
                     index={index}
                     onChange={(updatedQuestion) =>
-                      updateQuestion('postTestForm', index, updatedQuestion as any)
+                      updateQuestion('postTestForm', index, updatedQuestion as  EditablePatchFormQuestion)
                     }
                     onRemove={() => removeQuestion('postTestForm', index)}
                   />
