@@ -112,6 +112,7 @@ export type FormOptionUpdate = {
 };
 
 export type FormQuestionUpdate = {
+    type: string;
 };
 
 export type FormUpdate = {
@@ -137,6 +138,8 @@ export type InformationCardUpdate = {
 };
 
 export type SelectMultipleUpdate = FormQuestionUpdate & {
+    type: 'SelectMultipleUpdate';
+} & {
     id?: number;
     category: string;
     text?: string;
@@ -148,6 +151,8 @@ export type SelectMultipleUpdate = FormQuestionUpdate & {
 };
 
 export type SelectOneUpdate = FormQuestionUpdate & {
+    type: 'SelectOneUpdate';
+} & {
     id?: number;
     category: string;
     text?: string;
@@ -163,6 +168,8 @@ export type SliderLabelUpdate = {
 };
 
 export type SliderUpdate = FormQuestionUpdate & {
+    type: 'SliderUpdate';
+} & {
     id?: number;
     category: string;
     text?: string;
@@ -205,6 +212,8 @@ export type TestQuestionUpdate = {
 };
 
 export type TextLongUpdate = FormQuestionUpdate & {
+    type: 'TextLongUpdate';
+} & {
     id?: number;
     category: string;
     text?: string;
@@ -215,6 +224,8 @@ export type TextLongUpdate = FormQuestionUpdate & {
 };
 
 export type TextShortUpdate = FormQuestionUpdate & {
+    type: 'TextShortUpdate';
+} & {
     id?: number;
     category: string;
     text?: string;
@@ -926,6 +937,7 @@ export type UpdateLatestConfigErrors = {
     422: ApiHttpError;
 };
 
+export type UpdateLatestConfigError = UpdateLatestConfigErrors[keyof UpdateLatestConfigErrors];
 
 export type UpdateLatestConfigResponses = {
     /**

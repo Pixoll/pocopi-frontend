@@ -1,11 +1,12 @@
-import type {TrimmedConfig, AssignedTestGroup} from "@/api";
+import type { TrimmedConfig, AssignedTestGroup } from "@/api";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
-import { useAuth } from "@/contexts/AuthContext.tsx";
+import { useAuth } from "@/contexts/AuthContext";
 import styles from "@/styles/TestPage/TestPage.module.css";
 
 type TestPageProps = {
@@ -14,41 +15,29 @@ type TestPageProps = {
   goToNextPage: () => void;
 };
 
-export function TestPage({
-                           config,
-                           protocol,
-                           goToNextPage,
-                         }: TestPageProps) {
+export function TestPage({ config, protocol, goToNextPage }: TestPageProps) {
   const { isDarkMode } = useTheme();
   const { token } = useAuth();
 
-  if (!token) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.content}>
-          <p>Se necesita autenticarse primero</p>
+  return (
+    <ProtectedRoute config={config}>
+      {!protocol ? (
+        <div className={styles.page}>
+          <div className={styles.content}>
+            <p>Cargando preguntas...</p>
+          </div>
         </div>
-      </div>
-    );
-  }
-
-  if (!protocol) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.content}>
-          <p>Cargando preguntas....</p>
-        </div>
-      </div>
-    );
-  }
-
-  return <TestPageContent
-    token={token}
-    config={config}
-    protocol={protocol}
-    goToNextPage={goToNextPage}
-    isDarkMode={isDarkMode}
-  />;
+      ) : (
+        <TestPageContent
+          token={token!}
+          config={config}
+          protocol={protocol}
+          goToNextPage={goToNextPage}
+          isDarkMode={isDarkMode}
+        />
+      )}
+    </ProtectedRoute>
+  );
 }
 
 function TestPageContent({
@@ -58,7 +47,7 @@ function TestPageContent({
                            goToNextPage,
                            isDarkMode,
                          }: {
-  token: string
+  token: string;
   config: TrimmedConfig;
   protocol: AssignedTestGroup;
   goToNextPage: () => void;
@@ -78,7 +67,7 @@ function TestPageContent({
     onOptionClick,
     onOptionHover,
     jumpToQuestion,
-  } = useTest(protocol,token);
+  } = useTest(protocol, token);
 
   const { phases } = protocol;
   const phase = phases[phaseIndex];
@@ -105,53 +94,52 @@ function TestPageContent({
             onContinue={() => quitSummary(goToNextPage)}
           />
         </div>
-      ) : <>
-        {/* main content */}
-        <div className={styles.content}>
-          {/* question */}
-          <div
-            className={[
-              styles.question,
-              isDarkMode ? styles.dark : styles.light,
-            ].join(" ")}
-          >
-            {question.text && (
-              <div className={question.image ? styles.questionText : ""}>
-                {question.text}
-              </div>
-            )}
-            {question.image && (
-              <img
-                src={question.image.url}
-                alt={question.image.alt}
-                className={styles.questionImage}
-                draggable={false}
-              />
-            )}
+      ) : (
+        <>
+          <div className={styles.content}>
+            <div
+              className={[
+                styles.question,
+                isDarkMode ? styles.dark : styles.light,
+              ].join(" ")}
+            >
+              {question.text && (
+                <div className={question.image ? styles.questionText : ""}>
+                  {question.text}
+                </div>
+              )}
+              {question.image && (
+                <img
+                  src={question.image.url}
+                  alt={question.image.alt}
+                  className={styles.questionImage}
+                  draggable={false}
+                />
+              )}
+            </div>
+
+            {/* options */}
+            <TestOptions
+              options={question.options}
+              selected={selectedOptionId}
+              onOptionClick={onOptionClick}
+              onOptionHover={onOptionHover}
+            />
           </div>
 
-          {/* options */}
-          <TestOptions
-            options={question.options}
-            selected={selectedOptionId}
-            onOptionClick={onOptionClick}
-            onOptionHover={onOptionHover}
+          <TestPageNavigation
+            config={config}
+            protocol={protocol}
+            phaseIndex={phaseIndex}
+            questionIndex={questionIndex}
+            isOptionSelected={selectedOptionId !== null}
+            showedSummary={showedSummary}
+            goToSummary={goToSummary}
+            onPreviousQuestion={goToPreviousQuestion}
+            onNextQuestion={goToNextQuestion}
           />
-        </div>
-
-        {/* bottom nav bar */}
-        <TestPageNavigation
-          config={config}
-          protocol={protocol}
-          phaseIndex={phaseIndex}
-          questionIndex={questionIndex}
-          isOptionSelected={selectedOptionId !== null}
-          showedSummary={showedSummary}
-          goToSummary={goToSummary}
-          onPreviousQuestion={goToPreviousQuestion}
-          onNextQuestion={goToNextQuestion}
-        />
-      </>}
+        </>
+      )}
     </div>
   );
 }
