@@ -37,8 +37,15 @@ export type Image = {
 
 export type UserTestAttempt = {
     completedPreTestForm: boolean;
-    lastTestQuestionId: number;
+    completedTest: boolean;
+    completedPostTestForm: boolean;
+    testAnswers: Array<UserTestAttemptAnswer>;
     assignedGroup: AssignedTestGroup;
+};
+
+export type UserTestAttemptAnswer = {
+    questionId: number;
+    optionId: number;
 };
 
 export type NewFormAnswer = {
