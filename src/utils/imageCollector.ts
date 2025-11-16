@@ -152,19 +152,21 @@ export async function preloadImages(serverConfig: FullConfig): Promise<void> {
   const urls = extractAllImageUrls(serverConfig);
   const uniqueUrls = [...new Set(urls)];
 
-
-  const promises = uniqueUrls.map(async (url) => {
+  await Promise.all(uniqueUrls.map(async (url) => {
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        return;
+      }
+
+      const urlParts = url.split("/");
       const blob = await response.blob();
-      const file = new File([blob], ".png", { type: blob.type || 'image/png' });
+      const file = new File([blob], urlParts[urlParts.length - 1] ?? "file", { type: blob.type });
       imageCache.set(url, file);
     } catch (error) {
       console.error(error);
     }
-  });
-
-  await Promise.all(promises);
+  }));
 }
 
 export function getImageFile(imageState: ImageState | undefined): File | undefined {
