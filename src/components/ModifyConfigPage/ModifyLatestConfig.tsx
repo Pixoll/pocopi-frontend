@@ -3,8 +3,6 @@ import {produce} from 'immer'
 import {
   toEditablePatchConfig,
   type EditablePatchConfig,
-  type EditablePatchSelectOne,
-  type EditablePatchFormQuestion,
   type EditablePatchInformationCard,
   type EditablePatchGroup,
   buildPatchRequest,
@@ -12,7 +10,6 @@ import {
   clearImageCache
 } from "@/utils/imageCollector.ts";
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
-import {FormQuestionEditor} from "@/components/ModifyConfigPage/FormQuestionEditor.tsx";
 import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCardEditor.tsx";
 import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
@@ -24,6 +21,8 @@ import api, {
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 import {LoadingPage} from "@/pages/LoadingPage.tsx";
 import {SavePopup} from "@/components/SavePopup.tsx";
+import {ConfirmModal} from "@/components/ConfirmModal.tsx";
+import {FormQuestionsCoordinator} from "@/components/ModifyConfigPage/FormQuestionsCoordinator.tsx";
 
 type ModifyConfigPageProps = {
   token: string;
@@ -39,6 +38,8 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   const [saveStatus, setSaveStatus] = useState<'loading' | 'success' | 'error' | null>(null);
   const [saveMessage, setSaveMessage] = useState<string>('');
 
+  const [showDeleteGroupConfirm, setShowDeleteGroupConfirm] = useState(false);
+  const [deleteGroupIndex, setDeleteGroupIndex] = useState<number | null>(null);
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
@@ -68,24 +69,6 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   if (isLoading || !config) {
     return <LoadingPage message="Cargando configuración..." />;
   }
-
-  const addQuestion = (formType: 'preTestForm' | 'postTestForm') => {
-    const newQuestion: EditablePatchSelectOne = {
-      id: undefined,
-      category: '',
-      text: '',
-      type: 'select-one',
-      options: [],
-      other: false
-    };
-
-    setConfig(produce(config, draft => {
-      if (!draft[formType]) {
-        draft[formType] = { questions: [] };
-      }
-      draft[formType]!.questions.push(newQuestion);
-    }));
-  };
 
   const handleSave = async () => {
     setSaveStatus('loading');
@@ -119,30 +102,6 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   const handleClosePopup = () => {
     setSaveStatus(null);
     setSaveMessage('');
-  };
-
-  const updateQuestion = (
-    formType: 'preTestForm' | 'postTestForm',
-    index: number,
-    updatedQuestion: EditablePatchFormQuestion
-  ) => {
-    setConfig((currentConfig) =>
-      produce(currentConfig, (draft) => {
-        if (draft) {
-          draft[formType]!.questions[index] = updatedQuestion;
-        }
-      })
-    );
-  };
-
-  const removeQuestion = (formType: 'preTestForm' | 'postTestForm', index: number) => {
-    setConfig((currentConfig) => produce(
-      currentConfig, (draft) => {
-        if (draft) {
-          draft[formType]!.questions = draft[formType]!.questions.filter((_, i) => i !== index);
-        }
-      }
-    ));
   };
 
   const renderContent = () => {
@@ -305,70 +264,22 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
       case 'preTestForm':
         return (
           <div className={styles.tabContent}>
-            <div className={styles.sectionHeader}>
-              <h3>Formulario Pre-Test</h3>
-              <button
-                onClick={() => addQuestion('preTestForm')}
-                className={styles.addButton}
-              >
-                + Añadir Pregunta
-              </button>
-            </div>
-
-            {!config.preTestForm || config.preTestForm.questions?.length === 0 ? (
-              <div className={styles.emptyState}>
-                No hay preguntas. Haz clic en "Añadir Pregunta" para crear una.
-              </div>
-            ) : (
-              <div className={styles.questionsContainer}>
-                {config.preTestForm.questions.map((question, index) => (
-                  <FormQuestionEditor
-                    key={question.id ?? `question-${index}`}
-                    question={question}
-                    index={index}
-                    onChange={(updatedQuestion) =>
-                      updateQuestion('preTestForm', index, updatedQuestion as EditablePatchFormQuestion)
-                    }
-                    onRemove={() => removeQuestion('preTestForm', index)}
-                  />
-                ))}
-              </div>
-            )}
+            <FormQuestionsCoordinator
+              config={config}
+              setConfig={setConfig}
+              formType="preTestForm"
+            />
           </div>
         );
 
       case 'postTestForm':
         return (
           <div className={styles.tabContent}>
-            <div className={styles.sectionHeader}>
-              <h3>Formulario Post-Test</h3>
-              <button
-                onClick={() => addQuestion('postTestForm')}
-                className={styles.addButton}
-              >
-                + Añadir Pregunta
-              </button>
-            </div>
-
-            {!config.postTestForm || config.postTestForm.questions?.length === 0 ? (
-              <div className={styles.emptyState}>
-                No hay preguntas. Haz clic en "Añadir Pregunta" para crear una.
-              </div>
-            ) : (
-              <div className={styles.questionsContainer}>
-                {config.postTestForm.questions.map((question, index) => (
-                  <FormQuestionEditor
-                    key={question.id ?? `question-${index}`}
-                    question={question}
-                    index={index}
-                    onChange={(updatedQuestion) =>
-                      updateQuestion('postTestForm', index, updatedQuestion as  EditablePatchFormQuestion)
-                    }
-                    onRemove={() => removeQuestion('postTestForm', index)}
-                  />
-                ))}
-              </div>
-            )}
+            <FormQuestionsCoordinator
+              config={config}
+              setConfig={setConfig}
+              formType="postTestForm"
+            />
           </div>
         );
 
@@ -529,12 +440,8 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
 
                   <button
                     onClick={() => {
-                      if (confirm('¿Estás seguro de eliminar este grupo?')) {
-                        setConfig(produce(config, (draft) => {
-                          draft.groups = draft.groups.filter((_, i) => i !== selectedGroupIndex);
-                        }));
-                        setSelectedGroupIndex(null);
-                      }
+                      setDeleteGroupIndex(selectedGroupIndex);
+                      setShowDeleteGroupConfirm(true);
                     }}
                     className={styles.removeButton}
                   >
@@ -563,6 +470,26 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
                 />
               </div>
             )}
+
+            <ConfirmModal
+              isOpen={showDeleteGroupConfirm}
+              onClose={() => {
+                setShowDeleteGroupConfirm(false);
+                setDeleteGroupIndex(null);
+              }}
+              onConfirm={() => {
+                if (deleteGroupIndex !== null) {
+                  setConfig(produce(config, (draft) => {
+                    draft.groups = draft.groups.filter((_, i) => i !== deleteGroupIndex);
+                  }));
+                  setSelectedGroupIndex(null);
+                  setShowDeleteGroupConfirm(false);
+                  setDeleteGroupIndex(null);
+                }
+              }}
+              title="Confirmar Eliminación de Grupo"
+              message={`¿Estás seguro de eliminar el grupo "${config.groups[deleteGroupIndex ?? 0]?.label}"? Esta acción eliminará todas sus fases y preguntas y no se puede deshacer.`}
+            />
           </div>
         );
 

@@ -12,20 +12,48 @@ import type {
 } from "@/utils/imageCollector.ts";
 import styles from "@/styles/ModifyConfigPage/FormQuestionEditor.module.css";
 import { ImageEditor } from "@/components/ModifyConfigPage/ImageEditor.tsx";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faArrowDown, faCopy, faTrash, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 type FormQuestionEditorProps = {
   question: EditablePatchFormQuestion;
   index: number;
   onChange: (question: EditablePatchFormQuestion) => void;
   onRemove: () => void;
+  onDuplicate?: () => void;
+  onCopy?: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
-export function FormQuestionEditor({ question, index, onChange, onRemove }: FormQuestionEditorProps) {
+export function FormQuestionEditor({
+                                     question,
+                                     index,
+                                     onChange,
+                                     onRemove,
+                                     onDuplicate,
+                                     onCopy,
+                                     onMoveUp,
+                                     onMoveDown
+                                   }: FormQuestionEditorProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showLabels, setShowLabels] = useState(false);
 
   const hasOptions = question.type === 'select-one' || question.type === 'select-multiple';
   const hasLabels = question.type === 'slider';
+
+  const getQuestionSummary = () => {
+    const text = question.text || 'Sin texto';
+    const typeLabels = {
+      'select-one': 'Selección única',
+      'select-multiple': 'Selección múltiple',
+      'slider': 'Deslizador',
+      'text-short': 'Texto corto',
+      'text-long': 'Texto largo'
+    };
+    return `${text}${text.length > 50 ? '...' : ''} • ${typeLabels[question.type]}`;
+  };
 
   const handleAddOption = () => {
     if (!hasOptions) return;
@@ -232,187 +260,282 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
   };
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <h5>Pregunta {index + 1}</h5>
-        <button type="button" onClick={onRemove} className={styles.removeButton}>
-          ✕
-        </button>
-      </div>
-
-      <ImageEditor
-        image={question.image}
-        onChange={(imageState: ImageState) => {
-          onChange({ ...question, image: imageState } as EditablePatchFormQuestion);
-        }}
-        label="Imagen de la pregunta"
-        compact={true}
-      />
-
-      <div className={styles.inputGroup}>
-        <label className={styles.inputLabel}>Categoría</label>
-        <input
-          type="text"
-          placeholder="Ej: Información personal"
-          value={question.category || ''}
-          onChange={(e) => onChange({ ...question, category: e.target.value } as EditablePatchFormQuestion)}
-          className={styles.input}
-        />
-      </div>
-
-      <div className={styles.inputGroup}>
-        <label className={styles.inputLabel}>Texto de la pregunta</label>
-        <textarea
-          placeholder="Escribe tu pregunta aquí..."
-          value={question.text || ''}
-          onChange={(e) => onChange({ ...question, text: e.target.value } as EditablePatchFormQuestion)}
-          className={styles.textarea}
-          rows={2}
-        />
-      </div>
-
-      <div className={styles.inputGroup}>
-        <label className={styles.inputLabel}>Tipo de pregunta</label>
-        <select
-          value={question.type}
-          onChange={(e) => {
-            const baseQuestion = {
-              id: question.id,
-              category: question.category,
-              text: question.text,
-              image: question.image
-            };
-
-            let newQuestion: EditablePatchFormQuestion;
-            switch (e.target.value) {
-              case 'select-one':
-                newQuestion = { ...baseQuestion, type: 'select-one', options: [], other: false } as EditablePatchSelectOne;
-                break;
-              case 'select-multiple':
-                newQuestion = { ...baseQuestion, type: 'select-multiple', options: [], min: 0, max: 0, other: false } as EditablePatchSelectMultiple;
-                break;
-              case 'slider':
-                newQuestion = { ...baseQuestion, type: 'slider', placeholder: '', min: 0, max: 100, step: 1, labels: [] } as EditablePatchSlider;
-                break;
-              case 'text-short':
-                newQuestion = { ...baseQuestion, type: 'text-short', placeholder: '', minLength: 0, maxLength: 100 } as EditablePatchTextShort;
-                break;
-              case 'text-long':
-                newQuestion = { ...baseQuestion, type: 'text-long', placeholder: '', minLength: 0, maxLength: 1000 } as EditablePatchTextLong;
-                break;
-              default:
-                return;
-            }
-            onChange(newQuestion);
-          }}
-          className={styles.select}
-        >
-          <option value="select-one">Selección única</option>
-          <option value="select-multiple">Selección múltiple</option>
-          <option value="slider">Deslizador</option>
-          <option value="text-short">Texto corto</option>
-          <option value="text-long">Texto largo</option>
-        </select>
-      </div>
-
-      {renderTypeSpecificFields()}
-
-      {hasOptions && (
-        <div className={styles.optionsSection}>
-          <div className={styles.optionsHeader}>
-            <button
-              type="button"
-              className={styles.toggleButton}
-              onClick={() => setShowOptions(!showOptions)}
-            >
-              <span className={`${styles.arrow} ${showOptions ? styles.arrowExpanded : ''}`}>▼</span>
-              <span>Opciones ({(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.length || 0})</span>
-            </button>
-            <button type="button" onClick={handleAddOption} className={styles.addButton}>
-              + Agregar opción
-            </button>
+    <div className={`${styles.card} ${isExpanded ? styles.expanded : ''}`}>
+      <div
+        className={styles.cardHeader}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className={styles.headerLeft}>
+          <FontAwesomeIcon
+            icon={isExpanded ? faChevronUp : faChevronDown}
+            className={styles.chevronIcon}
+          />
+          <div className={styles.headerInfo}>
+            <h5>Pregunta {index + 1}</h5>
+            {!isExpanded && (
+              <p className={styles.summary}>{getQuestionSummary()}</p>
+            )}
+          </div>
+        </div>
+        <div className={styles.headerActions}>
+          <div className={styles.actionGroup}>
+            {onMoveUp && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveUp();
+                }}
+                className={styles.iconButton}
+                title="Mover arriba"
+              >
+                <FontAwesomeIcon icon={faArrowUp} />
+              </button>
+            )}
+            {onMoveDown && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveDown();
+                }}
+                className={styles.iconButton}
+                title="Mover abajo"
+              >
+                <FontAwesomeIcon icon={faArrowDown} />
+              </button>
+            )}
           </div>
 
-          {showOptions && (
-            <div className={styles.optionsList}>
-              {(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.map((option, optionIndex) => (
-                <div key={option.id ?? `new-option-${optionIndex}`} className={styles.optionCard}>
-                  <div className={styles.optionHeader}>
-                    <span className={styles.optionNumber}>Opción {optionIndex + 1}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveOption(optionIndex)}
-                      className={styles.removeOptionButton}
-                    >
-                      ✕
-                    </button>
-                  </div>
+          {(onMoveUp || onMoveDown) && (onCopy || onDuplicate) && (
+            <div className={styles.actionSeparator} />
+          )}
+          <div className={styles.actionGroup}>
+            {onCopy && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCopy();
+                }}
+                className={styles.iconButton}
+                title="Copiar pregunta"
+              >
+                <FontAwesomeIcon icon={faCopy} />
+              </button>
+            )}
+            {onDuplicate && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDuplicate();
+                }}
+                className={styles.iconButton}
+                title="Duplicar pregunta"
+              >
+                <FontAwesomeIcon icon={faCopy} />
+                <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon} />
+              </button>
+            )}
+          </div>
+          {(onCopy || onDuplicate) && (
+            <div className={styles.actionSeparator} />
+          )}
+          <div className={styles.actionGroup}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove();
+              }}
+              className={`${styles.iconButton} ${styles.removeButton}`}
+              title="Eliminar pregunta"
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </div>
+        </div>
+      </div>
 
-                  <ImageEditor
-                    onChange={(imageState: ImageState) => {
-                      handleOptionChange(optionIndex, 'image', imageState);
-                    }}
-                    label=""
-                    compact={true}
-                  />
+      {isExpanded && (
+        <div className={styles.cardBody}>
+          <ImageEditor
+            image={question.image}
+            onChange={(imageState: ImageState) => {
+              onChange({ ...question, image: imageState } as EditablePatchFormQuestion);
+            }}
+            label="Imagen de la pregunta"
+            compact={true}
+          />
 
-                  <input
-                    type="text"
-                    placeholder="Texto de la opción"
-                    value={option.text || ''}
-                    onChange={(e) => handleOptionChange(optionIndex, 'text', e.target.value)}
-                    className={styles.input}
-                  />
+          <div className={styles.inputGroup}>
+            <label className={styles.inputLabel}>Categoría</label>
+            <input
+              type="text"
+              placeholder="Ej: Información personal"
+              value={question.category || ''}
+              onChange={(e) => onChange({ ...question, category: e.target.value } as EditablePatchFormQuestion)}
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.inputLabel}>Texto de la pregunta</label>
+            <textarea
+              placeholder="Escribe tu pregunta aquí..."
+              value={question.text || ''}
+              onChange={(e) => onChange({ ...question, text: e.target.value } as EditablePatchFormQuestion)}
+              className={styles.textarea}
+              rows={2}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.inputLabel}>Tipo de pregunta</label>
+            <select
+              value={question.type}
+              onChange={(e) => {
+                const baseQuestion = {
+                  id: question.id,
+                  category: question.category,
+                  text: question.text,
+                  image: question.image
+                };
+
+                let newQuestion: EditablePatchFormQuestion;
+                switch (e.target.value) {
+                  case 'select-one':
+                    newQuestion = { ...baseQuestion, type: 'select-one', options: [], other: false } as EditablePatchSelectOne;
+                    break;
+                  case 'select-multiple':
+                    newQuestion = { ...baseQuestion, type: 'select-multiple', options: [], min: 0, max: 0, other: false } as EditablePatchSelectMultiple;
+                    break;
+                  case 'slider':
+                    newQuestion = { ...baseQuestion, type: 'slider', placeholder: '', min: 0, max: 100, step: 1, labels: [] } as EditablePatchSlider;
+                    break;
+                  case 'text-short':
+                    newQuestion = { ...baseQuestion, type: 'text-short', placeholder: '', minLength: 0, maxLength: 100 } as EditablePatchTextShort;
+                    break;
+                  case 'text-long':
+                    newQuestion = { ...baseQuestion, type: 'text-long', placeholder: '', minLength: 0, maxLength: 1000 } as EditablePatchTextLong;
+                    break;
+                  default:
+                    return;
+                }
+                onChange(newQuestion);
+              }}
+              className={styles.select}
+            >
+              <option value="select-one">Selección única</option>
+              <option value="select-multiple">Selección múltiple</option>
+              <option value="slider">Deslizador</option>
+              <option value="text-short">Texto corto</option>
+              <option value="text-long">Texto largo</option>
+            </select>
+          </div>
+
+          {renderTypeSpecificFields()}
+
+          {hasOptions && (
+            <div className={styles.optionsSection}>
+              <div className={styles.optionsHeader}>
+                <button
+                  type="button"
+                  className={styles.toggleButton}
+                  onClick={() => setShowOptions(!showOptions)}
+                >
+                  <span className={`${styles.arrow} ${showOptions ? styles.arrowExpanded : ''}`}>▼</span>
+                  <span>Opciones ({(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.length || 0})</span>
+                </button>
+                <button type="button" onClick={handleAddOption} className={styles.addButton}>
+                  + Agregar opción
+                </button>
+              </div>
+
+              {showOptions && (
+                <div className={styles.optionsList}>
+                  {(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.map((option, optionIndex) => (
+                    <div key={option.id ?? `new-option-${optionIndex}`} className={styles.optionCard}>
+                      <div className={styles.optionHeader}>
+                        <span className={styles.optionNumber}>Opción {optionIndex + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveOption(optionIndex)}
+                          className={styles.removeOptionButton}
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <ImageEditor
+                        image={option.image}
+                        onChange={(imageState: ImageState) => {
+                          handleOptionChange(optionIndex, 'image', imageState);
+                        }}
+                        label=""
+                        compact={true}
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Texto de la opción"
+                        value={option.text || ''}
+                        onChange={(e) => handleOptionChange(optionIndex, 'text', e.target.value)}
+                        className={styles.input}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           )}
-        </div>
-      )}
 
-      {hasLabels && (
-        <div className={styles.labelsSection}>
-          <div className={styles.labelsHeader}>
-            <button
-              type="button"
-              className={styles.toggleButton}
-              onClick={() => setShowLabels(!showLabels)}
-            >
-              <span className={`${styles.arrow} ${showLabels ? styles.arrowExpanded : ''}`}>▼</span>
-              <span>Etiquetas del slider ({(question as EditablePatchSlider).labels?.length || 0})</span>
-            </button>
-            <button type="button" onClick={handleAddLabel} className={styles.addButton}>
-              + Agregar etiqueta
-            </button>
-          </div>
+          {hasLabels && (
+            <div className={styles.labelsSection}>
+              <div className={styles.labelsHeader}>
+                <button
+                  type="button"
+                  className={styles.toggleButton}
+                  onClick={() => setShowLabels(!showLabels)}
+                >
+                  <span className={`${styles.arrow} ${showLabels ? styles.arrowExpanded : ''}`}>▼</span>
+                  <span>Etiquetas del slider ({(question as EditablePatchSlider).labels?.length || 0})</span>
+                </button>
+                <button type="button" onClick={handleAddLabel} className={styles.addButton}>
+                  + Agregar etiqueta
+                </button>
+              </div>
 
-          {showLabels && (
-            <div className={styles.labelsList}>
-              {(question as EditablePatchSlider).labels?.map((label, labelIndex) => (
-                <div key={labelIndex} className={styles.labelCard}>
-                  <input
-                    type="number"
-                    placeholder="Valor"
-                    value={label.number}
-                    onChange={(e) => handleLabelChange(labelIndex, 'number', parseInt(e.target.value) || 0)}
-                    className={styles.labelNumberInput}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Etiqueta"
-                    value={label.label}
-                    onChange={(e) => handleLabelChange(labelIndex, 'label', e.target.value)}
-                    className={styles.labelTextInput}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveLabel(labelIndex)}
-                    className={styles.removeLabelButton}
-                  >
-                    ✕
-                  </button>
+              {showLabels && (
+                <div className={styles.labelsList}>
+                  {(question as EditablePatchSlider).labels?.map((label, labelIndex) => (
+                    <div key={labelIndex} className={styles.labelCard}>
+                      <input
+                        type="number"
+                        placeholder="Valor"
+                        value={label.number}
+                        onChange={(e) => handleLabelChange(labelIndex, 'number', parseInt(e.target.value) || 0)}
+                        className={styles.labelNumberInput}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Etiqueta"
+                        value={label.label}
+                        onChange={(e) => handleLabelChange(labelIndex, 'label', e.target.value)}
+                        className={styles.labelTextInput}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveLabel(labelIndex)}
+                        className={styles.removeLabelButton}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>
@@ -420,3 +543,4 @@ export function FormQuestionEditor({ question, index, onChange, onRemove }: Form
     </div>
   );
 }
+

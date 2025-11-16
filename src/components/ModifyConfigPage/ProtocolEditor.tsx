@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import styles from '@/styles/ModifyConfigPage/ProtocolEditor.module.css';
 import { QuestionEditor } from '@/components/ModifyConfigPage/QuestionEditor.tsx';
 import { DestinationModal } from '@/components/ModifyConfigPage/DestinationModal.tsx';
+
 import { clonePhase, cloneQuestion } from '@/utils/CloneHelper.ts';
 import type { EditablePatchPhase, EditablePatchQuestion, EditablePatchGroup } from "@/utils/imageCollector.ts";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faArrowUp, faArrowDown, faPaste } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import {ConfirmModal} from "@/components/ConfirmModal.tsx";
 
 type ClipboardItem =
   | { type: 'phase'; data: EditablePatchPhase }
@@ -23,6 +25,8 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
   const [selectedPhaseIndex, setSelectedPhaseIndex] = useState<number | null>(null);
   const [clipboard, setClipboard] = useState<ClipboardItem>(null);
   const [showDestinationModal, setShowDestinationModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{ type: 'phase' | 'question', phaseIndex: number, questionIndex?: number } | null>(null);
 
   useEffect(() => {
     const phasesLength = phases?.length || 0;
@@ -63,18 +67,8 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
     const phaseToCopy = phases[phaseIndex];
     const clonedPhase = clonePhase(phaseToCopy);
     setClipboard({ type: 'phase', data: clonedPhase });
-  };
-
-
-  const pastePhase = () => {
-    if (!clipboard || clipboard.type !== 'phase') return;
-
     if (allGroups && onCrossGroupPaste) {
       setShowDestinationModal(true);
-    } else {
-      const newPhases = [...phases, clipboard.data];
-      onChange(newPhases);
-      setSelectedPhaseIndex(newPhases.length - 1);
     }
   };
 
@@ -89,14 +83,37 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
   };
 
   const removePhase = (phaseIndex: number) => {
-    const newPhases = phases.filter((_, i) => i !== phaseIndex);
-    onChange(newPhases);
+    setPendingDelete({ type: 'phase', phaseIndex });
+    setShowDeleteConfirm(true);
+  };
 
-    if (selectedPhaseIndex === phaseIndex) {
-      setSelectedPhaseIndex(newPhases.length > 0 ? Math.max(0, phaseIndex - 1) : null);
-    } else if (selectedPhaseIndex !== null && selectedPhaseIndex > phaseIndex) {
-      setSelectedPhaseIndex(selectedPhaseIndex - 1);
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+
+    if (pendingDelete.type === 'phase') {
+      const newPhases = phases.filter((_, i) => i !== pendingDelete.phaseIndex);
+      onChange(newPhases);
+
+      if (selectedPhaseIndex === pendingDelete.phaseIndex) {
+        setSelectedPhaseIndex(newPhases.length > 0 ? Math.max(0, pendingDelete.phaseIndex - 1) : null);
+      } else if (selectedPhaseIndex !== null && selectedPhaseIndex > pendingDelete.phaseIndex) {
+        setSelectedPhaseIndex(selectedPhaseIndex - 1);
+      }
+    } else if (pendingDelete.type === 'question' && pendingDelete.questionIndex !== undefined) {
+      const newPhases = phases.map((phase, idx) => {
+        if (idx === pendingDelete.phaseIndex) {
+          return {
+            ...phase,
+            questions: phase.questions.filter((_, i) => i !== pendingDelete.questionIndex)
+          };
+        }
+        return phase;
+      });
+      onChange(newPhases);
     }
+
+    setShowDeleteConfirm(false);
+    setPendingDelete(null);
   };
 
   const updatePhase = (phaseIndex: number, updates: Partial<EditablePatchPhase>) => {
@@ -154,24 +171,8 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
     const questionToCopy = phases[phaseIndex].questions[questionIndex];
     const clonedQuestion = cloneQuestion(questionToCopy);
     setClipboard({ type: 'question', data: clonedQuestion });
-  };
-
-  const pasteQuestion = (phaseIndex: number) => {
-    if (!clipboard || clipboard.type !== 'question') return;
-
     if (allGroups && onCrossGroupPaste) {
       setShowDestinationModal(true);
-    } else {
-      const newPhases = phases.map((phase, idx) => {
-        if (idx === phaseIndex) {
-          return {
-            ...phase,
-            questions: [...phase.questions, clipboard.data]
-          };
-        }
-        return phase;
-      });
-      onChange(newPhases);
     }
   };
 
@@ -211,23 +212,19 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
   };
 
   const removeQuestion = (phaseIndex: number, questionIndex: number) => {
-    const newPhases = phases.map((phase, idx) => {
-      if (idx === phaseIndex) {
-        return {
-          ...phase,
-          questions: phase.questions.filter((_, i) => i !== questionIndex)
-        };
-      }
-      return phase;
-    });
-
-    onChange(newPhases);
+    setPendingDelete({ type: 'question', phaseIndex, questionIndex });
+    setShowDeleteConfirm(true);
   };
 
   const handleDestinationConfirm = (groupIndex: number, phaseIndex?: number) => {
     if (!clipboard || !onCrossGroupPaste) return;
     onCrossGroupPaste(clipboard, groupIndex, phaseIndex);
     setClipboard(null);
+  };
+
+  const handleDestinationCancel = () => {
+    setClipboard(null);
+    setShowDestinationModal(false);
   };
 
   const selectedPhase = selectedPhaseIndex !== null && phases?.[selectedPhaseIndex]
@@ -241,16 +238,6 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
           <div className={styles.sidebarHeader}>
             <h5>Fases ({phases?.length || 0})</h5>
             <div className={styles.sidebarActions}>
-              {clipboard?.type === 'phase' && (
-                <button
-                  onClick={pastePhase}
-                  className={styles.pasteButton}
-                  type="button"
-                  title="Pegar fase"
-                >
-                  <FontAwesomeIcon icon={faPaste} />
-                </button>
-              )}
               <button onClick={addPhase} className={styles.addButton} type="button">
                 + Nueva Fase
               </button>
@@ -366,16 +353,6 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
                 <div className={styles.questionsSectionHeader}>
                   <h5>Preguntas</h5>
                   <div className={styles.questionsActions}>
-                    {clipboard?.type === 'question' && (
-                      <button
-                        type="button"
-                        onClick={() => pasteQuestion(selectedPhaseIndex!)}
-                        className={styles.pasteButton}
-                        title="Pegar pregunta"
-                      >
-                        <FontAwesomeIcon icon={faPaste} /> Pegar
-                      </button>
-                    )}
                     <button
                       type="button"
                       onClick={() => addQuestion(selectedPhaseIndex!)}
@@ -422,13 +399,28 @@ export function ProtocolEditor({ phases, onChange, allGroups, onCrossGroupPaste 
       {allGroups && (
         <DestinationModal
           isOpen={showDestinationModal}
-          onClose={() => setShowDestinationModal(false)}
+          onClose={handleDestinationCancel}
           onConfirm={handleDestinationConfirm}
           groups={allGroups}
           title={clipboard?.type === 'phase' ? 'Pegar Fase en...' : 'Pegar Pregunta en...'}
           needsPhaseSelection={clipboard?.type === 'question'}
         />
       )}
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setPendingDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Confirmar Eliminación"
+        message={
+          pendingDelete?.type === 'phase'
+            ? `¿Estás seguro de eliminar la Fase ${pendingDelete.phaseIndex + 1}? Esta acción no se puede deshacer.`
+            : `¿Estás seguro de eliminar esta pregunta? Esta acción no se puede deshacer.`
+        }
+      />
     </div>
   );
 }

@@ -58,7 +58,7 @@
 
 .modalBody {
     padding: 20px;
-    background: var(--card-dark, #2c3e50);
+    background: #2c3e50;
 }
 
 .formGroup {

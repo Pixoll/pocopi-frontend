@@ -70,26 +70,72 @@
     text-overflow: ellipsis;
 }
 
-.removeButton {
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+.headerActions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 0;
 }
 
-.removeButton:hover {
-    background: var(--danger-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+.actionGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.actionSeparator {
+    width: 1px;
+    height: 24px;
+    background-color: var(--border-color);
+    margin: 0 0.75rem;
+}
+
+.iconButton {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.iconButton:hover {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.iconButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.iconButton:disabled:hover {
+    background-color: transparent;
+    color: var(--text-secondary);
+}
+
+.iconButton.removeButton {
+    color: var(--danger);
+}
+
+.iconButton.removeButton:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-hover);
+}
+
+.duplicateIcon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -40%);
+    font-size: 0.7em;
+    opacity: 0.6;
 }
 
 .cardBody {
@@ -217,39 +263,6 @@
     flex-direction: column;
     gap: 0.75rem;
 }
-.headerActions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.iconButton {
-    background: none;
-    border: none;
-    padding: 6px 8px;
-    cursor: pointer;
-    color: var(--text-muted);
-    border-radius: 4px;
-    transition: all 0.2s;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.iconButton:hover {
-    background: var(--input-bg);
-    color: var(--accent-teal);
-}
-
-.duplicateIcon {
-    position: absolute;
-    font-size: 10px;
-    top: 2px;
-    right: 2px;
-    color: inherit;
-}
 
 .checkboxLabel {
     display: flex;
@@ -276,6 +289,7 @@
 .checkboxLabel span {
     color: var(--text-secondary);
 }
+
 @media (max-width: 768px) {
     .cardHeader {
         padding: 1rem;
@@ -293,11 +307,6 @@
         font-size: 0.8rem;
     }
 
-    .removeButton {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-    }
-
     .sectionHeader {
         flex-direction: column;
         align-items: stretch;
@@ -307,4 +316,22 @@
         width: 100%;
         justify-content: center;
     }
+
+    .headerActions {
+        flex-wrap: wrap;
+    }
+
+    .actionSeparator {
+        display: none;
+    }
+
+    .actionGroup {
+        gap: 0.125rem;
+    }
+}
+
+.iconButton:focus-visible,
+.addButton:focus-visible {
+    outline: 2px solid var(--accent-teal);
+    outline-offset: 2px;
 }

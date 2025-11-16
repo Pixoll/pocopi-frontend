@@ -78,70 +78,86 @@ export function QuestionEditor({
           </div>
         </div>
         <div className={styles.headerActions}>
-          {onMoveUp && (
+          <div className={styles.actionGroup}>
+            {onMoveUp && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveUp();
+                }}
+                className={styles.iconButton}
+                type="button"
+                title="Mover arriba"
+              >
+                <FontAwesomeIcon icon={faArrowUp} />
+              </button>
+            )}
+            {onMoveDown && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveDown();
+                }}
+                className={styles.iconButton}
+                type="button"
+                title="Mover abajo"
+              >
+                <FontAwesomeIcon icon={faArrowDown} />
+              </button>
+            )}
+          </div>
+
+          {(onMoveUp || onMoveDown) && (onCopy || onDuplicate) && (
+            <div className={styles.actionSeparator} />
+          )}
+
+          <div className={styles.actionGroup}>
+            {onCopy && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCopy();
+                }}
+                className={styles.iconButton}
+                type="button"
+                title="Copiar pregunta"
+              >
+                <FontAwesomeIcon icon={faCopy} />
+              </button>
+            )}
+            {onDuplicate && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDuplicate();
+                }}
+                className={styles.iconButton}
+                type="button"
+                title="Duplicar pregunta"
+              >
+                <FontAwesomeIcon icon={faCopy} />
+                <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon} />
+              </button>
+            )}
+          </div>
+
+          {(onCopy || onDuplicate) && (
+            <div className={styles.actionSeparator} />
+          )}
+
+          <div className={styles.actionGroup}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onMoveUp();
+                onRemove();
               }}
-              className={styles.iconButton}
+              className={`${styles.iconButton} ${styles.removeButton}`}
               type="button"
-              title="Mover arriba"
+              title="Eliminar pregunta"
             >
-              <FontAwesomeIcon icon={faArrowUp} />
+              <FontAwesomeIcon icon={faTrash} />
             </button>
-          )}
-          {onMoveDown && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onMoveDown();
-              }}
-              className={styles.iconButton}
-              type="button"
-              title="Mover abajo"
-            >
-              <FontAwesomeIcon icon={faArrowDown} />
-            </button>
-          )}
-          {onCopy && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onCopy();
-              }}
-              className={styles.iconButton}
-              type="button"
-              title="Copiar pregunta"
-            >
-              <FontAwesomeIcon icon={faCopy} />
-            </button>
-          )}
-          {onDuplicate && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDuplicate();
-              }}
-              className={styles.iconButton}
-              type="button"
-              title="Duplicar pregunta"
-            >
-              <FontAwesomeIcon icon={faCopy} />
-              <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon} />
-            </button>
-          )}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
-            className={styles.removeButton}
-            type="button"
-            title="Eliminar pregunta"
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
+          </div>
         </div>
       </div>
 
