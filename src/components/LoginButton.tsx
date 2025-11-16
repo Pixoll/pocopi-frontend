@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import type { TrimmedConfig, UserTestAttempt } from "@/api";
 import { LoginModal } from "@/components/HomePage/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
-import type { TrimmedConfig, AssignedTestGroup } from "@/api";
 import styles from "@/styles/LoginButton.module.css";
+import { faRightToBracket, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 
 type LoginButtonProps = {
   config: TrimmedConfig;
-  goToNextPage?: (group: AssignedTestGroup) => void;
+  goToNextPage?: (attempt: UserTestAttempt) => void;
   variant?: "icon" | "button";
   showAnonymousOption?: boolean;
   onAttemptInProgress?: () => void;
@@ -16,13 +16,13 @@ type LoginButtonProps = {
 };
 
 export function LoginButton({
-                              config,
-                              goToNextPage,
-                              variant = "icon",
-                              showAnonymousOption = false,
-                              onAttemptInProgress,
-                              className = "",
-                            }: LoginButtonProps) {
+  config,
+  goToNextPage,
+  variant = "icon",
+  showAnonymousOption = false,
+  onAttemptInProgress,
+  className = "",
+}: LoginButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const { isLoggedIn } = useAuth();
 
@@ -40,7 +40,7 @@ export function LoginButton({
           className={`${styles.iconButton} ${styles.iconButtonDark} ${className}`}
           title="Iniciar sesión"
         >
-          <FontAwesomeIcon icon={faUser} className={styles.icon} />
+          <FontAwesomeIcon icon={faUser} className={styles.icon}/>
         </button>
 
         <LoginModal
@@ -61,7 +61,7 @@ export function LoginButton({
         onClick={handleClick}
         className={`${styles.loginButton} ${className}`}
       >
-        <FontAwesomeIcon icon={faRightToBracket} /> Iniciar sesión
+        <FontAwesomeIcon icon={faRightToBracket}/> Iniciar sesión
       </button>
 
       <LoginModal

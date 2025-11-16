@@ -1,20 +1,20 @@
-import styles from "@/styles/HomePage/HomeHeader.module.css";
-import type { TrimmedConfig, AssignedTestGroup } from "@/api";
+import type { TrimmedConfig, UserTestAttempt } from "@/api";
 import { LoginButton } from "@/components/LoginButton";
+import styles from "@/styles/HomePage/HomeHeader.module.css";
 
 type HomeHeaderProps = {
   config: TrimmedConfig;
   isDarkMode: boolean;
-  goToNextPage?: (group: AssignedTestGroup) => void;
+  goToNextPage?: (attempt: UserTestAttempt) => void;
   onAttemptInProgress?: () => void;
 };
 
 export function HomeHeader({
-                             config,
-                             isDarkMode,
-                             goToNextPage,
-                             onAttemptInProgress
-                           }: HomeHeaderProps) {
+  config,
+  isDarkMode,
+  goToNextPage,
+  onAttemptInProgress
+}: HomeHeaderProps) {
   return (
     <div className={styles.header}>
       <div
@@ -24,7 +24,7 @@ export function HomeHeader({
         ].join(" ")}
       >
         {config.icon && (
-          <img className={styles.appIcon} src={config.icon.url} alt={config.icon.alt} />
+          <img className={styles.appIcon} src={config.icon.url} alt={config.icon.alt}/>
         )}
       </div>
 

@@ -1,32 +1,32 @@
-import React, { useState } from "react";
-import { Accordion, Button, Card, Col, Form, Row } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import Markdown from "react-markdown";
+import type { TrimmedConfig, UserTestAttempt } from "@/api";
+import api from "@/api";
 import { LoginModal } from "@/components/HomePage/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoginLogic } from "@/hooks/useLoginLogic";
 import { t } from "@/utils/translations";
-import api from "@/api";
-import type { TrimmedConfig, AssignedTestGroup } from "@/api";
+import { faArrowRight, faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { type ChangeEvent, useState } from "react";
+import { Accordion, Button, Card, Col, Form, Row } from "react-bootstrap";
+import Markdown from "react-markdown";
 
 type HomeInfoCardProps = {
   config: TrimmedConfig;
   isDarkMode: boolean;
   consentAccepted: boolean;
-  onConsentChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  goToNextPage: (group: AssignedTestGroup) => void;
+  onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  goToNextPage: (attempt: UserTestAttempt) => void;
   onAttemptInProgress: () => void;
 };
 
 export function HomeInfoCard({
-                               config,
-                               isDarkMode,
-                               consentAccepted,
-                               onConsentChange,
-                               goToNextPage,
-                               onAttemptInProgress,
-                             }: HomeInfoCardProps) {
+  config,
+  isDarkMode,
+  consentAccepted,
+  onConsentChange,
+  goToNextPage,
+  onAttemptInProgress,
+}: HomeInfoCardProps) {
   const { isLoggedIn, token } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [checkingExistingAttempt, setCheckingExistingAttempt] = useState(false);
@@ -60,7 +60,7 @@ export function HomeInfoCard({
       const response = await api.beginTest({ auth: token });
 
       if (response.data) {
-        goToNextPage(response.data.assignedGroup);
+        goToNextPage(response.data);
       } else if (response.error && response.error.code === 409) {
         onAttemptInProgress();
       } else if (response.error) {
@@ -129,10 +129,10 @@ export function HomeInfoCard({
                       style={{
                         height: "40px",
                         width: "40px",
-                        backgroundColor: `#${color ?? 'ffffff'}${Math.round(iconOpacity * 255).toString(16).padStart(2, '0')}`
+                        backgroundColor: `#${color ?? "ffffff"}${Math.round(iconOpacity * 255).toString(16).padStart(2, "0")}`
                       }}
                     >
-                      {icon && <img src={icon.url} alt={icon.alt} style={{ height: "1em" }} />}
+                      {icon && <img src={icon.url} alt={icon.alt} style={{ height: "1em" }}/>}
                     </div>
                     <div>
                       <h5 className="h6 mb-2">{title}</h5>
@@ -165,7 +165,7 @@ export function HomeInfoCard({
               disabled={buttonProps.disabled}
             >
               <span className="me-2">{buttonProps.text}</span>
-              <FontAwesomeIcon icon={buttonProps.icon} />
+              <FontAwesomeIcon icon={buttonProps.icon}/>
             </Button>
           </div>
         </Card.Body>

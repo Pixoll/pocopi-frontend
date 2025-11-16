@@ -1,39 +1,39 @@
-import { useState } from "react";
-import type { AssignedTestGroup, TrimmedConfig } from "@/api";
+import type { TrimmedConfig, UserTestAttempt } from "@/api";
+import { ContinueAttemptModal } from "@/components/ContinueAttemptModal";
+import { AdminButton } from "@/components/HomePage/AdminButton";
 import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
 import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
-import { ContinueAttemptModal } from "@/components/ContinueAttemptModal";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import { AdminButton } from "@/components/HomePage/AdminButton";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/HomePage.module.css";
+import { type ChangeEvent, useState } from "react";
 
 type HomePageProps = {
   config: TrimmedConfig;
-  goToNextPage: (group: AssignedTestGroup) => void;
+  goToNextPage: (attempt: UserTestAttempt) => void;
   onDashboard: () => void;
   onAdmin: () => void;
 };
 
 export function HomePage({
-                           config,
-                           goToNextPage,
-                           onDashboard,
-                           onAdmin,
-                         }: HomePageProps) {
+  config,
+  goToNextPage,
+  onDashboard,
+  onAdmin,
+}: HomePageProps) {
   const { isDarkMode } = useTheme();
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
 
-  const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConsentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setConsentAccepted(e.target.checked);
   };
 
-  const handleContinueAttempt = (group: AssignedTestGroup) => {
+  const handleContinueAttempt = (attempt: UserTestAttempt) => {
     setShowContinueModal(false);
-    goToNextPage(group);
+    goToNextPage(attempt);
   };
 
   const handleDiscardAttempt = () => {
@@ -87,10 +87,10 @@ export function HomePage({
         onError={handleModalError}
       />
 
-      <AdminButton isDarkMode={isDarkMode} onAdmin={onAdmin} />
-      <DashboardButton config={config} isDarkMode={isDarkMode} onDashboard={onDashboard} />
+      <AdminButton isDarkMode={isDarkMode} onAdmin={onAdmin}/>
+      <DashboardButton config={config} isDarkMode={isDarkMode} onDashboard={onDashboard}/>
 
-      <ThemeSwitcher config={config} />
+      <ThemeSwitcher config={config}/>
     </div>
   );
 }

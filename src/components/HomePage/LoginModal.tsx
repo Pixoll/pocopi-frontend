@@ -1,40 +1,40 @@
-import { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
-import { useTheme } from "@/hooks/useTheme";
+import type { Credentials, TrimmedConfig, UserTestAttempt } from "@/api";
 import { useLoginLogic } from "@/hooks/useLoginLogic";
-import LoginSection from "./LoginSection";
+import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
+import { faUser, faUserSecret, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faWarning, faUserSecret } from "@fortawesome/free-solid-svg-icons";
-import type {AssignedTestGroup, TrimmedConfig, Credentials} from "@/api";
+import { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
+import LoginSection from "./LoginSection";
 
 type LoginModalProps = {
-  config: TrimmedConfig ;
+  config: TrimmedConfig;
   show: boolean;
   onHide: () => void;
   onCancel?: () => void;
-  goToNextPage?: (group: AssignedTestGroup) => void;
+  goToNextPage?: (attempt: UserTestAttempt) => void;
   showAnonymousOption?: boolean;
   onAttemptInProgress?: () => void;
   showCancelButton?: boolean;
 };
 
 export function LoginModal({
-                             config,
-                             show,
-                             onHide,
-                             onCancel,
-                             goToNextPage,
-                             showAnonymousOption = false,
-                             onAttemptInProgress,
-                             showCancelButton = true
-                           }: LoginModalProps) {
+  config,
+  show,
+  onHide,
+  onCancel,
+  goToNextPage,
+  showAnonymousOption = false,
+  onAttemptInProgress,
+  showCancelButton = true
+}: LoginModalProps) {
   const { isDarkMode } = useTheme();
   const { saving, error, login, createAnonymousUser } = useLoginLogic({
     config,
-    onSuccess: (group) => {
+    onSuccess: (attempt) => {
       onHide();
-      goToNextPage?.(group);
+      goToNextPage?.(attempt);
     },
     onAttemptInProgress: () => {
       onHide();
@@ -68,7 +68,7 @@ export function LoginModal({
     return (
       <Modal show={show} centered backdrop="static">
         <div className={styles.header}>
-          <h5><FontAwesomeIcon icon={faUserSecret} /> Creando usuario anónimo...</h5>
+          <h5><FontAwesomeIcon icon={faUserSecret}/> Creando usuario anónimo...</h5>
         </div>
       </Modal>
     );
@@ -77,13 +77,13 @@ export function LoginModal({
   return (
     <Modal show={show} onHide={handleCancelClick} centered backdrop="static">
       <div className={styles.header}>
-        <h5><FontAwesomeIcon icon={faUser} /> Iniciar sesión</h5>
+        <h5><FontAwesomeIcon icon={faUser}/> Iniciar sesión</h5>
       </div>
 
       <div className={styles.modalBody}>
         {error && (
           <div className={styles.alertError}>
-            <FontAwesomeIcon icon={faWarning} /> {error}
+            <FontAwesomeIcon icon={faWarning}/> {error}
           </div>
         )}
 
@@ -112,7 +112,7 @@ export function LoginModal({
               onClick={handleAnonymousLogin}
               disabled={saving}
             >
-              <FontAwesomeIcon icon={faUserSecret} /> Continuar como usuario anónimo
+              <FontAwesomeIcon icon={faUserSecret}/> Continuar como usuario anónimo
             </Button>
           </>
         )}

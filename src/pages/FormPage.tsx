@@ -1,37 +1,39 @@
 import api, {
-  type User,
-  type TrimmedConfig,
+  type ApiHttpError,
   type NewFormAnswer,
   type SelectOne,
   type Slider,
-  type ApiHttpError
+  type TrimmedConfig,
+  type User, type UserTestAttempt
 } from "@/api";
+import { ErrorDisplay } from "@/components/ErrorDisplay";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
 import { Spinner } from "@/components/Spinner";
-import { ErrorDisplay } from "@/components/ErrorDisplay";
 import { useAuth } from "@/contexts/AuthContext";
-import { t } from "@/utils/translations";
 import styles from "@/styles/FormPage/FormPage.module.css";
+import { t } from "@/utils/translations";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type FormEvent, useEffect, useState } from "react";
 
 type FormPageProps = {
   config: TrimmedConfig;
-  type: "pre-test" | "post-test";
+  type: "pre" | "post";
+  attempt: UserTestAttempt | null;
   goToNextPage: () => void;
 };
 
 export function FormPage({
-                           config,
-                           type,
-                           goToNextPage,
-                         }: FormPageProps) {
+  config,
+  type,
+  attempt,
+  goToNextPage,
+}: FormPageProps) {
   const { token, isLoggedIn } = useAuth();
   const [user, setUser] = useState<User | null>(null);
 
-  const form = type === "pre-test" ? config.preTestForm : config.postTestForm;
+  const form = type === "pre" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
 
   const [answers, setAnswers] = useState<NewFormAnswer[]>(
@@ -64,6 +66,14 @@ export function FormPage({
     fetchUser();
   }, [token, isLoggedIn]);
 
+  if (!attempt) {
+    return (
+      <div>
+        <p>Cargando formulario...</p>
+      </div>
+    );
+  }
+
   if (!form) {
     goToNextPage();
     return (
@@ -73,7 +83,16 @@ export function FormPage({
     );
   }
 
-  const title = type === "pre-test"
+  if ((type === "pre" && attempt.completedPreTestForm) || (type === "post" && attempt.completedPostTestForm)) {
+    goToNextPage();
+    return (
+      <div>
+        <p>Formulario ya fue respondido</p>
+      </div>
+    );
+  }
+
+  const title = type === "pre"
     ? t(config, "preTest.title")
     : t(config, "postTest.title");
 
@@ -112,7 +131,7 @@ export function FormPage({
   };
 
   const submitEndPostForm = async () => {
-    if (token && form && type === "post-test") {
+    if (token && form && type === "post") {
       try {
         const response = await api.endTest({ auth: token });
         if (response.error) {
@@ -139,7 +158,7 @@ export function FormPage({
 
     const allAnswered = answers.every((answer, idx) => {
       const question = questions[idx];
-      if (question.type === 'slider') {
+      if (question.type === "slider") {
         return answer.value !== undefined;
       }
       return answer.answer !== undefined && answer.answer.length > 0;
@@ -167,14 +186,13 @@ export function FormPage({
         questionId: answer.questionId,
       };
 
-      if (question.type === 'select-one' || question.type === 'select-multiple') {
+      if (question.type === "select-one" || question.type === "select-multiple") {
         if (answer.optionId !== undefined) {
           cleaned.optionId = answer.optionId;
-        }
-        if (answer.answer !== undefined) {
+        } else if (answer.answer !== undefined) {
           cleaned.answer = answer.answer;
         }
-      } else if (question.type === 'slider') {
+      } else if (question.type === "slider") {
         cleaned.value = answer.value;
       } else {
         cleaned.answer = answer.answer;
@@ -185,7 +203,7 @@ export function FormPage({
 
     try {
       const result = await api.submitFormAnswers({
-        path: { formType: type === "pre-test" ? "pre" : "post"},
+        path: { formType: type },
         auth: token,
         body: {
           answers: cleanedAnswers,
@@ -198,7 +216,7 @@ export function FormPage({
         return;
       }
 
-      if (type === "post-test") {
+      if (type === "post") {
         const endTestSuccess = await submitEndPostForm();
         if (!endTestSuccess) {
           setSending(false);
@@ -216,7 +234,6 @@ export function FormPage({
       setSending(false);
     }
   };
-
 
   return (
     <div className={styles.page}>
@@ -269,11 +286,11 @@ export function FormPage({
               {sending
                 ? <>
                   {t(config, "form.sendingAnswers")}
-                  <Spinner />
+                  <Spinner/>
                 </>
                 : <>
                   {t(config, "form.sendAnswers")}
-                  <FontAwesomeIcon icon={faArrowRight} />
+                  <FontAwesomeIcon icon={faArrowRight}/>
                 </>}
             </button>
           </div>

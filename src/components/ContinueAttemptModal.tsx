@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlayCircle, faTrash, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import api, { type UserTestAttempt } from "@/api";
 import { Spinner } from "@/components/Spinner";
-import api, { type AssignedTestGroup } from "@/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { faExclamationTriangle, faPlayCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
 
 type ContinueAttemptModalProps = {
   show: boolean;
-  onContinue: (group: AssignedTestGroup) => void;
+  onContinue: (attempt: UserTestAttempt) => void;
   onDiscard: () => void;
   onError?: (error: string) => void;
 };
 
 export function ContinueAttemptModal({
-                                       show,
-                                       onContinue,
-                                       onDiscard,
-                                       onError,
-                                     }: ContinueAttemptModalProps) {
+  show,
+  onContinue,
+  onDiscard,
+  onError,
+}: ContinueAttemptModalProps) {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<"continue" | "discard" | null>(null);
@@ -36,7 +36,7 @@ export function ContinueAttemptModal({
       const response = await api.continueTest({ auth: token });
 
       if (response.data) {
-        onContinue(response.data.assignedGroup);
+        onContinue(response.data);
       } else if (response.error) {
         onError?.(response.error.message || "Error al continuar el intento");
       }
@@ -79,18 +79,19 @@ export function ContinueAttemptModal({
     <Modal show={show} centered backdrop="static" keyboard={false}>
       <Modal.Header>
         <Modal.Title>
-          <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning me-2" />
+          <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning me-2"/>
           Intento en progreso
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <p className="mb-3">
-            Tienes un intento de test en progreso. ¿Deseas continuar donde lo dejaste o comenzar un nuevo intento?
+          Tienes un intento de test en progreso. ¿Deseas continuar donde lo dejaste o comenzar un nuevo intento?
         </p>
 
         <div className="alert alert-info small mb-0">
-          <strong>Nota:</strong> Si descartás el intento anterior, perderás todo tu progreso y comenzarás desde cero.
+          <strong>Nota:</strong>
+          Si descartás el intento anterior, perderás todo tu progreso y comenzarás desde cero.
         </div>
       </Modal.Body>
 
@@ -102,11 +103,13 @@ export function ContinueAttemptModal({
         >
           {loading && action === "discard" ? (
             <>
-              <Spinner /> Descartando...
+              <Spinner/>
+              Descartando...
             </>
           ) : (
             <>
-              <FontAwesomeIcon icon={faTrash} /> Descartar y empezar de nuevo
+              <FontAwesomeIcon icon={faTrash}/>
+              Descartar y empezar de nuevo
             </>
           )}
         </Button>
@@ -118,11 +121,13 @@ export function ContinueAttemptModal({
         >
           {loading && action === "continue" ? (
             <>
-              <Spinner /> Continuando...
+              <Spinner/>
+              Continuando...
             </>
           ) : (
             <>
-              <FontAwesomeIcon icon={faPlayCircle} /> Continuar donde lo dejé
+              <FontAwesomeIcon icon={faPlayCircle}/>
+              Continuar donde lo dejé
             </>
           )}
         </Button>

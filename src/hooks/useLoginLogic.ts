@@ -1,10 +1,10 @@
-import { useState } from "react";
-import api, {type AssignedTestGroup, type Credentials, type FullConfig, type TrimmedConfig} from "@/api";
+import api, { type Credentials, type FullConfig, type TrimmedConfig, type UserTestAttempt } from "@/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 type LoginLogicOptions = {
   config: TrimmedConfig | FullConfig;
-  onSuccess?: (group: AssignedTestGroup) => void;
+  onSuccess?: (attempt: UserTestAttempt) => void;
   onAttemptInProgress: () => void;
 };
 
@@ -27,7 +27,7 @@ export function useLoginLogic({ config, onSuccess, onAttemptInProgress }: LoginL
         const groupResponse = await api.beginTest({ auth: token });
 
         if (groupResponse.data) {
-          onSuccess?.(groupResponse.data.assignedGroup);
+          onSuccess?.(groupResponse.data);
           return true;
         } else if (groupResponse.error) {
           if (groupResponse.error.code === 409) {

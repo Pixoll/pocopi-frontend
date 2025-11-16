@@ -1,55 +1,68 @@
-import type { TrimmedConfig, AssignedTestGroup } from "@/api";
+import type { TrimmedConfig, UserTestAttempt } from "@/api";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
-import { useAuth } from "@/contexts/AuthContext";
 import styles from "@/styles/TestPage/TestPage.module.css";
 
 type TestPageProps = {
   config: TrimmedConfig;
-  protocol: AssignedTestGroup | null;
+  attempt: UserTestAttempt | null;
   goToNextPage: () => void;
 };
 
-export function TestPage({ config, protocol, goToNextPage }: TestPageProps) {
+export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
   const { isDarkMode } = useTheme();
   const { token } = useAuth();
 
+  if (!attempt) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <p>Cargando preguntas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (attempt.completedTest) {
+    goToNextPage();
+    return (
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <p>Test ya fue completado</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ProtectedRoute config={config}>
-      {!protocol ? (
-        <div className={styles.page}>
-          <div className={styles.content}>
-            <p>Cargando preguntas...</p>
-          </div>
-        </div>
-      ) : (
-        <TestPageContent
-          token={token!}
-          config={config}
-          protocol={protocol}
-          goToNextPage={goToNextPage}
-          isDarkMode={isDarkMode}
-        />
-      )}
+      <TestPageContent
+        token={token!}
+        config={config}
+        attempt={attempt}
+        goToNextPage={goToNextPage}
+        isDarkMode={isDarkMode}
+      />
     </ProtectedRoute>
   );
 }
 
 function TestPageContent({
-                           token,
-                           config,
-                           protocol,
-                           goToNextPage,
-                           isDarkMode,
-                         }: {
+  token,
+  config,
+  attempt,
+  goToNextPage,
+  isDarkMode,
+}: {
   token: string;
   config: TrimmedConfig;
-  protocol: AssignedTestGroup;
+  attempt: UserTestAttempt;
   goToNextPage: () => void;
   isDarkMode: boolean;
 }) {
@@ -67,9 +80,10 @@ function TestPageContent({
     onOptionClick,
     onOptionHover,
     jumpToQuestion,
-  } = useTest(protocol, token);
+  } = useTest(attempt, token);
 
-  const { phases } = protocol;
+  const group = attempt.assignedGroup;
+  const { phases } = group;
   const phase = phases[phaseIndex];
   const question = phase.questions[questionIndex];
 
@@ -87,7 +101,7 @@ function TestPageContent({
         <div className={styles.content}>
           <PhaseSummaryModal
             config={config}
-            protocol={protocol}
+            protocol={group}
             answers={answers}
             phaseIndex={phaseIndex}
             jumpToQuestion={jumpToQuestion}
@@ -129,7 +143,7 @@ function TestPageContent({
 
           <TestPageNavigation
             config={config}
-            protocol={protocol}
+            protocol={group}
             phaseIndex={phaseIndex}
             questionIndex={questionIndex}
             isOptionSelected={selectedOptionId !== null}

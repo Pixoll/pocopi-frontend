@@ -1,5 +1,5 @@
-import api, { type AssignedTestGroup, type NewOptionEventLog } from "@/api";
-import { useState } from "react";
+import api, { type NewOptionEventLog, type UserTestAttempt } from "@/api";
+import { useMemo, useState } from "react";
 
 export type Answers = Record<number, Record<number, number | null>>;
 
@@ -19,7 +19,11 @@ type Test = {
   jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
 
-export function useTest(protocol: AssignedTestGroup, token: string): Test {
+export function useTest(attempt: UserTestAttempt, token: string): Test {
+  const answersFromAttempt = useMemo(() => Object.fromEntries(attempt.testAnswers.map(answer =>
+    [answer.questionId, answer.optionId]
+  )) as Record<number, number>, [attempt]);
+
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
@@ -27,14 +31,16 @@ export function useTest(protocol: AssignedTestGroup, token: string): Test {
   const [showedSummary, setShowedSummary] = useState(false);
   const [questionTimestamp, setQuestionTimestamp] = useState(() => Date.now());
 
-  const [answers, setAnswers] = useState<Answers>(Object.fromEntries(
-    protocol.phases.map((phase, index) => [
+  const [answers, setAnswers] = useState<Answers>(() => Object.fromEntries(
+    attempt.assignedGroup.phases.map((phase, index) => [
       index,
-      Object.fromEntries(phase.questions.map((q) => [q.id, null])),
+      Object.fromEntries(phase.questions.map((q) =>
+        [q.id, answersFromAttempt[q.id] ?? null]
+      )),
     ])
   ));
 
-  const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = protocol;
+  const { phases, allowPreviousPhase, allowPreviousQuestion, allowSkipQuestion } = attempt.assignedGroup;
   const phase = phases[phaseIndex];
   const { questions } = phase;
   const { id: questionId } = questions[questionIndex];

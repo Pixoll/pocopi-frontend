@@ -1,11 +1,11 @@
-import api, {type AssignedTestGroup, type TrimmedConfig, type User, type UserSummary} from "@/api";
+import api, { type AssignedTestGroup, type TrimmedConfig, type User, type UserSummary } from "@/api";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
+import { t } from "@/utils/translations.ts";
 import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import {t} from "@/utils/translations.ts";
-import {useAuth} from "@/contexts/AuthContext.tsx";
 
 type UserResult = UserSummary & {
   totalQuestions: number;
@@ -14,7 +14,7 @@ type UserResult = UserSummary & {
 type CompletionResultsProps = {
   config: TrimmedConfig;
   userData: User | null;
-  group: AssignedTestGroup | null;
+  group?: AssignedTestGroup | null;
 };
 
 export function CompletionResults({ config, userData, group }: CompletionResultsProps) {
@@ -23,14 +23,14 @@ export function CompletionResults({ config, userData, group }: CompletionResults
   const [loading, setLoading] = useState(false);
   const [userResult, setUserResult] = useState<UserResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const {token} = useAuth();
+  const { token } = useAuth();
 
   if (!userData) {
-    return(
+    return (
       <div>
         <p>Cargando usuario...</p>
       </div>
-    )
+    );
   }
   const fetchUserResult = async () => {
     if (userResult) {
@@ -41,7 +41,7 @@ export function CompletionResults({ config, userData, group }: CompletionResults
 
     try {
       const result = await api.getCurrentUserSummary({
-        auth:token
+        auth: token
       });
 
       if (!result.data) {
@@ -49,7 +49,7 @@ export function CompletionResults({ config, userData, group }: CompletionResults
       } else {
         setUserResult({
           ...result.data,
-          totalQuestions: group?.phases.reduce((acc, phase )=>acc+(phase.questions.length), 0) ?? result.data.questionsAnswered,
+          totalQuestions: group?.phases.reduce((acc, phase) => acc + (phase.questions.length), 0) ?? result.data.questionsAnswered,
         });
       }
     } catch {
@@ -106,25 +106,29 @@ export function CompletionResults({ config, userData, group }: CompletionResults
         {!loading && !error && userResult && <>
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faCheck} className={[styles.resultIcon, styles.correctIcon].join(" ")}/>
-            <strong>{t(config, "completion.correctAnswers")}</strong>{" "}
+            <strong>{t(config, "completion.correctAnswers")}</strong>
+            {" "}
             {t(config, "completion.correctOfTotal", `${userResult.correctQuestions}`, `${userResult.totalQuestions}`)}
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faForward} className={[styles.resultIcon, styles.skippedIcon].join(" ")}/>
-            <strong>{t(config, "completion.skippedQuestions")}</strong>{" "}
+            <strong>{t(config, "completion.skippedQuestions")}</strong>
+            {" "}
             {userResult.totalQuestions - userResult.questionsAnswered}
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faPercent} className={[styles.resultIcon, styles.accuracyIcon].join(" ")}/>
-            <strong>{t(config, "completion.accuracyPercent")}</strong>{" "}
+            <strong>{t(config, "completion.accuracyPercent")}</strong>
+            {" "}
             {userResult.accuracy.toFixed(1)}%
           </div>
 
           <div className={styles.resultContainer}>
             <FontAwesomeIcon icon={faClock} className={[styles.resultIcon, styles.timeIcon].join(" ")}/>
-            <strong>{t(config, "completion.timeTaken")}</strong>{" "}
+            <strong>{t(config, "completion.timeTaken")}</strong>
+            {" "}
             {t(config, "completion.timeSeconds", (userResult.timeTaken / 1000).toFixed(1))}
           </div>
         </>}
