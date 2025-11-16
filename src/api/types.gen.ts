@@ -43,9 +43,9 @@ export type UserTestAttempt = {
 
 export type NewFormAnswer = {
     questionId: number;
-    optionId: number;
-    value: number;
-    answer: string;
+    optionId?: number;
+    value?: number;
+    answer?: string;
 };
 
 export type NewFormAnswers = {
@@ -118,9 +118,6 @@ export type FormQuestionUpdate = {
 export type FormUpdate = {
     id?: number;
     title?: string;
-    /**
-     * Form questions
-     */
     questions: Array<SelectMultipleUpdate | SelectOneUpdate | SliderUpdate | TextLongUpdate | TextShortUpdate>;
 };
 
@@ -403,6 +400,11 @@ export type OptionEventLog = {
     timestamp: number;
 };
 
+export type OptionSelectionEvent = {
+    optionId: number;
+    timestamp: number;
+};
+
 export type QuestionEventLogWithUserId = {
     userId: number;
     questionId: number;
@@ -411,6 +413,7 @@ export type QuestionEventLogWithUserId = {
     skipped: boolean;
     totalOptionChanges: number;
     totalOptionHovers: number;
+    optionSelections: Array<OptionSelectionEvent>;
     events: Array<OptionEventLog>;
 };
 
@@ -421,6 +424,7 @@ export type QuestionEventLog = {
     skipped: boolean;
     totalOptionChanges: number;
     totalOptionHovers: number;
+    optionSelections: Array<OptionSelectionEvent>;
     events: Array<OptionEventLog>;
 };
 
@@ -711,10 +715,10 @@ export type BeginTestResponse = BeginTestResponses[keyof BeginTestResponses];
 export type SubmitFormAnswersData = {
     body: NewFormAnswers;
     path: {
-        formId: number;
+        formType: 'pre' | 'post';
     };
     query?: never;
-    url: '/api/forms/{formId}/answers';
+    url: '/api/forms/{formType}/answers';
 };
 
 export type SubmitFormAnswersErrors = {
@@ -899,7 +903,7 @@ export type GetLastestConfigAsUserResponses = {
 export type GetLastestConfigAsUserResponse = GetLastestConfigAsUserResponses[keyof GetLastestConfigAsUserResponses];
 
 export type UpdateLatestConfigData = {
-    body?: {
+    body: {
         /**
          * New application icon
          */

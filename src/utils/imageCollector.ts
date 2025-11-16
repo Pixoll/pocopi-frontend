@@ -35,25 +35,30 @@ export type EditablePatchOption = TestOptionUpdate & {
   image?: ImageState;
 };
 
-export type EditablePatchSelectOne = SelectOneUpdate & {
+export type EditablePatchSelectOne = Omit<SelectOneUpdate, 'type'> & {
+  type: 'select-one';
   image?: ImageState;
   options: EditablePatchFormOption[];
 };
 
-export type EditablePatchSelectMultiple = SelectMultipleUpdate & {
+export type EditablePatchSelectMultiple = Omit<SelectMultipleUpdate, 'type'> & {
+  type: 'select-multiple';
   image?: ImageState;
   options: EditablePatchFormOption[];
 };
 
-export type EditablePatchSlider = SliderUpdate & {
+export type EditablePatchSlider = Omit<SliderUpdate, 'type'> & {
+  type: 'slider';
   image?: ImageState;
 };
 
-export type EditablePatchTextShort = TextShortUpdate & {
+export type EditablePatchTextShort = Omit<TextShortUpdate, 'type'> & {
+  type: 'text-short';
   image?: ImageState;
 };
 
-export type EditablePatchTextLong = TextLongUpdate & {
+export type EditablePatchTextLong = Omit<TextLongUpdate, 'type'> & {
+  type: 'text-long';
   image?: ImageState;
 };
 

@@ -78,7 +78,7 @@ export const submitFormAnswers = <ThrowOnError extends boolean = false>(options:
                 type: 'http'
             }
         ],
-        url: '/api/forms/{formId}/answers',
+        url: '/api/forms/{formType}/answers',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -163,8 +163,8 @@ export const getLastestConfigAsUser = <ThrowOnError extends boolean = false>(opt
     });
 };
 
-export const updateLatestConfig = <ThrowOnError extends boolean = false>(options?: Options<UpdateLatestConfigData, ThrowOnError>) => {
-    return (options?.client ?? client).patch<UpdateLatestConfigResponses, UpdateLatestConfigErrors, ThrowOnError>({
+export const updateLatestConfig = <ThrowOnError extends boolean = false>(options: Options<UpdateLatestConfigData, ThrowOnError>) => {
+    return (options.client ?? client).patch<UpdateLatestConfigResponses, UpdateLatestConfigErrors, ThrowOnError>({
         ...formDataBodySerializer,
         security: [
             {
@@ -176,7 +176,7 @@ export const updateLatestConfig = <ThrowOnError extends boolean = false>(options
         ...options,
         headers: {
             'Content-Type': null,
-            ...options?.headers
+            ...options.headers
         }
     });
 };
