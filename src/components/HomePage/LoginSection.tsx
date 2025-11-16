@@ -17,6 +17,7 @@ type LoginSectionProps = {
   isDarkMode: boolean;
   saving: boolean;
   validated: boolean;
+  showCancelButton?: boolean;
 }
 
 export default function LoginSection({
@@ -28,7 +29,8 @@ export default function LoginSection({
                                        onHide,
                                        isDarkMode,
                                        saving,
-                                       validated
+                                       validated,
+                                       showCancelButton = true
                                      }: LoginSectionProps) {
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -56,17 +58,19 @@ export default function LoginSection({
       />
 
       <div className={styles.buttonsContainer}>
-        <button
-          className={[
-            styles.button,
-            styles.cancelButton,
-            isDarkMode ? styles.cancelButtonDark : styles.cancelButtonLight,
-          ].join(" ")}
-          onClick={onHide}
-          type="button"
-        >
-          {t(config, "home.cancel")}
-        </button>
+        {showCancelButton && (
+          <button
+            className={[
+              styles.button,
+              styles.cancelButton,
+              isDarkMode ? styles.cancelButtonDark : styles.cancelButtonLight,
+            ].join(" ")}
+            onClick={onHide}
+            type="button"
+          >
+            {t(config, "home.cancel")}
+          </button>
+        )}
 
         <button type="submit" className={[styles.button, styles.saveButton].join(" ")} disabled={saving}>
           <FontAwesomeIcon icon={saving ? faCircleNotch : faSignIn} spin={saving}/>

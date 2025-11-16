@@ -1,11 +1,10 @@
-
 import styles from "@/styles/FormPage/SliderQuestion.module.css";
 import type {Slider} from "@/api";
 
 type SliderQuestionProps = {
   question: Slider;
-  answer: string;
-  setAnswer: (value: string) => void;
+  answer: number;
+  setAnswer: (value: number) => void;
 };
 
 export function SliderQuestion({ question, answer, setAnswer }: SliderQuestionProps) {
@@ -28,13 +27,13 @@ export function SliderQuestion({ question, answer, setAnswer }: SliderQuestionPr
           min={question.min}
           max={question.max}
           step={question.step || 1}
-          value={answer || question.min}
-          onChange={(e) => setAnswer(e.target.value)}
-          onClick={(e) => setAnswer((e.target as HTMLInputElement).value)}
+          value={answer ?? question.min}
+          onChange={(e) => setAnswer(Number(e.target.value))}
+          onClick={(e) => setAnswer(Number((e.target as HTMLInputElement).value))}
           list={datalistId}
           className={[
             styles.slider,
-            !answer ? styles.unanswered : "",
+            answer === undefined ? styles.unanswered : "",
           ].join(" ")}
           style={{ width: `${100 / (length + 1) * length}%` }}
         />
@@ -44,6 +43,7 @@ export function SliderQuestion({ question, answer, setAnswer }: SliderQuestionPr
         >
           {Array.from({ length }, (_, i) => (
             <option
+              key={i}
               value={question.min + i}
               label={labels[question.min + i] ?? ""}
               className={styles.label}

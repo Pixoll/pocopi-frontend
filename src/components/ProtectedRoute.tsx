@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginModal } from '@/components/HomePage/LoginModal';
 import type { TrimmedConfig } from '@/api';
 import api from '@/api';
+import {LoadingPage} from "@/pages/LoadingPage.tsx";
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -12,6 +14,7 @@ type ProtectedRouteProps = {
 
 export function ProtectedRoute({ children, config, requireAdmin = false }: ProtectedRouteProps) {
   const { token, isLoggedIn, clearAuth } = useAuth();
+  const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(!isLoggedIn);
   const [isValidating, setIsValidating] = useState(true);
 
@@ -22,6 +25,8 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
         setIsValidating(false);
         return;
       }
+
+      setIsValidating(true);
 
       try {
         const userResponse = await api.getCurrentUser({ auth: token });
@@ -68,25 +73,14 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
 
   const handleLoginSuccess = () => {
     setShowLogin(false);
-    setIsValidating(false);
+  };
+
+  const handleCancel = () => {
+    navigate('/');
   };
 
   if (isValidating) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        flexDirection: 'column',
-        gap: '1rem'
-      }}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </div>
-        <div>Validando sesión...</div>
-      </div>
-    );
+    return ( <LoadingPage message="Validando sesión" />);
   }
 
   if (!isLoggedIn || showLogin) {
@@ -94,7 +88,8 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
       <LoginModal
         config={config}
         show={true}
-        onHide={() => {}}
+        onHide={handleLoginSuccess}
+        onCancel={handleCancel}
         goToNextPage={handleLoginSuccess}
       />
     );

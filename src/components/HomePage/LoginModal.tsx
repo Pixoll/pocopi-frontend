@@ -12,18 +12,22 @@ type LoginModalProps = {
   config: TrimmedConfig ;
   show: boolean;
   onHide: () => void;
+  onCancel?: () => void;
   goToNextPage?: (group: AssignedTestGroup) => void;
   showAnonymousOption?: boolean;
   onAttemptInProgress?: () => void;
+  showCancelButton?: boolean;
 };
 
 export function LoginModal({
                              config,
                              show,
                              onHide,
+                             onCancel,
                              goToNextPage,
                              showAnonymousOption = false,
-                             onAttemptInProgress
+                             onAttemptInProgress,
+                             showCancelButton = true
                            }: LoginModalProps) {
   const { isDarkMode } = useTheme();
   const { saving, error, login, createAnonymousUser } = useLoginLogic({
@@ -52,6 +56,14 @@ export function LoginModal({
     await login(loginData);
   };
 
+  const handleCancelClick = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      onHide();
+    }
+  };
+
   if (isCreatingAnonymous) {
     return (
       <Modal show={show} centered backdrop="static">
@@ -63,7 +75,7 @@ export function LoginModal({
   }
 
   return (
-    <Modal show={show} onHide={onHide} centered backdrop="static">
+    <Modal show={show} onHide={handleCancelClick} centered backdrop="static">
       <div className={styles.header}>
         <h5><FontAwesomeIcon icon={faUser} /> Iniciar sesión</h5>
       </div>
@@ -83,7 +95,8 @@ export function LoginModal({
           handleSubmit={handleManualLogin}
           isDarkMode={isDarkMode}
           saving={saving}
-          onHide={onHide}
+          onHide={handleCancelClick}
+          showCancelButton={showCancelButton}
           validated
         />
 

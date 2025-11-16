@@ -37,9 +37,6 @@ export function FormPage({
   const [answers, setAnswers] = useState<NewFormAnswer[]>(
     Array.from({ length: questions.length }, (_, i) => ({
       questionId: questions[i].id,
-      optionId: -1,
-      value: 0,
-      answer: "",
     }))
   );
 
@@ -97,19 +94,18 @@ export function FormPage({
       const newAnswers = [...prev];
       newAnswers[questionIndex] = {
         ...newAnswers[questionIndex],
-        optionId: -1,
         answer: otherText,
       };
       return newAnswers;
     });
   };
 
-  const handleChange = (questionIndex: number, value: string) => {
+  const handleSliderChange = (questionIndex: number, value: number) => {
     setAnswers(prev => {
       const newAnswers = [...prev];
       newAnswers[questionIndex] = {
         ...newAnswers[questionIndex],
-        answer: value,
+        value: value,
       };
       return newAnswers;
     });
@@ -141,39 +137,45 @@ export function FormPage({
     setSending(true);
     setError(null);
 
-    if (answers.some(a => a.answer.length === 0)) {
+    const allAnswered = answers.every((answer, idx) => {
+      const question = questions[idx];
+      if (question.type === 'slider') {
+        return answer.value !== undefined;
+      }
+      return answer.answer !== undefined && answer.answer.length > 0;
+    });
+
+    if (!allAnswered) {
       setSending(false);
-      setError(t(config, "form.youMustAnswerEverything"));
       return;
     }
 
     if (!token || !isLoggedIn) {
       setSending(false);
-      setError("Debes iniciar sesión para enviar respuestas");
       return;
     }
 
     if (!user?.username) {
       setSending(false);
-      setError("No se pudo obtener información del usuario");
       return;
     }
 
     const cleanedAnswers = answers.map((answer, idx) => {
-      const cleaned: any = {
+      const question = questions[idx];
+
+      const cleaned: NewFormAnswer = {
         questionId: answer.questionId,
       };
 
-      const question = questions[idx];
-
       if (question.type === 'select-one' || question.type === 'select-multiple') {
-        if (answer.optionId !== -1) {
+        if (answer.optionId !== undefined) {
           cleaned.optionId = answer.optionId;
-        } else {
+        }
+        if (answer.answer !== undefined) {
           cleaned.answer = answer.answer;
         }
       } else if (question.type === 'slider') {
-        cleaned.value = +answer.answer || 0;
+        cleaned.value = answer.value;
       } else {
         cleaned.answer = answer.answer;
       }
@@ -183,7 +185,7 @@ export function FormPage({
 
     try {
       const result = await api.submitFormAnswers({
-        path: { formId: form.id },
+        path: { formType: type === "pre-test" ? "pre" : "post"},
         auth: token,
         body: {
           answers: cleanedAnswers,
@@ -215,6 +217,7 @@ export function FormPage({
     }
   };
 
+
   return (
     <div className={styles.page}>
       <div className={styles.card}>
@@ -230,8 +233,8 @@ export function FormPage({
                     key={question.id}
                     config={config}
                     question={question as SelectOne}
-                    answer={answers[idx].answer}
-                    optionId={answers[idx].optionId}
+                    answer={answers[idx].answer ?? ""}
+                    optionId={answers[idx].optionId ?? 0}
                     onOptionChange={(optionId, optionText) => handleOptionChange(idx, optionId, optionText)}
                     onOtherChange={(otherText) => handleOtherChange(idx, otherText)}
                   />
@@ -242,8 +245,8 @@ export function FormPage({
                   <SliderQuestion
                     key={question.id}
                     question={question as Slider}
-                    answer={answers[idx].answer}
-                    setAnswer={(value) => handleChange(idx, value)}
+                    answer={answers[idx].value ?? (question as Slider).min}
+                    setAnswer={(value) => handleSliderChange(idx, value)}
                   />
                 );
 

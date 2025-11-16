@@ -95,6 +95,7 @@ export type ConfigUpdate = {
     subtitle: string;
     description: string;
     anonymous: boolean;
+    usernamePattern?: PatternUpdate;
     informedConsent: string;
     informationCards?: Array<InformationCardUpdate>;
     faq?: Array<FrequentlyAskedQuestionUpdate>;
@@ -132,6 +133,12 @@ export type InformationCardUpdate = {
     title: string;
     description: string;
     color: number;
+};
+
+export type PatternUpdate = {
+    id?: number;
+    name: string;
+    regex: string;
 };
 
 export type SelectMultipleUpdate = FormQuestionUpdate & {
@@ -455,6 +462,12 @@ export type InformationCard = {
     icon?: Image | null;
 };
 
+export type Pattern = {
+    id: number;
+    name: string;
+    regex: string;
+};
+
 export type SelectMultiple = FormQuestion & {
     id: number;
     category: string;
@@ -523,6 +536,7 @@ export type TrimmedConfig = {
     subtitle?: string | null;
     description: string;
     anonymous: boolean;
+    usernamePattern?: Pattern;
     informationCards: Array<InformationCard>;
     informedConsent: string;
     frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
@@ -540,6 +554,7 @@ export type FullConfig = {
     subtitle?: string | null;
     description: string;
     anonymous: boolean;
+    usernamePattern?: Pattern;
     informationCards: Array<InformationCard>;
     informedConsent: string;
     frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
