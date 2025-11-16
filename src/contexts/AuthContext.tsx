@@ -1,41 +1,64 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import api from "@/api";
 import type { Credentials } from "@/api";
 
+type UserRole = 'user' | 'admin' | null;
+
 type AuthContextType = {
   token: string | undefined;
   isLoggedIn: boolean;
+  isValidating: boolean;
+  userRole: UserRole;
+  isAdmin: boolean;
+  isUser: boolean;
   setToken: (token: string | undefined) => void;
   generateCredentials: () => Credentials;
   clearAuth: () => void;
   validateTokenStatus: () => Promise<boolean>;
+  login: (newToken: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_KEY = "token";
-const TOKEN_CHECK_INTERVAL = 150000;
+const TOKEN_CHECK_INTERVAL = 5 * 60_000;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setTokenState] = useState<string | undefined>(undefined);
+  const [userRole, setUserRole] = useState<UserRole>(null);
+  const [isValidating, setIsValidating] = useState(true);
+  const intervalRef = useRef<number | null>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
     const storedToken = localStorage.getItem(STORAGE_KEY);
-    if (storedToken) setTokenState(storedToken);
+
+    if (storedToken) {
+      setTokenState(storedToken);
+    } else {
+      setIsValidating(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (token && isValidating) {
+      validateTokenStatus().then(() => {
+        setIsValidating(false);
+      });
+    }
+  }, [token, isValidating]);
 
+  useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === STORAGE_KEY) {
         const newToken = event.newValue || undefined;
         setTokenState(newToken);
 
         if (!newToken && token) {
-          window.location.reload();
+          clearAuth();
         }
       }
     };
@@ -44,47 +67,98 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [token]);
 
-  const validateTokenStatus = async (): Promise<boolean> => {
-    if (!token) return false;
-
-    try {
-      const response = await api.getCurrentUser({ auth: token });
-      if (!response || !response.data) {
-        clearAuth();
-        if (typeof window !== "undefined") {
-          window.location.reload();
-        }
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Token validation failed:', error);
-      clearAuth();
-      if (typeof window !== "undefined") {
-        window.location.reload();
-      }
-      return false;
+  useEffect(() => {
+    if (token) {
+      validateTokenStatus();
     }
-  };
+  }, [location.pathname]);
 
   useEffect(() => {
+    if (!token) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
 
-    if (!token) return;
-    validateTokenStatus();
-    const intervalId = setInterval(validateTokenStatus, TOKEN_CHECK_INTERVAL);
-    return () => clearInterval(intervalId);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
 
+    intervalRef.current = window.setInterval(() => {
+      validateTokenStatus();
+    }, TOKEN_CHECK_INTERVAL);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [token]);
+
+  const validateTokenStatus = async (): Promise<boolean> => {
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const adminResponse = await api.getCurrentAdmin({ auth: token });
+
+      if (adminResponse && adminResponse.data) {
+        setUserRole('admin');
+        return true;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      const userResponse = await api.getCurrentUser({ auth: token });
+
+      if (userResponse && userResponse.data) {
+        setUserRole('user');
+        return true;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    await clearAuth();
+    return false;
+  };
 
   const setToken = (newToken: string | undefined) => {
     setTokenState(newToken);
-    if (typeof window !== "undefined") {
-      if (newToken) {
-        localStorage.setItem(STORAGE_KEY, newToken);
-      } else {
-        localStorage.removeItem(STORAGE_KEY);
-      }
+    if (newToken) {
+      localStorage.setItem(STORAGE_KEY, newToken);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+
+  const login = async (newToken: string): Promise<void> => {
+    setToken(newToken);
+    setTokenState(newToken);
+
+    const isValid = await validateTokenStatus();
+
+    if (!isValid) {
+      clearAuth();
+    }
+  };
+
+  const clearAuth = async () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    setToken(undefined);
+    setUserRole(null);
+    if (window.location.pathname !== '/') {
+      navigate('/');
     }
   };
 
@@ -93,13 +167,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: uuidv4().replace(/-/g, ""),
   });
 
-  const clearAuth = () => setToken(undefined);
-
   const isLoggedIn = !!token;
+  const isAdmin = userRole === 'admin';
+  const isUser = userRole === 'user';
 
   return (
     <AuthContext.Provider
-      value={{ token, isLoggedIn, setToken, generateCredentials, clearAuth, validateTokenStatus }}
+      value={{
+        token,
+        isLoggedIn,
+        isValidating,
+        userRole,
+        isAdmin,
+        isUser,
+        setToken,
+        generateCredentials,
+        clearAuth,
+        validateTokenStatus,
+        login
+      }}
     >
       {children}
     </AuthContext.Provider>
