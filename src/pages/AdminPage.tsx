@@ -1,15 +1,18 @@
 import styles from "@/styles/AdminPage/AdminPage.module.css";
-import {useState} from "react";
+import { useState } from "react";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import type { TrimmedConfig } from "@/api";
 
 type AdminPageProps = {
   goToModifyConfigPage: () => void;
+  config: TrimmedConfig;
 }
-export function AdminPage({goToModifyConfigPage}: AdminPageProps){
+
+function AdminPageContent({ goToModifyConfigPage }: Omit<AdminPageProps, 'config'>) {
   const [Ids, setIds] = useState([1, 2, 3, 4, 5]);
   const [max, setMax] = useState(5);
 
   const orderConfigs = [...Ids].sort((a, b) => b - a);
-
 
   function setAsLastVersion(id: number) {
     const newIds = Ids.filter(existingId => existingId !== id);
@@ -70,13 +73,20 @@ export function AdminPage({goToModifyConfigPage}: AdminPageProps){
     <div className={styles.pageContainer}>
       <header className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Configuration panel</h1>
-        <p className={styles.pageSubtitle}>Manage and version configurations
-        </p>
+        <p className={styles.pageSubtitle}>Manage and version configurations</p>
       </header>
 
       <div className={styles.sectionsContainer}>
         {orderConfigs.map((id) => configSection(id, id === max))}
       </div>
     </div>
+  );
+}
+
+export function AdminPage({ goToModifyConfigPage, config }: AdminPageProps) {
+  return (
+    <ProtectedRoute config={config} requireAdmin={true}>
+      <AdminPageContent goToModifyConfigPage={goToModifyConfigPage} />
+    </ProtectedRoute>
   );
 }

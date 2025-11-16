@@ -1,27 +1,23 @@
-import { useState } from "react";
 import type { TrimmedConfig } from "@/api";
-import { LoginModal } from "@/components/HomePage/LoginModal";
 import { AnalyticsDashboard } from "@/components/DashboardPage/AnalyticsDashboard";
 import { useAuth } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
-export default function AnalyticDashboardPage({ config, onBack }: { config: TrimmedConfig; onBack: () => void }) {
-  const { token, isLoggedIn } = useAuth();
-  const [showLogin, setShowLogin] = useState(!isLoggedIn);
+type AnalyticDashboardPageProps = {
+  config: TrimmedConfig;
+  onBack: () => void;
+};
 
-  const handleLoginSuccess = () => {
-    setShowLogin(false);
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <LoginModal
-        config={config}
-        show={showLogin}
-        onHide={() => setShowLogin(false)}
-        goToNextPage={handleLoginSuccess}
-      />
-    );
-  }
+function AnalyticDashboardPageContent({ config, onBack }: AnalyticDashboardPageProps) {
+  const { token } = useAuth();
 
   return <AnalyticsDashboard config={config} onBack={onBack} adminToken={token!} />;
+}
+
+export default function AnalyticDashboardPage({ config, onBack }: AnalyticDashboardPageProps) {
+  return (
+    <ProtectedRoute config={config} requireAdmin={true}>
+      <AnalyticDashboardPageContent config={config} onBack={onBack} />
+    </ProtectedRoute>
+  );
 }

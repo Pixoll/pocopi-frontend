@@ -120,11 +120,11 @@ export function App() {
         />
         <Route
           path="/admin"
-          element={<AdminPage goToModifyConfigPage={goToModifyConfigPage} />}
+          element={<AdminPage goToModifyConfigPage={goToModifyConfigPage} config={config}/>}
         />
         <Route
           path="/modify-config"
-          element={<ModifyLatestConfigPage config={config} />}
+          element={<ModifyLatestConfigPage config={config}  />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
