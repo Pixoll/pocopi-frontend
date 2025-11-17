@@ -35,7 +35,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
         setError(null);
         await getAllConfigs(setConfigs);
       } catch (err) {
-        console.error("Error fetching configs:", err);
+        console.error(err);
         setError("Error al cargar las configuraciones");
       } finally {
         setLoading(false);
@@ -44,8 +44,6 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
 
     fetchConfigs();
   }, [token]);
-
-  const sortedConfigs = [...configs].sort((a, b) => b.version - a.version);
 
   async function setAsLastVersion(version: number) {
     try {
@@ -72,9 +70,11 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
     }
   }
 
-  function configSection(configData: ConfigPreview, isLast: boolean) {
+  function configSection(configData: ConfigPreview) {
+    const isActive = configData.active;
+
     return (
-      <div className={isLast ? styles.lastConfigSection : styles.configSection} key={configData.version}>
+      <div className={isActive ? styles.lastConfigSection : styles.configSection} key={configData.version}>
         <div className={styles.infoContainer}>
           <div className={styles.versionHeader}>
             {configData.icon?.url && (
@@ -85,7 +85,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
               />
             )}
             <span className={styles.versionNumber}>Version {configData.version}</span>
-            {isLast && <span className={styles.currentBadge}>Current</span>}
+            {isActive && <span className={styles.currentBadge}>Current</span>}
           </div>
 
           <div className={styles.contentInfo}>
@@ -98,9 +98,9 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
         </div>
 
         <div className={styles.buttonsContainer}>
-          {isLast ? (
+          {isActive ? (
             <div className={styles.buttonWrapper}>
-              <button onClick={() => goToModifyConfigPage(configData.version, isLast)} className={styles.modifyButton}>
+              <button onClick={() => goToModifyConfigPage(configData.version, isActive)} className={styles.modifyButton}>
                 Modify
               </button>
               <span className={styles.buttonHint}>Edit current configuration</span>
@@ -175,7 +175,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
       </header>
 
       <div className={styles.sectionsContainer}>
-        {sortedConfigs.map((config, index) => configSection(config, index === 0))}
+        {configs.map((config) => configSection(config))}
       </div>
     </div>
   );
