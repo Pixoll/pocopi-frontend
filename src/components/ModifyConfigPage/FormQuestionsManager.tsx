@@ -227,8 +227,6 @@ export function FormQuestionsManager({
           ))}
         </div>
       )}
-
-      {readOnly && (
         <FormDestinationModal
           isOpen={showFormDestinationModal}
           onClose={() => {
@@ -240,8 +238,6 @@ export function FormQuestionsManager({
           currentForm={formType}
           questionToPaste={formClipboard}
         />
-      )}
-      {readOnly && (
         <ConfirmModal
           isOpen={showDeleteConfirm}
           onClose={() => {
@@ -256,7 +252,6 @@ export function FormQuestionsManager({
           title="Confirmar Eliminación"
           message="¿Estás seguro de eliminar esta pregunta? Esta acción no se puede deshacer."
         />
-      )}
     </div>
   );
 }
