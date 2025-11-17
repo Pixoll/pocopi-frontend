@@ -484,30 +484,30 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
     preTestForm: config.preTestForm ? {
       id: config.preTestForm.id,
       title: config.preTestForm.title,
-      questions: config.preTestForm.questions.map((q): any => {
-        const base = {
-          id: q.id,
-          category: q.category,
-          text: q.text,
-          type: q.type
-        };
+      questions: config.preTestForm.questions.map((q): TextLongUpdate | TextShortUpdate | SliderUpdate | SelectOneUpdate | SelectMultipleUpdate  => {
 
         switch (q.type) {
           case 'select-one':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               options: (q as EditablePatchSelectOne).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
-                text: opt.text
+                text: opt.text || undefined
               })),
               other: (q as EditablePatchSelectOne).other
             };
           case 'select-multiple':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               options: (q as EditablePatchSelectMultiple).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
-                text: opt.text
+                text: opt.text || undefined
               })),
               min: (q as EditablePatchSelectMultiple).min,
               max: (q as EditablePatchSelectMultiple).max,
@@ -515,7 +515,10 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
             };
           case 'slider':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               min: (q as EditablePatchSlider).min,
               max: (q as EditablePatchSlider).max,
               step: (q as EditablePatchSlider).step,
@@ -523,14 +526,20 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
             };
           case 'text-short':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               placeholder: (q as EditablePatchTextShort).placeholder,
               minLength: (q as EditablePatchTextShort).minLength,
               maxLength: (q as EditablePatchTextShort).maxLength
             };
           case 'text-long':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               placeholder: (q as EditablePatchTextLong).placeholder,
               minLength: (q as EditablePatchTextLong).minLength,
               maxLength: (q as EditablePatchTextLong).maxLength
@@ -542,30 +551,30 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
     postTestForm: config.postTestForm ? {
       id: config.postTestForm.id,
       title: config.postTestForm.title,
-      questions: config.postTestForm.questions.map((q): any => {
-        const base = {
-          id: q.id,
-          category: q.category,
-          text: q.text,
-          type: q.type
-        };
+      questions: config.postTestForm.questions.map((q): TextLongUpdate | TextShortUpdate | SliderUpdate | SelectOneUpdate | SelectMultipleUpdate => {
 
         switch (q.type) {
           case 'select-one':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               options: (q as EditablePatchSelectOne).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
-                text: opt.text
+                text: opt.text || undefined
               })),
               other: (q as EditablePatchSelectOne).other
             };
           case 'select-multiple':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               options: (q as EditablePatchSelectMultiple).options.map((opt): FormOptionUpdate => ({
                 id: opt.id,
-                text: opt.text
+                text: opt.text || undefined
               })),
               min: (q as EditablePatchSelectMultiple).min,
               max: (q as EditablePatchSelectMultiple).max,
@@ -573,7 +582,10 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
             };
           case 'slider':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               min: (q as EditablePatchSlider).min,
               max: (q as EditablePatchSlider).max,
               step: (q as EditablePatchSlider).step,
@@ -581,14 +593,20 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
             };
           case 'text-short':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               placeholder: (q as EditablePatchTextShort).placeholder,
               minLength: (q as EditablePatchTextShort).minLength,
               maxLength: (q as EditablePatchTextShort).maxLength
             };
           case 'text-long':
             return {
-              ...base,
+              id: q.id,
+              category: q.category,
+              text: q.text || undefined,
+              type: q.type,
               placeholder: (q as EditablePatchTextLong).placeholder,
               minLength: (q as EditablePatchTextLong).minLength,
               maxLength: (q as EditablePatchTextLong).maxLength
@@ -601,7 +619,7 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
       id: group.id,
       probability: group.probability ?? 0,
       label: group.label,
-      greeting: group.greeting,
+      greeting: group.greeting || undefined,
       allowPreviousPhase: group.allowPreviousPhase,
       allowPreviousQuestion: group.allowPreviousQuestion,
       allowSkipQuestion: group.allowSkipQuestion,
@@ -611,11 +629,11 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
         randomizeQuestions: phase.randomizeQuestions,
         questions: phase.questions.map((q): TestQuestionUpdate => ({
           id: q.id,
-          text: q.text,
+          text: q.text || undefined,
           randomizeOptions: q.randomizeOptions,
           options: q.options.map((opt): TestOptionUpdate => ({
             id: opt.id,
-            text: opt.text,
+            text: opt.text || undefined,
             correct: opt.correct
           }))
         }))
