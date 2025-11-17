@@ -1,192 +1,228 @@
 .header {
-  align-items: center;
-  background-color: #0d6efd;
-  border: 0;
-  border-bottom: 1px solid #495057;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-  color: white;
-  display: flex;
-  flex-shrink: 0;
-  padding: 1rem;
+    align-items: center;
+    background-color: #0d6efd;
+    border: 0;
+    border-bottom: 1px solid #495057;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    color: white;
+    display: flex;
+    flex-shrink: 0;
+    padding: 1rem;
 }
 
 .headerText {
-  align-items: center;
-  display: flex;
-  font-weight: bold;
-  gap: 0.5rem;
-  line-height: 1.5;
-  margin: 0;
+    align-items: center;
+    display: flex;
+    font-weight: bold;
+    gap: 0.5rem;
+    line-height: 1.5;
+    margin: 0;
 }
 
 .modalBody {
-  border-bottom-left-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
-  flex: 1 1 auto;
-  padding: 1.5rem;
-  position: relative;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    flex: 1 1 auto;
+    padding: 1.5rem;
+    position: relative;
 }
 
 .modalBodyDark {
-  background-color: #212529;
-  color: #f8f9fa;
+    background-color: #212529;
+    color: #f8f9fa;
 }
 
 .alert {
-  align-items: center;
-  border-radius: 0.375rem;
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  position: relative;
+    align-items: center;
+    border-radius: 0.375rem;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    position: relative;
 }
 
 .alertDataDark {
-  background-color: #031633;
-  border: 1px solid #084298;
-  color: #6ea8fe;
+    background-color: #031633;
+    border: 1px solid #084298;
+    color: #6ea8fe;
 }
 
 .alertDataLight {
-  background-color: #cff4fc;
-  border: 1px solid #9eeaf9;
-  color: #055160;
+    background-color: #cff4fc;
+    border: 1px solid #9eeaf9;
+    color: #055160;
 }
 
 .alertErrorDark {
-  background-color: #2c0b0e;
-  border: 1px solid #842029;
-  color: #ea868f;
+    background-color: #2c0b0e;
+    border: 1px solid #842029;
+    color: #ea868f;
 }
 
 .alertErrorLight {
-  background-color: #f8d7da;
-  border: 1px solid #f1aeb5;
-  color: #58151c;
+    background-color: #f8d7da;
+    border: 1px solid #f1aeb5;
+    color: #58151c;
 }
 
 .alertIcon {
-  font-size: 1.25rem;
+    font-size: 1.25rem;
 }
 
 .closeButton {
-  background-color: transparent;
-  border: 0;
-  font-size: calc(1.275rem + 0.3vw);
-  line-height: 1;
-  margin-left: auto;
-  padding: 0;
-  transition: color 0.15s ease-in-out;
-  user-select: none;
+    background-color: transparent;
+    border: 0;
+    font-size: calc(1.275rem + 0.3vw);
+    line-height: 1;
+    margin-left: auto;
+    padding: 0;
+    transition: color 0.15s ease-in-out;
+    user-select: none;
 }
 
 .inputGroup {
-  display: flex;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.passwordContainer {
+    position: relative;
+    width: 100%;
+}
+
+.togglePasswordButton {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 10;
+}
+
+.togglePasswordButton:hover {
+    opacity: 0.7;
+}
+
+.togglePasswordButton:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+
+.togglePasswordButtonDark {
+    color: #f8f9fa;
+}
+
+.togglePasswordButtonLight {
+    color: #212529;
 }
 
 .buttonsContainer {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
 }
 
 .button {
-  background-color: transparent;
-  border-radius: 0.375rem;
-  text-align: center;
-  text-decoration: none;
-  transition: color 0.15s ease-in-out,
-  background-color 0.15s ease-in-out,
-  border-color 0.15s ease-in-out,
-  box-shadow 0.15s ease-in-out;
-  user-select: none;
+    background-color: transparent;
+    border-radius: 0.375rem;
+    text-align: center;
+    text-decoration: none;
+    transition: color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+    user-select: none;
 }
 
 .cancelButton {
-  padding: 0.375rem 1rem;
+    padding: 0.375rem 1rem;
 }
 
 .cancelButtonDark {
-  border: 1px solid #f8f9fa;
-  color: #f8f9fa;
+    border: 1px solid #f8f9fa;
+    color: #f8f9fa;
 }
 
 .cancelButtonDark:active, .cancelButtonDark:hover, .cancelButtonDark:focus-visible {
-  background-color: #f8f9fa;
-  color: black;
+    background-color: #f8f9fa;
+    color: black;
 }
 
 .cancelButtonDark:focus-visible {
-  border-color: #f8f9fa;
-  box-shadow: 0 0 0 0.25rem rgba(248, 249, 250, 0.5);
-  outline: 0;
+    border-color: #f8f9fa;
+    box-shadow: 0 0 0 0.25rem rgba(248, 249, 250, 0.5);
+    outline: 0;
 }
 
 .cancelButtonLight {
-  border: 1px solid #6c757d;
-  color: #6c757d;
+    border: 1px solid #6c757d;
+    color: #6c757d;
 }
 
 .cancelButtonLight:active, .cancelButtonLight:hover, .cancelButtonLight:focus-visible {
-  background-color: #6c757d;
-  color: white;
+    background-color: #6c757d;
+    color: white;
 }
 
 .cancelButtonLight:focus-visible {
-  border-color: #6c757d;
-  box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5);
-  outline: 0;
+    border-color: #6c757d;
+    box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5);
+    outline: 0;
 }
 
 .saveButton {
-  align-items: center;
-  background-color: #0d6efd;
-  border: 1px solid #0d6efd;
-  color: white;
-  display: flex;
-  gap: 0.5rem;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+    align-items: center;
+    background-color: #0d6efd;
+    border: 1px solid #0d6efd;
+    color: white;
+    display: flex;
+    gap: 0.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }
 
 .saveButton:hover, .saveButton:focus-visible {
-  background-color: #0b5ed7;
-  border-color: #0a58ca;
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
 }
 
 .saveButton:active {
-  background-color: #0a58ca;
-  border-color: #0a53be;
+    background-color: #0a58ca;
+    border-color: #0a53be;
 }
 
 .saveButton:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
-  outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+    outline: 0;
 }
 
 @media (max-width: 768px) {
-  .inputGroupMember {
-    width: 100%;
-  }
+    .inputGroupMember {
+        width: 100%;
+    }
 }
 
 @media (min-width: 768px) {
-  .inputGroup {
-    gap: 1rem;
-  }
+    .inputGroup {
+        gap: 1rem;
+    }
 
-  .inputGroupMember {
-    flex: 0 0 auto;
-    width: calc(50% - 0.5rem);
-  }
+    .inputGroupMember {
+        flex: 0 0 auto;
+        width: calc(50% - 0.5rem);
+    }
 }
 
 @media (min-width: 1200px) {
-  .fs-4 {
-    font-size: 1.5rem;
-  }
+    .fs-4 {
+        font-size: 1.5rem;
+    }
 }
