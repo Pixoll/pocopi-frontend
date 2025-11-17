@@ -455,37 +455,41 @@ export function FormQuestionEditor({
 
               {showOptions && (
                 <div className={styles.optionsList}>
-                  {(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.map((option, optionIndex) => (
-                    <div key={option.id ?? `new-option-${optionIndex}`} className={styles.optionCard}>
-                      <div className={styles.optionHeader}>
-                        <span className={styles.optionNumber}>Opción {optionIndex + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveOption(optionIndex)}
-                          className={styles.removeOptionButton}
-                        >
-                          ✕
-                        </button>
+                  {(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.map((option, optionIndex) => {
+                    const typedOption = option as EditablePatchFormOption;
+
+                    return (
+                      <div key={typedOption.id ?? `new-option-${optionIndex}`} className={styles.optionCard}>
+                        <div className={styles.optionHeader}>
+                          <span className={styles.optionNumber}>Opción {optionIndex + 1}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveOption(optionIndex)}
+                            className={styles.removeOptionButton}
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        <ImageEditor
+                          image={typedOption.image}
+                          onChange={(imageState: ImageState) => {
+                            handleOptionChange(optionIndex, 'image', imageState);
+                          }}
+                          label=""
+                          compact={true}
+                        />
+
+                        <input
+                          type="text"
+                          placeholder="Texto de la opción"
+                          value={typedOption.text || ''}
+                          onChange={(e) => handleOptionChange(optionIndex, 'text', e.target.value)}
+                          className={styles.input}
+                        />
                       </div>
-
-                      <ImageEditor
-                        image={option.image}
-                        onChange={(imageState: ImageState) => {
-                          handleOptionChange(optionIndex, 'image', imageState);
-                        }}
-                        label=""
-                        compact={true}
-                      />
-
-                      <input
-                        type="text"
-                        placeholder="Texto de la opción"
-                        value={option.text || ''}
-                        onChange={(e) => handleOptionChange(optionIndex, 'text', e.target.value)}
-                        className={styles.input}
-                      />
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FormQuestionEditor } from '@/components/ModifyConfigPage/FormQuestionEditor.tsx';
 import { FormDestinationModal } from '@/components/ModifyConfigPage/FormDestinationModal.tsx';
+import { ConfirmModal } from "@/components/ConfirmModal.tsx";
 import type {
   EditablePatchFormQuestion,
   EditablePatchSelectOne,
@@ -8,18 +9,51 @@ import type {
   EditablePatchSlider,
   EditablePatchTextShort,
   EditablePatchTextLong,
+  EditablePatchFormOption,
   ImageState
 } from "@/utils/imageCollector.ts";
+import { getImageFile } from '@/utils/imageCollector.ts';
 import styles from "@/styles/ModifyConfigPage/FormQuestionsManager.module.css";
-import {ConfirmModal} from "@/components/ConfirmModal.tsx";
 
 type FormQuestionsManagerProps = {
   formType: 'preTestForm' | 'postTestForm';
   questions: EditablePatchFormQuestion[];
   onChange: (questions: EditablePatchFormQuestion[]) => void;
+  onCopyToOtherForm?: (question: EditablePatchFormQuestion, targetForm: 'preTestForm' | 'postTestForm') => void;
 };
 
-export function FormQuestionsManager({ formType, questions, onChange }: FormQuestionsManagerProps) {
+let fileCounter = 0;
+
+function generateUniqueFileName(): string {
+  return `${Date.now()}_${++fileCounter}.png`;
+}
+
+function cloneImageState(image: ImageState | undefined): ImageState | undefined {
+  if (!image) return undefined;
+
+  if (image.type === 'deleted') return undefined;
+
+  const file = image.type === 'unchanged' ? getImageFile(image) : image.value;
+  if (!file) return undefined;
+
+  const uniqueName = generateUniqueFileName();
+  return { type: 'new', value: new File([file], uniqueName, { type: file.type }) };
+}
+
+function cloneFormOption(option: EditablePatchFormOption): EditablePatchFormOption {
+  return {
+    id: undefined,
+    text: option.text,
+    image: cloneImageState(option.image)
+  };
+}
+
+export function FormQuestionsManager({
+                                       formType,
+                                       questions,
+                                       onChange,
+                                       onCopyToOtherForm
+                                     }: FormQuestionsManagerProps) {
   const [formClipboard, setFormClipboard] = useState<EditablePatchFormQuestion | null>(null);
   const [showFormDestinationModal, setShowFormDestinationModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -28,19 +62,11 @@ export function FormQuestionsManager({ formType, questions, onChange }: FormQues
   const formTitle = formType === 'preTestForm' ? 'Formulario Pre-Test' : 'Formulario Post-Test';
 
   const cloneFormQuestion = (question: EditablePatchFormQuestion): EditablePatchFormQuestion => {
-    const cloneImage = (img: ImageState | undefined): ImageState | undefined => {
-      if (!img) return undefined;
-      if (img.status === 'existing' || img.status === 'unchanged') {
-        return { ...img, status: 'existing' };
-      }
-      return { ...img };
-    };
-
     const baseClone = {
       id: undefined,
       category: question.category,
       text: question.text,
-      image: cloneImage(question.image),
+      image: cloneImageState(question.image),
       type: question.type
     };
 
@@ -50,11 +76,7 @@ export function FormQuestionsManager({ formType, questions, onChange }: FormQues
         return {
           ...baseClone,
           type: 'select-one',
-          options: q.options?.map(opt => ({
-            id: undefined,
-            text: opt.text,
-            image: cloneImage(opt.image)
-          })) || [],
+          options: q.options?.map(cloneFormOption) || [],
           other: q.other
         } as EditablePatchSelectOne;
       }
@@ -63,11 +85,7 @@ export function FormQuestionsManager({ formType, questions, onChange }: FormQues
         return {
           ...baseClone,
           type: 'select-multiple',
-          options: q.options?.map(opt => ({
-            id: undefined,
-            text: opt.text,
-            image: cloneImage(opt.image)
-          })) || [],
+          options: q.options?.map(cloneFormOption) || [],
           min: q.min,
           max: q.max,
           other: q.other
@@ -168,7 +186,10 @@ export function FormQuestionsManager({ formType, questions, onChange }: FormQues
     setShowDeleteConfirm(true);
   };
 
-  const handlePasteToOtherForm = () => {
+  const handlePasteToOtherForm = (targetForm: 'preTestForm' | 'postTestForm') => {
+    if (formClipboard && onCopyToOtherForm) {
+      onCopyToOtherForm(formClipboard, targetForm);
+    }
     setShowFormDestinationModal(false);
     setFormClipboard(null);
   };

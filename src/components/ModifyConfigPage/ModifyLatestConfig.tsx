@@ -17,12 +17,14 @@ import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 import api, {
   type FrequentlyAskedQuestionUpdate,
   type FullConfig,
+  type ApiHttpError
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 import {LoadingPage} from "@/pages/LoadingPage.tsx";
 import {SavePopup} from "@/components/SavePopup.tsx";
 import {ConfirmModal} from "@/components/ConfirmModal.tsx";
 import {FormQuestionsCoordinator} from "@/components/ModifyConfigPage/FormQuestionsCoordinator.tsx";
+import {ErrorDisplay} from "@/components/ErrorDisplay.tsx";
 
 type ModifyConfigPageProps = {
   token: string;
@@ -35,11 +37,12 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number | null>(null);
-  const [saveStatus, setSaveStatus] = useState<'loading' | 'success' | 'error' | null>(null);
-  const [saveMessage, setSaveMessage] = useState<string>('');
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<ApiHttpError | null>(null);
 
   const [showDeleteGroupConfirm, setShowDeleteGroupConfirm] = useState(false);
   const [deleteGroupIndex, setDeleteGroupIndex] = useState<number | null>(null);
+
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
@@ -71,7 +74,8 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   }
 
   const handleSave = async () => {
-    setSaveStatus('loading');
+    setSaveError(null);
+    setShowSaveSuccess(false);
 
     try {
       const patchRequest = await buildPatchRequest(config);
@@ -81,27 +85,21 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
       });
 
       if (error) {
-        console.log(error);
-        setSaveStatus('error');
-        setSaveMessage('Error al guardar los cambios. Por favor, intenta de nuevo.');
+        setSaveError(error);
         return;
       }
 
       if (data) {
-        setSaveStatus('success');
-        setSaveMessage('Configuración guardada exitosamente');
+        setShowSaveSuccess(true);
         await getConfig();
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error(err);
-      setSaveStatus('error');
-      setSaveMessage('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
+      setSaveError({
+        code: 500,
+        message: 'Ocurrió un error inesperado al guardar'
+      });
     }
-  };
-
-  const handleClosePopup = () => {
-    setSaveStatus(null);
-    setSaveMessage('');
   };
 
   const renderContent = () => {
@@ -557,11 +555,23 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
 
   return (
     <div className={styles.container}>
-      <SavePopup
-        status={saveStatus}
-        message={saveMessage}
-        onClose={handleClosePopup}
-      />
+      {/* SavePopup solo aparece cuando hay éxito */}
+      {showSaveSuccess && (
+        <SavePopup
+          status="success"
+          message="Configuración guardada exitosamente"
+          onClose={() => setShowSaveSuccess(false)}
+        />
+      )}
+
+      {/* ErrorDisplay solo aparece cuando hay error */}
+      {saveError && (
+        <ErrorDisplay
+          error={saveError}
+          onClose={() => setSaveError(null)}
+        />
+      )}
+
       <header className={styles.header}>
         <h1>Editor de Configuración</h1>
         <button onClick={() => handleSave()} className={styles.saveButton}>

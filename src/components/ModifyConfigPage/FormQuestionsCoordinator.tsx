@@ -28,11 +28,28 @@ export function FormQuestionsCoordinator({ config, setConfig, formType }: FormQu
     }));
   };
 
+  const handleCopyToOtherForm = (question: EditablePatchFormQuestion, targetForm: 'preTestForm' | 'postTestForm') => {
+    setConfig(produce(config, (draft) => {
+      if (targetForm === 'preTestForm') {
+        if (!draft.preTestForm) {
+          draft.preTestForm = { id: undefined, questions: [] };
+        }
+        draft.preTestForm.questions.push(question);
+      } else {
+        if (!draft.postTestForm) {
+          draft.postTestForm = { id: undefined, questions: [] };
+        }
+        draft.postTestForm.questions.push(question);
+      }
+    }));
+  };
+
   return (
     <FormQuestionsManager
       formType={formType}
       questions={questions}
       onChange={handleQuestionsChange}
+      onCopyToOtherForm={handleCopyToOtherForm}
     />
   );
 }

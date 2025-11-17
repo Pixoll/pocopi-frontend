@@ -109,7 +109,7 @@ export function App() {
       />
       <Route
         path="/greeting"
-        element={<TestGreetingPage config={config} groupGreeting={attempt?.assignedGroup?.greeting} goToNextPage={goToTest}/>}
+        element={<TestGreetingPage config={config} attempt={attempt} goToNextPage={goToTest}/>}
       />
       <Route
         path="/test"
