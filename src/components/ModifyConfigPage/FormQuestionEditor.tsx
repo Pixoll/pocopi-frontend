@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import type {SliderLabel, SliderLabelUpdate} from "@/api";
 import type {
   EditablePatchFormQuestion,
@@ -11,9 +11,9 @@ import type {
   ImageState
 } from "@/utils/imageCollector.ts";
 import styles from "@/styles/ModifyConfigPage/FormQuestionEditor.module.css";
-import { ImageEditor } from "@/components/ModifyConfigPage/ImageEditor.tsx";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown, faCopy, faTrash, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faArrowUp, faArrowDown, faCopy, faTrash, faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 
 type FormQuestionEditorProps = {
   question: EditablePatchFormQuestion;
@@ -24,6 +24,7 @@ type FormQuestionEditorProps = {
   onCopy?: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  readOnly: boolean
 }
 
 export function FormQuestionEditor({
@@ -34,7 +35,8 @@ export function FormQuestionEditor({
                                      onDuplicate,
                                      onCopy,
                                      onMoveUp,
-                                     onMoveDown
+                                     onMoveDown,
+                                     readOnly
                                    }: FormQuestionEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
@@ -72,14 +74,14 @@ export function FormQuestionEditor({
   const handleOptionChange = (optionIndex: number, field: keyof EditablePatchFormOption, value: unknown) => {
     if (!hasOptions) return;
     const currentOptions = [...(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options];
-    currentOptions[optionIndex] = { ...currentOptions[optionIndex], [field]: value };
-    onChange({ ...question, options: currentOptions } as EditablePatchFormQuestion);
+    currentOptions[optionIndex] = {...currentOptions[optionIndex], [field]: value};
+    onChange({...question, options: currentOptions} as EditablePatchFormQuestion);
   };
 
   const handleRemoveOption = (optionIndex: number) => {
     if (!hasOptions) return;
     const currentOptions = (question as EditablePatchSelectOne | EditablePatchSelectMultiple).options.filter((_, i) => i !== optionIndex);
-    onChange({ ...question, options: currentOptions } as EditablePatchFormQuestion);
+    onChange({...question, options: currentOptions} as EditablePatchFormQuestion);
   };
 
   const handleAddLabel = () => {
@@ -98,14 +100,14 @@ export function FormQuestionEditor({
   const handleLabelChange = (labelIndex: number, field: keyof SliderLabel, value: unknown) => {
     if (!hasLabels) return;
     const currentLabels = [...(question as EditablePatchSlider).labels];
-    currentLabels[labelIndex] = { ...currentLabels[labelIndex], [field]: value };
-    onChange({ ...question, labels: currentLabels } as EditablePatchFormQuestion);
+    currentLabels[labelIndex] = {...currentLabels[labelIndex], [field]: value};
+    onChange({...question, labels: currentLabels} as EditablePatchFormQuestion);
   };
 
   const handleRemoveLabel = (labelIndex: number) => {
     if (!hasLabels) return;
     const currentLabels = (question as EditablePatchSlider).labels.filter((_, i) => i !== labelIndex);
-    onChange({ ...question, labels: currentLabels } as EditablePatchFormQuestion);
+    onChange({...question, labels: currentLabels} as EditablePatchFormQuestion);
   };
 
   const renderTypeSpecificFields = () => {
@@ -121,8 +123,12 @@ export function FormQuestionEditor({
                   type="number"
                   placeholder="0"
                   value={smq.min || 0}
-                  onChange={(e) => onChange({ ...question, min: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
+                  onChange={(e) => onChange({
+                    ...question,
+                    min: parseInt(e.target.value) || 0
+                  } as EditablePatchFormQuestion)}
                   className={styles.input}
+                  disabled={readOnly}
                 />
               </div>
               <div className={styles.inputGroup}>
@@ -131,8 +137,12 @@ export function FormQuestionEditor({
                   type="number"
                   placeholder="0"
                   value={smq.max || 0}
-                  onChange={(e) => onChange({ ...question, max: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
+                  onChange={(e) => onChange({
+                    ...question,
+                    max: parseInt(e.target.value) || 0
+                  } as EditablePatchFormQuestion)}
                   className={styles.input}
+                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -140,7 +150,8 @@ export function FormQuestionEditor({
               <input
                 type="checkbox"
                 checked={smq.other}
-                onChange={(e) => onChange({ ...question, other: e.target.checked } as EditablePatchFormQuestion)}
+                onChange={(e) => onChange({...question, other: e.target.checked} as EditablePatchFormQuestion)}
+                disabled={readOnly}
               />
               Permitir opción "Otro"
             </label>
@@ -154,7 +165,8 @@ export function FormQuestionEditor({
             <input
               type="checkbox"
               checked={soq.other}
-              onChange={(e) => onChange({ ...question, other: e.target.checked } as EditablePatchFormQuestion)}
+              onChange={(e) => onChange({...question, other: e.target.checked} as EditablePatchFormQuestion)}
+              disabled={readOnly}
             />
             Permitir opción "Otro"
           </label>
@@ -171,8 +183,12 @@ export function FormQuestionEditor({
                   type="number"
                   placeholder="0"
                   value={slq.min || 0}
-                  onChange={(e) => onChange({ ...question, min: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
+                  onChange={(e) => onChange({
+                    ...question,
+                    min: parseInt(e.target.value) || 0
+                  } as EditablePatchFormQuestion)}
                   className={styles.input}
+                  disabled={readOnly}
                 />
               </div>
               <div className={styles.inputGroup}>
@@ -181,8 +197,12 @@ export function FormQuestionEditor({
                   type="number"
                   placeholder="100"
                   value={slq.max || 100}
-                  onChange={(e) => onChange({ ...question, max: parseInt(e.target.value) || 100 } as EditablePatchFormQuestion)}
+                  onChange={(e) => onChange({
+                    ...question,
+                    max: parseInt(e.target.value) || 100
+                  } as EditablePatchFormQuestion)}
                   className={styles.input}
+                  disabled={readOnly}
                 />
               </div>
               <div className={styles.inputGroup}>
@@ -191,8 +211,12 @@ export function FormQuestionEditor({
                   type="number"
                   placeholder="1"
                   value={slq.step || 1}
-                  onChange={(e) => onChange({ ...question, step: parseInt(e.target.value) || 1 } as EditablePatchFormQuestion)}
+                  onChange={(e) => onChange({
+                    ...question,
+                    step: parseInt(e.target.value) || 1
+                  } as EditablePatchFormQuestion)}
                   className={styles.input}
+                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -205,6 +229,7 @@ export function FormQuestionEditor({
                 step={slq.step}
                 disabled
                 className={styles.sliderDemo}
+
               />
               <div className={styles.sliderValues}>
                 <span>{slq.min}</span>
@@ -225,8 +250,9 @@ export function FormQuestionEditor({
                 type="text"
                 placeholder="Ej: Escribe tu respuesta aquí"
                 value={tq.placeholder || ''}
-                onChange={(e) => onChange({ ...question, placeholder: e.target.value } as EditablePatchFormQuestion)}
+                onChange={(e) => onChange({...question, placeholder: e.target.value} as EditablePatchFormQuestion)}
                 className={styles.input}
+                disabled={readOnly}
               />
             </div>
             <div className={styles.row}>
@@ -236,8 +262,12 @@ export function FormQuestionEditor({
                   type="number"
                   placeholder="0"
                   value={tq.minLength || 0}
-                  onChange={(e) => onChange({ ...question, minLength: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
+                  onChange={(e) => onChange({
+                    ...question,
+                    minLength: parseInt(e.target.value) || 0
+                  } as EditablePatchFormQuestion)}
                   className={styles.input}
+                  disabled={readOnly}
                 />
               </div>
               <div className={styles.inputGroup}>
@@ -246,8 +276,12 @@ export function FormQuestionEditor({
                   type="number"
                   placeholder="0"
                   value={tq.maxLength || 0}
-                  onChange={(e) => onChange({ ...question, maxLength: parseInt(e.target.value) || 0 } as EditablePatchFormQuestion)}
+                  onChange={(e) => onChange({
+                    ...question,
+                    maxLength: parseInt(e.target.value) || 0
+                  } as EditablePatchFormQuestion)}
                   className={styles.input}
+                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -288,8 +322,9 @@ export function FormQuestionEditor({
                 }}
                 className={styles.iconButton}
                 title="Mover arriba"
+                disabled={readOnly}
               >
-                <FontAwesomeIcon icon={faArrowUp} />
+                <FontAwesomeIcon icon={faArrowUp}/>
               </button>
             )}
             {onMoveDown && (
@@ -301,14 +336,15 @@ export function FormQuestionEditor({
                 }}
                 className={styles.iconButton}
                 title="Mover abajo"
+                disabled={readOnly}
               >
-                <FontAwesomeIcon icon={faArrowDown} />
+                <FontAwesomeIcon icon={faArrowDown}/>
               </button>
             )}
           </div>
 
           {(onMoveUp || onMoveDown) && (onCopy || onDuplicate) && (
-            <div className={styles.actionSeparator} />
+            <div className={styles.actionSeparator}/>
           )}
           <div className={styles.actionGroup}>
             {onCopy && (
@@ -320,8 +356,10 @@ export function FormQuestionEditor({
                 }}
                 className={styles.iconButton}
                 title="Copiar pregunta"
+                disabled={readOnly}
               >
-                <FontAwesomeIcon icon={faCopy} />
+                <FontAwesomeIcon icon={faCopy}/>
+
               </button>
             )}
             {onDuplicate && (
@@ -333,14 +371,15 @@ export function FormQuestionEditor({
                 }}
                 className={styles.iconButton}
                 title="Duplicar pregunta"
+                disabled={readOnly}
               >
-                <FontAwesomeIcon icon={faCopy} />
-                <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon} />
+                <FontAwesomeIcon icon={faCopy}/>
+                <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon}/>
               </button>
             )}
           </div>
           {(onCopy || onDuplicate) && (
-            <div className={styles.actionSeparator} />
+            <div className={styles.actionSeparator}/>
           )}
           <div className={styles.actionGroup}>
             <button
@@ -351,8 +390,9 @@ export function FormQuestionEditor({
               }}
               className={`${styles.iconButton} ${styles.removeButton}`}
               title="Eliminar pregunta"
+              disabled={readOnly}
             >
-              <FontAwesomeIcon icon={faTrash} />
+              <FontAwesomeIcon icon={faTrash}/>
             </button>
           </div>
         </div>
@@ -363,7 +403,7 @@ export function FormQuestionEditor({
           <ImageEditor
             image={question.image}
             onChange={(imageState: ImageState) => {
-              onChange({ ...question, image: imageState } as EditablePatchFormQuestion);
+              onChange({...question, image: imageState} as EditablePatchFormQuestion);
             }}
             label="Imagen de la pregunta"
             compact={true}
@@ -375,8 +415,9 @@ export function FormQuestionEditor({
               type="text"
               placeholder="Ej: Información personal"
               value={question.category || ''}
-              onChange={(e) => onChange({ ...question, category: e.target.value } as EditablePatchFormQuestion)}
+              onChange={(e) => onChange({...question, category: e.target.value} as EditablePatchFormQuestion)}
               className={styles.input}
+              disabled={readOnly}
             />
           </div>
 
@@ -385,9 +426,10 @@ export function FormQuestionEditor({
             <textarea
               placeholder="Escribe tu pregunta aquí..."
               value={question.text || ''}
-              onChange={(e) => onChange({ ...question, text: e.target.value } as EditablePatchFormQuestion)}
+              onChange={(e) => onChange({...question, text: e.target.value} as EditablePatchFormQuestion)}
               className={styles.textarea}
               rows={2}
+              disabled={readOnly}
             />
           </div>
 
@@ -406,25 +448,59 @@ export function FormQuestionEditor({
                 let newQuestion: EditablePatchFormQuestion;
                 switch (e.target.value) {
                   case 'select-one':
-                    newQuestion = { ...baseQuestion, type: 'select-one', options: [], other: false } as EditablePatchSelectOne;
+                    newQuestion = {
+                      ...baseQuestion,
+                      type: 'select-one',
+                      options: [],
+                      other: false
+                    } as EditablePatchSelectOne;
                     break;
                   case 'select-multiple':
-                    newQuestion = { ...baseQuestion, type: 'select-multiple', options: [], min: 0, max: 0, other: false } as EditablePatchSelectMultiple;
+                    newQuestion = {
+                      ...baseQuestion,
+                      type: 'select-multiple',
+                      options: [],
+                      min: 0,
+                      max: 0,
+                      other: false
+                    } as EditablePatchSelectMultiple;
                     break;
                   case 'slider':
-                    newQuestion = { ...baseQuestion, type: 'slider', placeholder: '', min: 0, max: 100, step: 1, labels: [] } as EditablePatchSlider;
+                    newQuestion = {
+                      ...baseQuestion,
+                      type: 'slider',
+                      placeholder: '',
+                      min: 0,
+                      max: 100,
+                      step: 1,
+                      labels: []
+                    } as EditablePatchSlider;
                     break;
                   case 'text-short':
-                    newQuestion = { ...baseQuestion, type: 'text-short', placeholder: '', minLength: 0, maxLength: 100 } as EditablePatchTextShort;
+                    newQuestion = {
+                      ...baseQuestion,
+                      type: 'text-short',
+                      placeholder: '',
+                      minLength: 0,
+                      maxLength: 100
+                    } as EditablePatchTextShort;
                     break;
                   case 'text-long':
-                    newQuestion = { ...baseQuestion, type: 'text-long', placeholder: '', minLength: 0, maxLength: 1000 } as EditablePatchTextLong;
+                    newQuestion = {
+                      ...baseQuestion,
+                      type: 'text-long',
+                      placeholder: '',
+                      minLength: 0,
+                      maxLength: 1000
+                    } as EditablePatchTextLong;
                     break;
                   default:
                     return;
                 }
                 onChange(newQuestion);
+
               }}
+              disabled={readOnly}
               className={styles.select}
             >
               <option value="select-one">Selección única</option>
@@ -444,11 +520,12 @@ export function FormQuestionEditor({
                   type="button"
                   className={styles.toggleButton}
                   onClick={() => setShowOptions(!showOptions)}
+                  disabled={readOnly}
                 >
                   <span className={`${styles.arrow} ${showOptions ? styles.arrowExpanded : ''}`}>▼</span>
                   <span>Opciones ({(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.length || 0})</span>
                 </button>
-                <button type="button" onClick={handleAddOption} className={styles.addButton}>
+                <button type="button" onClick={handleAddOption} className={styles.addButton}  disabled={readOnly}>
                   + Agregar opción
                 </button>
               </div>
@@ -466,6 +543,7 @@ export function FormQuestionEditor({
                             type="button"
                             onClick={() => handleRemoveOption(optionIndex)}
                             className={styles.removeOptionButton}
+                            disabled={readOnly}
                           >
                             ✕
                           </button>
@@ -486,6 +564,7 @@ export function FormQuestionEditor({
                           value={typedOption.text || ''}
                           onChange={(e) => handleOptionChange(optionIndex, 'text', e.target.value)}
                           className={styles.input}
+                          disabled={readOnly}
                         />
                       </div>
                     );
@@ -502,11 +581,12 @@ export function FormQuestionEditor({
                   type="button"
                   className={styles.toggleButton}
                   onClick={() => setShowLabels(!showLabels)}
+                  disabled={readOnly}
                 >
                   <span className={`${styles.arrow} ${showLabels ? styles.arrowExpanded : ''}`}>▼</span>
                   <span>Etiquetas del slider ({(question as EditablePatchSlider).labels?.length || 0})</span>
                 </button>
-                <button type="button" onClick={handleAddLabel} className={styles.addButton}>
+                <button type="button" onClick={handleAddLabel} className={styles.addButton} disabled={readOnly}>
                   + Agregar etiqueta
                 </button>
               </div>
@@ -521,6 +601,7 @@ export function FormQuestionEditor({
                         value={label.number}
                         onChange={(e) => handleLabelChange(labelIndex, 'number', parseInt(e.target.value) || 0)}
                         className={styles.labelNumberInput}
+                        disabled={readOnly}
                       />
                       <input
                         type="text"
@@ -528,11 +609,13 @@ export function FormQuestionEditor({
                         value={label.label}
                         onChange={(e) => handleLabelChange(labelIndex, 'label', e.target.value)}
                         className={styles.labelTextInput}
+                        disabled={readOnly}
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveLabel(labelIndex)}
                         className={styles.removeLabelButton}
+                        disabled={readOnly}
                       >
                         ✕
                       </button>
@@ -547,4 +630,3 @@ export function FormQuestionEditor({
     </div>
   );
 }
-

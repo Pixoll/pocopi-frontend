@@ -40,9 +40,9 @@ export function App() {
     getConfig();
   }, []);
 
-  const goToModifyConfigPage = (configVersion: number, onlyRead: boolean) => {
+  const goToModifyConfigPage = (configVersion: number, readOnly: boolean) => {
     window.scrollTo(0, 0);
-    navigate(`/modify-config/${configVersion.toString()}/${onlyRead ?  'true' : 'false' }`);
+    navigate(`/modify-config/${configVersion.toString()}`, {state:{readOnly}});
   };
 
   const goToPreTest = (attempt: UserTestAttempt) => {
@@ -132,7 +132,7 @@ export function App() {
         element={<AdminPage goToModifyConfigPage={goToModifyConfigPage}  config={config}/>}
       />
       <Route
-        path="/modify-config/:configVersion/:readOnly"
+        path="/modify-config/:configVersion"
         element={<ModifyLatestConfigPage  config={config}/>}
       />
       <Route path="*" element={<Navigate to="/" replace/>}/>

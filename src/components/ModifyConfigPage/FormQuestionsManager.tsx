@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { FormQuestionEditor } from '@/components/ModifyConfigPage/FormQuestionEditor.tsx';
-import { FormDestinationModal } from '@/components/ModifyConfigPage/FormDestinationModal.tsx';
-import { ConfirmModal } from "@/components/ConfirmModal.tsx";
+import {useState} from 'react';
+import {FormQuestionEditor} from '@/components/ModifyConfigPage/FormQuestionEditor.tsx';
+import {FormDestinationModal} from '@/components/ModifyConfigPage/FormDestinationModal.tsx';
+import {ConfirmModal} from "@/components/ConfirmModal.tsx";
 import type {
   EditablePatchFormQuestion,
   EditablePatchSelectOne,
@@ -12,7 +12,7 @@ import type {
   EditablePatchFormOption,
   ImageState
 } from "@/utils/imageCollector.ts";
-import { getImageFile } from '@/utils/imageCollector.ts';
+import {getImageFile} from '@/utils/imageCollector.ts';
 import styles from "@/styles/ModifyConfigPage/FormQuestionsManager.module.css";
 
 type FormQuestionsManagerProps = {
@@ -20,6 +20,7 @@ type FormQuestionsManagerProps = {
   questions: EditablePatchFormQuestion[];
   onChange: (questions: EditablePatchFormQuestion[]) => void;
   onCopyToOtherForm?: (question: EditablePatchFormQuestion, targetForm: 'preTestForm' | 'postTestForm') => void;
+  readOnly: boolean;
 };
 
 let fileCounter = 0;
@@ -37,7 +38,7 @@ function cloneImageState(image: ImageState | undefined): ImageState | undefined 
   if (!file) return undefined;
 
   const uniqueName = generateUniqueFileName();
-  return { type: 'new', value: new File([file], uniqueName, { type: file.type }) };
+  return {type: 'new', value: new File([file], uniqueName, {type: file.type})};
 }
 
 function cloneFormOption(option: EditablePatchFormOption): EditablePatchFormOption {
@@ -52,7 +53,8 @@ export function FormQuestionsManager({
                                        formType,
                                        questions,
                                        onChange,
-                                       onCopyToOtherForm
+                                       onCopyToOtherForm,
+                                       readOnly,
                                      }: FormQuestionsManagerProps) {
   const [formClipboard, setFormClipboard] = useState<EditablePatchFormQuestion | null>(null);
   const [showFormDestinationModal, setShowFormDestinationModal] = useState(false);
@@ -99,7 +101,7 @@ export function FormQuestionsManager({
           min: q.min,
           max: q.max,
           step: q.step,
-          labels: q.labels?.map(l => ({ ...l })) || []
+          labels: q.labels?.map(l => ({...l})) || []
         } as EditablePatchSlider;
       }
       case 'text-short': {
@@ -220,37 +222,41 @@ export function FormQuestionsManager({
               onCopy={() => copyQuestion(index)}
               onMoveUp={index > 0 ? () => moveQuestion(index, 'up') : undefined}
               onMoveDown={index < questions.length - 1 ? () => moveQuestion(index, 'down') : undefined}
+              readOnly={readOnly}
             />
           ))}
         </div>
       )}
 
-      <FormDestinationModal
-        isOpen={showFormDestinationModal}
-        onClose={() => {
-          setShowFormDestinationModal(false);
-          setFormClipboard(null);
-        }}
-        onConfirm={handlePasteToOtherForm}
-        title="Copiar pregunta a..."
-        currentForm={formType}
-        questionToPaste={formClipboard}
-      />
-
-      <ConfirmModal
-        isOpen={showDeleteConfirm}
-        onClose={() => {
-          setShowDeleteConfirm(false);
-          setPendingDeleteIndex(null);
-        }}
-        onConfirm={() => {
-          if (pendingDeleteIndex !== null) {
-            removeQuestion(pendingDeleteIndex);
-          }
-        }}
-        title="Confirmar Eliminación"
-        message="¿Estás seguro de eliminar esta pregunta? Esta acción no se puede deshacer."
-      />
+      {readOnly && (
+        <FormDestinationModal
+          isOpen={showFormDestinationModal}
+          onClose={() => {
+            setShowFormDestinationModal(false);
+            setFormClipboard(null);
+          }}
+          onConfirm={handlePasteToOtherForm}
+          title="Copiar pregunta a..."
+          currentForm={formType}
+          questionToPaste={formClipboard}
+        />
+      )}
+      {readOnly && (
+        <ConfirmModal
+          isOpen={showDeleteConfirm}
+          onClose={() => {
+            setShowDeleteConfirm(false);
+            setPendingDeleteIndex(null);
+          }}
+          onConfirm={() => {
+            if (pendingDeleteIndex !== null) {
+              removeQuestion(pendingDeleteIndex);
+            }
+          }}
+          title="Confirmar Eliminación"
+          message="¿Estás seguro de eliminar esta pregunta? Esta acción no se puede deshacer."
+        />
+      )}
     </div>
   );
 }

@@ -127,6 +127,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 onChange={(e) => setConfig({...config, title: e.target.value})}
                 className={styles.input}
                 placeholder="Título de la configuración"
+                disabled={readOnly}
               />
             </div>
 
@@ -138,6 +139,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 onChange={(e) => setConfig({...config, subtitle: e.target.value})}
                 className={styles.input}
                 placeholder="Subtítulo"
+                disabled={readOnly}
               />
             </div>
 
@@ -148,6 +150,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 onChange={(e) => setConfig({...config, description: e.target.value})}
                 className={styles.textarea}
                 placeholder="Descripción"
+                disabled={readOnly}
                 rows={4}
               />
             </div>
@@ -158,6 +161,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                   type="checkbox"
                   checked={config.anonymous}
                   onChange={(e) => setConfig({...config, anonymous: e.target.checked})}
+                  disabled={readOnly}
                 />
                 Anónimo
               </label>
@@ -170,6 +174,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 onChange={(e) => setConfig({...config, informedConsent: e.target.value})}
                 className={styles.textarea}
                 placeholder="Texto del consentimiento informado"
+                disabled={readOnly}
                 rows={6}
               />
             </div>
@@ -204,6 +209,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 key={card.id ?? `new-card-${index}`}
                 card={card}
                 index={index}
+                readOnly={readOnly}
                 onChange={(updated) => {
                   setConfig(produce(config, (draft) => {
                     draft.informationCards[index] = updated;
@@ -244,6 +250,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
               <FaqEditor
                 key={index}
                 faq={faq}
+                readOnly={readOnly}
                 index={index}
                 onChange={(updated) => {
                   const newFaqs = [...config.faq];
@@ -266,6 +273,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
               config={config}
               setConfig={setConfig}
               formType="preTestForm"
+              readOnly={readOnly}
             />
           </div>
         );
@@ -277,6 +285,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
               config={config}
               setConfig={setConfig}
               formType="postTestForm"
+              readOnly={readOnly}
             />
           </div>
         );
@@ -305,6 +314,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                   }));
                 }}
                 className={styles.addButton}
+                disabled={readOnly}
               >
                 + Añadir Grupo
               </button>

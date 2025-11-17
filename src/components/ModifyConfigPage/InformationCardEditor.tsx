@@ -8,9 +8,11 @@ type InformationCardEditorProps = {
   index: number;
   onChange: (card: EditablePatchInformationCard) => void;
   onRemove: () => void;
+  readOnly:boolean;
+
 }
 
-export function InformationCardEditor({ card, index, onChange, onRemove }: InformationCardEditorProps) {
+export function InformationCardEditor({ card, index, onChange, onRemove, readOnly }: InformationCardEditorProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -25,6 +27,7 @@ export function InformationCardEditor({ card, index, onChange, onRemove }: Infor
         value={card.title || ''}
         onChange={(e) => onChange({ ...card, title: e.target.value })}
         className={styles.input}
+        disabled={readOnly}
       />
       <textarea
         placeholder="Descripción"
@@ -32,6 +35,7 @@ export function InformationCardEditor({ card, index, onChange, onRemove }: Infor
         onChange={(e) => onChange({ ...card, description: e.target.value })}
         className={styles.textarea}
         rows={3}
+        disabled={readOnly}
       />
       <input
         type="number"
@@ -39,6 +43,7 @@ export function InformationCardEditor({ card, index, onChange, onRemove }: Infor
         value={card.color || 0}
         onChange={(e) => onChange({ ...card, color: parseInt(e.target.value) || 0 })}
         className={styles.input}
+        disabled={readOnly}
       />
       <ImageEditor
         image={card.icon}

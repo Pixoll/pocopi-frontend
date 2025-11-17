@@ -6,9 +6,10 @@ type FormQuestionsCoordinatorProps = {
   config: EditablePatchConfig;
   setConfig: (config: EditablePatchConfig) => void;
   formType: 'preTestForm' | 'postTestForm';
+  readOnly: boolean;
 };
 
-export function FormQuestionsCoordinator({ config, setConfig, formType }: FormQuestionsCoordinatorProps) {
+export function FormQuestionsCoordinator({ config, setConfig, formType , readOnly}: FormQuestionsCoordinatorProps) {
   const form = formType === 'preTestForm' ? config.preTestForm : config.postTestForm;
   const questions = form?.questions || [];
 
@@ -50,6 +51,7 @@ export function FormQuestionsCoordinator({ config, setConfig, formType }: FormQu
       questions={questions}
       onChange={handleQuestionsChange}
       onCopyToOtherForm={handleCopyToOtherForm}
+      readOnly={readOnly}
     />
   );
 }

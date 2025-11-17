@@ -101,9 +101,10 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
         </div>
 
         <div className={styles.buttonsContainer}>
+
           {isActive ? (
             <div className={styles.buttonWrapper}>
-              <button onClick={() => goToModifyConfigPage(configData.version, isActive)} className={styles.modifyButton}>
+              <button onClick={() => goToModifyConfigPage(configData.version, !isActive)} className={styles.modifyButton}>
                 Modify
               </button>
               <span className={styles.buttonHint}>Edit current configuration</span>
@@ -118,6 +119,13 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
                   Set as active version
                 </button>
                 <span className={styles.buttonHint}>Make this the active config</span>
+
+                <button
+                  className={styles.setVersionButton}
+                  onClick={() => goToModifyConfigPage(configData.version, !isActive)}
+                >
+                   View version
+                </button>
               </div>
               <div className={styles.buttonWrapper}>
                 <button

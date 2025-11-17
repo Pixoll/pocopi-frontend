@@ -6,9 +6,10 @@ type FaqEditorProps = {
   index: number;
   onChange: (faq: FrequentlyAskedQuestionUpdate) => void;
   onRemove: () => void;
+  readOnly: boolean;
 }
 
-export function FaqEditor({ faq, index, onChange, onRemove }: FaqEditorProps) {
+export function FaqEditor({ faq, index, onChange, onRemove ,readOnly }: FaqEditorProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -31,6 +32,7 @@ export function FaqEditor({ faq, index, onChange, onRemove }: FaqEditorProps) {
             value={faq.question || ''}
             onChange={(e) => onChange({ ...faq, question: e.target.value })}
             className={styles.input}
+            disabled={readOnly}
           />
         </div>
 
@@ -44,6 +46,7 @@ export function FaqEditor({ faq, index, onChange, onRemove }: FaqEditorProps) {
             onChange={(e) => onChange({ ...faq, answer: e.target.value })}
             className={styles.textarea}
             rows={4}
+            disabled={readOnly}
           />
           <div className={styles.charCount}>
             {(faq.answer || '').length} caracteres
