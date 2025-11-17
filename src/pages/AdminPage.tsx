@@ -1,46 +1,106 @@
 import styles from "@/styles/AdminPage/AdminPage.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import type { TrimmedConfig } from "@/api";
+import api, { type TrimmedConfig, type ConfigPreview } from "@/api";
+import { useAuth } from "@/contexts/AuthContext.tsx";
+import { LoadingPage } from "@/pages/LoadingPage.tsx";
 
 type AdminPageProps = {
-  goToModifyConfigPage: () => void;
+  goToModifyConfigPage: (configVersion: number, onlyRead: boolean) => void;
+  token: string;
   config: TrimmedConfig;
 }
 
-function AdminPageContent({ goToModifyConfigPage }: Omit<AdminPageProps, 'config'>) {
-  const [Ids, setIds] = useState([1, 2, 3, 4, 5]);
-  const [max, setMax] = useState(5);
+async function getAllConfigs(set: (data: ConfigPreview[]) => void, token: string) {
+  try {
+    const response = await api.getAllConfigs();
+    if (response) {
+      set(response.data ?? []);
+    }
+  } catch (error) {
+    console.log(error);
+    set([]);
+  }
+}
 
-  const orderConfigs = [...Ids].sort((a, b) => b - a);
+function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 'config'>) {
+  const [configs, setConfigs] = useState<ConfigPreview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  function setAsLastVersion(id: number) {
-    const newIds = Ids.filter(existingId => existingId !== id);
-    const newMaxId = max + 1;
-    setIds([...newIds, newMaxId]);
-    setMax(newMaxId);
+  useEffect(() => {
+    const fetchConfigs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        await getAllConfigs(setConfigs, token);
+      } catch (err) {
+        console.error("Error fetching configs:", err);
+        setError("Error al cargar las configuraciones");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConfigs();
+  }, [token]);
+
+  const sortedConfigs = [...configs].sort((a, b) => b.version - a.version);
+
+  async function setAsLastVersion(version: number) {
+    try {
+      const response = await api.setConfigAsActive({ path: {version}})
+      if(response){
+        await getAllConfigs(setConfigs, token);
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError("Error al establecer la versión");
+    }
   }
 
-  function configSection(id: number, isLast: boolean) {
+  async function deleteConfig(version: number) {
+    try {
+      const response = await api.deleteConfig({ path: { version } });
+      if (response) {
+        await getAllConfigs(setConfigs, token);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Error al eliminar la configuración");
+    }
+  }
+
+  function configSection(configData: ConfigPreview, isLast: boolean) {
     return (
-      <div className={isLast ? styles.lastConfigSection : styles.configSection} key={id}>
+      <div className={isLast ? styles.lastConfigSection : styles.configSection} key={configData.version}>
         <div className={styles.infoContainer}>
           <div className={styles.versionHeader}>
-            <span className={styles.versionNumber}>Version {id}</span>
+            {configData.icon?.url && (
+              <img
+                src={configData.icon.url}
+                alt={`Icon version ${configData.version}`}
+                className={styles.configIcon}
+              />
+            )}
+            <span className={styles.versionNumber}>Version {configData.version}</span>
             {isLast && <span className={styles.currentBadge}>Current</span>}
           </div>
 
           <div className={styles.contentInfo}>
-            <h3 className={styles.title}>Title</h3>
-            <p className={styles.subtitle}>Subtitle</p>
-            <p className={styles.description}>Description</p>
+            <h3 className={styles.title}>{configData.title || "Sin título"}</h3>
+            {configData.subtitle && (
+              <p className={styles.subtitle}>{configData.subtitle}</p>
+            )}
+            <p className={styles.description}>{configData.description || "Sin descripción"}</p>
           </div>
         </div>
 
         <div className={styles.buttonsContainer}>
           {isLast ? (
             <div className={styles.buttonWrapper}>
-              <button onClick={goToModifyConfigPage} className={styles.modifyButton}>
+              <button onClick={() => goToModifyConfigPage(configData.version, isLast)} className={styles.modifyButton}>
                 Modify
               </button>
               <span className={styles.buttonHint}>Edit current configuration</span>
@@ -50,21 +110,59 @@ function AdminPageContent({ goToModifyConfigPage }: Omit<AdminPageProps, 'config
               <div className={styles.buttonWrapper}>
                 <button
                   className={styles.setVersionButton}
-                  onClick={() => setAsLastVersion(id)}
+                  onClick={() => setAsLastVersion(configData.version)}
                 >
                   Set as last version
                 </button>
                 <span className={styles.buttonHint}>Make this the active config</span>
               </div>
               <div className={styles.buttonWrapper}>
-                <button className={styles.deleteButton}>
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => deleteConfig(configData.version)}
+                  disabled={!configData.canDelete}
+                >
                   Delete
                 </button>
-                <span className={styles.buttonHint}>Remove this version</span>
+                <span className={styles.buttonHint}>
+                  {configData.canDelete ? "Remove this version" : "Cannot delete this version"}
+                </span>
               </div>
             </>
           )}
         </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return <LoadingPage message="Cargando configuraciones..." />;
+  }
+
+  if (error) {
+    return (
+      <div className={styles.pageContainer}>
+        <div className={styles.errorContainer}>
+          <h2 className={styles.errorTitle}>Error</h2>
+          <p className={styles.errorMessage}>{error}</p>
+          <button
+            className={styles.retryButton}
+            onClick={() => getAllConfigs(setConfigs, token)}
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (configs.length === 0) {
+    return (
+      <div className={styles.pageContainer}>
+        <header className={styles.pageHeader}>
+          <h1 className={styles.pageTitle}>Configuration panel</h1>
+          <p className={styles.pageSubtitle}>Manage and version configurations</p>
+        </header>
       </div>
     );
   }
@@ -77,16 +175,17 @@ function AdminPageContent({ goToModifyConfigPage }: Omit<AdminPageProps, 'config
       </header>
 
       <div className={styles.sectionsContainer}>
-        {orderConfigs.map((id) => configSection(id, id === max))}
+        {sortedConfigs.map((config, index) => configSection(config, index === 0))}
       </div>
     </div>
   );
 }
 
-export function AdminPage({ goToModifyConfigPage, config }: AdminPageProps) {
+export function AdminPage({ goToModifyConfigPage, config }: Omit<AdminPageProps, 'token'>) {
+  const { token } = useAuth();
   return (
     <ProtectedRoute config={config} requireAdmin={true}>
-      <AdminPageContent goToModifyConfigPage={goToModifyConfigPage} />
+      <AdminPageContent goToModifyConfigPage={goToModifyConfigPage} token={token!} />
     </ProtectedRoute>
   );
 }

@@ -27,11 +27,12 @@ import {FormQuestionsCoordinator} from "@/components/ModifyConfigPage/FormQuesti
 import {ErrorDisplay} from "@/components/ErrorDisplay.tsx";
 
 type ModifyConfigPageProps = {
-  token: string;
   onSave?: (config: FullConfig) => void;
+  configVersion: number;
+  readOnly:boolean;
 }
 
-export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, onSave*/}) => {
+export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVersion, readOnly}) => {
   const [config, setConfig] = useState<EditablePatchConfig | null>(null);
   const [activeTab, setActiveTab] = useState<string>('general');
   const [isLoading, setIsLoading] = useState(true);
@@ -46,7 +47,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
-      const response = await api.getActiveConfigAsAdmin();
+      const response = await api.getConfigByVersion({path: {version: configVersion}});
       if (response.data) {
         await preloadImages(response.data);
         setConfig(toEditablePatchConfig(response.data));
