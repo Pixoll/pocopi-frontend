@@ -4,6 +4,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import api, { type TrimmedConfig, type ConfigPreview } from "@/api";
 import { useAuth } from "@/contexts/AuthContext.tsx";
 import { LoadingPage } from "@/pages/LoadingPage.tsx";
+import Markdown from "react-markdown";
 
 type AdminPageProps = {
   goToModifyConfigPage: (configVersion: number, onlyRead: boolean) => void;
@@ -15,7 +16,7 @@ async function getAllConfigs(set: (data: ConfigPreview[]) => void) {
   try {
     const response = await api.getAllConfigs();
     if (response) {
-      set(response.data ?? []);
+      set(response.data?.sort((a, b) => a.active ? -1 : b.version - a.version) ?? []);
     }
   } catch (error) {
     console.log(error);
@@ -93,7 +94,9 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
             {configData.subtitle && (
               <p className={styles.subtitle}>{configData.subtitle}</p>
             )}
-            <p className={styles.description}>{configData.description || "Sin descripción"}</p>
+            <div className={styles.description}>
+              <Markdown >{configData.description || "Sin descripción"}</Markdown>
+            </div>
           </div>
         </div>
 
