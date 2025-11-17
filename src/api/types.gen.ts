@@ -436,6 +436,7 @@ export type ConfigPreview = {
     title: string;
     subtitle?: string | null;
     description: string;
+    active: boolean;
     canDelete: boolean;
 };
 
@@ -941,19 +942,6 @@ export type GetActiveConfigAsUserData = {
     url: '/api/configs/active';
 };
 
-export type GetActiveConfigAsUserErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetActiveConfigAsUserError = GetActiveConfigAsUserErrors[keyof GetActiveConfigAsUserErrors];
-
 export type GetActiveConfigAsUserResponses = {
     /**
      * OK
@@ -996,14 +984,6 @@ export type UpdateActiveConfigData = {
 };
 
 export type UpdateActiveConfigErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
     /**
      * Validation error
      */

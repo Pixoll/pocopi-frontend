@@ -19,7 +19,7 @@ type Test = {
   jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
 
-export function useTest(attempt: UserTestAttempt, token: string): Test {
+export function useTest(attempt: UserTestAttempt): Test {
   const answersFromAttempt = useMemo(() => Object.fromEntries(attempt.testAnswers.map(answer =>
     [answer.questionId, answer.optionId]
   )) as Record<number, number>, [attempt]);
@@ -66,7 +66,7 @@ export function useTest(attempt: UserTestAttempt, token: string): Test {
     setQuestionIndex(newQuestionIndex);
     setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
 
-    sendQuestionEvent(token, questionId, questionTimestamp);
+    sendQuestionEvent(questionId, questionTimestamp);
     setQuestionTimestamp(Date.now());
   };
 
@@ -98,7 +98,7 @@ export function useTest(attempt: UserTestAttempt, token: string): Test {
     setShowSummary(true);
     setShowedSummary(true);
 
-    sendQuestionEvent(token, questionId, questionTimestamp);
+    sendQuestionEvent(questionId, questionTimestamp);
     setQuestionTimestamp(Date.now());
   };
 
@@ -112,7 +112,7 @@ export function useTest(attempt: UserTestAttempt, token: string): Test {
       setQuestionIndex(0);
       setSelectedOptionId(answers[newPhaseIndex][targetQuestion.id]);
 
-      sendQuestionEvent(token, questionId, questionTimestamp);
+      sendQuestionEvent(questionId, questionTimestamp);
       setQuestionTimestamp(Date.now());
 
       return;
@@ -136,7 +136,7 @@ export function useTest(attempt: UserTestAttempt, token: string): Test {
     setQuestionIndex(questionIndex - 1);
     setSelectedOptionId(answers[phaseIndex][targetQuestion.id]);
 
-    sendQuestionEvent(token, questionId, questionTimestamp);
+    sendQuestionEvent(questionId, questionTimestamp);
     setQuestionTimestamp(Date.now());
   };
 
@@ -151,7 +151,7 @@ export function useTest(attempt: UserTestAttempt, token: string): Test {
       setQuestionIndex(questionIndex + 1);
       setSelectedOptionId(answers[phaseIndex][targetQuestion.id]);
 
-      sendQuestionEvent(token, questionId, questionTimestamp);
+      sendQuestionEvent(questionId, questionTimestamp);
       setQuestionTimestamp(Date.now());
 
       return;
@@ -177,16 +177,16 @@ export function useTest(attempt: UserTestAttempt, token: string): Test {
   const onOptionClick = async (optionId: number) => {
     if (selectedOptionId === optionId) {
       setAnswer(phaseIndex, questionId, null);
-      sendOptionEvent(token, optionId, "deselect");
+      sendOptionEvent(optionId, "deselect");
     } else {
       setAnswer(phaseIndex, questionId, optionId);
-      sendOptionEvent(token, optionId, "select");
+      sendOptionEvent(optionId, "select");
     }
     setSelectedOptionId((v) => (v === optionId ? null : optionId));
   };
 
   const onOptionHover = async (optionId: number) => {
-    sendOptionEvent(token, optionId, "hover");
+    sendOptionEvent(optionId, "hover");
   };
 
   return {
@@ -206,7 +206,7 @@ export function useTest(attempt: UserTestAttempt, token: string): Test {
   };
 }
 
-function sendQuestionEvent(token: string, questionId: number, timestamp: number): void {
+function sendQuestionEvent(questionId: number, timestamp: number): void {
   try {
     // noinspection JSIgnoredPromiseFromCall
     api.saveQuestionEventLog({
@@ -221,7 +221,7 @@ function sendQuestionEvent(token: string, questionId: number, timestamp: number)
   }
 }
 
-function sendOptionEvent(token: string, optionId: number, type: NewOptionEventLog["type"]): void {
+function sendOptionEvent(optionId: number, type: NewOptionEventLog["type"]): void {
   try {
     // noinspection JSIgnoredPromiseFromCall
     api.saveOptionEventLog({

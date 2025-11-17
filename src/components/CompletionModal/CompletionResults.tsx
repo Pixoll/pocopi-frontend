@@ -1,5 +1,4 @@
 import api, { type AssignedTestGroup, type TrimmedConfig, type User, type UserSummary } from "@/api";
-import { useAuth } from "@/contexts/AuthContext.tsx";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
 import { t } from "@/utils/translations.ts";
@@ -23,7 +22,6 @@ export function CompletionResults({ config, userData, group }: CompletionResults
   const [loading, setLoading] = useState(false);
   const [userResult, setUserResult] = useState<UserResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
 
   if (!userData) {
     return (

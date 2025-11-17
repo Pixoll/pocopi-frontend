@@ -11,7 +11,7 @@ type AdminPageProps = {
   config: TrimmedConfig;
 }
 
-async function getAllConfigs(set: (data: ConfigPreview[]) => void, token: string) {
+async function getAllConfigs(set: (data: ConfigPreview[]) => void) {
   try {
     const response = await api.getAllConfigs();
     if (response) {
@@ -33,7 +33,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
       try {
         setLoading(true);
         setError(null);
-        await getAllConfigs(setConfigs, token);
+        await getAllConfigs(setConfigs);
       } catch (err) {
         console.error("Error fetching configs:", err);
         setError("Error al cargar las configuraciones");
@@ -51,7 +51,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
     try {
       const response = await api.setConfigAsActive({ path: {version}})
       if(response){
-        await getAllConfigs(setConfigs, token);
+        await getAllConfigs(setConfigs);
       }
 
     } catch (err) {
@@ -64,7 +64,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
     try {
       const response = await api.deleteConfig({ path: { version } });
       if (response) {
-        await getAllConfigs(setConfigs, token);
+        await getAllConfigs(setConfigs);
       }
     } catch (err) {
       console.error(err);
@@ -112,7 +112,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
                   className={styles.setVersionButton}
                   onClick={() => setAsLastVersion(configData.version)}
                 >
-                  Set as last version
+                  Set as active version
                 </button>
                 <span className={styles.buttonHint}>Make this the active config</span>
               </div>
@@ -147,7 +147,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
           <p className={styles.errorMessage}>{error}</p>
           <button
             className={styles.retryButton}
-            onClick={() => getAllConfigs(setConfigs, token)}
+            onClick={() => getAllConfigs(setConfigs)}
           >
             Reintentar
           </button>

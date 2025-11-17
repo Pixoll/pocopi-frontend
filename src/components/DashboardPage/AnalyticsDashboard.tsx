@@ -23,7 +23,7 @@ type AnalyticsDashboardProps = {
   adminToken: string;
 };
 
-export function AnalyticsDashboard({ config, onBack, adminToken }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) {
   const [summary, setSummary] = useState<UsersSummary>({
     averageAccuracy: 0,
     averageTimeTaken: 0,

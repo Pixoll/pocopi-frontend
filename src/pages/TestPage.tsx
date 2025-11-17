@@ -54,7 +54,6 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
 }
 
 function TestPageContent({
-  token,
   config,
   attempt,
   goToNextPage,
@@ -80,7 +79,7 @@ function TestPageContent({
     onOptionClick,
     onOptionHover,
     jumpToQuestion,
-  } = useTest(attempt, token);
+  } = useTest(attempt);
 
   const group = attempt.assignedGroup;
   const { phases } = group;
