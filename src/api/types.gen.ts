@@ -119,9 +119,7 @@ export type FormOptionUpdate = {
     text?: string;
 };
 
-export type FormQuestionUpdate = {
-    type: string;
-};
+export type FormQuestionUpdate = unknown;
 
 export type FormUpdate = {
     id?: number;
@@ -149,8 +147,6 @@ export type PatternUpdate = {
 };
 
 export type SelectMultipleUpdate = FormQuestionUpdate & {
-    type: 'SelectMultipleUpdate';
-} & {
     id?: number;
     category: string;
     text?: string;
@@ -162,8 +158,6 @@ export type SelectMultipleUpdate = FormQuestionUpdate & {
 };
 
 export type SelectOneUpdate = FormQuestionUpdate & {
-    type: 'SelectOneUpdate';
-} & {
     id?: number;
     category: string;
     text?: string;
@@ -179,8 +173,6 @@ export type SliderLabelUpdate = {
 };
 
 export type SliderUpdate = FormQuestionUpdate & {
-    type: 'SliderUpdate';
-} & {
     id?: number;
     category: string;
     text?: string;
@@ -223,8 +215,6 @@ export type TestQuestionUpdate = {
 };
 
 export type TextLongUpdate = FormQuestionUpdate & {
-    type: 'TextLongUpdate';
-} & {
     id?: number;
     category: string;
     text?: string;
@@ -235,8 +225,6 @@ export type TextLongUpdate = FormQuestionUpdate & {
 };
 
 export type TextShortUpdate = FormQuestionUpdate & {
-    type: 'TextShortUpdate';
-} & {
     id?: number;
     category: string;
     text?: string;
@@ -480,7 +468,7 @@ export type SelectMultiple = FormQuestion & {
     category: string;
     text?: string | null;
     image?: Image | null;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    type: 'select-multiple';
     options: Array<FormOption>;
     min: number;
     max: number;
@@ -492,7 +480,7 @@ export type SelectOne = FormQuestion & {
     category: string;
     text?: string | null;
     image?: Image | null;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    type: 'select-one';
     options: Array<FormOption>;
     other: boolean;
 };
@@ -502,7 +490,7 @@ export type Slider = FormQuestion & {
     category: string;
     text?: string | null;
     image?: Image | null;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    type: 'slider';
     min: number;
     max: number;
     step: number;
@@ -520,7 +508,7 @@ export type TextLong = FormQuestion & {
     category: string;
     text?: string | null;
     image?: Image | null;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    type: 'text-long';
     placeholder: string;
     minLength: number;
     maxLength: number;
@@ -531,7 +519,7 @@ export type TextShort = FormQuestion & {
     category: string;
     text?: string | null;
     image?: Image | null;
-    type: 'select-one' | 'select-multiple' | 'slider' | 'text-short' | 'text-long';
+    type: 'text-short';
     placeholder: string;
     minLength: number;
     maxLength: number;
