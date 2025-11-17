@@ -16,7 +16,7 @@ export function useUserRole() {
 
     const checkRole = async () => {
       try {
-        const response = await api.getCurrentAdmin({ auth: token });
+        const response = await api.getCurrentAdmin();
 
         if (response && response.data) {
           setIsAdmin(true);

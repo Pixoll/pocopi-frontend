@@ -30,7 +30,7 @@ export function CompletionModal({
     const fetchUser = async () => {
       if (token) {
         try {
-          const response = await api.getCurrentUser({ auth: token });
+          const response = await api.getCurrentUser();
           setUser(response.data ?? null);
         } catch (error) {
           console.error(error);

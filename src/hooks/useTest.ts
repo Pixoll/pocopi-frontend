@@ -210,7 +210,6 @@ function sendQuestionEvent(token: string, questionId: number, timestamp: number)
   try {
     // noinspection JSIgnoredPromiseFromCall
     api.saveQuestionEventLog({
-      auth: token,
       body: {
         questionId,
         timestamp,
@@ -226,7 +225,6 @@ function sendOptionEvent(token: string, optionId: number, type: NewOptionEventLo
   try {
     // noinspection JSIgnoredPromiseFromCall
     api.saveOptionEventLog({
-      auth: token,
       body: {
         optionId,
         type,

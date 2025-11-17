@@ -33,7 +33,7 @@ export function ContinueAttemptModal({
     setAction("continue");
 
     try {
-      const response = await api.continueTest({ auth: token });
+      const response = await api.continueTest();
 
       if (response.data) {
         onContinue(response.data);
@@ -59,7 +59,7 @@ export function ContinueAttemptModal({
     setAction("discard");
 
     try {
-      const response = await api.discardTest({ auth: token });
+      const response = await api.discardTest();
 
       if (response.error) {
         onError?.(response.error.message || "Error al descartar el intento");

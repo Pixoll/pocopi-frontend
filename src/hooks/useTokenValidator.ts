@@ -12,7 +12,7 @@ export function useTokenValidator() {
     if (!token) return false;
 
     try {
-      const response = await api.getCurrentUser({ auth: token });
+      const response = await api.getCurrentUser();
 
       if (!response || !response.data) {
         clearAuth();

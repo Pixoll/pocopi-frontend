@@ -22,7 +22,7 @@ export function App() {
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
-      const response = await api.getLastestConfigAsUser();
+      const response = await api.getActiveConfigAsUser();
       if (response.data) {
         setConfig(response.data);
         document.title = response.data.title ?? "";

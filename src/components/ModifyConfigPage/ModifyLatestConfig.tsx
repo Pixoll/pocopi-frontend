@@ -46,7 +46,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
-      const response = await api.getLastestConfigAsAdmin({auth:token});
+      const response = await api.getActiveConfigAsAdmin();
       if (response.data) {
         await preloadImages(response.data);
         setConfig(toEditablePatchConfig(response.data));
@@ -79,8 +79,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ token/*, o
 
     try {
       const patchRequest = await buildPatchRequest(config);
-      const { data, error } = await api.updateLatestConfig({
-        auth: token,
+      const { data, error } = await api.updateActiveConfig({
         body: patchRequest
       });
 

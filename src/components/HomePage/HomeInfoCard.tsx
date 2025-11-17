@@ -57,7 +57,7 @@ export function HomeInfoCard({
 
     setCheckingExistingAttempt(true);
     try {
-      const response = await api.beginTest({ auth: token });
+      const response = await api.beginTest();
 
       if (response.data) {
         goToNextPage(response.data);

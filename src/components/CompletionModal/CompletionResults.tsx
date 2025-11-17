@@ -40,9 +40,7 @@ export function CompletionResults({ config, userData, group }: CompletionResults
     setError(null);
 
     try {
-      const result = await api.getCurrentUserSummary({
-        auth: token
-      });
+      const result = await api.getCurrentUserSummary();
 
       if (!result.data) {
         setError(t(config, "completion.failedToGetResults"));

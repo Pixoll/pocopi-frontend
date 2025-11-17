@@ -52,7 +52,7 @@ export function FormPage({
       }
 
       try {
-        const response = await api.getCurrentUser({ auth: token });
+        const response = await api.getCurrentUser();
         if (response.data) {
           setUser(response.data);
         } else if (response.error) {
@@ -133,7 +133,7 @@ export function FormPage({
   const submitEndPostForm = async () => {
     if (token && form && type === "post") {
       try {
-        const response = await api.endTest({ auth: token });
+        const response = await api.endTest();
         if (response.error) {
           setError(response.error);
           return false;
@@ -204,7 +204,6 @@ export function FormPage({
     try {
       const result = await api.submitFormAnswers({
         path: { formType: type },
-        auth: token,
         body: {
           answers: cleanedAnswers,
         }

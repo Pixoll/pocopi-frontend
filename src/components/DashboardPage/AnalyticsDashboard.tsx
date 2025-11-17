@@ -44,7 +44,7 @@ export function AnalyticsDashboard({ config, onBack, adminToken }: AnalyticsDash
       setLoadingSummary(true);
       setError(null);
 
-      const response = await api.getAllUserSummaries({ auth: adminToken});
+      const response = await api.getAllUserSummaries();
 
       if (!response.data) {
         setError(t(config, "dashboard.errorLoadingResults"));

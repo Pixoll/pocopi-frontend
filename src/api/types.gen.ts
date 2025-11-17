@@ -430,6 +430,15 @@ export type QuestionEventLog = {
     events: Array<OptionEventLog>;
 };
 
+export type ConfigPreview = {
+    version: number;
+    icon?: Image | null;
+    title: string;
+    subtitle?: string | null;
+    description: string;
+    canDelete: boolean;
+};
+
 export type Form = {
     id: number;
     questions: Array<SelectMultiple | SelectOne | Slider | TextLong | TextShort>;
@@ -447,6 +456,23 @@ export type FrequentlyAskedQuestion = {
     id: number;
     question: string;
     answer: string;
+};
+
+export type FullConfig = {
+    version: number;
+    icon?: Image | null;
+    title: string;
+    subtitle?: string | null;
+    description: string;
+    anonymous: boolean;
+    usernamePattern?: Pattern;
+    informationCards: Array<InformationCard>;
+    informedConsent: string;
+    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
+    preTestForm?: Form | null;
+    postTestForm?: Form | null;
+    groups: Array<TestGroup>;
+    translations: Array<Translation>;
 };
 
 export type InformationCard = {
@@ -503,62 +529,6 @@ export type SliderLabel = {
     label: string;
 };
 
-export type TextLong = FormQuestion & {
-    id: number;
-    category: string;
-    text?: string | null;
-    image?: Image | null;
-    type: 'text-long';
-    placeholder: string;
-    minLength: number;
-    maxLength: number;
-};
-
-export type TextShort = FormQuestion & {
-    id: number;
-    category: string;
-    text?: string | null;
-    image?: Image | null;
-    type: 'text-short';
-    placeholder: string;
-    minLength: number;
-    maxLength: number;
-};
-
-export type TrimmedConfig = {
-    icon?: Image | null;
-    title: string;
-    subtitle?: string | null;
-    description: string;
-    anonymous: boolean;
-    usernamePattern?: Pattern;
-    informationCards: Array<InformationCard>;
-    informedConsent: string;
-    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
-    preTestForm?: Form | null;
-    postTestForm?: Form | null;
-    translations: {
-        [key: string]: string;
-    };
-};
-
-export type FullConfig = {
-    id: number;
-    icon?: Image | null;
-    title: string;
-    subtitle?: string | null;
-    description: string;
-    anonymous: boolean;
-    usernamePattern?: Pattern;
-    informationCards: Array<InformationCard>;
-    informedConsent: string;
-    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
-    preTestForm?: Form | null;
-    postTestForm?: Form | null;
-    groups: Array<TestGroup>;
-    translations: Array<Translation>;
-};
-
 export type TestGroup = {
     id: number;
     probability: number;
@@ -592,11 +562,50 @@ export type TestQuestion = {
     options: Array<TestOption>;
 };
 
+export type TextLong = FormQuestion & {
+    id: number;
+    category: string;
+    text?: string | null;
+    image?: Image | null;
+    type: 'text-long';
+    placeholder: string;
+    minLength: number;
+    maxLength: number;
+};
+
+export type TextShort = FormQuestion & {
+    id: number;
+    category: string;
+    text?: string | null;
+    image?: Image | null;
+    type: 'text-short';
+    placeholder: string;
+    minLength: number;
+    maxLength: number;
+};
+
 export type Translation = {
     key: string;
     value?: string | null;
     description: string;
     arguments: Array<string>;
+};
+
+export type TrimmedConfig = {
+    icon?: Image | null;
+    title: string;
+    subtitle?: string | null;
+    description: string;
+    anonymous: boolean;
+    usernamePattern?: Pattern;
+    informationCards: Array<InformationCard>;
+    informedConsent: string;
+    frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
+    preTestForm?: Form | null;
+    postTestForm?: Form | null;
+    translations: {
+        [key: string]: string;
+    };
 };
 
 export type ApiHttpError = {
@@ -817,6 +826,35 @@ export type SaveOptionEventLogResponses = {
     200: unknown;
 };
 
+export type SetConfigAsActiveData = {
+    body?: never;
+    path: {
+        version: number;
+    };
+    query?: never;
+    url: '/api/configs/{version}/activate';
+};
+
+export type SetConfigAsActiveErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type SetConfigAsActiveError = SetConfigAsActiveErrors[keyof SetConfigAsActiveErrors];
+
+export type SetConfigAsActiveResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type RegisterData = {
     body: NewUser;
     path?: never;
@@ -896,23 +934,36 @@ export type GetCurrentAdminResponses = {
 
 export type GetCurrentAdminResponse = GetCurrentAdminResponses[keyof GetCurrentAdminResponses];
 
-export type GetLastestConfigAsUserData = {
+export type GetActiveConfigAsUserData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/config';
+    url: '/api/configs/active';
 };
 
-export type GetLastestConfigAsUserResponses = {
+export type GetActiveConfigAsUserErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetActiveConfigAsUserError = GetActiveConfigAsUserErrors[keyof GetActiveConfigAsUserErrors];
+
+export type GetActiveConfigAsUserResponses = {
     /**
      * OK
      */
     200: TrimmedConfig;
 };
 
-export type GetLastestConfigAsUserResponse = GetLastestConfigAsUserResponses[keyof GetLastestConfigAsUserResponses];
+export type GetActiveConfigAsUserResponse = GetActiveConfigAsUserResponses[keyof GetActiveConfigAsUserResponses];
 
-export type UpdateLatestConfigData = {
+export type UpdateActiveConfigData = {
     body: {
         /**
          * New application icon
@@ -941,19 +992,27 @@ export type UpdateLatestConfigData = {
     };
     path?: never;
     query?: never;
-    url: '/api/config';
+    url: '/api/configs/active';
 };
 
-export type UpdateLatestConfigErrors = {
+export type UpdateActiveConfigErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
     /**
      * Validation error
      */
     422: ApiHttpError;
 };
 
-export type UpdateLatestConfigError = UpdateLatestConfigErrors[keyof UpdateLatestConfigErrors];
+export type UpdateActiveConfigError = UpdateActiveConfigErrors[keyof UpdateActiveConfigErrors];
 
-export type UpdateLatestConfigResponses = {
+export type UpdateActiveConfigResponses = {
     /**
      * OK
      */
@@ -1471,14 +1530,14 @@ export type GetUserEventLogsResponses = {
 
 export type GetUserEventLogsResponse = GetUserEventLogsResponses[keyof GetUserEventLogsResponses];
 
-export type GetLastestConfigAsAdminData = {
+export type GetAllConfigsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/config/full';
+    url: '/api/configs';
 };
 
-export type GetLastestConfigAsAdminErrors = {
+export type GetAllConfigsErrors = {
     /**
      * Unauthorized
      */
@@ -1489,13 +1548,102 @@ export type GetLastestConfigAsAdminErrors = {
     403: ApiHttpError;
 };
 
-export type GetLastestConfigAsAdminError = GetLastestConfigAsAdminErrors[keyof GetLastestConfigAsAdminErrors];
+export type GetAllConfigsError = GetAllConfigsErrors[keyof GetAllConfigsErrors];
 
-export type GetLastestConfigAsAdminResponses = {
+export type GetAllConfigsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ConfigPreview>;
+};
+
+export type GetAllConfigsResponse = GetAllConfigsResponses[keyof GetAllConfigsResponses];
+
+export type DeleteConfigData = {
+    body?: never;
+    path: {
+        version: number;
+    };
+    query?: never;
+    url: '/api/configs/{version}';
+};
+
+export type DeleteConfigErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type DeleteConfigError = DeleteConfigErrors[keyof DeleteConfigErrors];
+
+export type DeleteConfigResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetConfigByVersionData = {
+    body?: never;
+    path: {
+        version: number;
+    };
+    query?: never;
+    url: '/api/configs/{version}';
+};
+
+export type GetConfigByVersionErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetConfigByVersionError = GetConfigByVersionErrors[keyof GetConfigByVersionErrors];
+
+export type GetConfigByVersionResponses = {
     /**
      * OK
      */
     200: FullConfig;
 };
 
-export type GetLastestConfigAsAdminResponse = GetLastestConfigAsAdminResponses[keyof GetLastestConfigAsAdminResponses];
+export type GetConfigByVersionResponse = GetConfigByVersionResponses[keyof GetConfigByVersionResponses];
+
+export type GetActiveConfigAsAdminData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/configs/active/full';
+};
+
+export type GetActiveConfigAsAdminErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetActiveConfigAsAdminError = GetActiveConfigAsAdminErrors[keyof GetActiveConfigAsAdminErrors];
+
+export type GetActiveConfigAsAdminResponses = {
+    /**
+     * OK
+     */
+    200: FullConfig;
+};
+
+export type GetActiveConfigAsAdminResponse = GetActiveConfigAsAdminResponses[keyof GetActiveConfigAsAdminResponses];

@@ -29,7 +29,7 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
       setIsValidating(true);
 
       try {
-        const userResponse = await api.getCurrentUser({ auth: token });
+        const userResponse = await api.getCurrentUser();
 
         if (!userResponse || !userResponse.data) {
           console.error('Invalid user response');
@@ -41,7 +41,7 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
 
         if (requireAdmin) {
           try {
-            const adminResponse = await api.getCurrentAdmin({ auth: token });
+            const adminResponse = await api.getCurrentAdmin();
 
             if (!adminResponse || !adminResponse.data) {
               clearAuth();

@@ -24,7 +24,7 @@ export function useLoginLogic({ config, onSuccess, onAttemptInProgress }: LoginL
       if (response.data) {
         const token = response.data.token;
         setToken(token);
-        const groupResponse = await api.beginTest({ auth: token });
+        const groupResponse = await api.beginTest();
 
         if (groupResponse.data) {
           onSuccess?.(groupResponse.data);

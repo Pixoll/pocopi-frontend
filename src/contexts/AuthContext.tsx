@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const adminResponse = await api.getCurrentAdmin({ auth: token });
+      const adminResponse = await api.getCurrentAdmin();
 
       if (adminResponse && adminResponse.data) {
         setUserRole('admin');
@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const userResponse = await api.getCurrentUser({ auth: token });
+      const userResponse = await api.getCurrentUser();
 
       if (userResponse && userResponse.data) {
         setUserRole('user');
