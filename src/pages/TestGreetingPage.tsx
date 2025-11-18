@@ -4,6 +4,7 @@ import { t } from "@/utils/translations.ts";
 
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect } from "react";
 import Markdown from "react-markdown";
 
 type TestInformationPageProps = {
@@ -13,6 +14,21 @@ type TestInformationPageProps = {
 };
 
 export function TestGreetingPage({ config, attempt, goToNextPage }: TestInformationPageProps) {
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const popState = () => {
+      window.history.pushState(null, "", window.location.href);
+      alert("No puedes volver a la página anterior");
+    };
+
+    window.addEventListener("popstate", popState);
+
+    return () => {
+      window.removeEventListener("popstate", popState);
+    };
+  }, []);
+
   if (!attempt || !attempt.assignedGroup.greeting) {
     goToNextPage();
     return (

@@ -37,12 +37,24 @@ export function App() {
   }
 
   useEffect(() => {
+    const beforeUnload = (e: WindowEventMap["beforeunload"]) => {
+      e.preventDefault();
+    };
+
+    window.addEventListener("beforeunload", beforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
     getConfig();
   }, []);
 
   const goToModifyConfigPage = (configVersion: number, readOnly: boolean) => {
     window.scrollTo(0, 0);
-    navigate(`/modify-config/${configVersion.toString()}`, {state:{readOnly}});
+    navigate(`/modify-config/${configVersion.toString()}`, { state: { readOnly } });
   };
 
   const goToPreTest = (attempt: UserTestAttempt) => {
@@ -129,11 +141,11 @@ export function App() {
       />
       <Route
         path="/admin"
-        element={<AdminPage goToModifyConfigPage={goToModifyConfigPage}  config={config}/>}
+        element={<AdminPage goToModifyConfigPage={goToModifyConfigPage} config={config}/>}
       />
       <Route
         path="/modify-config/:configVersion"
-        element={<ModifyLatestConfigPage  config={config}/>}
+        element={<ModifyLatestConfigPage config={config}/>}
       />
       <Route path="*" element={<Navigate to="/" replace/>}/>
     </Routes>

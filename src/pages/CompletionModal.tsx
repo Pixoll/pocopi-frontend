@@ -27,6 +27,21 @@ export function CompletionModal({
   const [_updatedUserData, setUpdatedUserData] = useState<{ username?: string, password?: string }>({});
 
   useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const popState = () => {
+      window.history.pushState(null, "", window.location.href);
+      alert("No puedes volver a la página anterior");
+    };
+
+    window.addEventListener("popstate", popState);
+
+    return () => {
+      window.removeEventListener("popstate", popState);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchUser = async () => {
       if (token) {
         try {

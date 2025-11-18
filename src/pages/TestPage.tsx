@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
+import { useEffect } from "react";
 
 type TestPageProps = {
   config: TrimmedConfig;
@@ -18,6 +19,21 @@ type TestPageProps = {
 export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
   const { isDarkMode } = useTheme();
   const { token } = useAuth();
+
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const popState = () => {
+      window.history.pushState(null, "", window.location.href);
+      alert("No puedes volver a la página anterior");
+    };
+
+    window.addEventListener("popstate", popState);
+
+    return () => {
+      window.removeEventListener("popstate", popState);
+    };
+  }, []);
 
   if (!attempt) {
     return (
