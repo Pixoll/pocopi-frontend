@@ -1,15 +1,15 @@
-import api, {type TrimmedConfig, type UsersSummary, type UserSummary} from "@/api";
+import api, { type TrimmedConfig, type UsersTestAttemptsSummary, type UserTestAttemptSummary } from "@/api";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
 import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import {t} from "@/utils/translations.ts";
+import { t } from "@/utils/translations.ts";
 
 type ParticipantsListProps = {
   config: TrimmedConfig;
   isDarkMode: boolean;
-  summary: UsersSummary;
+  summary: UsersTestAttemptsSummary;
   setError: (value: string | null) => void;
 };
 
@@ -65,7 +65,7 @@ export function ParticipantsList({
     }
   };
 
-  const exportUserTimelogs = async (user: UserSummary) => {
+  const exportUserTimelogs = async (user: UserTestAttemptSummary) => {
     try {
       setLoadingExportUserTimelogs(true);
       setError(null);
@@ -76,7 +76,7 @@ export function ParticipantsList({
         },
       });
       if (response.data) {
-      console.log(response.data);
+        console.log(response.data);
       }
       if (response.error) {
         console.error("error while exporting user:", response.error);
@@ -138,63 +138,64 @@ export function ParticipantsList({
             ].join(" ")}
           >
             <thead>
-            <tr>
-              <th>{t(config, "dashboard.participant")}</th>
-              <th>{t(config, "dashboard.group")}</th>
-              <th>{t(config, "dashboard.date")}</th>
-              <th>{t(config, "dashboard.timeTaken")}</th>
-              <th>{t(config, "dashboard.correct")}</th>
-              <th>{t(config, "dashboard.answered")}</th>
-              <th>{t(config, "dashboard.accuracy")}</th>
-              <th>{t(config, "dashboard.actions")}</th>
-            </tr>
+              <tr>
+                <th>{t(config, "dashboard.participant")}</th>
+                <th>{t(config, "dashboard.group")}</th>
+                <th>{t(config, "dashboard.date")}</th>
+                <th>{t(config, "dashboard.timeTaken")}</th>
+                <th>{t(config, "dashboard.correct")}</th>
+                <th>{t(config, "dashboard.answered")}</th>
+                <th>{t(config, "dashboard.accuracy")}</th>
+                <th>{t(config, "dashboard.actions")}</th>
+              </tr>
             </thead>
             <tbody>
-            {summary.users.map((user) => (
-              <tr key={user.id}>
-                <td>
-                  <div className={styles.userContainer}>
-                    <FontAwesomeIcon
-                      icon={faUser}
-                      className={[
-                        styles.userIcon,
-                        isDarkMode ? styles.userIconDark : styles.userIconLight,
-                      ].join(" ")}
-                    />
-                    <div>
-                      <div className={styles.userName}>
-                        {user.name}
+              {summary.users.map((user) => (
+                <tr key={user.id}>
+                  <td>
+                    <div className={styles.userContainer}>
+                      <FontAwesomeIcon
+                        icon={faUser}
+                        className={[
+                          styles.userIcon,
+                          isDarkMode ? styles.userIconDark : styles.userIconLight,
+                        ].join(" ")}
+                      />
+                      <div>
+                        <div className={styles.userName}>
+                          {user.name}
+                        </div>
+                        <small className={styles.userId}>
+                          {t(config, "dashboard.id", user.id.toString())}
+                        </small>
                       </div>
-                      <small className={styles.userId}>
-                        {t(config, "dashboard.id", user.id.toString())}
-                      </small>
                     </div>
-                  </div>
-                </td>
-                <td>{new Date(user.timestamp).toLocaleString()}</td>
-                <td>{(user.timeTaken / 1000).toFixed(2)}</td>
-                <td>{user.correctQuestions}</td>
-                <td>{user.questionsAnswered}</td>
-                <td>
-                  <div className={[styles.accuracyBadge, getAccuracyBadgeClass(user.accuracy)].join(" ")}>
-                    {user.accuracy.toFixed(1)}%
-                  </div>
-                </td>
-                <td>
-                  <button
-                    className={styles.exportUserButton}
-                    onClick={() => exportUserTimelogs(user)}
-                    disabled={loadingExportUserTimelogs}
-                    title={t(config, "dashboard.exportParticipantResult")}
-                  >
-                    {loadingExportUserTimelogs
-                      ? <Spinner/>
-                      : <FontAwesomeIcon icon={faFileExport}/>
-                    }
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td>{user.group}</td>
+                  <td>{new Date(user.timestamp).toLocaleString()}</td>
+                  <td>{(user.timeTaken / 1000).toFixed(2)}</td>
+                  <td>{user.correctQuestions}</td>
+                  <td>{user.questionsAnswered}</td>
+                  <td>
+                    <div className={[styles.accuracyBadge, getAccuracyBadgeClass(user.accuracy)].join(" ")}>
+                      {user.accuracy.toFixed(1)}%
+                    </div>
+                  </td>
+                  <td>
+                    <button
+                      className={styles.exportUserButton}
+                      onClick={() => exportUserTimelogs(user)}
+                      disabled={loadingExportUserTimelogs}
+                      title={t(config, "dashboard.exportParticipantResult")}
+                    >
+                      {loadingExportUserTimelogs
+                        ? <Spinner/>
+                        : <FontAwesomeIcon icon={faFileExport}/>
+                      }
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

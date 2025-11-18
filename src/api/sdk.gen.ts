@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { BeginTestData, BeginTestErrors, BeginTestResponses, ContinueTestData, ContinueTestErrors, ContinueTestResponses, DeleteConfigData, DeleteConfigErrors, DeleteConfigResponses, DiscardTestData, DiscardTestErrors, DiscardTestResponses, EndTestData, EndTestErrors, EndTestResponses, GetActiveConfigAsAdminData, GetActiveConfigAsAdminErrors, GetActiveConfigAsAdminResponses, GetActiveConfigAsUserData, GetActiveConfigAsUserResponses, GetAllConfigsData, GetAllConfigsErrors, GetAllConfigsResponses, GetAllEventLogsData, GetAllEventLogsErrors, GetAllEventLogsResponses, GetAllUsersData, GetAllUsersErrors, GetAllUsersLatestConfigFormsZipData, GetAllUsersLatestConfigFormsZipErrors, GetAllUsersLatestConfigFormsZipResponses, GetAllUsersLatestConfigResultsZipData, GetAllUsersLatestConfigResultsZipErrors, GetAllUsersLatestConfigResultsZipResponses, GetAllUsersLatestConfigTestsZipData, GetAllUsersLatestConfigTestsZipErrors, GetAllUsersLatestConfigTestsZipResponses, GetAllUsersResponses, GetAllUserSummariesData, GetAllUserSummariesErrors, GetAllUserSummariesResponses, GetConfigByVersionData, GetConfigByVersionErrors, GetConfigByVersionResponses, GetCurrentAdminData, GetCurrentAdminErrors, GetCurrentAdminResponses, GetCurrentUserData, GetCurrentUserErrors, GetCurrentUserResponses, GetCurrentUserSummaryData, GetCurrentUserSummaryErrors, GetCurrentUserSummaryResponses, GetGroupFormResultsZipData, GetGroupFormResultsZipErrors, GetGroupFormResultsZipResponses, GetGroupFullResultsZipData, GetGroupFullResultsZipErrors, GetGroupFullResultsZipResponses, GetGroupTestResultsZipData, GetGroupTestResultsZipErrors, GetGroupTestResultsZipResponses, GetUserAllResultsData, GetUserAllResultsErrors, GetUserAllResultsResponses, GetUserData, GetUserErrors, GetUserEventLogsData, GetUserEventLogsErrors, GetUserEventLogsResponses, GetUserFormResultsData, GetUserFormResultsErrors, GetUserFormResultsResponses, GetUserResponses, GetUserSummaryByIdData, GetUserSummaryByIdErrors, GetUserSummaryByIdResponses, GetUserTestResultsData, GetUserTestResultsErrors, GetUserTestResultsResponses, LoginData, LoginErrors, LoginResponses, RegisterData, RegisterErrors, RegisterResponses, SaveOptionEventLogData, SaveOptionEventLogErrors, SaveOptionEventLogResponses, SaveQuestionEventLogData, SaveQuestionEventLogErrors, SaveQuestionEventLogResponses, SetConfigAsActiveData, SetConfigAsActiveErrors, SetConfigAsActiveResponses, SubmitFormAnswersData, SubmitFormAnswersErrors, SubmitFormAnswersResponses, UpdateActiveConfigData, UpdateActiveConfigErrors, UpdateActiveConfigResponses } from './types.gen';
+import type { BeginTestData, BeginTestErrors, BeginTestResponses, ContinueTestData, ContinueTestErrors, ContinueTestResponses, DeleteConfigData, DeleteConfigErrors, DeleteConfigResponses, DiscardTestData, DiscardTestErrors, DiscardTestResponses, EndTestData, EndTestErrors, EndTestResponses, GetActiveConfigAsAdminData, GetActiveConfigAsAdminErrors, GetActiveConfigAsAdminResponses, GetActiveConfigAsUserData, GetActiveConfigAsUserResponses, GetAllConfigsData, GetAllConfigsErrors, GetAllConfigsResponses, GetAllEventLogsData, GetAllEventLogsErrors, GetAllEventLogsResponses, GetAllUsersData, GetAllUsersErrors, GetAllUsersLatestConfigFormsZipData, GetAllUsersLatestConfigFormsZipErrors, GetAllUsersLatestConfigFormsZipResponses, GetAllUsersLatestConfigResultsZipData, GetAllUsersLatestConfigResultsZipErrors, GetAllUsersLatestConfigResultsZipResponses, GetAllUsersLatestConfigTestsZipData, GetAllUsersLatestConfigTestsZipErrors, GetAllUsersLatestConfigTestsZipResponses, GetAllUsersResponses, GetAllUsersTestAttemptsSummaryData, GetAllUsersTestAttemptsSummaryErrors, GetAllUsersTestAttemptsSummaryResponses, GetConfigByVersionData, GetConfigByVersionErrors, GetConfigByVersionResponses, GetCurrentAdminData, GetCurrentAdminErrors, GetCurrentAdminResponses, GetCurrentUserData, GetCurrentUserErrors, GetCurrentUserResponses, GetCurrentUserTestAttemptSummaryData, GetCurrentUserTestAttemptSummaryErrors, GetCurrentUserTestAttemptSummaryResponses, GetGroupFormResultsZipData, GetGroupFormResultsZipErrors, GetGroupFormResultsZipResponses, GetGroupFullResultsZipData, GetGroupFullResultsZipErrors, GetGroupFullResultsZipResponses, GetGroupTestResultsZipData, GetGroupTestResultsZipErrors, GetGroupTestResultsZipResponses, GetUserAllResultsData, GetUserAllResultsErrors, GetUserAllResultsResponses, GetUserData, GetUserErrors, GetUserEventLogsData, GetUserEventLogsErrors, GetUserEventLogsResponses, GetUserFormResultsData, GetUserFormResultsErrors, GetUserFormResultsResponses, GetUserResponses, GetUserTestAttemptSummaryByIdData, GetUserTestAttemptSummaryByIdErrors, GetUserTestAttemptSummaryByIdResponses, GetUserTestResultsData, GetUserTestResultsErrors, GetUserTestResultsResponses, LoginData, LoginErrors, LoginResponses, RegisterData, RegisterErrors, RegisterResponses, SaveOptionEventLogData, SaveOptionEventLogErrors, SaveOptionEventLogResponses, SaveQuestionEventLogData, SaveQuestionEventLogErrors, SaveQuestionEventLogResponses, SetConfigAsActiveData, SetConfigAsActiveErrors, SetConfigAsActiveResponses, SubmitFormAnswersData, SubmitFormAnswersErrors, SubmitFormAnswersResponses, UpdateActiveConfigData, UpdateActiveConfigErrors, UpdateActiveConfigResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -233,41 +233,41 @@ export const getCurrentUser = <ThrowOnError extends boolean = false>(options?: O
     });
 };
 
-export const getAllUserSummaries = <ThrowOnError extends boolean = false>(options?: Options<GetAllUserSummariesData, ThrowOnError>) => {
-    return (options?.client ?? client).get<GetAllUserSummariesResponses, GetAllUserSummariesErrors, ThrowOnError>({
+export const getAllUsersTestAttemptsSummary = <ThrowOnError extends boolean = false>(options?: Options<GetAllUsersTestAttemptsSummaryData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetAllUsersTestAttemptsSummaryResponses, GetAllUsersTestAttemptsSummaryErrors, ThrowOnError>({
         security: [
             {
                 scheme: 'bearer',
                 type: 'http'
             }
         ],
-        url: '/api/summary',
+        url: '/api/summaries',
         ...options
     });
 };
 
-export const getUserSummaryById = <ThrowOnError extends boolean = false>(options: Options<GetUserSummaryByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetUserSummaryByIdResponses, GetUserSummaryByIdErrors, ThrowOnError>({
+export const getUserTestAttemptSummaryById = <ThrowOnError extends boolean = false>(options: Options<GetUserTestAttemptSummaryByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetUserTestAttemptSummaryByIdResponses, GetUserTestAttemptSummaryByIdErrors, ThrowOnError>({
         security: [
             {
                 scheme: 'bearer',
                 type: 'http'
             }
         ],
-        url: '/api/summary/{userId}',
+        url: '/api/summaries/{userId}',
         ...options
     });
 };
 
-export const getCurrentUserSummary = <ThrowOnError extends boolean = false>(options?: Options<GetCurrentUserSummaryData, ThrowOnError>) => {
-    return (options?.client ?? client).get<GetCurrentUserSummaryResponses, GetCurrentUserSummaryErrors, ThrowOnError>({
+export const getCurrentUserTestAttemptSummary = <ThrowOnError extends boolean = false>(options?: Options<GetCurrentUserTestAttemptSummaryData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetCurrentUserTestAttemptSummaryResponses, GetCurrentUserTestAttemptSummaryErrors, ThrowOnError>({
         security: [
             {
                 scheme: 'bearer',
                 type: 'http'
             }
         ],
-        url: '/api/summary/me',
+        url: '/api/summaries/me',
         ...options
     });
 };

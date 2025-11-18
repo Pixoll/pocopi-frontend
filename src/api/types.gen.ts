@@ -234,11 +234,13 @@ export type TextShortUpdate = FormQuestionUpdate & {
     maxLength: number;
 };
 
-export type UserSummary = {
+export type UserTestAttemptSummary = {
     id: number;
+    username: string;
     name: string;
     email: string;
     age: number;
+    group: string;
     timestamp: number;
     timeTaken: number;
     correctQuestions: number;
@@ -246,11 +248,11 @@ export type UserSummary = {
     accuracy: number;
 };
 
-export type UsersSummary = {
+export type UsersTestAttemptsSummary = {
     averageAccuracy: number;
     averageTimeTaken: number;
     totalQuestionsAnswered: number;
-    users: Array<UserSummary>;
+    users: Array<UserTestAttemptSummary>;
 };
 
 export type QuestionTimestamp = {
@@ -1088,14 +1090,14 @@ export type GetCurrentUserResponses = {
 
 export type GetCurrentUserResponse = GetCurrentUserResponses[keyof GetCurrentUserResponses];
 
-export type GetAllUserSummariesData = {
+export type GetAllUsersTestAttemptsSummaryData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/summary';
+    url: '/api/summaries';
 };
 
-export type GetAllUserSummariesErrors = {
+export type GetAllUsersTestAttemptsSummaryErrors = {
     /**
      * Unauthorized
      */
@@ -1106,27 +1108,27 @@ export type GetAllUserSummariesErrors = {
     403: ApiHttpError;
 };
 
-export type GetAllUserSummariesError = GetAllUserSummariesErrors[keyof GetAllUserSummariesErrors];
+export type GetAllUsersTestAttemptsSummaryError = GetAllUsersTestAttemptsSummaryErrors[keyof GetAllUsersTestAttemptsSummaryErrors];
 
-export type GetAllUserSummariesResponses = {
+export type GetAllUsersTestAttemptsSummaryResponses = {
     /**
      * OK
      */
-    200: UsersSummary;
+    200: UsersTestAttemptsSummary;
 };
 
-export type GetAllUserSummariesResponse = GetAllUserSummariesResponses[keyof GetAllUserSummariesResponses];
+export type GetAllUsersTestAttemptsSummaryResponse = GetAllUsersTestAttemptsSummaryResponses[keyof GetAllUsersTestAttemptsSummaryResponses];
 
-export type GetUserSummaryByIdData = {
+export type GetUserTestAttemptSummaryByIdData = {
     body?: never;
     path: {
         userId: number;
     };
     query?: never;
-    url: '/api/summary/{userId}';
+    url: '/api/summaries/{userId}';
 };
 
-export type GetUserSummaryByIdErrors = {
+export type GetUserTestAttemptSummaryByIdErrors = {
     /**
      * Unauthorized
      */
@@ -1137,25 +1139,25 @@ export type GetUserSummaryByIdErrors = {
     403: ApiHttpError;
 };
 
-export type GetUserSummaryByIdError = GetUserSummaryByIdErrors[keyof GetUserSummaryByIdErrors];
+export type GetUserTestAttemptSummaryByIdError = GetUserTestAttemptSummaryByIdErrors[keyof GetUserTestAttemptSummaryByIdErrors];
 
-export type GetUserSummaryByIdResponses = {
+export type GetUserTestAttemptSummaryByIdResponses = {
     /**
      * OK
      */
-    200: UserSummary;
+    200: UserTestAttemptSummary;
 };
 
-export type GetUserSummaryByIdResponse = GetUserSummaryByIdResponses[keyof GetUserSummaryByIdResponses];
+export type GetUserTestAttemptSummaryByIdResponse = GetUserTestAttemptSummaryByIdResponses[keyof GetUserTestAttemptSummaryByIdResponses];
 
-export type GetCurrentUserSummaryData = {
+export type GetCurrentUserTestAttemptSummaryData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/summary/me';
+    url: '/api/summaries/me';
 };
 
-export type GetCurrentUserSummaryErrors = {
+export type GetCurrentUserTestAttemptSummaryErrors = {
     /**
      * Unauthorized
      */
@@ -1166,16 +1168,16 @@ export type GetCurrentUserSummaryErrors = {
     403: ApiHttpError;
 };
 
-export type GetCurrentUserSummaryError = GetCurrentUserSummaryErrors[keyof GetCurrentUserSummaryErrors];
+export type GetCurrentUserTestAttemptSummaryError = GetCurrentUserTestAttemptSummaryErrors[keyof GetCurrentUserTestAttemptSummaryErrors];
 
-export type GetCurrentUserSummaryResponses = {
+export type GetCurrentUserTestAttemptSummaryResponses = {
     /**
      * OK
      */
-    200: UserSummary;
+    200: UserTestAttemptSummary;
 };
 
-export type GetCurrentUserSummaryResponse = GetCurrentUserSummaryResponses[keyof GetCurrentUserSummaryResponses];
+export type GetCurrentUserTestAttemptSummaryResponse = GetCurrentUserTestAttemptSummaryResponses[keyof GetCurrentUserTestAttemptSummaryResponses];
 
 export type GetUserTestResultsData = {
     body?: never;

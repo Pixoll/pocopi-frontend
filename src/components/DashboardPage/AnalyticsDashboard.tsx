@@ -1,4 +1,4 @@
-import api, {type TrimmedConfig, type UsersSummary} from "@/api";
+import api, { type TrimmedConfig, type UsersTestAttemptsSummary } from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader.tsx";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary.tsx";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList.tsx";
@@ -6,11 +6,11 @@ import { Spinner } from "@/components/Spinner.tsx";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher.tsx";
 import { useTheme } from "@/hooks/useTheme.ts";
 import styles from "@/styles/DashboardPage/DashboardPage.module.css";
+import { t } from "@/utils/translations.ts";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import {t} from "@/utils/translations.ts";
 
 enum DashboardTab {
   PARTICIPANTS = "participants",
@@ -24,7 +24,7 @@ type AnalyticsDashboardProps = {
 };
 
 export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) {
-  const [summary, setSummary] = useState<UsersSummary>({
+  const [summary, setSummary] = useState<UsersTestAttemptsSummary>({
     averageAccuracy: 0,
     averageTimeTaken: 0,
     totalQuestionsAnswered: 0,
@@ -44,7 +44,7 @@ export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) 
       setLoadingSummary(true);
       setError(null);
 
-      const response = await api.getAllUserSummaries();
+      const response = await api.getAllUsersTestAttemptsSummary();
 
       if (!response.data) {
         setError(t(config, "dashboard.errorLoadingResults"));
@@ -93,18 +93,18 @@ export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) 
 
         <Tab eventKey={DashboardTab.SUMMARY} title={t(config, "dashboard.summary")}>
           {loadingSummary
-            ? <LoadingIndicator config={config} />
+            ? <LoadingIndicator config={config}/>
             : <DashboardSummary config={config} isDarkMode={isDarkMode} summary={summary}/>
           }
         </Tab>
       </Tabs>
 
-      <ThemeSwitcher config={config} />
+      <ThemeSwitcher config={config}/>
     </div>
   );
 }
 
-function LoadingIndicator({config}: { config:TrimmedConfig }) {
+function LoadingIndicator({ config }: { config: TrimmedConfig }) {
   return (
     <div className={styles.loadingIndicator}>
       <Spinner className={styles.spinner}/>

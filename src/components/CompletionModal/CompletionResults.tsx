@@ -1,4 +1,4 @@
-import api, { type AssignedTestGroup, type TrimmedConfig, type User, type UserSummary } from "@/api";
+import api, { type AssignedTestGroup, type TrimmedConfig, type User, type UserTestAttemptSummary } from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
 import { t } from "@/utils/translations.ts";
@@ -6,7 +6,7 @@ import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesom
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-type UserResult = UserSummary & {
+type UserResult = UserTestAttemptSummary & {
   totalQuestions: number;
 };
 
@@ -38,7 +38,7 @@ export function CompletionResults({ config, userData, group }: CompletionResults
     setError(null);
 
     try {
-      const result = await api.getCurrentUserSummary();
+      const result = await api.getCurrentUserTestAttemptSummary();
 
       if (!result.data) {
         setError(t(config, "completion.failedToGetResults"));
