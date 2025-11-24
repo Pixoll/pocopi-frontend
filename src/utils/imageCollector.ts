@@ -18,8 +18,9 @@ import type {
   TestPhaseUpdate,
   TestGroupUpdate,
   InformationCardUpdate,
+  PatternUpdate,
   FrequentlyAskedQuestionUpdate,
-  Image
+  Image,
 } from "@/api";
 
 export type ImageState =
@@ -98,6 +99,7 @@ export type EditablePatchConfig = {
   subtitle?: string | null;
   description: string;
   anonymous: boolean;
+  usernamePattern?: PatternUpdate | null;
   informationCards: EditablePatchInformationCard[];
   informedConsent: string;
   faq: FrequentlyAskedQuestionUpdate[];
@@ -198,6 +200,11 @@ export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchCo
     subtitle: serverConfig.subtitle ?? "",
     description: serverConfig.description,
     anonymous: serverConfig.anonymous,
+    usernamePattern: serverConfig.usernamePattern ? {
+      id: serverConfig.usernamePattern.id,
+      name: serverConfig.usernamePattern.name,
+      regex: serverConfig.usernamePattern.regex
+    } : undefined,
     informedConsent: serverConfig.informedConsent,
 
     informationCards: serverConfig.informationCards.map((card): EditablePatchInformationCard => ({
@@ -470,6 +477,7 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
     subtitle: config.subtitle ?? "",
     description: config.description,
     anonymous: config.anonymous,
+    usernamePattern: config.usernamePattern ?? undefined,
     informedConsent: config.informedConsent,
 
     informationCards: config.informationCards.map((card): InformationCardUpdate => ({

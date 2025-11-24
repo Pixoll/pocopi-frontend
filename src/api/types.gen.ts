@@ -398,6 +398,12 @@ export type UserTestsResult = {
     questions?: Array<TestQuestionResult>;
 };
 
+export type Pattern = {
+    id: number;
+    name: string;
+    regex: string;
+};
+
 export type OptionEventLog = {
     optionId: number;
     type: 'deselect' | 'select' | 'hover';
@@ -484,12 +490,6 @@ export type InformationCard = {
     description: string;
     color?: number | null;
     icon?: Image | null;
-};
-
-export type Pattern = {
-    id: number;
-    name: string;
-    regex: string;
 };
 
 export type SelectMultiple = FormQuestion & {
@@ -1451,6 +1451,35 @@ export type GetGroupFullResultsZipResponses = {
 };
 
 export type GetGroupFullResultsZipResponse = GetGroupFullResultsZipResponses[keyof GetGroupFullResultsZipResponses];
+
+export type GetAllPatternsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/patterns';
+};
+
+export type GetAllPatternsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllPatternsError = GetAllPatternsErrors[keyof GetAllPatternsErrors];
+
+export type GetAllPatternsResponses = {
+    /**
+     * OK
+     */
+    200: Array<Pattern>;
+};
+
+export type GetAllPatternsResponse = GetAllPatternsResponses[keyof GetAllPatternsResponses];
 
 export type GetAllEventLogsData = {
     body?: never;

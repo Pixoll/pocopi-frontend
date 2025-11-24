@@ -17,7 +17,7 @@ import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 import api, {
   type FrequentlyAskedQuestionUpdate,
   type FullConfig,
-  type ApiHttpError
+  type ApiHttpError, type Pattern
 } from "@/api";
 import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
 import {LoadingPage} from "@/pages/LoadingPage.tsx";
@@ -25,13 +25,26 @@ import {SavePopup} from "@/components/SavePopup.tsx";
 import {ConfirmModal} from "@/components/ConfirmModal.tsx";
 import {FormQuestionsCoordinator} from "@/components/ModifyConfigPage/FormQuestionsCoordinator.tsx";
 import {ErrorDisplay} from "@/components/ErrorDisplay.tsx";
+import {PatternEditor} from "@/components/ModifyConfigPage/PatternEditor.tsx";
+import {useAuth} from "@/contexts/AuthContext.tsx";
 
 type ModifyConfigPageProps = {
   onSave?: (config: FullConfig) => void;
   configVersion: number;
   readOnly:boolean;
 }
-
+async function getPatterns(token: string, set: (data: Pattern[]) => void){
+  try {
+    const response = await api.getAllPatterns({auth: token})
+    if (response.data){
+      set(response.data);
+    }else{
+      set([])
+    }
+  }catch(err){
+    console.error(err)
+  }
+}
 export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVersion, readOnly}) => {
   const [config, setConfig] = useState<EditablePatchConfig | null>(null);
   const [activeTab, setActiveTab] = useState<string>('general');
@@ -43,6 +56,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
   const [showDeleteGroupConfirm, setShowDeleteGroupConfirm] = useState(false);
   const [deleteGroupIndex, setDeleteGroupIndex] = useState<number | null>(null);
+  const [patterns, setPatterns] = useState<Pattern[]>([]);
+
+  const {token} = useAuth();
 
   async function getConfig(): Promise<void> {
     setIsLoading(true);
@@ -51,7 +67,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
       if (response.data) {
         await preloadImages(response.data);
         setConfig(toEditablePatchConfig(response.data));
-
+        console.log("despues", response.data.usernamePattern);
         document.title = response.data.title ?? "";
       } else {
         console.error(response.error);
@@ -65,10 +81,13 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
   useEffect(() => {
     getConfig();
+    if (token) {
+      getPatterns(token, setPatterns);
+    }
     return () => {
       clearImageCache();
     };
-  }, []);
+  }, [token]);
 
   if (isLoading || !config) {
     return <LoadingPage message="Cargando configuración..." />;
@@ -80,6 +99,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
     try {
       const patchRequest = await buildPatchRequest(config);
+      console.log("se manda:", patchRequest.payload.usernamePattern);
       const { data, error } = await api.updateActiveConfig({
         body: patchRequest
       });
@@ -166,7 +186,54 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 Anónimo
               </label>
             </div>
+            {!config.anonymous && (
+              <div className={styles.patternSection}>
+                <div className={styles.sectionHeader}>
+                  <h4>Patrón de Nombre de Usuario</h4>
+                  {!config.usernamePattern && !readOnly && (
+                    <button
+                      onClick={() => {
+                        setConfig({
+                          ...config,
+                          usernamePattern: {
+                            name: '',
+                            regex: ''
+                          }
+                        });
+                      }}
+                      className={styles.addButton}
+                    >
+                      + Configurar Patrón
+                    </button>
+                  )}
+                </div>
 
+                {config.usernamePattern ? (
+                  <PatternEditor
+                    pattern={config.usernamePattern}
+                    availablePatterns={patterns}
+                    readOnly={readOnly}
+                    onChange={(updatedPattern) => {
+                      setConfig({
+                        ...config,
+                        usernamePattern: updatedPattern
+                      });
+                    }}
+                    onRemove={() => {
+                      setConfig({
+                        ...config,
+                        usernamePattern: null
+                      });
+                    }}
+                  />
+                ) : (
+                  <p className={styles.emptyMessage}>
+                    No hay patrón de nombre de usuario configurado.
+                    {!readOnly && ' Haz clic en "Configurar Patrón" para agregar uno.'}
+                  </p>
+                )}
+              </div>
+            )}
             <div className={styles.formGroup}>
               <label className={styles.label}>Consentimiento Informado</label>
               <textarea
