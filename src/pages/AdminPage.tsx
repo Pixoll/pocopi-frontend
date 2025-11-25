@@ -16,7 +16,13 @@ async function getAllConfigs(set: (data: ConfigPreview[]) => void) {
   try {
     const response = await api.getAllConfigs();
     if (response) {
-      set(response.data?.sort((a, b) => a.active ? -1 : b.version - a.version) ?? []);
+      const sorted = response. data?.sort((a, b) => {
+        if (a.active) return -1;
+        if (b.active) return 1;
+        return b.version - a. version;
+      }) ??  [];
+
+      set(sorted);
     }
   } catch (error) {
     console.log(error);
