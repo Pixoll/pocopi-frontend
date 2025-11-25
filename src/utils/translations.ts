@@ -4,7 +4,8 @@ export function t(config:TrimmedConfig, key: string, ...args: string[]): string 
   let value = config.translations[key];
 
   if (!value) {
-    throw new Error(`Translation key '${key}' not found.`);
+    console.log(new Error(`Translation key '${key}' not found.`));
+    return key;
   }
 
   for (let i = 0; i < args.length; i++) {
