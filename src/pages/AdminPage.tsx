@@ -42,7 +42,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
         setLoading(false);
       }
     };
-
+    console.log(configs)
     fetchConfigs();
   }, [token]);
 
@@ -56,6 +56,21 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
     } catch (err) {
       console.error(err);
       setError("Error al establecer la versión");
+    }
+  }
+
+  async function cloneConfigByVersion(version: number) {
+    try {
+      setLoading(true);
+      const response = await api.cloneConfigByVersion({path:{version}})
+      if(response){
+        await getAllConfigs(setConfigs);
+      }
+    } catch (e) {
+      console.error(e);
+      setError("Error al duplicar la configuración");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -124,8 +139,17 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
                   className={styles.setVersionButton}
                   onClick={() => goToModifyConfigPage(configData.version, !isActive)}
                 >
-                   View version
+                  View version
                 </button>
+              </div>
+              <div className={styles.buttonWrapper}>
+                <button
+                  className={styles.cloneButton}
+                  onClick={() => cloneConfigByVersion(configData.version)}
+                >
+                  Duplicate
+                </button>
+                <span className={styles.buttonHint}>Create a copy of this version</span>
               </div>
               <div className={styles.buttonWrapper}>
                 <button

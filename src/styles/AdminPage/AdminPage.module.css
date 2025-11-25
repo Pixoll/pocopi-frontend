@@ -165,7 +165,20 @@
     margin: 0;
     line-height: 1.4;
 }
+.cloneButton {
+    padding: 0.5rem 1rem;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
 
+.cloneButton:hover {
+    background-color: #0052a3;
+}
 .description {
     font-size: 0.9rem;
     color: #6b7280;

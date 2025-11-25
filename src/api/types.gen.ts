@@ -829,6 +829,35 @@ export type SaveOptionEventLogResponses = {
     200: unknown;
 };
 
+export type CloneConfigByVersionData = {
+    body?: never;
+    path: {
+        version: number;
+    };
+    query?: never;
+    url: '/api/configs/{version}/clone';
+};
+
+export type CloneConfigByVersionErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type CloneConfigByVersionError = CloneConfigByVersionErrors[keyof CloneConfigByVersionErrors];
+
+export type CloneConfigByVersionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type SetConfigAsActiveData = {
     body?: never;
     path: {
