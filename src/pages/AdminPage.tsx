@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import api, { type TrimmedConfig, type ConfigPreview } from "@/api";
 import { useAuth } from "@/contexts/AuthContext.tsx";
+import { ConfigSection } from "@/components/AdminPage/ConfigSection";
 import { LoadingPage } from "@/pages/LoadingPage.tsx";
-import Markdown from "react-markdown";
+import AdminAccountsSection from "@/components/AdminPage/AdminAccountsSection.tsx";
 
 type AdminPageProps = {
   goToModifyConfigPage: (configVersion: number, onlyRead: boolean) => void;
@@ -12,15 +13,17 @@ type AdminPageProps = {
   config: TrimmedConfig;
 }
 
+type TabType = 'configurations' | 'Administrators';
+
 async function getAllConfigs(set: (data: ConfigPreview[]) => void) {
   try {
     const response = await api.getAllConfigs();
     if (response) {
       const sorted = response. data?.sort((a, b) => {
-        if (a.active) return -1;
+        if (a. active) return -1;
         if (b.active) return 1;
-        return b.version - a. version;
-      }) ??  [];
+        return b.version - a.version;
+      }) ?? [];
 
       set(sorted);
     }
@@ -34,6 +37,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
   const [configs, setConfigs] = useState<ConfigPreview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>('configurations');
 
   useEffect(() => {
     const fetchConfigs = async () => {
@@ -42,23 +46,22 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
         setError(null);
         await getAllConfigs(setConfigs);
       } catch (err) {
-        console.error(err);
+        console. error(err);
         setError("Error al cargar las configuraciones");
       } finally {
         setLoading(false);
       }
     };
-    console.log(configs)
+
     fetchConfigs();
   }, [token]);
 
   async function setAsLastVersion(version: number) {
     try {
-      const response = await api.setConfigAsActive({ path: {version}})
-      if(response){
+      const response = await api. setConfigAsActive({ path: { version } })
+      if (response) {
         await getAllConfigs(setConfigs);
       }
-
     } catch (err) {
       console.error(err);
       setError("Error al establecer la versión");
@@ -68,12 +71,12 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
   async function cloneConfigByVersion(version: number) {
     try {
       setLoading(true);
-      const response = await api.cloneConfigByVersion({path:{version}})
-      if(response){
+      const response = await api.cloneConfigByVersion({ path: { version } })
+      if (response) {
         await getAllConfigs(setConfigs);
       }
     } catch (e) {
-      console.error(e);
+      console. error(e);
       setError("Error al duplicar la configuración");
     } finally {
       setLoading(false);
@@ -90,90 +93,6 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
       console.error(err);
       setError("Error al eliminar la configuración");
     }
-  }
-
-  function configSection(configData: ConfigPreview) {
-    const isActive = configData.active;
-
-    return (
-      <div className={isActive ? styles.lastConfigSection : styles.configSection} key={configData.version}>
-        <div className={styles.infoContainer}>
-          <div className={styles.versionHeader}>
-            {configData.icon?.url && (
-              <img
-                src={configData.icon.url}
-                alt={`Icon version ${configData.version}`}
-                className={styles.configIcon}
-              />
-            )}
-            <span className={styles.versionNumber}>Version {configData.version}</span>
-            {isActive && <span className={styles.currentBadge}>Current</span>}
-          </div>
-
-          <div className={styles.contentInfo}>
-            <h3 className={styles.title}>{configData.title || "Sin título"}</h3>
-            {configData.subtitle && (
-              <p className={styles.subtitle}>{configData.subtitle}</p>
-            )}
-            <div className={styles.description}>
-              <Markdown >{configData.description || "Sin descripción"}</Markdown>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.buttonsContainer}>
-
-          {isActive ? (
-            <div className={styles.buttonWrapper}>
-              <button onClick={() => goToModifyConfigPage(configData.version, !isActive)} className={styles.modifyButton}>
-                Modify
-              </button>
-              <span className={styles.buttonHint}>Edit current configuration</span>
-            </div>
-          ) : (
-            <>
-              <div className={styles.buttonWrapper}>
-                <button
-                  className={styles.setVersionButton}
-                  onClick={() => setAsLastVersion(configData.version)}
-                >
-                  Set as active version
-                </button>
-                <span className={styles.buttonHint}>Make this the active config</span>
-
-                <button
-                  className={styles.setVersionButton}
-                  onClick={() => goToModifyConfigPage(configData.version, !isActive)}
-                >
-                  View version
-                </button>
-              </div>
-              <div className={styles.buttonWrapper}>
-                <button
-                  className={styles.cloneButton}
-                  onClick={() => cloneConfigByVersion(configData.version)}
-                >
-                  Duplicate
-                </button>
-                <span className={styles.buttonHint}>Create a copy of this version</span>
-              </div>
-              <div className={styles.buttonWrapper}>
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => deleteConfig(configData.version)}
-                  disabled={!configData.canDelete}
-                >
-                  Delete
-                </button>
-                <span className={styles.buttonHint}>
-                  {configData.canDelete ? "Remove this version" : "Cannot delete this version"}
-                </span>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    );
   }
 
   if (loading) {
@@ -200,7 +119,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
   if (configs.length === 0) {
     return (
       <div className={styles.pageContainer}>
-        <header className={styles.pageHeader}>
+        <header className={styles. pageHeader}>
           <h1 className={styles.pageTitle}>Configuration panel</h1>
           <p className={styles.pageSubtitle}>Manage and version configurations</p>
         </header>
@@ -212,11 +131,49 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
     <div className={styles.pageContainer}>
       <header className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Configuration panel</h1>
-        <p className={styles.pageSubtitle}>Manage and version configurations</p>
+        <p className={styles. pageSubtitle}>Manage and version configurations</p>
       </header>
 
-      <div className={styles.sectionsContainer}>
-        {configs.map((config) => configSection(config))}
+      <div className={styles.tabsContainer}>
+        <button
+          className={`${styles. tab} ${activeTab === 'configurations' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('configurations')}
+        >
+          Configurations
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'Administrators' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('Administrators')}
+        >
+          Administrators
+        </button>
+      </div>
+
+      <div className={styles.tabContent}>
+        {activeTab === 'configurations' && (
+          <section className={styles.mainSection}>
+            <div className={styles.sectionsContainer}>
+              {configs.map((config) => (
+                <ConfigSection
+                  key={config.version}
+                  configData={config}
+                  onModify={goToModifyConfigPage}
+                  onSetActive={setAsLastVersion}
+                  onClone={cloneConfigByVersion}
+                  onDelete={deleteConfig}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'Administrators' && (
+          <section className={styles.mainSection}>
+            <div className={styles.emptySection}>
+              <AdminAccountsSection />
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
@@ -226,7 +183,7 @@ export function AdminPage({ goToModifyConfigPage, config }: Omit<AdminPageProps,
   const { token } = useAuth();
   return (
     <ProtectedRoute config={config} requireAdmin={true}>
-      <AdminPageContent goToModifyConfigPage={goToModifyConfigPage} token={token!} />
+      <AdminPageContent goToModifyConfigPage={goToModifyConfigPage} token={token! } />
     </ProtectedRoute>
   );
 }

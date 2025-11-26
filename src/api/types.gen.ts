@@ -88,13 +88,9 @@ export type Credentials = {
     password: string;
 };
 
-export type User = {
-    id: number;
+export type NewAdmin = {
     username: string;
-    anonymous: boolean;
-    name?: string;
-    email?: string;
-    age?: number;
+    password: string;
 };
 
 export type ConfigUpdate = {
@@ -109,9 +105,7 @@ export type ConfigUpdate = {
     preTestForm?: FormUpdate;
     postTestForm?: FormUpdate;
     groups: Array<TestGroupUpdate>;
-    translations: {
-        [key: string]: string;
-    };
+    translations: Array<TranslationUpdate>;
 };
 
 export type FormOptionUpdate = {
@@ -232,6 +226,20 @@ export type TextShortUpdate = FormQuestionUpdate & {
     placeholder: string;
     minLength: number;
     maxLength: number;
+};
+
+export type TranslationUpdate = {
+    key: string;
+    value: string;
+};
+
+export type User = {
+    id: number;
+    username: string;
+    anonymous: boolean;
+    name?: string;
+    email?: string;
+    age?: number;
 };
 
 export type UserTestAttemptSummary = {
@@ -611,6 +619,11 @@ export type TrimmedConfig = {
     };
 };
 
+export type Admin = {
+    id: number;
+    username: string;
+};
+
 export type ApiHttpError = {
     code: number;
     message: string;
@@ -937,14 +950,14 @@ export type LoginResponses = {
 
 export type LoginResponse = LoginResponses[keyof LoginResponses];
 
-export type GetCurrentAdminData = {
+export type GetAllAdminsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/admin/me';
+    url: '/api/admin';
 };
 
-export type GetCurrentAdminErrors = {
+export type GetAllAdminsErrors = {
     /**
      * Unauthorized
      */
@@ -955,16 +968,47 @@ export type GetCurrentAdminErrors = {
     403: ApiHttpError;
 };
 
-export type GetCurrentAdminError = GetCurrentAdminErrors[keyof GetCurrentAdminErrors];
+export type GetAllAdminsError = GetAllAdminsErrors[keyof GetAllAdminsErrors];
 
-export type GetCurrentAdminResponses = {
+export type GetAllAdminsResponses = {
     /**
      * OK
      */
-    200: User;
+    200: Array<Admin>;
 };
 
-export type GetCurrentAdminResponse = GetCurrentAdminResponses[keyof GetCurrentAdminResponses];
+export type GetAllAdminsResponse = GetAllAdminsResponses[keyof GetAllAdminsResponses];
+
+export type CreateAdminData = {
+    body: NewAdmin;
+    path?: never;
+    query?: never;
+    url: '/api/admin';
+};
+
+export type CreateAdminErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type CreateAdminError = CreateAdminErrors[keyof CreateAdminErrors];
+
+export type CreateAdminResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type GetActiveConfigAsUserData = {
     body?: never;
@@ -1687,3 +1731,32 @@ export type GetActiveConfigAsAdminResponses = {
 };
 
 export type GetActiveConfigAsAdminResponse = GetActiveConfigAsAdminResponses[keyof GetActiveConfigAsAdminResponses];
+
+export type GetCurrentAdminData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/admin/me';
+};
+
+export type GetCurrentAdminErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetCurrentAdminError = GetCurrentAdminErrors[keyof GetCurrentAdminErrors];
+
+export type GetCurrentAdminResponses = {
+    /**
+     * OK
+     */
+    200: Admin;
+};
+
+export type GetCurrentAdminResponse = GetCurrentAdminResponses[keyof GetCurrentAdminResponses];

@@ -129,7 +129,7 @@
     font-size: 0.85rem;
     color: #6b7280;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
+    letter-spacing: 1px;
 }
 
 .currentBadge {
@@ -141,7 +141,7 @@
     font-weight: 700;
     border-radius: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .contentInfo {
@@ -260,7 +260,94 @@
     transform: translateY(0);
 }
 
+.tabsContainer {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto 2rem auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid #3d4b5c;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #9ca3af;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    bottom: -2px;
+}
+
+.tab:hover {
+    color: #e5e7eb;
+    background: rgba(0, 139, 139, 0.05);
+}
+
+.activeTab {
+    color: var(--accent-teal);
+    border-bottom-color: var(--accent-teal);
+    font-weight: 600;
+}
+
+.tabContent {
+    width: 100%;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mainSection {
+    width: 100%;
+}
+
+.emptySection {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem 24px;
+    text-align: center;
+    color: #9ca3af;
+    background: #2a3441;
+    border: 1px solid #3d4b5c;
+    border-radius: 12px;
+}
+
+.emptySection p {
+    margin: 0;
+    font-size: 1.1rem;
+}
 @media (max-width: 768px) {
+    .tabsContainer {
+        padding: 0 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .emptySection {
+        padding: 2rem 12px;
+    }
+
     .pageContainer {
         padding: 20px 12px;
     }
@@ -304,3 +391,4 @@
         font-size: 0.68rem;
     }
 }
+
