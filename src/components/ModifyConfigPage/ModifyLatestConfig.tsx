@@ -67,7 +67,6 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
       if (response.data) {
         await preloadImages(response.data);
         setConfig(toEditablePatchConfig(response.data));
-        console.log("despues", response.data.usernamePattern);
         document.title = response.data.title ?? "";
       } else {
         console.error(response.error);
@@ -592,27 +591,39 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
               </button>
             </div>
             <div className={styles.translationsGrid}>
-              {Object.entries(config.translations || {}).map(([key, value]) => (
-                <div key={key} className={styles.translationItem}>
-                  <label className={styles.label}>{key}</label>
+              {(config.translations || []).map((translation, index) => (
+                <div key={translation.key} className={styles.translationItem}>
+                  <div className={styles.translationHeader}>
+                    <label className={styles.label}>{translation.key}</label>
+                    {translation.description && (
+                      <span className={styles.description}>{translation.description}</span>
+                    )}
+                    {translation.arguments.length > 0 && (
+                      <span className={styles.arguments}>
+            Argumentos: {translation.arguments.join(', ')}
+          </span>
+                    )}
+                  </div>
                   <input
                     type="text"
-                    value={value || ''}
+                    value={translation.value || ''}
                     onChange={(e) => {
+                      const newTranslations = [...config.translations];
+                      newTranslations[index] = {
+                        ...newTranslations[index],
+                        value: e.target.value
+                      };
                       setConfig({
                         ...config,
-                        translations: {
-                          ...config.translations,
-                          [key]: e.target.value
-                        }
+                        translations: newTranslations
                       });
                     }}
                     className={styles.input}
+                    placeholder={`Traducción para ${translation.key}`}
                   />
                   <button
                     onClick={() => {
-                      const newTranslations = {...config.translations};
-                      delete newTranslations[key];
+                      const newTranslations = config.translations.filter((_, i) => i !== index);
                       setConfig({...config, translations: newTranslations});
                     }}
                     className={styles.removeButton}

@@ -21,6 +21,7 @@ import type {
   PatternUpdate,
   FrequentlyAskedQuestionUpdate,
   Image,
+  Translation
 } from "@/api";
 
 export type ImageState =
@@ -106,9 +107,7 @@ export type EditablePatchConfig = {
   preTestForm?: EditablePatchForm | null;
   postTestForm?: EditablePatchForm | null;
   groups: EditablePatchGroup[];
-  translations: {
-    [key: string]: string;
-  };
+  translations: Array<Translation>;
 };
 
 const imageCache = new Map<string, File>();
@@ -400,10 +399,7 @@ export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchCo
       }))
     })),
 
-    translations: serverConfig.translations.reduce((acc, t) => {
-      acc[t.key] = t.value ?? "";
-      return acc;
-    }, {} as { [key: string]: string })
+    translations: serverConfig.translations
   };
 }
 
@@ -648,7 +644,11 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
       }))
     })),
 
-    translations: config.translations
+    translations: config.translations.map(acc => ({
+      key: acc.key,
+      value: acc.value ?? ""
+    }))
+
   };
 }
 
