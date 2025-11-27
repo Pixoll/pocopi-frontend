@@ -18,23 +18,25 @@ type InputWithIconProps = {
   min?: string;
   max?: string;
   isDarkMode: boolean;
-  error?: boolean; // Nuevo prop para indicar error
+  error?: boolean;
+  disabled?: boolean;
 };
 
 export function InputWithIcon({
-  config,
-  icon,
-  label,
-  type = "text",
-  name,
-  value,
-  onChange,
-  required = false,
-  min,
-  max,
-  isDarkMode,
-  error = false, // Nuevo prop con valor por defecto
-}: InputWithIconProps) {
+                                config,
+                                icon,
+                                label,
+                                type = "text",
+                                name,
+                                value,
+                                onChange,
+                                required = false,
+                                min,
+                                max,
+                                isDarkMode,
+                                error = false,
+                                disabled = false,
+                              }: InputWithIconProps) {
   return (
     <div className={styles.inputContainer}>
       <FloatingLabel
@@ -46,6 +48,7 @@ export function InputWithIcon({
             styles.input,
             isDarkMode ? styles.inputDark : "",
             error ? styles.inputError : "",
+            disabled ? styles.inputDisabled : "",
           ].join(" ")}
           type={type}
           placeholder={`Enter your ${name.toLowerCase()}`}
@@ -56,18 +59,20 @@ export function InputWithIcon({
           min={min}
           max={max}
           isInvalid={error}
+          disabled={disabled}
         />
         <FontAwesomeIcon
           className={[
             styles.icon,
             isDarkMode ? styles.iconDark : styles.iconLight,
             error ? styles.iconError : "",
+            disabled ? styles.iconDisabled : "",
           ].join(" ")}
           icon={icon}
         />
         {error && name !== "email" && (
           <Form.Control.Feedback type="invalid">
-              {t(config, "home.pleaseEnterValid", label.toLowerCase())}
+            {t(config, "home.pleaseEnterValid", label.toLowerCase())}
           </Form.Control.Feedback>
         )}
       </FloatingLabel>

@@ -17,15 +17,13 @@ type CompletionModalProps = {
 };
 
 export function CompletionModal({
-  config,
-  group,
-  onBackToHome,
-}: CompletionModalProps) {
+                                  config,
+                                  group,
+                                  onBackToHome,
+                                }: CompletionModalProps) {
   const { isDarkMode } = useTheme();
-  const { token, clearAuth } = useAuth();
+  const { token, isAdmin, clearAuth} = useAuth();
   const [user, setUser] = useState<User | null>(null);
-  const [_updatedUserData, setUpdatedUserData] = useState<{ username?: string, password?: string }>({});
-
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
 
@@ -34,7 +32,7 @@ export function CompletionModal({
       alert("No puedes volver a la página anterior");
     };
 
-    window.addEventListener("popstate", popState);
+    window. addEventListener("popstate", popState);
 
     return () => {
       window.removeEventListener("popstate", popState);
@@ -45,7 +43,8 @@ export function CompletionModal({
     const fetchUser = async () => {
       if (token) {
         try {
-          const response = await api.getCurrentUser();
+          const response = await api.getCurrentUser({auth:token});
+          console.log(response)
           setUser(response.data ?? null);
         } catch (error) {
           console.error(error);
@@ -56,16 +55,11 @@ export function CompletionModal({
     fetchUser();
   }, [token]);
 
-  const handleUserDataChange = (field: "username" | "password", value: string) => {
-    setUpdatedUserData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
   const goToHome = () => {
     clearAuth();
     onBackToHome();
   };
+
   return (
     <div className={styles.page}>
       <div className={styles.modal}>
@@ -82,7 +76,7 @@ export function CompletionModal({
           <CompletionUserInfo
             config={config}
             userData={user}
-            onUserDataChange={handleUserDataChange}
+            isAdmin={isAdmin}
           />
 
           <CompletionResults config={config} userData={user} group={group}/>
@@ -90,7 +84,7 @@ export function CompletionModal({
           <p
             className={[
               styles.resultsRecorded,
-              isDarkMode ? styles.resultsRecordedDark : styles.resultsRecordedLight,
+              isDarkMode ? styles. resultsRecordedDark : styles.resultsRecordedLight,
             ].join(" ")}
           >
             {t(config, "completion.resultsRecorded")}
@@ -99,7 +93,7 @@ export function CompletionModal({
           <button
             className={[
               styles.homeButton,
-              isDarkMode ? styles.homeButtonDark : styles.homeButtonLight,
+              isDarkMode ?  styles.homeButtonDark : styles.homeButtonLight,
             ].join(" ")}
             onClick={goToHome}
           >

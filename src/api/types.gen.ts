@@ -233,6 +233,14 @@ export type TranslationUpdate = {
     value: string;
 };
 
+export type CredentialsUpdate = {
+    oldUsername: string;
+    newUsername: string;
+    oldPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+};
+
 export type User = {
     id: number;
     username: string;
@@ -1068,6 +1076,37 @@ export type UpdateActiveConfigErrors = {
 export type UpdateActiveConfigError = UpdateActiveConfigErrors[keyof UpdateActiveConfigErrors];
 
 export type UpdateActiveConfigResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type UpdateCredentialsData = {
+    body: CredentialsUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/auth/credentials';
+};
+
+export type UpdateCredentialsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+    /**
+     * Validation error
+     */
+    422: ApiHttpError;
+};
+
+export type UpdateCredentialsError = UpdateCredentialsErrors[keyof UpdateCredentialsErrors];
+
+export type UpdateCredentialsResponses = {
     /**
      * OK
      */
