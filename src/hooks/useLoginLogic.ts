@@ -6,9 +6,10 @@ type LoginLogicOptions = {
   config: TrimmedConfig | FullConfig;
   onSuccess?: (attempt: UserTestAttempt) => void;
   onAttemptInProgress: () => void;
+  stayOnPage?: boolean;
 };
 
-export function useLoginLogic({ config, onSuccess, onAttemptInProgress }: LoginLogicOptions) {
+export function useLoginLogic({ config, onSuccess, onAttemptInProgress, stayOnPage = false }: LoginLogicOptions) {
   const { setToken, generateCredentials } = useAuth();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +25,12 @@ export function useLoginLogic({ config, onSuccess, onAttemptInProgress }: LoginL
       if (response.data) {
         const token = response.data.token;
         setToken(token);
+
+        if (stayOnPage) {
+          onSuccess?.(null as never);
+          return true;
+        }
+
         const groupResponse = await api.beginTest();
 
         if (groupResponse.data) {

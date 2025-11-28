@@ -7,14 +7,15 @@ type HomeHeaderProps = {
   isDarkMode: boolean;
   goToNextPage?: (attempt: UserTestAttempt) => void;
   onAttemptInProgress?: () => void;
+  onLoginSuccess?: () => void;
 };
 
 export function HomeHeader({
-  config,
-  isDarkMode,
-  goToNextPage,
-  onAttemptInProgress
-}: HomeHeaderProps) {
+                             config,
+                             isDarkMode,
+                             onAttemptInProgress,
+                             onLoginSuccess
+                           }: HomeHeaderProps) {
   return (
     <div className={styles.header}>
       <div
@@ -33,12 +34,13 @@ export function HomeHeader({
       <div className="flex items-center gap-2">
         {config.subtitle && <div className={styles.subtitle}>{config.subtitle}</div>}
 
-        {config.anonymous && goToNextPage && (
+        {config.anonymous && (
           <LoginButton
             config={config}
-            goToNextPage={goToNextPage}
             variant="icon"
             onAttemptInProgress={onAttemptInProgress}
+            onLoginSuccess={onLoginSuccess}
+            stayOnPage={true}
           />
         )}
       </div>

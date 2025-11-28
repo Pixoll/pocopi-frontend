@@ -12,17 +12,21 @@ type LoginButtonProps = {
   variant?: "icon" | "button";
   showAnonymousOption?: boolean;
   onAttemptInProgress?: () => void;
+  onLoginSuccess?: () => void;
+  stayOnPage?: boolean;
   className?: string;
 };
 
 export function LoginButton({
-  config,
-  goToNextPage,
-  variant = "icon",
-  showAnonymousOption = false,
-  onAttemptInProgress,
-  className = "",
-}: LoginButtonProps) {
+                              config,
+                              goToNextPage,
+                              variant = "icon",
+                              showAnonymousOption = false,
+                              onAttemptInProgress,
+                              onLoginSuccess,
+                              stayOnPage = false,
+                              className = "",
+                            }: LoginButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const { isLoggedIn } = useAuth();
 
@@ -50,6 +54,8 @@ export function LoginButton({
           goToNextPage={goToNextPage}
           showAnonymousOption={showAnonymousOption}
           onAttemptInProgress={onAttemptInProgress}
+          onLoginSuccess={onLoginSuccess}
+          stayOnPage={stayOnPage}
         />
       </>
     );
@@ -71,6 +77,8 @@ export function LoginButton({
         goToNextPage={goToNextPage}
         showAnonymousOption={showAnonymousOption}
         onAttemptInProgress={onAttemptInProgress}
+        onLoginSuccess={onLoginSuccess}
+        stayOnPage={stayOnPage}
       />
     </>
   );

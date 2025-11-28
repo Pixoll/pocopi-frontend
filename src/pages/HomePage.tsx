@@ -5,6 +5,7 @@ import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
 import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/HomePage.module.css";
 import { type ChangeEvent, useState } from "react";
@@ -17,12 +18,13 @@ type HomePageProps = {
 };
 
 export function HomePage({
-  config,
-  goToNextPage,
-  onDashboard,
-  onAdmin,
-}: HomePageProps) {
+                           config,
+                           goToNextPage,
+                           onDashboard,
+                           onAdmin,
+                         }: HomePageProps) {
   const { isDarkMode } = useTheme();
+  const { username } = useAuth();
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
@@ -50,13 +52,25 @@ export function HomePage({
     setShowContinueModal(true);
   };
 
+  const handleLoginSuccess = () => {
+    setConsentAccepted(false);
+    setModalError(null);
+  };
+
   return (
     <div className={styles.container}>
+      {username && (
+        <div className={styles.usernameBadge}>
+          <span>👤 {username}</span>
+        </div>
+      )}
+
       <HomeHeader
         config={config}
         isDarkMode={isDarkMode}
         goToNextPage={goToNextPage}
         onAttemptInProgress={handleAttemptInProgress}
+        onLoginSuccess={handleLoginSuccess}
       />
 
       {modalError && (

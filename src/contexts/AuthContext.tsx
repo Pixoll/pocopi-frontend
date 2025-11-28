@@ -13,6 +13,7 @@ type AuthContextType = {
   userRole: UserRole;
   isAdmin: boolean;
   isUser: boolean;
+  username: string | null;
   setToken: (token: string | undefined) => void;
   credentials: Credentials | null;
   generateCredentials: () => Credentials;
@@ -26,12 +27,14 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_KEY = "token";
+const USERNAME_KEY = "username";
 const ANONYMOUS_UPDATED_KEY = "anonymous_credentials_updated";
 const TOKEN_CHECK_INTERVAL = 5 * 60_000;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setTokenState] = useState<string | undefined>(undefined);
   const [userRole, setUserRole] = useState<UserRole>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(true);
   const [credentials, setCredentials] = useState<Credentials | null>(null);
   const [hasUpdatedAnonymousCredentials, setHasUpdatedAnonymousCredentials] = useState(false);
@@ -41,12 +44,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const storedToken = localStorage.getItem(STORAGE_KEY);
+    const storedUsername = localStorage.getItem(USERNAME_KEY);
     const anonymousUpdated = localStorage.getItem(ANONYMOUS_UPDATED_KEY) === 'true';
 
     if (storedToken) {
       setTokenState(storedToken);
     } else {
       setIsValidating(false);
+    }
+
+    if (storedUsername) {
+      setUsername(storedUsername);
     }
 
     setHasUpdatedAnonymousCredentials(anonymousUpdated);
@@ -69,6 +77,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!newToken && token) {
           clearAuth();
         }
+      }
+      if (event.key === USERNAME_KEY) {
+        const newUsername = event.newValue || null;
+        setUsername(newUsername);
       }
     };
 
@@ -117,6 +129,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (adminResponse && adminResponse.data) {
         setUserRole('admin');
+        if (adminResponse.data.username) {
+          setUsername(adminResponse.data.username);
+          localStorage.setItem(USERNAME_KEY, adminResponse.data.username);
+        }
         return true;
       }
     } catch (error) {
@@ -128,6 +144,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (userResponse && userResponse.data) {
         setUserRole('user');
+        if (userResponse.data.username) {
+          setUsername(userResponse.data.username);
+          localStorage.setItem(USERNAME_KEY, userResponse.data.username);
+        }
         return true;
       }
     } catch (error) {
@@ -166,6 +186,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setToken(undefined);
     setUserRole(null);
+    setUsername(null);
+    localStorage.removeItem(USERNAME_KEY);
     localStorage.removeItem(ANONYMOUS_UPDATED_KEY);
     setHasUpdatedAnonymousCredentials(false);
 
@@ -174,11 +196,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  function generateCredentials (): Credentials{
+  function generateCredentials(): Credentials {
     const username = uuidv4().replace(/-/g, "");
     const password = uuidv4().replace(/-/g, "");
-    setCredentials({username, password})
-    return {username, password}
+    setCredentials({ username, password });
+    return { username, password };
   }
 
   const markAnonymousCredentialsUpdated = () => {
@@ -199,6 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userRole,
         isAdmin,
         isUser,
+        username,
         setToken,
         generateCredentials,
         credentials,
