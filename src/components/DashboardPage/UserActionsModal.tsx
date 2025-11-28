@@ -1,12 +1,7 @@
-import { useState } from 'react';
-import api, {
-  type FormAnswersByUser,
-  type ResultsByUser,
-  type TestResultsByUser,
-  type UserTestAttemptSummary
-} from "@/api";
-import { SavePopup } from '@/components/SavePopup';
-import styles from '@/styles/DashboardPage/UserActionsModal.module.css';
+import api, { type UserTestAttemptSummary } from "@/api";
+import { SavePopup } from "@/components/SavePopup";
+import styles from "@/styles/DashboardPage/UserActionsModal.module.css";
+import { useState } from "react";
 
 type UserActionsModalProps = {
   userAttempt: UserTestAttemptSummary;
@@ -14,123 +9,64 @@ type UserActionsModalProps = {
   onClose: () => void;
 }
 
-async function getAllDetailByUserId(
-  userId: number,
-  setError: (error: string | null) => void,
-  setSuccess: (success: string | null) => void,
-  setData: (data: ResultsByUser) => void
-):Promise<void> {
-  try {
-    const response = await api.getUserResults({ path: { userId } });
-    if (response.data) {
-      setData(response.data);
-      setSuccess("Todos los resultados obtenidos exitosamente");
-    }
-    if (response.error) {
-      setError("Error al obtener todos los resultados");
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err) {
-    setError("Error inesperado al obtener los resultados");
-  }
-}
-
-async function getFormsDetailByUserId(
-  userId: number,
-  setError: (error: string | null) => void,
-  setSuccess: (success: string | null) => void,
-  setData: (data: FormAnswersByUser) => void
-):Promise<void> {
-  try {
-    const response = await api.getUserFormResults({ path: { userId } });
-    if (response.data) {
-      setData(response.data);
-      setSuccess("Resultados de formularios obtenidos exitosamente");
-    }
-    if (response.error) {
-      setError("Error al obtener resultados de formularios");
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err) {
-    setError("Error inesperado al obtener resultados de formularios");
-  }
-}
-
-async function getTestsDetailByUserId(
-  userId: number,
-  setError: (error: string | null) => void,
-  setSuccess: (success: string | null) => void,
-  setData: (data: TestResultsByUser) => void
-):Promise<void> {
-  try {
-    const response = await api.getUserTestResults({ path: { userId } });
-    if (response.data) {
-      setData(response.data);
-      setSuccess("Resultados de tests obtenidos exitosamente");
-    }
-    if (response.error) {
-      setError("Error al obtener resultados de tests");
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err) {
-    setError("Error inesperado al obtener resultados de tests");
-  }
-}
-
-
 export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserActionsModalProps) {
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [data, setData] = useState<TestResultsByUser | FormAnswersByUser | null>(null);
-  const [savePopupStatus, setSavePopupStatus] = useState<'loading' | 'success' | 'error' | null>(null);
-  const [savePopupMessage, setSavePopupMessage] = useState<string>('');
+  const [savePopupStatus, setSavePopupStatus] = useState<"loading" | "success" | "error" | null>(null);
+  const [savePopupMessage, setSavePopupMessage] = useState<string>("");
 
+  const downloadResults = async () => {
+    setSavePopupStatus("loading");
+    setSavePopupMessage("Obteniendo todos los resultados...");
 
-  const handleGetAllResults = async () => {
-    setSavePopupStatus('loading');
-    setSavePopupMessage('Obteniendo todos los resultados...');
-    await getAllDetailByUserId(userAttempt.user.id, setError, setSuccess, setData);
+    const result = await api.getUserResults({ path: { userId: userAttempt.user.id } });
 
-    if (error) {
-      setSavePopupStatus('error');
-      setSavePopupMessage(error);
+    if (!result.data) {
+      setSavePopupStatus("error");
+      setSavePopupMessage("Error al obtener todos los resultados");
     } else {
-      setSavePopupStatus('success');
-      setSavePopupMessage('Todos los resultados obtenidos exitosamente');
+      setSavePopupStatus("success");
+      setSavePopupMessage("Todos los resultados obtenidos exitosamente");
+
+      downloadJson(result.data, "results.json");
     }
   };
 
-  const handleGetFormsResults = async () => {
-    setSavePopupStatus('loading');
-    setSavePopupMessage('Obteniendo resultados de formularios...');
-    await getFormsDetailByUserId(userAttempt.user.id, setError, setSuccess, setData);
+  const downloadFormResults = async () => {
+    setSavePopupStatus("loading");
+    setSavePopupMessage("Obteniendo resultados de formularios...");
 
-    if (error) {
-      setSavePopupStatus('error');
-      setSavePopupMessage(error);
+    const result = await api.getUserFormResults({ path: { userId: userAttempt.user.id } });
+
+    if (!result.data) {
+      setSavePopupStatus("error");
+      setSavePopupMessage("Error al obtener resultados de formularios");
     } else {
-      setSavePopupStatus('success');
-      setSavePopupMessage('Resultados de formularios obtenidos exitosamente');
+      setSavePopupStatus("success");
+      setSavePopupMessage("Resultados de formularios obtenidos exitosamente");
+
+      downloadJson(result.data, "form-results.json");
     }
   };
 
-  const handleGetTestsResults = async () => {
-    setSavePopupStatus('loading');
-    setSavePopupMessage('Obteniendo resultados de tests...');
-    await getTestsDetailByUserId(userAttempt.user.id, setError, setSuccess, setData);
+  const downloadTestResults = async () => {
+    setSavePopupStatus("loading");
+    setSavePopupMessage("Obteniendo resultados de tests...");
 
-    if (error) {
-      setSavePopupStatus('error');
-      setSavePopupMessage(error);
+    const result = await api.getUserTestResults({ path: { userId: userAttempt.user.id } });
+
+    if (!result.data) {
+      setSavePopupStatus("error");
+      setSavePopupMessage("Error al obtener resultados de tests");
     } else {
-      setSavePopupStatus('success');
-      setSavePopupMessage('Resultados de tests obtenidos exitosamente');
+      setSavePopupStatus("success");
+      setSavePopupMessage("Resultados de tests obtenidos exitosamente");
+
+      downloadJson(result.data, "test-results.json");
     }
   };
 
   const handleClosePopup = () => {
     setSavePopupStatus(null);
-    setSavePopupMessage('');
+    setSavePopupMessage("");
   };
 
   if (!isOpen) return null;
@@ -146,11 +82,20 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
 
           <div className={styles.modalBody}>
             <div className={styles.userInfo}>
-              <p><strong>Usuario</strong> {userAttempt.user.name}</p>
-              {userAttempt.user.id && (<p><strong>ID:</strong> {userAttempt.user.id}</p>)}
-              {userAttempt.user.email && (<p><strong>Email:</strong> {userAttempt.user.email || '-'}</p>)}
-              {userAttempt.user.username && (<p><strong>Username:</strong> {userAttempt.user.username}</p>)}
-              {userAttempt.user.age && (<p><strong>Age:</strong> {userAttempt.user.age}</p>)}
+              <p><strong>Usuario</strong>
+                {userAttempt.user.name}</p>
+              {userAttempt.user.id && (<p>
+                <strong>ID:</strong>
+                {userAttempt.user.id}</p>)}
+              {userAttempt.user.email && (<p>
+                <strong>Email:</strong>
+                {userAttempt.user.email || "-"}</p>)}
+              {userAttempt.user.username && (<p>
+                <strong>Username:</strong>
+                {userAttempt.user.username}</p>)}
+              {userAttempt.user.age && (<p>
+                <strong>Age:</strong>
+                {userAttempt.user.age}</p>)}
             </div>
 
             <div className={styles.actionItem}>
@@ -163,7 +108,7 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
                   <strong>Por si acaso:</strong> Esto incluye resultados de tests, formularios de todas las configuraciones asociadas
                 </p>
               </div>
-              <button className={styles.actionButton} onClick={handleGetAllResults}>
+              <button className={styles.actionButton} onClick={downloadResults}>
                 Obtener Todos
               </button>
             </div>
@@ -178,7 +123,7 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
                   <strong>Por si acaso:</strong> Solo incluye formularios de todas las configuraciones asociadas, excluyendo tests.
                 </p>
               </div>
-              <button className={styles.actionButton} onClick={handleGetFormsResults}>
+              <button className={styles.actionButton} onClick={downloadFormResults}>
                 Obtener Formularios
               </button>
             </div>
@@ -193,7 +138,7 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
                   <strong>Por si acaso:</strong> Solo incluye tests de todas las configuraciones asociadas, excluyendo resultados de formularios.
                 </p>
               </div>
-              <button className={styles.actionButton} onClick={handleGetTestsResults}>
+              <button className={styles.actionButton} onClick={downloadTestResults}>
                 Obtener Tests
               </button>
             </div>
@@ -209,3 +154,17 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
     </>
   );
 }
+
+function downloadJson(json: object, filename: string): void {
+  const file = new Blob([JSON.stringify(json)], { type: "application/json" });
+  const url = URL.createObjectURL(file);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+

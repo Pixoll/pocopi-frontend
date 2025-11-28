@@ -1,11 +1,11 @@
 import api, { type TrimmedConfig, type UsersTestAttemptsSummary, type UserTestAttemptSummary } from "@/api";
+import UserActionsModal from "@/components/DashboardPage/UserActionsModal.tsx";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
-import { faDownload, faEllipsisV, faUser, faFileArchive } from "@fortawesome/free-solid-svg-icons";
+import { t } from "@/utils/translations.ts";
+import { faDownload, faEllipsisV, faFileArchive, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { t } from "@/utils/translations.ts";
-import UserActionsModal from "@/components/DashboardPage/UserActionsModal.tsx";
 
 type ParticipantsListProps = {
   config: TrimmedConfig;
@@ -15,11 +15,11 @@ type ParticipantsListProps = {
 };
 
 export function ParticipantsList({
-                                   config,
-                                   isDarkMode,
-                                   summary,
-                                   setError,
-                                 }: ParticipantsListProps) {
+  config,
+  isDarkMode,
+  summary,
+  setError,
+}: ParticipantsListProps) {
   const [loadingExportSummary, setLoadingExportSummary] = useState<boolean>(false);
   const [loadingAllResults, setLoadingAllResults] = useState<boolean>(false);
   const [loadingAllTests, setLoadingAllTests] = useState<boolean>(false);
@@ -35,6 +35,7 @@ export function ParticipantsList({
       const rows = [
         [
           "user_id",
+          "config_version",
           "group",
           "name",
           "email",
@@ -47,21 +48,30 @@ export function ParticipantsList({
         ].join(","),
       ];
 
-      summary.users.forEach((u) => {
+      summary.users.forEach((a) => {
         rows.push([
-          u.user.id,
-          escapeCsvValue(u.user.name ?? "-"),
-          escapeCsvValue(u.user.email ?? "-"),
-          u.user.age ?? "-",
-          new Date(u.timestamp).toISOString(),
-          (u.timeTaken / 1000).toFixed(2),
-          u.correctQuestions,
-          u.questionsAnswered,
-          u.accuracy.toFixed(1),
+          a.user.id,
+          a.configVersion,
+          a.group,
+          escapeCsvValue(a.user.name ?? "-"),
+          escapeCsvValue(a.user.email ?? "-"),
+          a.user.age ?? "-",
+          new Date(a.timestamp).toISOString(),
+          (a.timeTaken / 1000).toFixed(2),
+          a.correctQuestions,
+          a.questionsAnswered,
+          a.accuracy.toFixed(1),
         ].join(","));
       });
 
-      downloadFile("test_results.csv", rows.join("\n"), "text/csv;charset=utf-8;");
+      const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.setAttribute("hidden", "");
+      a.setAttribute("href", url);
+      a.setAttribute("download", "results-summary.csv");
+      a.click();
     } catch (error) {
       console.error("error exporting csv:", error);
       setError(t(config, "dashboard.exportCsv"));
@@ -70,17 +80,21 @@ export function ParticipantsList({
     }
   };
 
-  const getAllUsersLatestConfigResultsZip = async () => {
+  const downloadAllResults = async () => {
     try {
       setLoadingAllResults(true);
       setError(null);
-      const response = await api.getAllResults();
+      const result = await api.getAllResults();
 
-      if (response.error) {
-        console.error("Error al exportar todos los resultados:", response.error);
+      if (result.error) {
+        console.error("Error al exportar todos los resultados:", result.error);
         setError("Error al exportar todos los resultados");
-      } else if (response.data) {
-        console.log(response.data);
+      } else if (result.data) {
+        downloadFile(
+          result.data as unknown as Blob,
+          result.response.headers.get("content-disposition"),
+          "results.tar.gz"
+        );
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -90,17 +104,21 @@ export function ParticipantsList({
     }
   };
 
-  const getAllUsersLatestConfigTestsZip = async () => {
+  const downloadAllTestResults = async () => {
     try {
       setLoadingAllTests(true);
       setError(null);
-      const response = await api.getAllTestResults();
+      const result = await api.getAllTestResults();
 
-      if (response.error) {
-        console.error("Error al exportar todos los tests:", response.error);
+      if (result.error) {
+        console.error("Error al exportar todos los tests:", result.error);
         setError("Error al exportar todos los tests");
-      } else if (response.data) {
-        console.log("Tests obtenidos:", response.data);
+      } else if (result.data) {
+        downloadFile(
+          result.data as unknown as Blob,
+          result.response.headers.get("content-disposition"),
+          "test-results.tar.gz"
+        );
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -110,17 +128,21 @@ export function ParticipantsList({
     }
   };
 
-  const getAllUsersLatestConfigFormsZip = async () => {
+  const downloadAllFormResults = async () => {
     try {
       setLoadingAllForms(true);
       setError(null);
-      const response = await api.getAllFormResults();
+      const result = await api.getAllFormResults();
 
-      if (response.error) {
-        console.error( response.error);
+      if (result.error) {
+        console.error(result.error);
         setError("Error al exportar todos los formularios");
-      } else if (response.data) {
-        console.log(response.data);
+      } else if (result.data) {
+        downloadFile(
+          result.data as unknown as Blob,
+          result.response.headers.get("content-disposition"),
+          "form-results.tar.gz"
+        );
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -167,43 +189,43 @@ export function ParticipantsList({
           <h6 className={styles.bulkExportTitle}>Exportar información de todos los usuarios:</h6>
           <div className={styles.bulkExportButtons}>
             <button
-              onClick={getAllUsersLatestConfigResultsZip}
+              onClick={downloadAllResults}
               className={styles.bulkExportButton}
               disabled={loadingAllResults || summary.users.length === 0}
               title="Exportar todos los resultados de usuarios"
             >
               {loadingAllResults ? (
-                <Spinner />
+                <Spinner/>
               ) : (
-                <FontAwesomeIcon icon={faFileArchive} />
+                <FontAwesomeIcon icon={faFileArchive}/>
               )}
               <span>Todos los Resultados</span>
             </button>
 
             <button
-              onClick={getAllUsersLatestConfigTestsZip}
+              onClick={downloadAllTestResults}
               className={styles.bulkExportButton}
               disabled={loadingAllTests || summary.users.length === 0}
               title="Exportar todos los tests de usuarios"
             >
               {loadingAllTests ? (
-                <Spinner />
+                <Spinner/>
               ) : (
-                <FontAwesomeIcon icon={faFileArchive} />
+                <FontAwesomeIcon icon={faFileArchive}/>
               )}
               <span>Todos los Tests</span>
             </button>
 
             <button
-              onClick={getAllUsersLatestConfigFormsZip}
+              onClick={downloadAllFormResults}
               className={styles.bulkExportButton}
               disabled={loadingAllForms || summary.users.length === 0}
               title="Exportar todos los formularios de usuarios"
             >
               {loadingAllForms ? (
-                <Spinner />
+                <Spinner/>
               ) : (
-                <FontAwesomeIcon icon={faFileArchive} />
+                <FontAwesomeIcon icon={faFileArchive}/>
               )}
               <span>Todos los Formularios</span>
             </button>
@@ -228,62 +250,62 @@ export function ParticipantsList({
               ].join(" ")}
             >
               <thead>
-              <tr>
-                <th>{t(config, "dashboard.participant")}</th>
-                <th>Versión de configuración</th>
-                <th>{t(config, "dashboard.group")}</th>
-                <th>{t(config, "dashboard.date")}</th>
-                <th>{t(config, "dashboard.timeTaken")}</th>
-                <th>{t(config, "dashboard.correct")}</th>
-                <th>{t(config, "dashboard.answered")}</th>
-                <th>{t(config, "dashboard.accuracy")}</th>
-                <th>{t(config, "dashboard.actions")}</th>
-              </tr>
+                <tr>
+                  <th>{t(config, "dashboard.participant")}</th>
+                  <th>Versión de configuración</th>
+                  <th>{t(config, "dashboard.group")}</th>
+                  <th>{t(config, "dashboard.date")}</th>
+                  <th>{t(config, "dashboard.timeTaken")}</th>
+                  <th>{t(config, "dashboard.correct")}</th>
+                  <th>{t(config, "dashboard.answered")}</th>
+                  <th>{t(config, "dashboard.accuracy")}</th>
+                  <th>{t(config, "dashboard.actions")}</th>
+                </tr>
               </thead>
               <tbody>
-              {summary.users.map((userAttempt) => (
-                <tr key={userAttempt.user.id}>
-                  <td>
-                    <div className={styles.userContainer}>
-                      <FontAwesomeIcon
-                        icon={faUser}
-                        className={[
-                          styles.userIcon,
-                          isDarkMode ? styles.userIconDark : styles.userIconLight,
-                        ].join(" ")}
-                      />
-                      <div>
-                        <div className={styles.userName}>
-                          {userAttempt.user.name}
+                {summary.users.map((userAttempt) => (
+                  <tr key={userAttempt.user.id}>
+                    <td>
+                      <div className={styles.userContainer}>
+                        <FontAwesomeIcon
+                          icon={faUser}
+                          className={[
+                            styles.userIcon,
+                            isDarkMode ? styles.userIconDark : styles.userIconLight,
+                          ].join(" ")}
+                        />
+                        <div>
+                          <div className={styles.userName}>
+                            {userAttempt.user.name}
+                          </div>
+                          <small className={styles.userId}>
+                            {t(config, "dashboard.id", userAttempt.user.id.toString())}
+                          </small>
                         </div>
-                        <small className={styles.userId}>
-                          {t(config, "dashboard.id", userAttempt.user.id.toString())}
-                        </small>
                       </div>
-                    </div>
-                  </td>
-                  <td>{userAttempt.configVersion}</td>
-                  <td>{userAttempt.group}</td>
-                  <td>{new Date(userAttempt.timestamp).toLocaleString()}</td>
-                  <td>{(userAttempt.timeTaken / 1000).toFixed(2)}</td>
-                  <td>{userAttempt.correctQuestions}</td>
-                  <td>{userAttempt.questionsAnswered}</td>
-                  <td>
-                    <div className={[styles.accuracyBadge, getAccuracyBadgeClass(userAttempt.accuracy)].join(" ")}>
-                      {userAttempt.accuracy.toFixed(1)}%
-                    </div>
-                  </td>
-                  <td>
-                    <button
-                      className={styles.exportUserButton}
-                      onClick={() => openUserActionsModal(userAttempt)}
-                      title="Acciones de usuario"
-                    >
-                      <FontAwesomeIcon icon={faEllipsisV}/>
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td>{userAttempt.configVersion}</td>
+                    <td>{userAttempt.group}</td>
+                    <td>{new Date(userAttempt.timestamp).toLocaleString()}</td>
+                    <td>{(userAttempt.timeTaken / 1000).toFixed(2)}</td>
+                    <td>{userAttempt.correctQuestions}</td>
+                    <td>{userAttempt.questionsAnswered}</td>
+                    <td>
+                      <div className={[styles.accuracyBadge, getAccuracyBadgeClass(userAttempt.accuracy)].join(" ")}>
+                        {userAttempt.accuracy.toFixed(1)}%
+                      </div>
+                    </td>
+                    <td>
+                      <button
+                        className={styles.exportUserButton}
+                        onClick={() => openUserActionsModal(userAttempt)}
+                        title="Acciones de usuario"
+                      >
+                        <FontAwesomeIcon icon={faEllipsisV}/>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -312,12 +334,17 @@ function escapeCsvValue(value: string): string {
   return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, "\"\"")}"` : value;
 }
 
-function downloadFile(filename: string, data: string, mimeType: string): void {
-  const blob = new Blob([data], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.setAttribute("hidden", "");
-  a.setAttribute("href", url);
-  a.setAttribute("download", filename);
-  a.click();
+function downloadFile(file: Blob, contentDisposition: string | null, defaultName: string): void {
+  const filenameMatch = contentDisposition?.match(/filename="? (. +)"?/);
+  const filename = filenameMatch ? filenameMatch[1] : defaultName;
+
+  const url = URL.createObjectURL(file);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+
+  link.click();
+
+  URL.revokeObjectURL(url);
 }
