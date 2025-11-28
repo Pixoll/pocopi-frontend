@@ -59,6 +59,8 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   const [patterns, setPatterns] = useState<Pattern[]>([]);
 
   const {token} = useAuth();
+  console.log("pretest: ",config?.preTestForm)
+  console.log("postest: ",config?.postTestForm)
 
   async function getConfig(): Promise<void> {
     setIsLoading(true);
@@ -98,7 +100,6 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
     try {
       const patchRequest = await buildPatchRequest(config);
-      console.log("se manda:", patchRequest.payload.usernamePattern);
       const { data, error } = await api.updateActiveConfig({
         body: patchRequest
       });

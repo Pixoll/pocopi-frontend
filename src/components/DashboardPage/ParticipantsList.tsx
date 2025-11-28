@@ -1,10 +1,11 @@
 import api, { type TrimmedConfig, type UsersTestAttemptsSummary, type UserTestAttemptSummary } from "@/api";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
-import { faDownload, faFileExport, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faEllipsisV, faUser, faFileArchive } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { t } from "@/utils/translations.ts";
+import UserActionsModal from "@/components/DashboardPage/UserActionsModal.tsx";
 
 type ParticipantsListProps = {
   config: TrimmedConfig;
@@ -14,13 +15,17 @@ type ParticipantsListProps = {
 };
 
 export function ParticipantsList({
-  config,
-  isDarkMode,
-  summary,
-  setError,
-}: ParticipantsListProps) {
+                                   config,
+                                   isDarkMode,
+                                   summary,
+                                   setError,
+                                 }: ParticipantsListProps) {
   const [loadingExportSummary, setLoadingExportSummary] = useState<boolean>(false);
-  const [loadingExportUserTimelogs, setLoadingExportUserTimelogs] = useState<boolean>(false);
+  const [loadingAllResults, setLoadingAllResults] = useState<boolean>(false);
+  const [loadingAllTests, setLoadingAllTests] = useState<boolean>(false);
+  const [loadingAllForms, setLoadingAllForms] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<UserTestAttemptSummary | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const exportToCsv = () => {
     try {
@@ -44,10 +49,10 @@ export function ParticipantsList({
 
       summary.users.forEach((u) => {
         rows.push([
-          u.id,
-          escapeCsvValue(u.name),
-          escapeCsvValue(u.email ?? "-"),
-          u.age ?? "-",
+          u.user.id,
+          escapeCsvValue(u.user.name ?? "-"),
+          escapeCsvValue(u.user.email ?? "-"),
+          u.user.age ?? "-",
           new Date(u.timestamp).toISOString(),
           (u.timeTaken / 1000).toFixed(2),
           u.correctQuestions,
@@ -65,81 +70,167 @@ export function ParticipantsList({
     }
   };
 
-  const exportUserTimelogs = async (user: UserTestAttemptSummary) => {
+  const getAllUsersLatestConfigResultsZip = async () => {
     try {
-      setLoadingExportUserTimelogs(true);
+      setLoadingAllResults(true);
       setError(null);
+      const response = await api.getAllResults();
 
-      const response = await api.getUserEventLogs({
-        path: {
-          userId: user.id
-        },
-      });
-      if (response.data) {
+      if (response.error) {
+        console.error("Error al exportar todos los resultados:", response.error);
+        setError("Error al exportar todos los resultados");
+      } else if (response.data) {
         console.log(response.data);
       }
-      if (response.error) {
-        console.error("error while exporting user:", response.error);
-        setError(t(config, "dashboard.errorExportUser", user.id.toString()));
-      } else {
-        const exportData = {
-          participant: user,
-          timelogs: response.data,
-        };
-
-        const json = JSON.stringify(exportData, null, 2);
-        downloadFile(`user_${user.id}_results.json`, json, "application/json");
-      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error("error while exporting user:", error);
-      setError(t(config, "dashboard.errorExportUser", user.id.toString()));
+      setError("Error inesperado al exportar todos los resultados");
     } finally {
-      setLoadingExportUserTimelogs(false);
+      setLoadingAllResults(false);
     }
   };
 
-  return (
-    <div
-      className={[
-        styles.container,
-        isDarkMode ? styles.containerDark : styles.containerLight,
-      ].join(" ")}
-    >
-      <div className={styles.header}>
-        <h5 className={styles.title}>{t(config, "dashboard.testResults")}</h5>
-        <button
-          onClick={exportToCsv}
-          className={styles.exportCsvButton}
-          disabled={loadingExportSummary || summary.users.length === 0}
-        >
-          {loadingExportSummary
-            ? <Spinner/>
-            : <FontAwesomeIcon icon={faDownload}/>
-          }
-          {t(config, "dashboard.exportCsv")}
-        </button>
-      </div>
+  const getAllUsersLatestConfigTestsZip = async () => {
+    try {
+      setLoadingAllTests(true);
+      setError(null);
+      const response = await api.getAllTestResults();
 
-      {summary.users.length === 0 ? (
-        <div
-          className={[
-            styles.noResults,
-            isDarkMode ? styles.noResultsDark : styles.noResultsLight,
-          ].join(" ")}
-        >
-          {t(config, "dashboard.noResults")}
+      if (response.error) {
+        console.error("Error al exportar todos los tests:", response.error);
+        setError("Error al exportar todos los tests");
+      } else if (response.data) {
+        console.log("Tests obtenidos:", response.data);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      setError("Error inesperado al exportar todos los tests");
+    } finally {
+      setLoadingAllTests(false);
+    }
+  };
+
+  const getAllUsersLatestConfigFormsZip = async () => {
+    try {
+      setLoadingAllForms(true);
+      setError(null);
+      const response = await api.getAllFormResults();
+
+      if (response.error) {
+        console.error( response.error);
+        setError("Error al exportar todos los formularios");
+      } else if (response.data) {
+        console.log(response.data);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      setError("Error inesperado al exportar todos los formularios");
+    } finally {
+      setLoadingAllForms(false);
+    }
+  };
+
+  const openUserActionsModal = (user: UserTestAttemptSummary) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  return (
+    <>
+      <div
+        className={[
+          styles.container,
+          isDarkMode ? styles.containerDark : styles.containerLight,
+        ].join(" ")}
+      >
+        <div className={styles.header}>
+          <h5 className={styles.title}>{t(config, "dashboard.testResults")}</h5>
+          <button
+            onClick={exportToCsv}
+            className={styles.exportCsvButton}
+            disabled={loadingExportSummary || summary.users.length === 0}
+          >
+            {loadingExportSummary
+              ? <Spinner/>
+              : <FontAwesomeIcon icon={faDownload}/>
+            }
+            {t(config, "dashboard.exportCsv")}
+          </button>
         </div>
-      ) : (
-        <div className={styles.tableContainer}>
-          <table
+
+        <div className={styles.bulkExportSection}>
+          <h6 className={styles.bulkExportTitle}>Exportar información de todos los usuarios:</h6>
+          <div className={styles.bulkExportButtons}>
+            <button
+              onClick={getAllUsersLatestConfigResultsZip}
+              className={styles.bulkExportButton}
+              disabled={loadingAllResults || summary.users.length === 0}
+              title="Exportar todos los resultados de usuarios"
+            >
+              {loadingAllResults ? (
+                <Spinner />
+              ) : (
+                <FontAwesomeIcon icon={faFileArchive} />
+              )}
+              <span>Todos los Resultados</span>
+            </button>
+
+            <button
+              onClick={getAllUsersLatestConfigTestsZip}
+              className={styles.bulkExportButton}
+              disabled={loadingAllTests || summary.users.length === 0}
+              title="Exportar todos los tests de usuarios"
+            >
+              {loadingAllTests ? (
+                <Spinner />
+              ) : (
+                <FontAwesomeIcon icon={faFileArchive} />
+              )}
+              <span>Todos los Tests</span>
+            </button>
+
+            <button
+              onClick={getAllUsersLatestConfigFormsZip}
+              className={styles.bulkExportButton}
+              disabled={loadingAllForms || summary.users.length === 0}
+              title="Exportar todos los formularios de usuarios"
+            >
+              {loadingAllForms ? (
+                <Spinner />
+              ) : (
+                <FontAwesomeIcon icon={faFileArchive} />
+              )}
+              <span>Todos los Formularios</span>
+            </button>
+          </div>
+        </div>
+
+        {summary.users.length === 0 ? (
+          <div
             className={[
-              styles.table,
-              isDarkMode ? styles.tableDark : styles.tableLight,
+              styles.noResults,
+              isDarkMode ? styles.noResultsDark : styles.noResultsLight,
             ].join(" ")}
           >
-            <thead>
+            {t(config, "dashboard.noResults")}
+          </div>
+        ) : (
+          <div className={styles.tableContainer}>
+            <table
+              className={[
+                styles.table,
+                isDarkMode ? styles.tableDark : styles.tableLight,
+              ].join(" ")}
+            >
+              <thead>
               <tr>
                 <th>{t(config, "dashboard.participant")}</th>
+                <th>Versión de configuración</th>
                 <th>{t(config, "dashboard.group")}</th>
                 <th>{t(config, "dashboard.date")}</th>
                 <th>{t(config, "dashboard.timeTaken")}</th>
@@ -148,10 +239,10 @@ export function ParticipantsList({
                 <th>{t(config, "dashboard.accuracy")}</th>
                 <th>{t(config, "dashboard.actions")}</th>
               </tr>
-            </thead>
-            <tbody>
-              {summary.users.map((user) => (
-                <tr key={user.id}>
+              </thead>
+              <tbody>
+              {summary.users.map((userAttempt) => (
+                <tr key={userAttempt.user.id}>
                   <td>
                     <div className={styles.userContainer}>
                       <FontAwesomeIcon
@@ -163,44 +254,50 @@ export function ParticipantsList({
                       />
                       <div>
                         <div className={styles.userName}>
-                          {user.name}
+                          {userAttempt.user.name}
                         </div>
                         <small className={styles.userId}>
-                          {t(config, "dashboard.id", user.id.toString())}
+                          {t(config, "dashboard.id", userAttempt.user.id.toString())}
                         </small>
                       </div>
                     </div>
                   </td>
-                  <td>{user.group}</td>
-                  <td>{new Date(user.timestamp).toLocaleString()}</td>
-                  <td>{(user.timeTaken / 1000).toFixed(2)}</td>
-                  <td>{user.correctQuestions}</td>
-                  <td>{user.questionsAnswered}</td>
+                  <td>{userAttempt.configVersion}</td>
+                  <td>{userAttempt.group}</td>
+                  <td>{new Date(userAttempt.timestamp).toLocaleString()}</td>
+                  <td>{(userAttempt.timeTaken / 1000).toFixed(2)}</td>
+                  <td>{userAttempt.correctQuestions}</td>
+                  <td>{userAttempt.questionsAnswered}</td>
                   <td>
-                    <div className={[styles.accuracyBadge, getAccuracyBadgeClass(user.accuracy)].join(" ")}>
-                      {user.accuracy.toFixed(1)}%
+                    <div className={[styles.accuracyBadge, getAccuracyBadgeClass(userAttempt.accuracy)].join(" ")}>
+                      {userAttempt.accuracy.toFixed(1)}%
                     </div>
                   </td>
                   <td>
                     <button
                       className={styles.exportUserButton}
-                      onClick={() => exportUserTimelogs(user)}
-                      disabled={loadingExportUserTimelogs}
-                      title={t(config, "dashboard.exportParticipantResult")}
+                      onClick={() => openUserActionsModal(userAttempt)}
+                      title="Acciones de usuario"
                     >
-                      {loadingExportUserTimelogs
-                        ? <Spinner/>
-                        : <FontAwesomeIcon icon={faFileExport}/>
-                      }
+                      <FontAwesomeIcon icon={faEllipsisV}/>
                     </button>
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
-        </div>
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {selectedUser && (
+        <UserActionsModal
+          userAttempt={selectedUser}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
       )}
-    </div>
+    </>
   );
 }
 

@@ -1,0 +1,243 @@
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modalContent {
+    background: #2d3748;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+    border: 1px solid #4a5568;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px;
+    border-bottom: 1px solid #4a5568;
+    position: sticky;
+    top: 0;
+    background: #2d3748;
+    z-index: 10;
+    border-radius: 12px 12px 0 0;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #a0aec0;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    background-color: #4a5568;
+    color: #e2e8f0;
+}
+
+.modalBody {
+    padding: 24px 28px;
+}
+
+.userInfo {
+    background-color: #1a202c;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    border: 1px solid #4a5568;
+}
+
+.userInfo p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #cbd5e0;
+}
+
+.userInfo p:last-child {
+    margin-bottom: 0;
+}
+
+.userInfo strong {
+    color: #e2e8f0;
+}
+
+.actionItem {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid #4a5568;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+    background-color: #374151;
+}
+
+.actionItem:hover {
+    border-color: #4299e1;
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+    background-color: #3d4a5c;
+}
+
+.actionItem:last-child {
+    margin-bottom: 0;
+}
+
+.actionInfo {
+    flex: 1;
+}
+
+.actionInfo h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.actionDescription {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #a0aec0;
+    line-height: 1.5;
+}
+
+.actionNote {
+    margin: 0;
+    font-size: 13px;
+    color: #718096;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.actionNote strong {
+    color: #a0aec0;
+    font-style: normal;
+}
+
+.actionButton {
+    align-self: center;
+    padding: 10px 20px;
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    min-width: 140px;
+}
+
+.actionButton:hover {
+    background-color: #3182ce;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+}
+
+.actionButton:active {
+    transform: translateY(0);
+}
+
+.actionButton:disabled {
+    background-color: #4a5568;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.5;
+}
+
+.modalContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+    background: #1a202c;
+    border-radius: 0 12px 12px 0;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 4px;
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}
+
+@media (max-width: 640px) {
+    .modalContent {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .modalHeader {
+        padding: 20px;
+    }
+
+    .modalHeader h2 {
+        font-size: 20px;
+    }
+
+    .modalBody {
+        padding: 20px;
+    }
+
+    .actionItem {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .actionButton {
+        width: 100%;
+    }
+}

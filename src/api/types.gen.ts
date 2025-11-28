@@ -251,11 +251,8 @@ export type User = {
 };
 
 export type UserTestAttemptSummary = {
-    id: number;
-    username: string;
-    name: string;
-    email: string;
-    age: number;
+    user: User;
+    configVersion: number;
     group: string;
     timestamp: number;
     timeTaken: number;
@@ -271,153 +268,11 @@ export type UsersTestAttemptsSummary = {
     users: Array<UserTestAttemptSummary>;
 };
 
-export type QuestionTimestamp = {
-    start: number;
-    end: number;
-};
-
-export type TestQuestionResult = {
-    questionId: number;
-    timestamps: Array<QuestionTimestamp>;
-    correct: boolean;
-    skipped: boolean;
-    totalOptionChanges: number;
-    totalOptionHovers: number;
-};
-
-/**
- * Resultados de test de un usuario
- */
-export type TestResultByUser = {
-    /**
-     * Información del usuario, incluyendo el ID de grupo de test
-     */
-    user?: UserBasicInfo;
-    /**
-     * Resultados por pregunta
-     */
-    questions?: Array<TestQuestionResult>;
-};
-
-/**
- * Datos básicos de un usuario
- */
-export type UserBasicInfo = {
-    /**
-     * ID del usuario
-     */
-    id?: number;
-    /**
-     * Nombre del usuario
-     */
-    name?: string;
-    /**
-     * Email del usuario
-     */
-    email?: string;
-    /**
-     * Edad del usuario
-     */
-    age?: number;
-};
-
-/**
- * Respuesta de un usuario a una pregunta del formulario.
- */
 export type FormAnswer = {
-    /**
-     * ID de la pregunta
-     */
     questionId: number;
-    /**
-     * Texto de la pregunta
-     */
-    questionText: string;
-    /**
-     * ID de la opcion seleccionada (si es pertinente))
-     */
     optionId?: number;
-    /**
-     * Texto de la opcion seleccionada (si es pertinente)
-     */
-    optionText?: string;
-    /**
-     * Valor numerico de la respuesta (si es pertinente)
-     */
     value?: number;
-    /**
-     * Respuesta en texto libre (si es pertinente)
-     */
     answer?: string;
-};
-
-/**
- * Contiene las respuestas a un formulario especifico.
- */
-export type FormAnswers = {
-    /**
-     * ID del formulario
-     */
-    formId: number;
-    /**
-     * Título del formulario
-     */
-    formTitle: string;
-    /**
-     * Respuestas a preguntas del formulario
-     */
-    answers: Array<FormAnswer>;
-};
-
-/**
- * Respuestas de los resultados de los formularios (pre-test y post-test) de un usuario
- */
-export type FormAnswersByUser = {
-    /**
-     * Información del usuario, incluyendo el ID de grupo de test
-     */
-    user?: UserBasicInfo;
-    /**
-     * Resultados de formularios pre-test
-     */
-    pre?: Array<FormAnswers>;
-    /**
-     * Resultados de formularios post-test
-     */
-    post?: Array<FormAnswers>;
-};
-
-/**
- * Resultados completos (formularios y tests) de un usuario, con info de usuario unica
- */
-export type ResultsByUser = {
-    /**
-     * Datos del usuario
-     */
-    user?: UserBasicInfo;
-    /**
-     * Resultados de formularios
-     */
-    forms?: UserFormsResult;
-    /**
-     * Resultados de test
-     */
-    tests?: UserTestsResult;
-};
-
-export type UserFormsResult = {
-    pre?: Array<FormAnswers>;
-    post?: Array<FormAnswers>;
-};
-
-export type UserTestsResult = {
-    questions?: Array<TestQuestionResult>;
-};
-
-export type Pattern = {
-    id: number;
-    name: string;
-    regex: string;
 };
 
 export type OptionEventLog = {
@@ -431,8 +286,7 @@ export type OptionSelectionEvent = {
     timestamp: number;
 };
 
-export type QuestionEventLogWithUserId = {
-    userId: number;
+export type QuestionEventLog = {
     questionId: number;
     timestamps: Array<QuestionTimestamp>;
     correct: boolean;
@@ -443,15 +297,59 @@ export type QuestionEventLogWithUserId = {
     events: Array<OptionEventLog>;
 };
 
-export type QuestionEventLog = {
-    questionId: number;
-    timestamps: Array<QuestionTimestamp>;
-    correct: boolean;
-    skipped: boolean;
-    totalOptionChanges: number;
-    totalOptionHovers: number;
-    optionSelections: Array<OptionSelectionEvent>;
-    events: Array<OptionEventLog>;
+export type QuestionTimestamp = {
+    start: number;
+    end: number;
+};
+
+export type ResultsByConfig = {
+    configVersion: number;
+    preTestForm: Array<FormAnswer>;
+    postTestForm: Array<FormAnswer>;
+    attemptsResults: Array<TestResult>;
+};
+
+export type ResultsByUser = {
+    user: User;
+    results: Array<ResultsByConfig>;
+};
+
+export type TestResult = {
+    attemptId: number;
+    group: string;
+    timestamp: number;
+    timeTaken: number;
+    correctQuestions: number;
+    questionsAnswered: number;
+    accuracy: number;
+    questionEvents: Array<QuestionEventLog>;
+};
+
+export type TestResultsByConfig = {
+    configVersion: number;
+    attemptsResults: Array<TestResult>;
+};
+
+export type TestResultsByUser = {
+    user: User;
+    results: Array<TestResultsByConfig>;
+};
+
+export type FormAnswersByConfig = {
+    configVersion: number;
+    preTestForm: Array<FormAnswer>;
+    postTestForm: Array<FormAnswer>;
+};
+
+export type FormAnswersByUser = {
+    user: User;
+    answers: Array<FormAnswersByConfig>;
+};
+
+export type Pattern = {
+    id: number;
+    name: string;
+    regex: string;
 };
 
 export type ConfigPreview = {
@@ -1231,45 +1129,14 @@ export type GetAllUsersTestAttemptsSummaryResponses = {
 
 export type GetAllUsersTestAttemptsSummaryResponse = GetAllUsersTestAttemptsSummaryResponses[keyof GetAllUsersTestAttemptsSummaryResponses];
 
-export type GetUserTestAttemptSummaryByIdData = {
-    body?: never;
-    path: {
-        userId: number;
-    };
-    query?: never;
-    url: '/api/summaries/{userId}';
-};
-
-export type GetUserTestAttemptSummaryByIdErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetUserTestAttemptSummaryByIdError = GetUserTestAttemptSummaryByIdErrors[keyof GetUserTestAttemptSummaryByIdErrors];
-
-export type GetUserTestAttemptSummaryByIdResponses = {
-    /**
-     * OK
-     */
-    200: UserTestAttemptSummary;
-};
-
-export type GetUserTestAttemptSummaryByIdResponse = GetUserTestAttemptSummaryByIdResponses[keyof GetUserTestAttemptSummaryByIdResponses];
-
-export type GetCurrentUserTestAttemptSummaryData = {
+export type GetCurrentUserLatestTestAttemptSummaryData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/summaries/me';
 };
 
-export type GetCurrentUserTestAttemptSummaryErrors = {
+export type GetCurrentUserLatestTestAttemptSummaryErrors = {
     /**
      * Unauthorized
      */
@@ -1280,16 +1147,76 @@ export type GetCurrentUserTestAttemptSummaryErrors = {
     403: ApiHttpError;
 };
 
-export type GetCurrentUserTestAttemptSummaryError = GetCurrentUserTestAttemptSummaryErrors[keyof GetCurrentUserTestAttemptSummaryErrors];
+export type GetCurrentUserLatestTestAttemptSummaryError = GetCurrentUserLatestTestAttemptSummaryErrors[keyof GetCurrentUserLatestTestAttemptSummaryErrors];
 
-export type GetCurrentUserTestAttemptSummaryResponses = {
+export type GetCurrentUserLatestTestAttemptSummaryResponses = {
     /**
      * OK
      */
     200: UserTestAttemptSummary;
 };
 
-export type GetCurrentUserTestAttemptSummaryResponse = GetCurrentUserTestAttemptSummaryResponses[keyof GetCurrentUserTestAttemptSummaryResponses];
+export type GetCurrentUserLatestTestAttemptSummaryResponse = GetCurrentUserLatestTestAttemptSummaryResponses[keyof GetCurrentUserLatestTestAttemptSummaryResponses];
+
+export type GetAllResultsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/results';
+};
+
+export type GetAllResultsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetAllResultsError = GetAllResultsErrors[keyof GetAllResultsErrors];
+
+export type GetAllResultsResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetAllResultsResponse = GetAllResultsResponses[keyof GetAllResultsResponses];
+
+export type GetUserResultsData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/results/users/{userId}';
+};
+
+export type GetUserResultsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserResultsError = GetUserResultsErrors[keyof GetUserResultsErrors];
+
+export type GetUserResultsResponses = {
+    /**
+     * OK
+     */
+    200: ResultsByUser;
+};
+
+export type GetUserResultsResponse = GetUserResultsResponses[keyof GetUserResultsResponses];
 
 export type GetUserTestResultsData = {
     body?: never;
@@ -1297,7 +1224,7 @@ export type GetUserTestResultsData = {
         userId: number;
     };
     query?: never;
-    url: '/api/results/user/{userId}/tests';
+    url: '/api/results/users/{userId}/tests';
 };
 
 export type GetUserTestResultsErrors = {
@@ -1317,7 +1244,7 @@ export type GetUserTestResultsResponses = {
     /**
      * OK
      */
-    200: TestResultByUser;
+    200: TestResultsByUser;
 };
 
 export type GetUserTestResultsResponse = GetUserTestResultsResponses[keyof GetUserTestResultsResponses];
@@ -1328,7 +1255,7 @@ export type GetUserFormResultsData = {
         userId: number;
     };
     query?: never;
-    url: '/api/results/user/{userId}/forms';
+    url: '/api/results/users/{userId}/forms';
 };
 
 export type GetUserFormResultsErrors = {
@@ -1353,45 +1280,14 @@ export type GetUserFormResultsResponses = {
 
 export type GetUserFormResultsResponse = GetUserFormResultsResponses[keyof GetUserFormResultsResponses];
 
-export type GetUserAllResultsData = {
-    body?: never;
-    path: {
-        userId: number;
-    };
-    query?: never;
-    url: '/api/results/user/{userId}/all';
-};
-
-export type GetUserAllResultsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetUserAllResultsError = GetUserAllResultsErrors[keyof GetUserAllResultsErrors];
-
-export type GetUserAllResultsResponses = {
-    /**
-     * OK
-     */
-    200: ResultsByUser;
-};
-
-export type GetUserAllResultsResponse = GetUserAllResultsResponses[keyof GetUserAllResultsResponses];
-
-export type GetAllUsersLatestConfigResultsZipData = {
+export type GetAllTestResultsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/results/user/all/latest/zip';
+    url: '/api/results/tests';
 };
 
-export type GetAllUsersLatestConfigResultsZipErrors = {
+export type GetAllTestResultsErrors = {
     /**
      * Unauthorized
      */
@@ -1402,25 +1298,25 @@ export type GetAllUsersLatestConfigResultsZipErrors = {
     403: ApiHttpError;
 };
 
-export type GetAllUsersLatestConfigResultsZipError = GetAllUsersLatestConfigResultsZipErrors[keyof GetAllUsersLatestConfigResultsZipErrors];
+export type GetAllTestResultsError = GetAllTestResultsErrors[keyof GetAllTestResultsErrors];
 
-export type GetAllUsersLatestConfigResultsZipResponses = {
+export type GetAllTestResultsResponses = {
     /**
      * OK
      */
     200: string;
 };
 
-export type GetAllUsersLatestConfigResultsZipResponse = GetAllUsersLatestConfigResultsZipResponses[keyof GetAllUsersLatestConfigResultsZipResponses];
+export type GetAllTestResultsResponse = GetAllTestResultsResponses[keyof GetAllTestResultsResponses];
 
-export type GetAllUsersLatestConfigTestsZipData = {
+export type GetAllFormResultsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/results/user/all/latest/tests/zip';
+    url: '/api/results/forms';
 };
 
-export type GetAllUsersLatestConfigTestsZipErrors = {
+export type GetAllFormResultsErrors = {
     /**
      * Unauthorized
      */
@@ -1431,138 +1327,16 @@ export type GetAllUsersLatestConfigTestsZipErrors = {
     403: ApiHttpError;
 };
 
-export type GetAllUsersLatestConfigTestsZipError = GetAllUsersLatestConfigTestsZipErrors[keyof GetAllUsersLatestConfigTestsZipErrors];
+export type GetAllFormResultsError = GetAllFormResultsErrors[keyof GetAllFormResultsErrors];
 
-export type GetAllUsersLatestConfigTestsZipResponses = {
+export type GetAllFormResultsResponses = {
     /**
      * OK
      */
     200: string;
 };
 
-export type GetAllUsersLatestConfigTestsZipResponse = GetAllUsersLatestConfigTestsZipResponses[keyof GetAllUsersLatestConfigTestsZipResponses];
-
-export type GetAllUsersLatestConfigFormsZipData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/results/user/all/latest/forms/zip';
-};
-
-export type GetAllUsersLatestConfigFormsZipErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetAllUsersLatestConfigFormsZipError = GetAllUsersLatestConfigFormsZipErrors[keyof GetAllUsersLatestConfigFormsZipErrors];
-
-export type GetAllUsersLatestConfigFormsZipResponses = {
-    /**
-     * OK
-     */
-    200: string;
-};
-
-export type GetAllUsersLatestConfigFormsZipResponse = GetAllUsersLatestConfigFormsZipResponses[keyof GetAllUsersLatestConfigFormsZipResponses];
-
-export type GetGroupTestResultsZipData = {
-    body?: never;
-    path: {
-        groupId: number;
-    };
-    query?: never;
-    url: '/api/results/group/{groupId}/tests';
-};
-
-export type GetGroupTestResultsZipErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetGroupTestResultsZipError = GetGroupTestResultsZipErrors[keyof GetGroupTestResultsZipErrors];
-
-export type GetGroupTestResultsZipResponses = {
-    /**
-     * OK
-     */
-    200: string;
-};
-
-export type GetGroupTestResultsZipResponse = GetGroupTestResultsZipResponses[keyof GetGroupTestResultsZipResponses];
-
-export type GetGroupFormResultsZipData = {
-    body?: never;
-    path: {
-        groupId: number;
-    };
-    query?: never;
-    url: '/api/results/group/{groupId}/forms';
-};
-
-export type GetGroupFormResultsZipErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetGroupFormResultsZipError = GetGroupFormResultsZipErrors[keyof GetGroupFormResultsZipErrors];
-
-export type GetGroupFormResultsZipResponses = {
-    /**
-     * OK
-     */
-    200: string;
-};
-
-export type GetGroupFormResultsZipResponse = GetGroupFormResultsZipResponses[keyof GetGroupFormResultsZipResponses];
-
-export type GetGroupFullResultsZipData = {
-    body?: never;
-    path: {
-        groupId: number;
-    };
-    query?: never;
-    url: '/api/results/group/{groupId}/all';
-};
-
-export type GetGroupFullResultsZipErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetGroupFullResultsZipError = GetGroupFullResultsZipErrors[keyof GetGroupFullResultsZipErrors];
-
-export type GetGroupFullResultsZipResponses = {
-    /**
-     * OK
-     */
-    200: string;
-};
-
-export type GetGroupFullResultsZipResponse = GetGroupFullResultsZipResponses[keyof GetGroupFullResultsZipResponses];
+export type GetAllFormResultsResponse = GetAllFormResultsResponses[keyof GetAllFormResultsResponses];
 
 export type GetAllPatternsData = {
     body?: never;
@@ -1592,66 +1366,6 @@ export type GetAllPatternsResponses = {
 };
 
 export type GetAllPatternsResponse = GetAllPatternsResponses[keyof GetAllPatternsResponses];
-
-export type GetAllEventLogsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/event-logs';
-};
-
-export type GetAllEventLogsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetAllEventLogsError = GetAllEventLogsErrors[keyof GetAllEventLogsErrors];
-
-export type GetAllEventLogsResponses = {
-    /**
-     * OK
-     */
-    200: Array<QuestionEventLogWithUserId>;
-};
-
-export type GetAllEventLogsResponse = GetAllEventLogsResponses[keyof GetAllEventLogsResponses];
-
-export type GetUserEventLogsData = {
-    body?: never;
-    path: {
-        userId: number;
-    };
-    query?: never;
-    url: '/api/event-logs/{userId}';
-};
-
-export type GetUserEventLogsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetUserEventLogsError = GetUserEventLogsErrors[keyof GetUserEventLogsErrors];
-
-export type GetUserEventLogsResponses = {
-    /**
-     * OK
-     */
-    200: Array<QuestionEventLog>;
-};
-
-export type GetUserEventLogsResponse = GetUserEventLogsResponses[keyof GetUserEventLogsResponses];
 
 export type GetAllConfigsData = {
     body?: never;
