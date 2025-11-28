@@ -28,7 +28,7 @@ type CompletionUserInfoProps = {
 
 export function CompletionUserInfo({config, userData, isAdmin }: CompletionUserInfoProps) {
   const { isDarkMode } = useTheme();
-  const { credentials, hasUpdatedAnonymousCredentials, markAnonymousCredentialsUpdated } = useAuth()
+  const { credentials, hasUpdatedAnonymousCredentials, markAnonymousCredentialsUpdated, isLoggedIn } = useAuth()
 
   const [credentialsUpdate, setCredentialsUpdate] = useState<CredentialsUpdate>({
     oldUsername: credentials?.username || "",
@@ -129,7 +129,7 @@ export function CompletionUserInfo({config, userData, isAdmin }: CompletionUserI
           />
         )}
 
-        {!isAdmin && config.anonymous && (
+        {!isAdmin && config.anonymous && credentials && isLoggedIn && !hasUpdatedAnonymousCredentials && (
           <>
             <div className={styles.separator}>
               <span>Actualizar credenciales</span>

@@ -38,7 +38,7 @@ export function CompletionResults({ config, userData, group }: CompletionResults
     setError(null);
 
     try {
-      const result = await api.getCurrentUserTestAttemptSummary();
+      const result = await api.getCurrentUserLatestTestAttemptSummary();
 
       if (!result.data) {
         setError(t(config, "completion.failedToGetResults"));
