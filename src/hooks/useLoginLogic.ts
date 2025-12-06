@@ -10,7 +10,7 @@ type LoginLogicOptions = {
 };
 
 export function useLoginLogic({ config, onSuccess, onAttemptInProgress, stayOnPage = false }: LoginLogicOptions) {
-  const { setToken, generateCredentials } = useAuth();
+  const { setToken, setUsername, generateCredentials } = useAuth();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +25,7 @@ export function useLoginLogic({ config, onSuccess, onAttemptInProgress, stayOnPa
       if (response.data) {
         const token = response.data.token;
         setToken(token);
+        setUsername(credentials.username);
 
         if (stayOnPage) {
           onSuccess?.(null as never);

@@ -14,6 +14,7 @@ type AuthContextType = {
   isAdmin: boolean;
   isUser: boolean;
   username: string | null;
+  setUsername: (username: string | null) => void;
   setToken: (token: string | undefined) => void;
   credentials: Credentials | null;
   generateCredentials: () => Credentials;
@@ -222,6 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isUser,
         username,
+        setUsername,
         setToken,
         generateCredentials,
         credentials,

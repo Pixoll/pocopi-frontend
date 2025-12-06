@@ -5,10 +5,10 @@ import { DashboardButton } from "@/components/HomePage/DashboardButton";
 import { HomeHeader } from "@/components/HomePage/HomeHeader";
 import { HomeInfoCard } from "@/components/HomePage/HomeInfoCard";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/HomePage.module.css";
 import { type ChangeEvent, useState } from "react";
+import UserLogout from "@/components/UserLogout.tsx";
 
 type HomePageProps = {
   config: TrimmedConfig;
@@ -24,7 +24,6 @@ export function HomePage({
                            onAdmin,
                          }: HomePageProps) {
   const { isDarkMode } = useTheme();
-  const { username } = useAuth();
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
@@ -59,12 +58,7 @@ export function HomePage({
 
   return (
     <div className={styles.container}>
-      {username && (
-        <div className={styles.usernameBadge}>
-          <span>👤 {username}</span>
-        </div>
-      )}
-
+      <UserLogout />
       <HomeHeader
         config={config}
         isDarkMode={isDarkMode}
