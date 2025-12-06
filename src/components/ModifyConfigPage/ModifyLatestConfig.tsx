@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {produce} from 'immer'
 import {
   toEditablePatchConfig,
@@ -57,6 +57,8 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   const [showDeleteGroupConfirm, setShowDeleteGroupConfirm] = useState(false);
   const [deleteGroupIndex, setDeleteGroupIndex] = useState<number | null>(null);
   const [patterns, setPatterns] = useState<Pattern[]>([]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {token} = useAuth();
   console.log("pretest: ",config?.preTestForm)
@@ -120,6 +122,55 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
         message: 'Ocurrió un error inesperado al guardar'
       });
     }
+  };
+
+  const handleExport = () => {
+    try {
+      const dataStr = JSON.stringify(config, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `config-${config.title || 'export'}-${new Date().toISOString()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      setSaveError({
+        code: 500,
+        message: 'Error al exportar la configuración'
+      });
+    }
+  };
+
+  const handleImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedConfig = JSON.parse(e.target?.result as string);
+        setConfig(importedConfig);
+        setShowSaveSuccess(true);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (err) {
+        setSaveError({
+          code: 400,
+          message: 'Error al importar: el archivo no es un JSON válido'
+        });
+      }
+    };
+    reader.readAsText(file);
   };
 
   const renderContent = () => {
@@ -644,7 +695,14 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
   return (
     <div className={styles.container}>
-      {/* SavePopup solo aparece cuando hay éxito */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+
       {showSaveSuccess && (
         <SavePopup
           status="success"
@@ -653,7 +711,6 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
         />
       )}
 
-      {/* ErrorDisplay solo aparece cuando hay error */}
       {saveError && (
         <ErrorDisplay
           error={saveError}
@@ -663,9 +720,30 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
       <header className={styles.header}>
         <h1>Editor de Configuración</h1>
-        <button onClick={() => handleSave()} className={styles.saveButton}>
-          Guardar Cambios
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={handleImport}
+            className={styles.saveButton}
+            style={{ backgroundColor: '#6366f1' }}
+            disabled={readOnly}
+          >
+            Importar
+          </button>
+          <button
+            onClick={handleExport}
+            className={styles.saveButton}
+            style={{ backgroundColor: '#8b5cf6' }}
+          >
+            Exportar
+          </button>
+          <button
+            onClick={handleSave}
+            className={styles.saveButton}
+            disabled={readOnly}
+          >
+            Guardar Cambios
+          </button>
+        </div>
       </header>
 
       <div className={styles.tabs}>

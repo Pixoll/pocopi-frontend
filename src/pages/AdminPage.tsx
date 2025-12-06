@@ -58,7 +58,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
 
   async function setAsLastVersion(version: number) {
     try {
-      const response = await api. setConfigAsActive({ path: { version } })
+      const response = await api.setConfigAsActive({ path: { version } })
       if (response) {
         await getAllConfigs(setConfigs);
       }
@@ -183,7 +183,7 @@ export function AdminPage({ goToModifyConfigPage, config }: Omit<AdminPageProps,
   const { token } = useAuth();
   return (
     <ProtectedRoute config={config} requireAdmin={true}>
-      <AdminPageContent goToModifyConfigPage={goToModifyConfigPage} token={token! } />
+      <AdminPageContent goToModifyConfigPage={goToModifyConfigPage} token={token!} />
     </ProtectedRoute>
   );
 }
