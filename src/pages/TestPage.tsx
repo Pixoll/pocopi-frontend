@@ -9,6 +9,8 @@ import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import UserLogout from "@/components/UserLogout.tsx";
 
 type TestPageProps = {
   config: TrimmedConfig;
@@ -18,7 +20,8 @@ type TestPageProps = {
 
 export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
   const { isDarkMode } = useTheme();
-  const { token } = useAuth();
+  const { token, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
@@ -34,12 +37,51 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
       window.removeEventListener("popstate", popState);
     };
   }, []);
+    // sino esta logeado
+  useEffect(() => {
+    if (!isLoggedIn) {
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [isLoggedIn, navigate]);
+  
+  // sino existe un intento
+  useEffect(() => {
+    if (isLoggedIn && !attempt) {
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [isLoggedIn, attempt, navigate]);
+
+  if (!isLoggedIn) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <p className={styles.info}>No has iniciado sesión...</p>
+            <p className={styles.redirectText}>Redirigiendo al inicio...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!attempt) {
     return (
       <div className={styles.page}>
         <div className={styles.content}>
-          <p>Cargando preguntas...</p>
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <p>No hay un intento de test activo...</p>
+            <p className={styles.redirectText}>Redirigiendo al inicio...</p>
+          </div>
         </div>
       </div>
     );
@@ -50,7 +92,9 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
     return (
       <div className={styles.page}>
         <div className={styles.content}>
-          <p>Test ya fue completado</p>
+          <div className={styles.loadingContainer}>
+            <p>Test completado exitosamente ✓</p>
+          </div>
         </div>
       </div>
     );
@@ -58,6 +102,7 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
 
   return (
     <ProtectedRoute config={config}>
+      <UserLogout />
       <TestPageContent
         token={token!}
         config={config}
@@ -70,11 +115,11 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
 }
 
 function TestPageContent({
-  config,
-  attempt,
-  goToNextPage,
-  isDarkMode,
-}: {
+                           config,
+                           attempt,
+                           goToNextPage,
+                           isDarkMode,
+                         }: {
   token: string;
   config: TrimmedConfig;
   attempt: UserTestAttempt;
@@ -147,7 +192,6 @@ function TestPageContent({
               )}
             </div>
 
-            {/* options */}
             <TestOptions
               options={question.options}
               selected={selectedOptionId}
