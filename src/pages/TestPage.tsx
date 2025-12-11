@@ -47,7 +47,7 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
     }
     return undefined;
   }, [isLoggedIn, navigate]);
-  
+
   // sino existe un intento
   useEffect(() => {
     if (isLoggedIn && !attempt) {

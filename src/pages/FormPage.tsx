@@ -16,6 +16,7 @@ import { t } from "@/utils/translations";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type FormEvent, useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom";
 
 type FormPageProps = {
   config: TrimmedConfig;
@@ -25,11 +26,11 @@ type FormPageProps = {
 };
 
 export function FormPage({
-  config,
-  type,
-  attempt,
-  goToNextPage,
-}: FormPageProps) {
+                           config,
+                           type,
+                           attempt,
+                           goToNextPage,
+                         }: FormPageProps) {
   const { token, isLoggedIn } = useAuth();
   const [user, setUser] = useState<User | null>(null);
 
@@ -44,6 +45,8 @@ export function FormPage({
 
   const [sending, setSending] = useState<boolean>(false);
   const [error, setError] = useState<string | ApiHttpError | null>(null);
+  const [validationError, setValidationError] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
@@ -81,10 +84,52 @@ export function FormPage({
     fetchUser();
   }, [token, isLoggedIn]);
 
+  // Redirect cuando no hay sesión
+  useEffect(() => {
+    if (!isLoggedIn) {
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [isLoggedIn, navigate]);
+
+  // Redirect cuando no existe un intento
+  useEffect(() => {
+    if (isLoggedIn && !attempt) {
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [isLoggedIn, attempt, navigate]);
+
+  if (!isLoggedIn) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <div className={styles.loadingContainer}>
+            <Spinner />
+            <p className={styles.info}>No has iniciado sesión...</p>
+            <p className={styles.redirectText}>Redirigiendo al inicio...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!attempt) {
     return (
-      <div>
-        <p>Cargando formulario...</p>
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <div className={styles.loadingContainer}>
+            <Spinner />
+            <p>No hay un intento de test activo...</p>
+            <p className={styles.redirectText}>Redirigiendo al inicio...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -121,6 +166,7 @@ export function FormPage({
       };
       return newAnswers;
     });
+    setValidationError("");
   };
 
   const handleOtherChange = (questionIndex: number, otherText: string) => {
@@ -132,6 +178,7 @@ export function FormPage({
       };
       return newAnswers;
     });
+    setValidationError("");
   };
 
   const handleSliderChange = (questionIndex: number, value: number) => {
@@ -143,6 +190,7 @@ export function FormPage({
       };
       return newAnswers;
     });
+    setValidationError("");
   };
 
   const submitEndPostForm = async () => {
@@ -170,6 +218,7 @@ export function FormPage({
     e.preventDefault();
     setSending(true);
     setError(null);
+    setValidationError("");
 
     const allAnswered = answers.every((answer, idx) => {
       const question = questions[idx];
@@ -180,6 +229,7 @@ export function FormPage({
     });
 
     if (!allAnswered) {
+      setValidationError("Por favor responde todas las preguntas requeridas");
       setSending(false);
       return;
     }
@@ -289,6 +339,12 @@ export function FormPage({
           })}
 
           <div className={styles.sendButtonContainer}>
+            {validationError && (
+              <div className={styles.validationError}>
+                {validationError}
+              </div>
+            )}
+
             {error && (
               <ErrorDisplay
                 error={error}
