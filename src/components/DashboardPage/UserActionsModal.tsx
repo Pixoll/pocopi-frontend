@@ -1,4 +1,4 @@
-import api, { type UserTestAttemptSummary } from "@/api";
+import api, { type UserTestAttemptSummary , type TestResultsByUser} from "@/api";
 import { SavePopup } from "@/components/SavePopup";
 import styles from "@/styles/DashboardPage/UserActionsModal.module.css";
 import { useState } from "react";
@@ -47,20 +47,24 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
     }
   };
 
-  const downloadTestResults = async () => {
+  const downloadTestResults = async (format: 'json' | 'csv') => {
     setSavePopupStatus("loading");
     setSavePopupMessage("Obteniendo resultados de tests...");
 
     const result = await api.getUserTestResults({ path: { userId: userAttempt.user.id } });
 
-    if (!result.data) {
+    if (!result. data) {
       setSavePopupStatus("error");
       setSavePopupMessage("Error al obtener resultados de tests");
     } else {
       setSavePopupStatus("success");
       setSavePopupMessage("Resultados de tests obtenidos exitosamente");
 
-      downloadJson(result.data, "test-results.json");
+      if (format === 'json') {
+        downloadJson(result.data, "test-results.json");
+      } else {
+        downloadTestResultsAsCsv(result.data as TestResultsByUser, "test-results.csv");
+      }
     }
   };
 
@@ -82,20 +86,23 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
 
           <div className={styles.modalBody}>
             <div className={styles.userInfo}>
-              <p><strong>Usuario</strong>
-                {userAttempt.user.name}</p>
+              {userAttempt.user.name && (
+                <p><strong>Usuario</strong>
+                  {" " + userAttempt.user.name}
+                </p>
+              )}
               {userAttempt.user.id && (<p>
                 <strong>ID:</strong>
-                {userAttempt.user.id}</p>)}
+                {" " + userAttempt.user.id}</p>)}
               {userAttempt.user.email && (<p>
                 <strong>Email:</strong>
-                {userAttempt.user.email || "-"}</p>)}
+                {" " + userAttempt.user.email || "-"}</p>)}
               {userAttempt.user.username && (<p>
                 <strong>Username:</strong>
-                {userAttempt.user.username}</p>)}
+                {" " + userAttempt.user.username}</p>)}
               {userAttempt.user.age && (<p>
                 <strong>Age:</strong>
-                {userAttempt.user.age}</p>)}
+                {" " + userAttempt.user.age}</p>)}
             </div>
 
             <div className={styles.actionItem}>
@@ -138,9 +145,14 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
                   <strong>Por si acaso:</strong> Solo incluye tests de todas las configuraciones asociadas, excluyendo resultados de formularios.
                 </p>
               </div>
-              <button className={styles.actionButton} onClick={downloadTestResults}>
-                Obtener Tests
-              </button>
+              <div className={styles.actionButtons}>
+                <button className={styles.actionButton} onClick={() => downloadTestResults('json')}>
+                  Obtener JSON
+                </button>
+                <button className={styles. actionButton} onClick={() => downloadTestResults('csv')}>
+                  Obtener CSV
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -167,4 +179,151 @@ function downloadJson(json: object, filename: string): void {
 
   URL.revokeObjectURL(url);
 }
+function downloadCsv(csvContent: string, filename:  string): void {
+  const file = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(file);
 
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function escapeCsvValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  const stringValue = typeof value === "object"
+    ? JSON. stringify(value)
+    : String(value);
+
+  if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
+    return `"${stringValue. replace(/"/g, '""')}"`;
+  }
+
+  return stringValue;
+}
+
+function flattenTestResultsToRows(data: TestResultsByUser): Record<string, unknown>[] {
+  const rows: Record<string, unknown>[] = [];
+
+  const { user, results } = data;
+
+  for (const configResult of results) {
+    const { configVersion, attemptsResults } = configResult;
+
+    for (const attempt of attemptsResults) {
+      const {
+        attemptId,
+        group,
+        timestamp,
+        timeTaken,
+        correctQuestions,
+        questionsAnswered,
+        accuracy,
+        questionEvents
+      } = attempt;
+
+      for (const questionEvent of questionEvents) {
+        const {
+          questionId,
+          timestamps,
+          correct,
+          skipped,
+          totalOptionChanges,
+          totalOptionHovers,
+          optionSelections,
+          events
+        } = questionEvent;
+
+        if (events. length > 0) {
+          for (const event of events) {
+            rows.push({
+              userId: user.id,
+              userName: user.name,
+              userEmail: user.email || "",
+              userUsername: user.username || "",
+              userAge: user.age || "",
+              configVersion,
+              attemptId,
+              group,
+              attemptTimestamp: timestamp,
+              timeTaken,
+              correctQuestions,
+              questionsAnswered,
+              accuracy,
+              questionId,
+              questionTimestamps: JSON.stringify(timestamps),
+              questionCorrect: correct,
+              questionSkipped: skipped,
+              totalOptionChanges,
+              totalOptionHovers,
+              optionSelections: JSON.stringify(optionSelections),
+              eventOptionId: event.optionId,
+              eventType: event.type,
+              eventTimestamp: event.timestamp
+            });
+          }
+        } else {
+          rows.push({
+            userId: user.id,
+            userName:  user.name,
+            userEmail: user.email || "",
+            userUsername: user.username || "",
+            userAge: user.age || "",
+            configVersion,
+            attemptId,
+            group,
+            attemptTimestamp: timestamp,
+            timeTaken,
+            correctQuestions,
+            questionsAnswered,
+            accuracy,
+            questionId,
+            questionTimestamps: JSON.stringify(timestamps),
+            questionCorrect:  correct,
+            questionSkipped: skipped,
+            totalOptionChanges,
+            totalOptionHovers,
+            optionSelections: JSON.stringify(optionSelections),
+            eventOptionId: "",
+            eventType:  "",
+            eventTimestamp: ""
+          });
+        }
+      }
+    }
+  }
+
+  return rows;
+}
+
+function convertToCsv(rows: Record<string, unknown>[]): string {
+  if (rows.length === 0) {
+    return "";
+  }
+
+  const headersSet = new Set<string>();
+  for (const row of rows) {
+    Object.keys(row).forEach(key => headersSet.add(key));
+  }
+  const headers = Array.from(headersSet);
+
+  const headerLine = headers.map(escapeCsvValue).join(";");
+
+  const dataLines = rows.map(row =>
+    headers.map(header => escapeCsvValue(row[header])).join(";")
+  );
+
+  return [headerLine, ...dataLines].join("\n");
+}
+
+function downloadTestResultsAsCsv(data: TestResultsByUser, filename: string): void {
+  const rows = flattenTestResultsToRows(data);
+  const csvContent = convertToCsv(rows);
+  downloadCsv(csvContent, filename);
+}
