@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { LoginModal } from '@/components/HomePage/LoginModal';
 import type { TrimmedConfig } from '@/api';
 import api from '@/api';
-import {LoadingPage} from "@/pages/LoadingPage.tsx";
+import { LoadingPage } from "@/pages/LoadingPage.tsx";
+import styles from '@/styles/ProtectedRoute.module.css';
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
   const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(!isLoggedIn);
   const [isValidating, setIsValidating] = useState(true);
+  const [showUnauthorized, setShowUnauthorized] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -40,20 +42,14 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
         }
 
         if (requireAdmin) {
-          try {
-            const adminResponse = await api.getCurrentAdmin();
+          const adminResponse = await api.getCurrentAdmin();
 
-            if (!adminResponse || !adminResponse.data) {
-              clearAuth();
-              setShowLogin(true);
-              setIsValidating(false);
-              return;
-            }
-          } catch (error) {
-            console.error(error);
-            clearAuth();
-            setShowLogin(true);
+          if (!adminResponse || !adminResponse.data) {
+            setShowUnauthorized(true);
             setIsValidating(false);
+            setTimeout(() => {
+              navigate('/');
+            }, 3000);
             return;
           }
         }
@@ -61,15 +57,23 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
         setShowLogin(false);
       } catch (error) {
         console.error('Auth validation failed:', error);
-        clearAuth();
-        setShowLogin(true);
+
+        if (requireAdmin) {
+          setShowUnauthorized(true);
+          setTimeout(() => {
+            navigate('/');
+          }, 3000);
+        } else {
+          clearAuth();
+          setShowLogin(true);
+        }
       } finally {
         setIsValidating(false);
       }
     };
 
     checkAuth();
-  }, [token, isLoggedIn, requireAdmin, clearAuth]);
+  }, [token, isLoggedIn, requireAdmin, clearAuth, navigate]);
 
   const handleLoginSuccess = () => {
     setShowLogin(false);
@@ -80,7 +84,41 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
   };
 
   if (isValidating) {
-    return ( <LoadingPage message="Validando sesión" />);
+    return <LoadingPage message="Validando sesión" />;
+  }
+
+  if (showUnauthorized) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.card}>
+          <div className={styles.icon}>
+            <svg
+              className={styles.iconSvg}
+              viewBox="0 0 24 24"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <h2 className={styles.title}>
+            Acceso No Autorizado
+          </h2>
+          <p className={styles.message}>
+            No tienes permisos de administrador para acceder a esta página.
+          </p>
+          <p className={styles.redirectMessage}>
+            Serás redirigido a la página principal en unos segundos...
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className={styles.button}
+          >
+            Ir al inicio ahora
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!isLoggedIn || showLogin) {
