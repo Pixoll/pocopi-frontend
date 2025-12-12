@@ -1161,7 +1161,9 @@ export type GetCurrentUserLatestTestAttemptSummaryResponse = GetCurrentUserLates
 export type GetAllResultsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        csv?: boolean;
+    };
     url: '/api/results';
 };
 
@@ -1249,6 +1251,37 @@ export type GetUserTestResultsResponses = {
 
 export type GetUserTestResultsResponse = GetUserTestResultsResponses[keyof GetUserTestResultsResponses];
 
+export type GetUserTestResultsCsvData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/results/users/{userId}/tests/csv';
+};
+
+export type GetUserTestResultsCsvErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserTestResultsCsvError = GetUserTestResultsCsvErrors[keyof GetUserTestResultsCsvErrors];
+
+export type GetUserTestResultsCsvResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetUserTestResultsCsvResponse = GetUserTestResultsCsvResponses[keyof GetUserTestResultsCsvResponses];
+
 export type GetUserFormResultsData = {
     body?: never;
     path: {
@@ -1280,10 +1313,74 @@ export type GetUserFormResultsResponses = {
 
 export type GetUserFormResultsResponse = GetUserFormResultsResponses[keyof GetUserFormResultsResponses];
 
+export type GetUserFormResultsCsvData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/results/users/{userId}/forms/csv';
+};
+
+export type GetUserFormResultsCsvErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserFormResultsCsvError = GetUserFormResultsCsvErrors[keyof GetUserFormResultsCsvErrors];
+
+export type GetUserFormResultsCsvResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetUserFormResultsCsvResponse = GetUserFormResultsCsvResponses[keyof GetUserFormResultsCsvResponses];
+
+export type GetUserResultsCsvData = {
+    body?: never;
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/api/results/users/{userId}/csv';
+};
+
+export type GetUserResultsCsvErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetUserResultsCsvError = GetUserResultsCsvErrors[keyof GetUserResultsCsvErrors];
+
+export type GetUserResultsCsvResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetUserResultsCsvResponse = GetUserResultsCsvResponses[keyof GetUserResultsCsvResponses];
+
 export type GetAllTestResultsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        csv?: boolean;
+    };
     url: '/api/results/tests';
 };
 
@@ -1312,7 +1409,9 @@ export type GetAllTestResultsResponse = GetAllTestResultsResponses[keyof GetAllT
 export type GetAllFormResultsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        csv?: boolean;
+    };
     url: '/api/results/forms';
 };
 

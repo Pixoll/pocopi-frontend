@@ -80,11 +80,11 @@ export function ParticipantsList({
     }
   };
 
-  const downloadAllResults = async () => {
+  const downloadAllResults = async (format: "json" | "csv") => {
     try {
       setLoadingAllResults(true);
       setError(null);
-      const result = await api.getAllResults();
+      const result = await api.getAllResults({ query: { csv: format === "csv" } });
 
       if (result.error) {
         console.error("Error al exportar todos los resultados:", result.error);
@@ -104,11 +104,11 @@ export function ParticipantsList({
     }
   };
 
-  const downloadAllTestResults = async () => {
+  const downloadAllTestResults = async (format: "json" | "csv") => {
     try {
       setLoadingAllTests(true);
       setError(null);
-      const result = await api.getAllTestResults();
+      const result = await api.getAllTestResults({ query: { csv: format === "csv" } });
 
       if (result.error) {
         console.error("Error al exportar todos los tests:", result.error);
@@ -128,11 +128,11 @@ export function ParticipantsList({
     }
   };
 
-  const downloadAllFormResults = async () => {
+  const downloadAllFormResults = async (format: "json" | "csv") => {
     try {
       setLoadingAllForms(true);
       setError(null);
-      const result = await api.getAllFormResults();
+      const result = await api.getAllFormResults({ query: { csv: format === "csv" } });
 
       if (result.error) {
         console.error(result.error);
@@ -189,45 +189,87 @@ export function ParticipantsList({
           <h6 className={styles.bulkExportTitle}>Exportar información de todos los usuarios:</h6>
           <div className={styles.bulkExportButtons}>
             <button
-              onClick={downloadAllResults}
+              onClick={() => downloadAllResults("json")}
               className={styles.bulkExportButton}
               disabled={loadingAllResults || summary.users.length === 0}
-              title="Exportar todos los resultados de usuarios"
+              title="Exportar todos los resultados de usuarios como JSON"
             >
               {loadingAllResults ? (
                 <Spinner/>
               ) : (
                 <FontAwesomeIcon icon={faFileArchive}/>
               )}
-              <span>Todos los Resultados</span>
+              <span>Todos los Resultados (JSON)</span>
             </button>
 
             <button
-              onClick={downloadAllTestResults}
+              onClick={() => downloadAllResults("csv")}
+              className={styles.bulkExportButton}
+              disabled={loadingAllResults || summary.users.length === 0}
+              title="Exportar todos los resultados de usuarios como CSV"
+            >
+              {loadingAllResults ? (
+                <Spinner/>
+              ) : (
+                <FontAwesomeIcon icon={faFileArchive}/>
+              )}
+              <span>Todos los Resultados (CSV)</span>
+            </button>
+
+            <button
+              onClick={() => downloadAllTestResults("json")}
               className={styles.bulkExportButton}
               disabled={loadingAllTests || summary.users.length === 0}
-              title="Exportar todos los tests de usuarios"
+              title="Exportar todos los tests de usuarios como JSON"
             >
               {loadingAllTests ? (
                 <Spinner/>
               ) : (
                 <FontAwesomeIcon icon={faFileArchive}/>
               )}
-              <span>Todos los Tests</span>
+              <span>Todos los Tests (JSON)</span>
             </button>
 
             <button
-              onClick={downloadAllFormResults}
+              onClick={() => downloadAllTestResults("csv")}
+              className={styles.bulkExportButton}
+              disabled={loadingAllTests || summary.users.length === 0}
+              title="Exportar todos los tests de usuarios como CSV"
+            >
+              {loadingAllTests ? (
+                <Spinner/>
+              ) : (
+                <FontAwesomeIcon icon={faFileArchive}/>
+              )}
+              <span>Todos los Tests (CSV)</span>
+            </button>
+
+            <button
+              onClick={() => downloadAllFormResults("json")}
               className={styles.bulkExportButton}
               disabled={loadingAllForms || summary.users.length === 0}
-              title="Exportar todos los formularios de usuarios"
+              title="Exportar todos los formularios de usuarios como JSON"
             >
               {loadingAllForms ? (
                 <Spinner/>
               ) : (
                 <FontAwesomeIcon icon={faFileArchive}/>
               )}
-              <span>Todos los Formularios</span>
+              <span>Todos los Formularios (JSON)</span>
+            </button>
+
+            <button
+              onClick={() => downloadAllFormResults("csv")}
+              className={styles.bulkExportButton}
+              disabled={loadingAllForms || summary.users.length === 0}
+              title="Exportar todos los formularios de usuarios como CSV"
+            >
+              {loadingAllForms ? (
+                <Spinner/>
+              ) : (
+                <FontAwesomeIcon icon={faFileArchive}/>
+              )}
+              <span>Todos los Formularios (CSV)</span>
             </button>
           </div>
         </div>
