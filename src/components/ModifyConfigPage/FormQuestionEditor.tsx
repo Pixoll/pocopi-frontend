@@ -13,7 +13,7 @@ import type {
 import styles from "@/styles/ModifyConfigPage/FormQuestionEditor.module.css";
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowUp, faArrowDown, faCopy, faTrash, faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
+import {faArrowUp, faArrowDown, faTrash, faChevronDown, faChevronUp, faClone, faArrowRightArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 type FormQuestionEditorProps = {
   question: EditablePatchFormQuestion;
@@ -24,7 +24,7 @@ type FormQuestionEditorProps = {
   onCopy?: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
-  readOnly: boolean
+  readOnly: boolean;
 }
 
 export function FormQuestionEditor({
@@ -355,11 +355,10 @@ export function FormQuestionEditor({
                   onCopy();
                 }}
                 className={styles.iconButton}
-                title="Copiar pregunta"
+                title="Copiar a otro formulario"
                 disabled={readOnly}
               >
-                <FontAwesomeIcon icon={faCopy}/>
-
+                <FontAwesomeIcon icon={faArrowRightArrowLeft}/>
               </button>
             )}
             {onDuplicate && (
@@ -373,8 +372,7 @@ export function FormQuestionEditor({
                 title="Duplicar pregunta"
                 disabled={readOnly}
               >
-                <FontAwesomeIcon icon={faCopy}/>
-                <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon}/>
+                <FontAwesomeIcon icon={faClone}/>
               </button>
             )}
           </div>
