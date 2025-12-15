@@ -20,6 +20,7 @@ type FormQuestionsManagerProps = {
   questions: EditablePatchFormQuestion[];
   onChange: (questions: EditablePatchFormQuestion[]) => void;
   onCopyToOtherForm?: (question: EditablePatchFormQuestion, targetForm: 'preTestForm' | 'postTestForm') => void;
+  onCopyAllToOtherForm?: (questions: EditablePatchFormQuestion[], targetForm: 'preTestForm' | 'postTestForm') => void;
   readOnly: boolean;
 };
 
@@ -49,85 +50,89 @@ function cloneFormOption(option: EditablePatchFormOption): EditablePatchFormOpti
   };
 }
 
+function cloneFormQuestion(question: EditablePatchFormQuestion): EditablePatchFormQuestion {
+  const baseClone = {
+    id: undefined,
+    category: question.category,
+    text: question.text,
+    image: cloneImageState(question.image),
+    type: question.type
+  };
+
+  switch (question.type) {
+    case 'select-one': {
+      const q = question as EditablePatchSelectOne;
+      return {
+        ...baseClone,
+        type: 'select-one',
+        options: q.options?.map(cloneFormOption) || [],
+        other: q.other
+      } as EditablePatchSelectOne;
+    }
+    case 'select-multiple': {
+      const q = question as EditablePatchSelectMultiple;
+      return {
+        ...baseClone,
+        type: 'select-multiple',
+        options: q.options?.map(cloneFormOption) || [],
+        min: q.min,
+        max: q.max,
+        other: q.other
+      } as EditablePatchSelectMultiple;
+    }
+    case 'slider': {
+      const q = question as EditablePatchSlider;
+      return {
+        ...baseClone,
+        type: 'slider',
+        min: q.min,
+        max: q.max,
+        step: q.step,
+        labels: q.labels?.map(l => ({...l})) || []
+      } as EditablePatchSlider;
+    }
+    case 'text-short': {
+      const q = question as EditablePatchTextShort;
+      return {
+        ...baseClone,
+        type: 'text-short',
+        placeholder: q.placeholder,
+        minLength: q.minLength,
+        maxLength: q.maxLength
+      } as EditablePatchTextShort;
+    }
+    case 'text-long': {
+      const q = question as EditablePatchTextLong;
+      return {
+        ...baseClone,
+        type: 'text-long',
+        placeholder: q.placeholder,
+        minLength: q.minLength,
+        maxLength: q.maxLength
+      } as EditablePatchTextLong;
+    }
+    default:
+      return baseClone as EditablePatchFormQuestion;
+  }
+}
+
 export function FormQuestionsManager({
                                        formType,
                                        questions,
                                        onChange,
                                        onCopyToOtherForm,
+                                       onCopyAllToOtherForm,
                                        readOnly,
                                      }: FormQuestionsManagerProps) {
   const [formClipboard, setFormClipboard] = useState<EditablePatchFormQuestion | null>(null);
   const [showFormDestinationModal, setShowFormDestinationModal] = useState(false);
+  const [showCopyAllModal, setShowCopyAllModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [pendingDeleteIndex, setPendingDeleteIndex] = useState<number | null>(null);
 
   const formTitle = formType === 'preTestForm' ? 'Formulario Pre-Test' : 'Formulario Post-Test';
-
-  const cloneFormQuestion = (question: EditablePatchFormQuestion): EditablePatchFormQuestion => {
-    const baseClone = {
-      id: undefined,
-      category: question.category,
-      text: question.text,
-      image: cloneImageState(question.image),
-      type: question.type
-    };
-
-    switch (question.type) {
-      case 'select-one': {
-        const q = question as EditablePatchSelectOne;
-        return {
-          ...baseClone,
-          type: 'select-one',
-          options: q.options?.map(cloneFormOption) || [],
-          other: q.other
-        } as EditablePatchSelectOne;
-      }
-      case 'select-multiple': {
-        const q = question as EditablePatchSelectMultiple;
-        return {
-          ...baseClone,
-          type: 'select-multiple',
-          options: q.options?.map(cloneFormOption) || [],
-          min: q.min,
-          max: q.max,
-          other: q.other
-        } as EditablePatchSelectMultiple;
-      }
-      case 'slider': {
-        const q = question as EditablePatchSlider;
-        return {
-          ...baseClone,
-          type: 'slider',
-          min: q.min,
-          max: q.max,
-          step: q.step,
-          labels: q.labels?.map(l => ({...l})) || []
-        } as EditablePatchSlider;
-      }
-      case 'text-short': {
-        const q = question as EditablePatchTextShort;
-        return {
-          ...baseClone,
-          type: 'text-short',
-          placeholder: q.placeholder,
-          minLength: q.minLength,
-          maxLength: q.maxLength
-        } as EditablePatchTextShort;
-      }
-      case 'text-long': {
-        const q = question as EditablePatchTextLong;
-        return {
-          ...baseClone,
-          type: 'text-long',
-          placeholder: q.placeholder,
-          minLength: q.minLength,
-          maxLength: q.maxLength
-        } as EditablePatchTextLong;
-      }
-      default:
-        return baseClone as EditablePatchFormQuestion;
-    }
-  };
+  const targetFormType = formType === 'preTestForm' ? 'postTestForm' : 'preTestForm';
+  const targetFormTitle = formType === 'preTestForm' ? 'Post-Test' : 'Pre-Test';
 
   const addQuestion = () => {
     const newQuestion: EditablePatchFormQuestion = {
@@ -174,6 +179,18 @@ export function FormQuestionsManager({
     setShowFormDestinationModal(true);
   };
 
+  const copyAllQuestions = () => {
+    setShowCopyAllModal(true);
+  };
+
+  const handleCopyAllConfirm = () => {
+    if (onCopyAllToOtherForm && questions.length > 0) {
+      const clonedQuestions = questions.map(q => cloneFormQuestion(q));
+      onCopyAllToOtherForm(clonedQuestions, targetFormType);
+    }
+    setShowCopyAllModal(false);
+  };
+
   const moveQuestion = (index: number, direction: 'up' | 'down') => {
     const toIndex = direction === 'up' ? index - 1 : index + 1;
     if (toIndex < 0 || toIndex >= questions.length) return;
@@ -200,9 +217,19 @@ export function FormQuestionsManager({
     <div className={styles.container}>
       <div className={styles.header}>
         <h3>{formTitle}</h3>
-        <button onClick={addQuestion} className={styles.addButton}>
-          + Añadir Pregunta
-        </button>
+        <div className={styles.copyAllButtonContainer}>
+          {questions.length > 0 && !readOnly && (
+            <button
+              onClick={copyAllQuestions}
+              className={styles.copyAllButton}
+            >
+              Copiar todas a {targetFormTitle}
+            </button>
+          )}
+          <button onClick={addQuestion} className={styles.addButton} disabled={readOnly}>
+            + Añadir Pregunta
+          </button>
+        </div>
       </div>
 
       {!questions || questions.length === 0 ? (
@@ -227,31 +254,41 @@ export function FormQuestionsManager({
           ))}
         </div>
       )}
-        <FormDestinationModal
-          isOpen={showFormDestinationModal}
-          onClose={() => {
-            setShowFormDestinationModal(false);
-            setFormClipboard(null);
-          }}
-          onConfirm={handlePasteToOtherForm}
-          title="Copiar pregunta a..."
-          currentForm={formType}
-          questionToPaste={formClipboard}
-        />
-        <ConfirmModal
-          isOpen={showDeleteConfirm}
-          onClose={() => {
-            setShowDeleteConfirm(false);
-            setPendingDeleteIndex(null);
-          }}
-          onConfirm={() => {
-            if (pendingDeleteIndex !== null) {
-              removeQuestion(pendingDeleteIndex);
-            }
-          }}
-          title="Confirmar Eliminación"
-          message="¿Estás seguro de eliminar esta pregunta? Esta acción no se puede deshacer."
-        />
+
+      <FormDestinationModal
+        isOpen={showFormDestinationModal}
+        onClose={() => {
+          setShowFormDestinationModal(false);
+          setFormClipboard(null);
+        }}
+        onConfirm={handlePasteToOtherForm}
+        title="Copiar pregunta a..."
+        currentForm={formType}
+        questionToPaste={formClipboard}
+      />
+
+      <ConfirmModal
+        isOpen={showCopyAllModal}
+        onClose={() => setShowCopyAllModal(false)}
+        onConfirm={handleCopyAllConfirm}
+        title="Copiar todas las preguntas"
+        message={`¿Estás seguro de copiar todas las ${questions.length} preguntas del ${formTitle} al ${targetFormTitle}? Las preguntas se añadirán al final del formulario destino.`}
+      />
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setPendingDeleteIndex(null);
+        }}
+        onConfirm={() => {
+          if (pendingDeleteIndex !== null) {
+            removeQuestion(pendingDeleteIndex);
+          }
+        }}
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de eliminar esta pregunta? Esta acción no se puede deshacer."
+      />
     </div>
   );
 }

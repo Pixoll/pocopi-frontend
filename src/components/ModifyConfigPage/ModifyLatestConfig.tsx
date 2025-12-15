@@ -61,8 +61,6 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {token} = useAuth();
-  console.log("pretest: ",config?.preTestForm)
-  console.log("postest: ",config?.postTestForm)
 
   async function getConfig(): Promise<void> {
     setIsLoading(true);

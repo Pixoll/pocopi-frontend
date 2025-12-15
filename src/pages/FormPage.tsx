@@ -84,7 +84,6 @@ export function FormPage({
     fetchUser();
   }, [token, isLoggedIn]);
 
-  // Redirect cuando no hay sesión
   useEffect(() => {
     if (!isLoggedIn) {
       const timer = setTimeout(() => {
@@ -95,7 +94,6 @@ export function FormPage({
     return undefined;
   }, [isLoggedIn, navigate]);
 
-  // Redirect cuando no existe un intento
   useEffect(() => {
     if (isLoggedIn && !attempt) {
       const timer = setTimeout(() => {

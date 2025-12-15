@@ -9,7 +9,7 @@ type FormQuestionsCoordinatorProps = {
   readOnly: boolean;
 };
 
-export function FormQuestionsCoordinator({ config, setConfig, formType , readOnly}: FormQuestionsCoordinatorProps) {
+export function FormQuestionsCoordinator({ config, setConfig, formType, readOnly }: FormQuestionsCoordinatorProps) {
   const form = formType === 'preTestForm' ? config.preTestForm : config.postTestForm;
   const questions = form?.questions || [];
 
@@ -45,12 +45,29 @@ export function FormQuestionsCoordinator({ config, setConfig, formType , readOnl
     }));
   };
 
+  const handleCopyAllToOtherForm = (questions: EditablePatchFormQuestion[], targetForm: 'preTestForm' | 'postTestForm') => {
+    setConfig(produce(config, (draft) => {
+      if (targetForm === 'preTestForm') {
+        if (!draft.preTestForm) {
+          draft.preTestForm = { id: undefined, questions: [] };
+        }
+        draft.preTestForm.questions.push(...questions);
+      } else {
+        if (!draft.postTestForm) {
+          draft.postTestForm = { id: undefined, questions: [] };
+        }
+        draft.postTestForm.questions.push(...questions);
+      }
+    }));
+  };
+
   return (
     <FormQuestionsManager
       formType={formType}
       questions={questions}
       onChange={handleQuestionsChange}
       onCopyToOtherForm={handleCopyToOtherForm}
+      onCopyAllToOtherForm={handleCopyAllToOtherForm}
       readOnly={readOnly}
     />
   );
