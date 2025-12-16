@@ -3,13 +3,14 @@ import styles from '@/styles/AdminPage/AdminAccountsSection.module.css';
 import api, {type Admin, type NewAdmin} from '@/api';
 import { ErrorDisplay } from '@/components/ErrorDisplay';
 import { LoadingPage } from '@/pages/LoadingPage';
+import {useTheme} from "@/hooks/useTheme.ts";
 
 export default function AdminAccountsSection() {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | Error | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
-
+  const {isDarkMode} = useTheme();
   const [newAdmin, setNewAdmin] = useState<NewAdmin>({
     username: '',
     password: '',
@@ -82,8 +83,12 @@ export default function AdminAccountsSection() {
 
       <div className={styles.header}>
         <div>
-          <h2 className={styles.title}>Administrator Accounts</h2>
-          <p className={styles.subtitle}>Manage system administrator accounts</p>
+          <h2 className={`${styles.title} ${!isDarkMode ? styles.titleLight : ''}`}>
+            Administrator Accounts
+          </h2>
+          <p className={`${styles.subtitle} ${!isDarkMode ? styles.subtitleLight : ''}`}>
+            Manage system administrator accounts
+          </p>
         </div>
         {!showCreateForm && (
           <button
@@ -97,18 +102,20 @@ export default function AdminAccountsSection() {
       </div>
 
       {showCreateForm && (
-        <div className={styles.createFormCard}>
-          <h3 className={styles.formTitle}>Create New Administrator</h3>
+        <div className={`${styles.createFormCard} ${!isDarkMode ? styles.createFormCardLight : ''}`}>
+          <h3 className={`${styles.formTitle} ${!isDarkMode ? styles.formTitleLight : ''}`}>
+            Create New Administrator
+          </h3>
           <form onSubmit={handleCreateAdmin} className={styles.form}>
             <div className={styles.formGroup}>
-              <label className={styles.label}>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>
                 Username <span className={styles.required}>*</span>
               </label>
               <input
                 type="text"
                 value={newAdmin.username}
                 onChange={(e) => setNewAdmin({ ...newAdmin, username: e.target.value })}
-                className={styles.input}
+                className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
                 placeholder="Enter username"
                 required
                 disabled={loading}
@@ -116,19 +123,21 @@ export default function AdminAccountsSection() {
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.label}>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>
                 Password <span className={styles.required}>*</span>
               </label>
               <input
                 type="password"
                 value={newAdmin.password}
                 onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
-                className={styles.input}
+                className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
                 placeholder="Enter secure password"
                 required
                 disabled={loading}
               />
-              <small className={styles.hint}>Minimum 8 characters recommended</small>
+              <small className={`${styles.hint} ${!isDarkMode ? styles.hintLight : ''}`}>
+                Minimum 8 characters recommended
+              </small>
             </div>
 
             <div className={styles.formActions}>
@@ -154,17 +163,19 @@ export default function AdminAccountsSection() {
 
       <div className={styles.adminsList}>
         {admins.length === 0 ? (
-          <div className={styles.emptyState}>
+          <div className={`${styles.emptyState} ${!isDarkMode ? styles.emptyStateLight : ''}`}>
             <p>No administrators found</p>
           </div>
         ) : (
           admins.map((admin) => (
-            <div key={admin.id} className={styles.adminCard}>
+            <div key={admin.id} className={`${styles.adminCard} ${!isDarkMode ? styles.adminCardLight : ''}`}>
               <div className={styles.adminInfo}>
                 <div className={styles.adminAvatar}>
                   {admin.username.charAt(0).toUpperCase()}
                 </div>
-                <span className={styles.adminName}>{admin.username}</span>
+                <span className={`${styles.adminName} ${!isDarkMode ? styles.adminNameLight : ''}`}>
+                  {admin.username}
+                </span>
               </div>
             </div>
           ))

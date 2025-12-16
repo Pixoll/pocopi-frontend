@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {t} from "@/utils/translations.ts";
 import type {TrimmedConfig} from "@/api";
 
-export function ThemeSwitcher({config}:{config:TrimmedConfig}) {
+export function ThemeSwitcher({config}:{config?:TrimmedConfig}) {
   const { isDarkMode, toggleTheme } = useTheme();
 
   return (
@@ -15,7 +15,7 @@ export function ThemeSwitcher({config}:{config:TrimmedConfig}) {
         isDarkMode ? styles.themeSwitcherDark : styles.themeSwitcherLight,
       ].join(" ")}
       onClick={toggleTheme}
-      aria-label={t(config, "home.themeSwitchButtonHint", isDarkMode ? "light" : "dark")}
+      aria-label={config ? t(config, "home.themeSwitchButtonHint", isDarkMode ? "light" : "dark") : ""}
     >
       <FontAwesomeIcon
         icon={isDarkMode ? faSun : faMoon}

@@ -7,7 +7,10 @@
     min-height: 100vh;
     box-sizing: border-box;
 }
-/* Agrega estos estilos a tu archivo existente */
+
+.pageContainerLight {
+    background: #f8f9fa;
+}
 
 .configIcon {
     width: 40px;
@@ -40,6 +43,11 @@
     color: #6c757d;
     font-style: italic;
 }
+
+.buttonHintLight {
+    color: #495057;
+}
+
 .pageHeader {
     max-width: 1200px;
     width: 100%;
@@ -59,6 +67,10 @@
     color: #9ca3af;
     margin: 0;
     font-weight: 400;
+}
+
+.pageSubtitleLight {
+    color: #6c757d;
 }
 
 .sectionsContainer {
@@ -85,6 +97,12 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+.configSectionLight {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 .lastConfigSection {
     width: 100%;
     display: flex;
@@ -99,14 +117,29 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+.lastConfigSectionLight {
+    background: #f0f9f9;
+    border: 2px solid var(--accent-teal);
+    box-shadow: 0 4px 16px rgba(0, 139, 139, 0.15);
+}
+
 .configSection:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     border-color: #5a6b7d;
 }
 
+.configSectionLight:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #adb5bd;
+}
+
 .lastConfigSection:hover {
     box-shadow: 0 6px 20px rgba(0, 139, 139, 0.35);
+}
+
+.lastConfigSectionLight:hover {
+    box-shadow: 0 6px 20px rgba(0, 139, 139, 0.25);
 }
 
 .infoContainer {
@@ -130,6 +163,10 @@
     color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+
+.versionNumberLight {
+    color: #868e96;
 }
 
 .currentBadge {
@@ -158,6 +195,10 @@
     line-height: 1.3;
 }
 
+.titleLight {
+    color: #212529;
+}
+
 .subtitle {
     font-weight: 500;
     font-size: 1rem;
@@ -165,6 +206,11 @@
     margin: 0;
     line-height: 1.4;
 }
+
+.subtitleLight {
+    color: #6c757d;
+}
+
 .cloneButton {
     padding: 0.5rem 1rem;
     background-color: #0066cc;
@@ -179,6 +225,7 @@
 .cloneButton:hover {
     background-color: #0052a3;
 }
+
 .description {
     font-size: 0.9rem;
     color: #6b7280;
@@ -186,6 +233,10 @@
     max-height: 240px;
     line-height: 1.6;
     overflow-y: auto;
+}
+
+.descriptionLight {
+    color: #495057;
 }
 
 .buttonsContainer {
@@ -270,6 +321,10 @@
     border-bottom: 2px solid #3d4b5c;
 }
 
+.tabsContainerLight {
+    border-bottom: 2px solid #dee2e6;
+}
+
 .tab {
     background: none;
     border: none;
@@ -284,9 +339,18 @@
     bottom: -2px;
 }
 
+.tabLight {
+    color: #6c757d;
+}
+
 .tab:hover {
     color: #e5e7eb;
     background: rgba(0, 139, 139, 0.05);
+}
+
+.tabLight:hover {
+    color: #212529;
+    background: rgba(0, 139, 139, 0.08);
 }
 
 .activeTab {
@@ -327,10 +391,17 @@
     border-radius: 12px;
 }
 
+.emptySectionLight {
+    color: #6c757d;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+}
+
 .emptySection p {
     margin: 0;
     font-size: 1.1rem;
 }
+
 @media (max-width: 768px) {
     .tabsContainer {
         padding: 0 12px;
@@ -391,4 +462,3 @@
         font-size: 0.68rem;
     }
 }
-

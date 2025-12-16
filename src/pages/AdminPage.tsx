@@ -6,6 +6,8 @@ import { useAuth } from "@/contexts/AuthContext.tsx";
 import { ConfigSection } from "@/components/AdminPage/ConfigSection";
 import { LoadingPage } from "@/pages/LoadingPage.tsx";
 import AdminAccountsSection from "@/components/AdminPage/AdminAccountsSection.tsx";
+import {ThemeSwitcher} from "@/components/ThemeSwitcher.tsx";
+import {useTheme} from "@/hooks/useTheme.ts";
 
 type AdminPageProps = {
   goToModifyConfigPage: (configVersion: number, onlyRead: boolean) => void;
@@ -19,8 +21,8 @@ async function getAllConfigs(set: (data: ConfigPreview[]) => void) {
   try {
     const response = await api.getAllConfigs();
     if (response) {
-      const sorted = response. data?.sort((a, b) => {
-        if (a. active) return -1;
+      const sorted = response.data?.sort((a, b) => {
+        if (a.active) return -1;
         if (b.active) return 1;
         return b.version - a.version;
       }) ?? [];
@@ -38,6 +40,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('configurations');
+  const {isDarkMode} = useTheme();
 
   useEffect(() => {
     const fetchConfigs = async () => {
@@ -46,7 +49,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
         setError(null);
         await getAllConfigs(setConfigs);
       } catch (err) {
-        console. error(err);
+        console.error(err);
         setError("Error al cargar las configuraciones");
       } finally {
         setLoading(false);
@@ -76,7 +79,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
         await getAllConfigs(setConfigs);
       }
     } catch (e) {
-      console. error(e);
+      console.error(e);
       setError("Error al duplicar la configuración");
     } finally {
       setLoading(false);
@@ -101,7 +104,7 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
 
   if (error) {
     return (
-      <div className={styles.pageContainer}>
+      <div className={`${styles.pageContainer} ${!isDarkMode ? styles.pageContainerLight : ''}`}>
         <div className={styles.errorContainer}>
           <h2 className={styles.errorTitle}>Error</h2>
           <p className={styles.errorMessage}>{error}</p>
@@ -118,31 +121,35 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
 
   if (configs.length === 0) {
     return (
-      <div className={styles.pageContainer}>
-        <header className={styles. pageHeader}>
+      <div className={`${styles.pageContainer} ${!isDarkMode ? styles.pageContainerLight : ''}`}>
+        <header className={styles.pageHeader}>
           <h1 className={styles.pageTitle}>Configuration panel</h1>
-          <p className={styles.pageSubtitle}>Manage and version configurations</p>
+          <p className={`${styles.pageSubtitle} ${!isDarkMode ? styles.pageSubtitleLight : ''}`}>
+            Manage and version configurations
+          </p>
         </header>
       </div>
     );
   }
 
   return (
-    <div className={styles.pageContainer}>
+    <div className={`${styles.pageContainer} ${!isDarkMode ? styles.pageContainerLight : ''}`}>
       <header className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Configuration panel</h1>
-        <p className={styles. pageSubtitle}>Manage and version configurations</p>
+        <p className={`${styles.pageSubtitle} ${!isDarkMode ? styles.pageSubtitleLight : ''}`}>
+          Manage and version configurations
+        </p>
       </header>
 
-      <div className={styles.tabsContainer}>
+      <div className={`${styles.tabsContainer} ${!isDarkMode ? styles.tabsContainerLight : ''}`}>
         <button
-          className={`${styles. tab} ${activeTab === 'configurations' ? styles.activeTab : ''}`}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'configurations' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('configurations')}
         >
           Configurations
         </button>
         <button
-          className={`${styles.tab} ${activeTab === 'Administrators' ? styles.activeTab : ''}`}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'Administrators' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('Administrators')}
         >
           Administrators
@@ -169,12 +176,13 @@ function AdminPageContent({ goToModifyConfigPage, token }: Omit<AdminPageProps, 
 
         {activeTab === 'Administrators' && (
           <section className={styles.mainSection}>
-            <div className={styles.emptySection}>
+            <div className={`${styles.emptySection} ${!isDarkMode ? styles.emptySectionLight : ''}`}>
               <AdminAccountsSection />
             </div>
           </section>
         )}
       </div>
+      <ThemeSwitcher />
     </div>
   );
 }

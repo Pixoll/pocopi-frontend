@@ -1,6 +1,7 @@
 import styles from "@/styles/AdminPage/AdminPage.module.css";
 import type { ConfigPreview } from "@/api";
 import Markdown from "react-markdown";
+import {useTheme} from "@/hooks/useTheme.ts";
 
 type ConfigSectionProps = {
   configData: ConfigPreview;
@@ -18,9 +19,10 @@ export function ConfigSection({
                                 onDelete
                               }: ConfigSectionProps) {
   const isActive = configData.active;
+  const {isDarkMode} = useTheme();
 
   return (
-    <div className={isActive ? styles.lastConfigSection : styles.configSection}>
+    <div className={`${isActive ? styles.lastConfigSection : styles.configSection} ${!isDarkMode ? (isActive ? styles.lastConfigSectionLight : styles.configSectionLight) : ''}`}>
       <div className={styles.infoContainer}>
         <div className={styles.versionHeader}>
           {configData.icon?.url && (
@@ -30,16 +32,22 @@ export function ConfigSection({
               className={styles.configIcon}
             />
           )}
-          <span className={styles.versionNumber}>Version {configData.version}</span>
+          <span className={`${styles.versionNumber} ${!isDarkMode ? styles.versionNumberLight : ''}`}>
+            Version {configData.version}
+          </span>
           {isActive && <span className={styles.currentBadge}>Current</span>}
         </div>
 
         <div className={styles.contentInfo}>
-          <h3 className={styles.title}>{configData. title || "Sin título"}</h3>
-          {configData. subtitle && (
-            <p className={styles.subtitle}>{configData.subtitle}</p>
+          <h3 className={`${styles.title} ${!isDarkMode ? styles.titleLight : ''}`}>
+            {configData.title || "Sin título"}
+          </h3>
+          {configData.subtitle && (
+            <p className={`${styles.subtitle} ${!isDarkMode ? styles.subtitleLight : ''}`}>
+              {configData.subtitle}
+            </p>
           )}
-          <div className={styles. description}>
+          <div className={`${styles.description} ${!isDarkMode ? styles.descriptionLight : ''}`}>
             <Markdown>{configData.description || "Sin descripción"}</Markdown>
           </div>
         </div>
@@ -54,7 +62,9 @@ export function ConfigSection({
             >
               Modify
             </button>
-            <span className={styles.buttonHint}>Edit current configuration</span>
+            <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ''}`}>
+              Edit current configuration
+            </span>
           </div>
         ) : (
           <>
@@ -65,7 +75,9 @@ export function ConfigSection({
               >
                 Set as active version
               </button>
-              <span className={styles.buttonHint}>Make this the active config</span>
+              <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ''}`}>
+                Make this the active config
+              </span>
 
               <button
                 className={styles.setVersionButton}
@@ -81,7 +93,9 @@ export function ConfigSection({
               >
                 Duplicate
               </button>
-              <span className={styles.buttonHint}>Create a copy of this version</span>
+              <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ''}`}>
+                Create a copy of this version
+              </span>
             </div>
             <div className={styles.buttonWrapper}>
               <button
@@ -91,7 +105,7 @@ export function ConfigSection({
               >
                 Delete
               </button>
-              <span className={styles.buttonHint}>
+              <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ''}`}>
                 {configData.canDelete ? "Remove this version" : "Cannot delete this version"}
               </span>
             </div>
