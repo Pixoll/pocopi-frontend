@@ -1,11 +1,11 @@
-import api, { type UserTestAttemptSummary } from "@/api";
+import api, { type TestAttemptSummary } from "@/api";
 import { SavePopup } from "@/components/SavePopup";
 import styles from "@/styles/DashboardPage/UserActionsModal.module.css";
 import { downloadFile } from "@/utils/files";
 import { useState } from "react";
 
 type UserActionsModalProps = {
-  userAttempt: UserTestAttemptSummary;
+  userAttempt: TestAttemptSummary;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -19,8 +19,8 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
     setSavePopupMessage("Obteniendo todos los resultados...");
 
     const result = format === "json"
-      ? await api.getUserResults({ path: { userId: userAttempt.user.id } })
-      : await api.getUserResultsCsv({ path: { userId: userAttempt.user.id } });
+      ? await api.getAttemptResults({ path: { attemptId: userAttempt.id } })
+      : await api.getAttemptResultsCsv({ path: { attemptId: userAttempt.id } });
 
     if (!result.data) {
       setSavePopupStatus("error");
@@ -42,8 +42,8 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
     setSavePopupMessage("Obteniendo resultados de formularios...");
 
     const result = format === "json"
-      ? await api.getUserFormResults({ path: { userId: userAttempt.user.id } })
-      : await api.getUserFormResultsCsv({ path: { userId: userAttempt.user.id } });
+      ? await api.getAttemptFormResults({ path: { attemptId: userAttempt.id } })
+      : await api.getAttemptFormResultsCsv({ path: { attemptId: userAttempt.id } });
 
     if (!result.data) {
       setSavePopupStatus("error");
@@ -65,8 +65,8 @@ export default function UserActionsModal({ userAttempt, isOpen, onClose }: UserA
     setSavePopupMessage("Obteniendo resultados de tests...");
 
     const result = format === "json"
-      ? await api.getUserTestResults({ path: { userId: userAttempt.user.id } })
-      : await api.getUserTestResultsCsv({ path: { userId: userAttempt.user.id } });
+      ? await api.getAttemptTestResults({ path: { attemptId: userAttempt.id } })
+      : await api.getAttemptTestResultsCsv({ path: { attemptId: userAttempt.id } });
 
     if (!result.data) {
       setSavePopupStatus("error");

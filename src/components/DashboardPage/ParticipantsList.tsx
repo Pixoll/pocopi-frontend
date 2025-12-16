@@ -1,4 +1,4 @@
-import api, { type TrimmedConfig, type UsersTestAttemptsSummary, type UserTestAttemptSummary } from "@/api";
+import api, { type TrimmedConfig, type TestAttemptsSummary, type TestAttemptSummary } from "@/api";
 import UserActionsModal from "@/components/DashboardPage/UserActionsModal.tsx";
 import { Spinner } from "@/components/Spinner";
 import styles from "@/styles/DashboardPage/ParticipantsList.module.css";
@@ -10,7 +10,7 @@ import { useState } from "react";
 type ParticipantsListProps = {
   config: TrimmedConfig;
   isDarkMode: boolean;
-  summary: UsersTestAttemptsSummary;
+  summary: TestAttemptsSummary;
   setError: (value: string | null) => void;
 };
 
@@ -24,7 +24,7 @@ export function ParticipantsList({
   const [loadingAllResults, setLoadingAllResults] = useState<boolean>(false);
   const [loadingAllTests, setLoadingAllTests] = useState<boolean>(false);
   const [loadingAllForms, setLoadingAllForms] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<UserTestAttemptSummary | null>(null);
+  const [selectedUser, setSelectedUser] = useState<TestAttemptSummary | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const exportToCsv = () => {
@@ -152,7 +152,7 @@ export function ParticipantsList({
     }
   };
 
-  const openUserActionsModal = (user: UserTestAttemptSummary) => {
+  const openUserActionsModal = (user: TestAttemptSummary) => {
     setSelectedUser(user);
     setIsModalOpen(true);
   };

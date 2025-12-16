@@ -1,4 +1,4 @@
-import api, { type TrimmedConfig, type UsersTestAttemptsSummary } from "@/api";
+import api, { type TrimmedConfig, type TestAttemptsSummary } from "@/api";
 import { DashboardHeader } from "@/components/DashboardPage/DashboardHeader.tsx";
 import { DashboardSummary } from "@/components/DashboardPage/DashboardSummary.tsx";
 import { ParticipantsList } from "@/components/DashboardPage/ParticipantsList.tsx";
@@ -24,7 +24,7 @@ type AnalyticsDashboardProps = {
 };
 
 export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) {
-  const [summary, setSummary] = useState<UsersTestAttemptsSummary>({
+  const [summary, setSummary] = useState<TestAttemptsSummary>({
     averageAccuracy: 0,
     averageTimeTaken: 0,
     totalQuestionsAnswered: 0,
@@ -44,7 +44,7 @@ export function AnalyticsDashboard({ config, onBack }: AnalyticsDashboardProps) 
       setLoadingSummary(true);
       setError(null);
 
-      const response = await api.getAllUsersTestAttemptsSummary();
+      const response = await api.getAllTestAttemptsSummary();
 
       if (!response.data) {
         setError(t(config, "dashboard.errorLoadingResults"));

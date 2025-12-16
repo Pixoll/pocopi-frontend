@@ -1,4 +1,4 @@
-import api, { type AssignedTestGroup, type TrimmedConfig, type User, type UserTestAttemptSummary } from "@/api";
+import api, { type AssignedTestGroup, type TrimmedConfig, type User, type TestAttemptSummary } from "@/api";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/CompletionModal/CompletionResults.module.css";
 import { t } from "@/utils/translations.ts";
@@ -6,7 +6,7 @@ import { faChartLine, faCheck, faClock, faForward, faPercent } from "@fortawesom
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-type UserResult = UserTestAttemptSummary & {
+type UserResult = TestAttemptSummary & {
   totalQuestions: number;
 };
 

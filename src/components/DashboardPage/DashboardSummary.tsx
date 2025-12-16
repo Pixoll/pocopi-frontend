@@ -1,4 +1,4 @@
-import type { TrimmedConfig, UsersTestAttemptsSummary } from "@/api";
+import type { TrimmedConfig, TestAttemptsSummary } from "@/api";
 import styles from "@/styles/DashboardPage/DashboardSummary.module.css";
 import { t } from "@/utils/translations.ts";
 import { faChartLine, faCheckCircle, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +7,7 @@ import { StatCard } from "./StatCard";
 type DashboardSummaryProps = {
   config: TrimmedConfig;
   isDarkMode: boolean;
-  summary: UsersTestAttemptsSummary;
+  summary: TestAttemptsSummary;
 };
 
 export function DashboardSummary({ config, isDarkMode, summary }: DashboardSummaryProps) {
