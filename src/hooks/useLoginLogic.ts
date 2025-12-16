@@ -5,11 +5,10 @@ import { useState } from "react";
 type LoginLogicOptions = {
   config: TrimmedConfig | FullConfig;
   onSuccess?: (attempt: UserTestAttempt) => void;
-  onAttemptInProgress: () => void;
   stayOnPage?: boolean;
 };
 
-export function useLoginLogic({ config, onSuccess, onAttemptInProgress, stayOnPage = false }: LoginLogicOptions) {
+export function useLoginLogic({ config, onSuccess, stayOnPage = false }: LoginLogicOptions) {
   const { setToken, setUsername, generateCredentials } = useAuth();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,26 +30,11 @@ export function useLoginLogic({ config, onSuccess, onAttemptInProgress, stayOnPa
           onSuccess?.(null as never);
           return true;
         }
-
-        const groupResponse = await api.beginTest();
-
-        if (groupResponse.data) {
-          onSuccess?.(groupResponse.data);
-          return true;
-        } else if (groupResponse.error) {
-          if (groupResponse.error.code === 409) {
-            console.log("hay un intento");
-            onAttemptInProgress();
-            return false;
-          } else {
-            throw new Error(groupResponse.error.message);
-          }
-        }
       } else {
         throw new Error(response.error?.message || "Error al iniciar sesión");
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `${err}`);
       return false;
     } finally {
       setSaving(false);
@@ -70,8 +54,8 @@ export function useLoginLogic({ config, onSuccess, onAttemptInProgress, stayOnPa
       } else {
         throw new Error(registerRes.error?.message || "Error al registrar usuario");
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `${err}`);
       return false;
     } finally {
       setSaving(false);

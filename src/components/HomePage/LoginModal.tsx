@@ -15,24 +15,22 @@ type LoginModalProps = {
   onCancel?: () => void;
   goToNextPage?: (attempt: UserTestAttempt) => void;
   showAnonymousOption?: boolean;
-  onAttemptInProgress?: () => void;
   onLoginSuccess?: () => void;
   stayOnPage?: boolean;
   showCancelButton?: boolean;
 };
 
 export function LoginModal({
-                             config,
-                             show,
-                             onHide,
-                             onCancel,
-                             goToNextPage,
-                             showAnonymousOption = false,
-                             onAttemptInProgress,
-                             onLoginSuccess,
-                             stayOnPage = false,
-                             showCancelButton = true
-                           }: LoginModalProps) {
+  config,
+  show,
+  onHide,
+  onCancel,
+  goToNextPage,
+  showAnonymousOption = false,
+  onLoginSuccess,
+  stayOnPage = false,
+  showCancelButton = true
+}: LoginModalProps) {
   const { isDarkMode } = useTheme();
   const { saving, error, login, createAnonymousUser } = useLoginLogic({
     config,
@@ -43,10 +41,6 @@ export function LoginModal({
       } else {
         goToNextPage?.(attempt);
       }
-    },
-    onAttemptInProgress: () => {
-      onHide();
-      onAttemptInProgress?.();
     },
     stayOnPage
   });

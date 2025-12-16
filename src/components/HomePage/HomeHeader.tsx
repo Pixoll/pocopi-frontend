@@ -11,11 +11,10 @@ type HomeHeaderProps = {
 };
 
 export function HomeHeader({
-                             config,
-                             isDarkMode,
-                             onAttemptInProgress,
-                             onLoginSuccess
-                           }: HomeHeaderProps) {
+  config,
+  isDarkMode,
+  onLoginSuccess
+}: HomeHeaderProps) {
   return (
     <div className={styles.header}>
       <div
@@ -38,7 +37,6 @@ export function HomeHeader({
           <LoginButton
             config={config}
             variant="icon"
-            onAttemptInProgress={onAttemptInProgress}
             onLoginSuccess={onLoginSuccess}
             stayOnPage={true}
           />

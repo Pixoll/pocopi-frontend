@@ -33,7 +33,6 @@ export function HomeInfoCard({
   const { createAnonymousUser, saving } = useLoginLogic({
     config,
     onSuccess: goToNextPage,
-    onAttemptInProgress,
   });
 
   const infoCardsAmount = config.informationCards.length;
@@ -201,7 +200,6 @@ export function HomeInfoCard({
           onHide={() => setShowLoginModal(false)}
           goToNextPage={goToNextPage}
           showAnonymousOption={false}
-          onAttemptInProgress={onAttemptInProgress}
         />
       )}
     </>

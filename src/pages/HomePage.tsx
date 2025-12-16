@@ -18,11 +18,11 @@ type HomePageProps = {
 };
 
 export function HomePage({
-                           config,
-                           goToNextPage,
-                           onDashboard,
-                           onAdmin,
-                         }: HomePageProps) {
+  config,
+  goToNextPage,
+  onDashboard,
+  onAdmin,
+}: HomePageProps) {
   const { isDarkMode } = useTheme();
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
@@ -58,12 +58,11 @@ export function HomePage({
 
   return (
     <div className={styles.container}>
-      <UserLogout />
+      <UserLogout/>
       <HomeHeader
         config={config}
         isDarkMode={isDarkMode}
         goToNextPage={goToNextPage}
-        onAttemptInProgress={handleAttemptInProgress}
         onLoginSuccess={handleLoginSuccess}
       />
 
