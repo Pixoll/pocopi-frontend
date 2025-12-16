@@ -10,7 +10,6 @@ import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UserLogout from "@/components/UserLogout.tsx";
 
 type TestPageProps = {
   config: TrimmedConfig;
@@ -37,11 +36,11 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
       window.removeEventListener("popstate", popState);
     };
   }, []);
-    // sino esta logeado
+  // sino esta logeado
   useEffect(() => {
     if (!isLoggedIn) {
       const timer = setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -52,7 +51,7 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
   useEffect(() => {
     if (isLoggedIn && !attempt) {
       const timer = setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -102,7 +101,6 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
 
   return (
     <ProtectedRoute config={config}>
-      <UserLogout />
       <TestPageContent
         token={token!}
         config={config}
@@ -115,11 +113,11 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
 }
 
 function TestPageContent({
-                           config,
-                           attempt,
-                           goToNextPage,
-                           isDarkMode,
-                         }: {
+  config,
+  attempt,
+  goToNextPage,
+  isDarkMode,
+}: {
   token: string;
   config: TrimmedConfig;
   attempt: UserTestAttempt;
