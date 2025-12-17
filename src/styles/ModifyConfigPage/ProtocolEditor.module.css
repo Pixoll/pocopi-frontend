@@ -7,13 +7,13 @@
 .protocolSettings {
     background: var(--card-light);
     padding: 1.25rem;
-    border-radius: 6px;
+    border-radius:  6px;
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .protocolSettings h5 {
-    margin: 0 0 1rem 0;
+    margin:  0 0 1rem 0;
     font-size: 1rem;
     color: var(--text-primary);
     font-weight: 600;
@@ -36,6 +36,10 @@
     transition: background 0.2s;
 }
 
+.checkboxLabelLight {
+    color: #2c3e50;
+}
+
 .checkboxLabel:hover {
     background: rgba(0, 139, 139, 0.05);
 }
@@ -51,6 +55,10 @@
     color: var(--text-secondary);
 }
 
+.checkboxLabelLight span {
+    color: #6b7280;
+}
+
 .protocolLayout {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -62,11 +70,21 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.protocolLayoutLight {
+    border-color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .phasesSidebar {
-    background: var(--card-light);
+    background:  var(--card-light);
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+}
+
+.phasesSidebarLight {
+    background: #f9fafb;
+    border-right-color: #e0e0e0;
 }
 
 .sidebarHeader {
@@ -75,17 +93,26 @@
     background: var(--input-bg);
 }
 
+.sidebarHeaderLight {
+    background: #ffffff;
+    border-bottom-color: #e0e0e0;
+}
+
 .sidebarHeader h5 {
-    margin: 0 0 0.75rem 0;
+    margin:  0 0 0.75rem 0;
     font-size: 0.95rem;
     color: var(--text-primary);
     font-weight: 600;
 }
 
+.titleLight {
+    color: #2c3e50 !important;
+}
+
 .phasesList {
     flex: 1;
     overflow-y: auto;
-    padding: 0.5rem;
+    padding:  0.5rem;
 }
 
 .phaseItem {
@@ -98,6 +125,15 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+}
+
+.phaseItemLight {
+    background: #ffffff;
+    border-color: #d0d0d0;
 }
 
 .phaseItem:hover {
@@ -113,6 +149,25 @@
     box-shadow: 0 2px 8px rgba(0, 139, 139, 0.3);
 }
 
+.phaseItemLight.active {
+    background: #008b8b;
+    border-color: #008b8b;
+}
+
+.phaseItemButton {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.phaseItemButtonLight {
+    color: #2c3e50;
+}
+
 .phaseItemContent {
     display: flex;
     flex-direction: column;
@@ -120,13 +175,21 @@
 }
 
 .phaseNumber {
-    font-weight: 600;
+    font-weight:  600;
     font-size: 0.9rem;
     color: var(--text-primary);
 }
 
-.phaseItem.active .phaseNumber {
+.phaseNumberLight {
+    color:  #2c3e50;
+}
+
+.phaseItem.active.phaseNumber {
     color: white;
+}
+
+.phaseItem.active.phaseNumber.activeText {
+    color: white ! important;
 }
 
 .questionCount {
@@ -134,14 +197,26 @@
     color: var(--text-muted);
 }
 
+.questionCountLight {
+    color: #9ca3af;
+}
+
 .phaseItem.active .questionCount {
     color: rgba(255, 255, 255, 0.85);
+}
+
+.phaseItem.active .questionCount.activeCount {
+    color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .phaseContent {
     background: var(--input-bg);
     padding: 1.5rem;
     overflow-y: auto;
+}
+
+.phaseContentLight {
+    background: #ffffff;
 }
 
 .noSelection {
@@ -155,14 +230,22 @@
 }
 
 .noSelection p {
-    margin: 0 0 0.5rem 0;
+    margin:  0 0 0.5rem 0;
     font-size: 1.1rem;
     color: var(--text-secondary);
+}
+
+.noSelectionTextLight {
+    color: #6b7280 !important;
 }
 
 .noSelection small {
     font-size: 0.85rem;
     color: var(--text-muted);
+}
+
+.noSelectionSmallLight {
+    color: #9ca3af !important;
 }
 
 .phaseEditor {
@@ -179,10 +262,18 @@
     border-bottom: 2px solid var(--border-color);
 }
 
+.phaseHeaderLight {
+    border-bottom-color: #e0e0e0;
+}
+
 .phaseHeader h4 {
-    margin: 0;
+    margin:  0;
     font-size: 1.4rem;
     color: var(--text-primary);
+}
+
+.phaseHeaderTitleLight {
+    color:  #2c3e50 !important;
 }
 
 .phaseSubtitle {
@@ -190,6 +281,11 @@
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
+
+.phaseSubtitleLight {
+    color:  #6b7280;
+}
+
 .questionsSection {
     display: flex;
     flex-direction: column;
@@ -199,14 +295,18 @@
 .questionsSectionHeader {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items:  center;
 }
 
 .questionsSectionHeader h5 {
-    margin: 0;
+    margin:  0;
     font-size: 1.1rem;
     color: var(--text-primary);
     font-weight: 600;
+}
+
+.questionsSectionTitleLight {
+    color: #2c3e50 !important;
 }
 
 .questionsList {
@@ -235,8 +335,13 @@
     text-align: center;
     color: var(--text-muted);
     background: var(--card-light);
-    border: 1px dashed var(--border-color);
+    border:  1px dashed var(--border-color);
     border-radius: 6px;
+}
+
+.emptyStateLight {
+    background: #f9fafb;
+    border-color: #d1d5db;
 }
 
 .emptyState p {
@@ -245,9 +350,17 @@
     color: var(--text-secondary);
 }
 
+.emptyTextLight {
+    color: #6b7280 !important;
+}
+
 .emptyState small {
-    font-size: 0.8rem;
+    font-size:  0.8rem;
     color: var(--text-muted);
+}
+
+.emptySmallLight {
+    color: #9ca3af !important;
 }
 
 .addButton {
@@ -263,17 +376,25 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.addButtonLight {
+    background: #008b8b;
+}
+
 .addButton:hover {
     background: #007a7a;
-    transform: translateY(-1px);
+    transform:  translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 139, 139, 0.3);
+}
+
+.addButtonLight:hover {
+    background:  #006666;
 }
 
 .removeButton {
     background: var(--danger);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding:  0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.85rem;
@@ -282,10 +403,18 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.removeButtonLight {
+    background: #e74c3c;
+}
+
 .removeButton:hover {
     background: var(--danger-hover);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+.removeButtonLight:hover {
+    background: #c0392b;
 }
 
 .sidebarActions {
@@ -294,44 +423,17 @@
     align-items: center;
 }
 
-.phaseItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.2s;
-}
-
-.phaseItem:hover {
-    border-color: var(--accent-teal);
-    box-shadow: 0 2px 4px rgba(0, 139, 139, 0.15);
-}
-
-.phaseItem.active {
-    border-color: var(--accent-teal);
-    background: rgba(0, 139, 139, 0.15);
-}
-
-.phaseItemButton {
-    flex: 1;
-    background: none;
-    border: none;
-    padding: 12px;
-    text-align: left;
-    cursor: pointer;
-    color: var(--text-primary);
-}
-
 .phaseItemActions {
     display: flex;
     gap: 4px;
     padding: 8px;
     border-left: 1px solid var(--border-color);
     background: var(--card-light);
+}
+
+.phaseItemActionsLight {
+    border-left-color: #e0e0e0;
+    background: #f3f4f6;
 }
 
 .iconButton {
@@ -349,9 +451,18 @@
     position: relative;
 }
 
+.iconButtonLight {
+    color: #6b7280;
+}
+
 .iconButton:hover:not(:disabled) {
     background: var(--input-bg);
     color: var(--accent-teal);
+}
+
+.iconButtonLight:hover:not(:disabled) {
+    background: #e5e7eb;
+    color:  #008b8b;
 }
 
 .iconButton:disabled {
@@ -401,14 +512,6 @@
     flex-wrap: wrap;
 }
 
-.phaseItem.active .phaseNumber {
-    color: var(--accent-teal);
-    font-weight: 700;
-}
-
-.phaseItem.active .questionCount {
-    color: var(--text-secondary);
-}
 @media (max-width: 968px) {
     .protocolLayout {
         grid-template-columns: 1fr;
@@ -418,6 +521,10 @@
         border-right: none;
         border-bottom: 1px solid var(--border-color);
         max-height: 200px;
+    }
+
+    .phasesSidebarLight {
+        border-bottom-color: #e0e0e0;
     }
 
     .phasesList {

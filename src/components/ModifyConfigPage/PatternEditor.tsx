@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { Pattern, PatternUpdate } from '@/api';
 import styles from '@/styles/ModifyConfigPage/ModifyConfigPage.module.css';
+import {useTheme} from "@/hooks/useTheme.ts";
 
 type PatternEditorProps = {
   pattern: PatternUpdate | null;
@@ -18,6 +19,7 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
                                                               onRemove
                                                             }) => {
   const [isNewPattern, setIsNewPattern] = useState<boolean>(!pattern || !pattern.id);
+  const {isDarkMode} = useTheme();
 
   useEffect(() => {
     setIsNewPattern(!pattern || !pattern.id);
@@ -55,8 +57,8 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
   };
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
+    <div className={`${styles.card} ${!isDarkMode ? styles.cardLight : ''}`}>
+      <div className={`${styles.cardHeader} ${!isDarkMode ? styles.cardHeaderLight : ''}`}>
         <h4>Configuración de Patrón</h4>
         {!readOnly && (
           <button
@@ -70,11 +72,13 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>Fuente del Patrón</label>
+        <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>
+          Fuente del Patrón
+        </label>
         <select
           value={getSelectedValue()}
           onChange={(e) => handlePatternSourceChange(e.target.value)}
-          className={styles.select}
+          className={`${styles.select} ${!isDarkMode ? styles.selectLight : ''}`}
           disabled={readOnly}
         >
           <option value="none">-- Sin patrón --</option>
@@ -94,7 +98,7 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
       {pattern && (
         <>
           {isNewPattern && (
-            <div className={styles.infoBox}>
+            <div className={`${styles.infoBox} ${!isDarkMode ? styles.infoBoxLight : ''}`}>
               <small>
                 Nuevo patrón que se guardará y se aplicará automáticamente
               </small>
@@ -102,7 +106,7 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
           )}
 
           {!isNewPattern && pattern.id && pattern.id > 0 && (
-            <div className={styles.infoBox}>
+            <div className={`${styles.infoBox} ${!isDarkMode ? styles.infoBoxLight : ''}`}>
               <small>
                 Patrón existente "{pattern.name}". Se puede modificar o usar tal cual.
               </small>
@@ -110,7 +114,7 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
           )}
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>
+            <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>
               Nombre del Patrón
               {isNewPattern && <span className={styles.required}> *</span>}
             </label>
@@ -118,14 +122,14 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
               type="text"
               value={pattern.name || ''}
               onChange={(e) => onChange({ ...pattern, name: e.target.value })}
-              className={styles.input}
+              className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
               placeholder="Ej: Email, DNI, RUT, etc."
               disabled={readOnly}
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>
+            <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>
               Expresión Regular (Regex)
               {isNewPattern && <span className={styles.required}> *</span>}
             </label>
@@ -133,11 +137,11 @@ export const PatternEditor: React.FC<PatternEditorProps> = ({
               type="text"
               value={pattern.regex || ''}
               onChange={(e) => onChange({ ...pattern, regex: e.target.value })}
-              className={styles.input}
+              className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
               placeholder="Ej: ^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$"
               disabled={readOnly}
             />
-            <small className={styles.helpText}>
+            <small className={`${styles.helpText} ${!isDarkMode ? styles.helpTextLight : ''}`}>
               Define el patrón de validación para el nombre de usuario
             </small>
           </div>

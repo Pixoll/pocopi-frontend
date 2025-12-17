@@ -14,11 +14,12 @@ import type {
 } from "@/utils/imageCollector.ts";
 import {getImageFile} from '@/utils/imageCollector.ts';
 import styles from "@/styles/ModifyConfigPage/FormQuestionsManager.module.css";
+import {useTheme} from "@/hooks/useTheme.ts";
 
 type FormQuestionsManagerProps = {
   formType: 'preTestForm' | 'postTestForm';
   questions: EditablePatchFormQuestion[];
-  onChange: (questions: EditablePatchFormQuestion[]) => void;
+  onChange:  (questions: EditablePatchFormQuestion[]) => void;
   onCopyToOtherForm?: (question: EditablePatchFormQuestion, targetForm: 'preTestForm' | 'postTestForm') => void;
   onCopyAllToOtherForm?: (questions: EditablePatchFormQuestion[], targetForm: 'preTestForm' | 'postTestForm') => void;
   readOnly: boolean;
@@ -46,14 +47,14 @@ function cloneFormOption(option: EditablePatchFormOption): EditablePatchFormOpti
   return {
     id: undefined,
     text: option.text,
-    image: cloneImageState(option.image)
+    image: cloneImageState(option. image)
   };
 }
 
-function cloneFormQuestion(question: EditablePatchFormQuestion): EditablePatchFormQuestion {
+function cloneFormQuestion(question:  EditablePatchFormQuestion): EditablePatchFormQuestion {
   const baseClone = {
     id: undefined,
-    category: question.category,
+    category:  question.category,
     text: question.text,
     image: cloneImageState(question.image),
     type: question.type
@@ -66,10 +67,10 @@ function cloneFormQuestion(question: EditablePatchFormQuestion): EditablePatchFo
         ...baseClone,
         type: 'select-one',
         options: q.options?.map(cloneFormOption) || [],
-        other: q.other
+        other: q. other
       } as EditablePatchSelectOne;
     }
-    case 'select-multiple': {
+    case 'select-multiple':  {
       const q = question as EditablePatchSelectMultiple;
       return {
         ...baseClone,
@@ -96,7 +97,7 @@ function cloneFormQuestion(question: EditablePatchFormQuestion): EditablePatchFo
       return {
         ...baseClone,
         type: 'text-short',
-        placeholder: q.placeholder,
+        placeholder:  q.placeholder,
         minLength: q.minLength,
         maxLength: q.maxLength
       } as EditablePatchTextShort;
@@ -106,7 +107,7 @@ function cloneFormQuestion(question: EditablePatchFormQuestion): EditablePatchFo
       return {
         ...baseClone,
         type: 'text-long',
-        placeholder: q.placeholder,
+        placeholder:  q.placeholder,
         minLength: q.minLength,
         maxLength: q.maxLength
       } as EditablePatchTextLong;
@@ -124,6 +125,7 @@ export function FormQuestionsManager({
                                        onCopyAllToOtherForm,
                                        readOnly,
                                      }: FormQuestionsManagerProps) {
+  const {isDarkMode} = useTheme();
   const [formClipboard, setFormClipboard] = useState<EditablePatchFormQuestion | null>(null);
   const [showFormDestinationModal, setShowFormDestinationModal] = useState(false);
   const [showCopyAllModal, setShowCopyAllModal] = useState(false);
@@ -142,13 +144,13 @@ export function FormQuestionsManager({
       image: undefined,
       type: 'select-one',
       options: [],
-      other: false
+      other:  false
     } as EditablePatchSelectOne;
 
     onChange([...questions, newQuestion]);
   };
 
-  const updateQuestion = (index: number, updatedQuestion: EditablePatchFormQuestion) => {
+  const updateQuestion = (index: number, updatedQuestion:  EditablePatchFormQuestion) => {
     const newQuestions = [...questions];
     newQuestions[index] = updatedQuestion;
     onChange(newQuestions);
@@ -216,24 +218,28 @@ export function FormQuestionsManager({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h3>{formTitle}</h3>
+        <h3 className={isDarkMode ? '' : styles.titleLight}>{formTitle}</h3>
         <div className={styles.copyAllButtonContainer}>
-          {questions.length > 0 && !readOnly && (
+          {questions.length > 0 && ! readOnly && (
             <button
               onClick={copyAllQuestions}
-              className={styles.copyAllButton}
+              className={`${styles.copyAllButton} ${isDarkMode ? '' : styles.copyAllButtonLight}`}
             >
               Copiar todas a {targetFormTitle}
             </button>
           )}
-          <button onClick={addQuestion} className={styles.addButton} disabled={readOnly}>
+          <button
+            onClick={addQuestion}
+            className={`${styles.addButton} ${isDarkMode ?  '' : styles.addButtonLight}`}
+            disabled={readOnly}
+          >
             + Añadir Pregunta
           </button>
         </div>
       </div>
 
       {!questions || questions.length === 0 ? (
-        <div className={styles.emptyState}>
+        <div className={`${styles.emptyState} ${isDarkMode ? '' : styles.emptyStateLight}`}>
           No hay preguntas. Haz clic en "Añadir Pregunta" para crear una.
         </div>
       ) : (
@@ -272,7 +278,7 @@ export function FormQuestionsManager({
         onClose={() => setShowCopyAllModal(false)}
         onConfirm={handleCopyAllConfirm}
         title="Copiar todas las preguntas"
-        message={`¿Estás seguro de copiar todas las ${questions.length} preguntas del ${formTitle} al ${targetFormTitle}? Las preguntas se añadirán al final del formulario destino.`}
+        message={`¿Estás seguro de copiar todas las ${questions.length} preguntas del ${formTitle} al ${targetFormTitle}? Las preguntas se añadirán al final del formulario destino. `}
       />
 
       <ConfirmModal
@@ -287,7 +293,7 @@ export function FormQuestionsManager({
           }
         }}
         title="Confirmar Eliminación"
-        message="¿Estás seguro de eliminar esta pregunta? Esta acción no se puede deshacer."
+        message="¿Estás seguro de eliminar esta pregunta?  Esta acción no se puede deshacer."
       />
     </div>
   );

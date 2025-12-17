@@ -22,6 +22,10 @@
     background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
 }
 
+.containerLight {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
 .header {
     background: var(--card-bg);
     padding: 1.5rem 2rem;
@@ -35,11 +39,20 @@
     border-bottom: 2px solid var(--accent-teal);
 }
 
+.headerLight {
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
 .header h1 {
     margin: 0;
     font-size: 1.75rem;
     color: var(--text-primary);
     font-weight: 600;
+}
+
+.headerLight h1 {
+    color: #212529;
 }
 
 .saveButton {
@@ -73,6 +86,11 @@
     overflow-x: auto;
 }
 
+.tabsLight {
+    background: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+}
+
 .tab {
     background: none;
     border: none;
@@ -85,9 +103,18 @@
     white-space: nowrap;
 }
 
+.tabLight {
+    color: #6c757d;
+}
+
 .tab:hover {
     color: var(--text-primary);
     background: rgba(0, 139, 139, 0.1);
+}
+
+.tabLight:hover {
+    color: #212529;
+    background: rgba(0, 139, 139, 0.08);
 }
 
 .activeTab {
@@ -111,6 +138,12 @@
     border: 1px solid var(--border-color);
 }
 
+.tabContentLight {
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #dee2e6;
+}
+
 .tabContent h3 {
     margin-top: 0;
     margin-bottom: 1.5rem;
@@ -118,6 +151,10 @@
     font-size: 1.5rem;
     border-bottom: 2px solid var(--accent-teal);
     padding-bottom: 0.5rem;
+}
+
+.tabContentLight h3 {
+    color: #212529;
 }
 
 .formGroup {
@@ -132,6 +169,10 @@
     font-size: 0.95rem;
 }
 
+.labelLight {
+    color: #212529;
+}
+
 .input {
     width: 100%;
     padding: 0.75rem;
@@ -144,6 +185,12 @@
     color: var(--text-primary);
 }
 
+.inputLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #212529;
+}
+
 .input:focus {
     outline: none;
     border-color: var(--accent-teal);
@@ -152,6 +199,10 @@
 
 .input::placeholder {
     color: var(--text-muted);
+}
+
+.inputLight::placeholder {
+    color: #adb5bd;
 }
 
 .textarea {
@@ -168,6 +219,12 @@
     color: var(--text-primary);
 }
 
+.textareaLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #212529;
+}
+
 .textarea:focus {
     outline: none;
     border-color: var(--accent-teal);
@@ -176,6 +233,10 @@
 
 .textarea::placeholder {
     color: var(--text-muted);
+}
+
+.textareaLight::placeholder {
+    color: #adb5bd;
 }
 
 .select {
@@ -191,6 +252,12 @@
     box-sizing: border-box;
 }
 
+.selectLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #212529;
+}
+
 .select:focus {
     outline: none;
     border-color: var(--accent-teal);
@@ -200,6 +267,11 @@
 .select option {
     background: var(--input-bg);
     color: var(--text-primary);
+}
+
+.selectLight option {
+    background: #ffffff;
+    color: #212529;
 }
 
 .checkboxLabel {
@@ -212,6 +284,10 @@
     padding: 0.5rem;
     border-radius: 4px;
     transition: background 0.2s;
+}
+
+.checkboxLabelLight {
+    color: #212529;
 }
 
 .checkboxLabel:hover {
@@ -233,6 +309,11 @@
     border: 1px solid var(--border-color);
 }
 
+.imageEditorLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
 .imagePreview {
     margin: 1rem 0;
     min-height: 150px;
@@ -242,6 +323,11 @@
     background: var(--input-bg);
     border-radius: 4px;
     border: 2px dashed var(--border-color);
+}
+
+.imagePreviewLight {
+    background: #ffffff;
+    border: 2px dashed #dee2e6;
 }
 
 .preview {
@@ -256,6 +342,10 @@
     padding: 2rem;
 }
 
+.emptyImageLight {
+    color: #6c757d;
+}
+
 .card {
     background: var(--card-light);
     padding: 1.5rem;
@@ -263,6 +353,12 @@
     margin-bottom: 1rem;
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cardLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .cardHeader {
@@ -274,11 +370,21 @@
     border-bottom: 1px solid var(--border-color);
 }
 
+.cardHeaderLight {
+    border-bottom: 1px solid #dee2e6;
+}
+
 .cardHeader h4,
 .cardHeader h5,
 .cardHeader h6 {
     margin: 0;
     color: var(--text-primary);
+}
+
+.cardHeaderLight h4,
+.cardHeaderLight h5,
+.cardHeaderLight h6 {
+    color: #212529;
 }
 
 .sectionHeader {
@@ -296,6 +402,13 @@
 .sectionHeader h6 {
     margin: 0;
     color: var(--text-primary);
+}
+
+.sectionHeaderLight h3,
+.sectionHeaderLight h4,
+.sectionHeaderLight h5,
+.sectionHeaderLight h6 {
+    color: #212529;
 }
 
 .addButton {
@@ -361,12 +474,22 @@
     border: 1px solid var(--border-color);
 }
 
+.sectionLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
 .optionItem {
     background: var(--input-bg);
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 0.75rem;
     border: 1px solid var(--border-color);
+}
+
+.optionItemLight {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
 }
 
 .optionHeader {
@@ -376,6 +499,10 @@
     margin-bottom: 0.75rem;
     font-weight: 500;
     color: var(--text-secondary);
+}
+
+.optionHeaderLight {
+    color: #495057;
 }
 
 .questionsContainer {
@@ -392,6 +519,12 @@
     background: var(--input-bg);
     border-radius: 8px;
     border: 2px dashed var(--border-color);
+}
+
+.emptyStateLight {
+    color: #6c757d;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
 }
 
 .groupSelector {
@@ -416,10 +549,20 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.groupCardLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .groupCard h4 {
     margin-top: 0;
     margin-bottom: 1rem;
     color: var(--text-primary);
+}
+
+.groupCardLight h4 {
+    color: #212529;
 }
 
 .protocolSection {
@@ -428,10 +571,18 @@
     border-top: 1px solid var(--border-color);
 }
 
+.protocolSectionLight {
+    border-top: 1px solid #dee2e6;
+}
+
 .protocolSection h5 {
     margin-top: 0;
     margin-bottom: 1rem;
     color: var(--text-primary);
+}
+
+.protocolSectionLight h5 {
+    color: #212529;
 }
 
 .phasesSection {
@@ -445,6 +596,12 @@
     margin-bottom: 1.5rem;
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.phaseCardLight {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .translationsGrid {
@@ -463,6 +620,11 @@
     align-items: center;
 }
 
+.translationItemLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
 .translationItem .label {
     margin: 0;
     font-family: monospace;
@@ -479,6 +641,12 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.patternSectionLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .patternSection .sectionHeader{
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
@@ -489,6 +657,10 @@
     font-size: 1.25rem;
     color: var(--text-primary);
     margin: 0;
+}
+
+.patternSectionLight .sectionHeader h4 {
+    color: #212529;
 }
 
 .emptyMessage {
@@ -502,6 +674,12 @@
     margin: 1rem 0;
 }
 
+.emptyMessageLight {
+    color: #6c757d;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+}
+
 .infoBox {
     background: rgba(0, 139, 139, 0.1);
     border-left: 4px solid var(--accent-teal);
@@ -510,11 +688,19 @@
     margin-bottom: 1.5rem;
 }
 
+.infoBoxLight {
+    background: rgba(0, 139, 139, 0.08);
+}
+
 .infoBox small {
     color: var(--text-secondary);
     font-size: 0.9rem;
     line-height: 1.4;
     display: block;
+}
+
+.infoBoxLight small {
+    color: #495057;
 }
 
 .required {
@@ -530,11 +716,20 @@
     font-style: italic;
 }
 
+.helpTextLight {
+    color: #6c757d;
+}
+
 .card .select optgroup {
     background: var(--card-bg);
     color: var(--text-primary);
     font-weight: 600;
     padding: 0.5rem;
+}
+
+.cardLight .select optgroup {
+    background: #ffffff;
+    color: #212529;
 }
 
 .patternSection,
@@ -545,6 +740,34 @@
 
 .patternSection:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.patternSectionLight:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.description {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+.descriptionLight {
+    color: #6c757d;
+}
+
+.arguments {
+    font-size: 0.8rem;
+    color: var(--accent-teal);
+    font-family: monospace;
+    margin-top: 0.25rem;
+}
+
+.translationHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 @media (max-width: 768px) {

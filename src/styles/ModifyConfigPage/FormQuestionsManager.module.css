@@ -1,6 +1,6 @@
 .container {
     display: flex;
-    flex-direction: column;
+    flex-direction:  column;
     gap: 1rem;
 }
 
@@ -13,39 +13,55 @@
 
 .header h3 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size:  1.5rem;
     font-weight: 600;
     color: #bfc3cb;
 }
 
+.titleLight {
+    color: #2c3e50 !important;
+}
+
 .addButton {
-    background-color: #3b82f6;
+    background-color:  #3b82f6;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 6px;
-    font-size: 0.875rem;
+    font-size:  0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
+}
+
+.addButtonLight {
+    background-color:  #3b82f6;
 }
 
 .addButton:hover {
     background-color: #2563eb;
 }
 
+.addButtonLight:hover {
+    background-color: #2563eb;
+}
+
 .addButton:disabled {
     background-color: #9ca3af;
-    cursor: not-allowed;
+    cursor:  not-allowed;
     opacity: 0.6;
 }
 
+.addButtonLight:disabled {
+    background-color: #d1d5db;
+}
+
 .copyAllButton {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    background:  linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius:  6px;
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
@@ -53,15 +69,27 @@
     box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
 }
 
+.copyAllButtonLight {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+}
+
 .copyAllButton:hover {
     background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
     transform: translateY(-1px);
 }
+
+.copyAllButtonLight:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.4);
+}
+
 .copyAllButtonContainer {
     display: flex;
     gap: 10px;
 }
+
 .copyAllButton:active {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
@@ -71,10 +99,16 @@
     text-align: center;
     padding: 3rem 1rem;
     background-color: #f9fafb;
-    border: 2px dashed #d1d5db;
+    border:  2px dashed #d1d5db;
     border-radius: 8px;
     color: #6b7280;
     font-size: 0.875rem;
+}
+
+.emptyStateLight {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    color: #6b7280;
 }
 
 .questionsContainer {

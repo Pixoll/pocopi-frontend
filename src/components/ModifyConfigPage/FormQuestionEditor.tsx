@@ -14,17 +14,18 @@ import styles from "@/styles/ModifyConfigPage/FormQuestionEditor.module.css";
 import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowUp, faArrowDown, faTrash, faChevronDown, faChevronUp, faClone, faArrowRightArrowLeft} from '@fortawesome/free-solid-svg-icons';
+import {useTheme} from "@/hooks/useTheme.ts";
 
 type FormQuestionEditorProps = {
   question: EditablePatchFormQuestion;
   index: number;
   onChange: (question: EditablePatchFormQuestion) => void;
   onRemove: () => void;
-  onDuplicate?: () => void;
+  onDuplicate?:  () => void;
   onCopy?: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
-  readOnly: boolean;
+  readOnly:  boolean;
 }
 
 export function FormQuestionEditor({
@@ -38,6 +39,7 @@ export function FormQuestionEditor({
                                      onMoveDown,
                                      readOnly
                                    }: FormQuestionEditorProps) {
+  const {isDarkMode} = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showLabels, setShowLabels] = useState(false);
@@ -54,13 +56,13 @@ export function FormQuestionEditor({
       'text-short': 'Texto corto',
       'text-long': 'Texto largo'
     };
-    return `${text}${text.length > 50 ? '...' : ''} • ${typeLabels[question.type]}`;
+    return `${text}${text. length > 50 ? '...' : ''} • ${typeLabels[question.type]}`;
   };
 
   const handleAddOption = () => {
-    if (!hasOptions) return;
+    if (! hasOptions) return;
     const currentOptions = (question as EditablePatchSelectOne | EditablePatchSelectMultiple).options || [];
-    const newOption: EditablePatchFormOption = {
+    const newOption:  EditablePatchFormOption = {
       id: undefined,
       text: '',
       image: undefined
@@ -73,12 +75,12 @@ export function FormQuestionEditor({
 
   const handleOptionChange = (optionIndex: number, field: keyof EditablePatchFormOption, value: unknown) => {
     if (!hasOptions) return;
-    const currentOptions = [...(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options];
-    currentOptions[optionIndex] = {...currentOptions[optionIndex], [field]: value};
-    onChange({...question, options: currentOptions} as EditablePatchFormQuestion);
+    const currentOptions = [... (question as EditablePatchSelectOne | EditablePatchSelectMultiple).options];
+    currentOptions[optionIndex] = {... currentOptions[optionIndex], [field]: value};
+    onChange({... question, options: currentOptions} as EditablePatchFormQuestion);
   };
 
-  const handleRemoveOption = (optionIndex: number) => {
+  const handleRemoveOption = (optionIndex:  number) => {
     if (!hasOptions) return;
     const currentOptions = (question as EditablePatchSelectOne | EditablePatchSelectMultiple).options.filter((_, i) => i !== optionIndex);
     onChange({...question, options: currentOptions} as EditablePatchFormQuestion);
@@ -92,19 +94,19 @@ export function FormQuestionEditor({
       label: '',
     };
     onChange({
-      ...question,
+      ... question,
       labels: [...currentLabels, newLabel]
     } as EditablePatchFormQuestion);
   };
 
-  const handleLabelChange = (labelIndex: number, field: keyof SliderLabel, value: unknown) => {
+  const handleLabelChange = (labelIndex:  number, field: keyof SliderLabel, value: unknown) => {
     if (!hasLabels) return;
     const currentLabels = [...(question as EditablePatchSlider).labels];
-    currentLabels[labelIndex] = {...currentLabels[labelIndex], [field]: value};
+    currentLabels[labelIndex] = {... currentLabels[labelIndex], [field]: value};
     onChange({...question, labels: currentLabels} as EditablePatchFormQuestion);
   };
 
-  const handleRemoveLabel = (labelIndex: number) => {
+  const handleRemoveLabel = (labelIndex:  number) => {
     if (!hasLabels) return;
     const currentLabels = (question as EditablePatchSlider).labels.filter((_, i) => i !== labelIndex);
     onChange({...question, labels: currentLabels} as EditablePatchFormQuestion);
@@ -112,27 +114,27 @@ export function FormQuestionEditor({
 
   const renderTypeSpecificFields = () => {
     switch (question.type) {
-      case 'select-multiple': {
+      case 'select-multiple':  {
         const smq = question as EditablePatchSelectMultiple;
         return (
           <>
-            <div className={styles.row}>
+            <div className={styles. row}>
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Mínimo de selecciones</label>
+                <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Mínimo de selecciones</label>
                 <input
                   type="number"
                   placeholder="0"
                   value={smq.min || 0}
                   onChange={(e) => onChange({
                     ...question,
-                    min: parseInt(e.target.value) || 0
+                    min: parseInt(e.target. value) || 0
                   } as EditablePatchFormQuestion)}
-                  className={styles.input}
+                  className={`${styles.input} ${isDarkMode ? '' : styles.inputLight}`}
                   disabled={readOnly}
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Máximo de selecciones</label>
+                <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Máximo de selecciones</label>
                 <input
                   type="number"
                   placeholder="0"
@@ -141,16 +143,16 @@ export function FormQuestionEditor({
                     ...question,
                     max: parseInt(e.target.value) || 0
                   } as EditablePatchFormQuestion)}
-                  className={styles.input}
+                  className={`${styles.input} ${isDarkMode ?  '' : styles.inputLight}`}
                   disabled={readOnly}
                 />
               </div>
             </div>
-            <label className={styles.checkboxLabel}>
+            <label className={`${styles.checkboxLabel} ${isDarkMode ?  '' : styles.checkboxLabelLight}`}>
               <input
                 type="checkbox"
                 checked={smq.other}
-                onChange={(e) => onChange({...question, other: e.target.checked} as EditablePatchFormQuestion)}
+                onChange={(e) => onChange({... question, other: e.target. checked} as EditablePatchFormQuestion)}
                 disabled={readOnly}
               />
               Permitir opción "Otro"
@@ -161,11 +163,11 @@ export function FormQuestionEditor({
       case 'select-one': {
         const soq = question as EditablePatchSelectOne;
         return (
-          <label className={styles.checkboxLabel}>
+          <label className={`${styles.checkboxLabel} ${isDarkMode ?  '' : styles.checkboxLabelLight}`}>
             <input
               type="checkbox"
               checked={soq.other}
-              onChange={(e) => onChange({...question, other: e.target.checked} as EditablePatchFormQuestion)}
+              onChange={(e) => onChange({...question, other: e.target. checked} as EditablePatchFormQuestion)}
               disabled={readOnly}
             />
             Permitir opción "Otro"
@@ -176,9 +178,9 @@ export function FormQuestionEditor({
         const slq = question as EditablePatchSlider;
         return (
           <>
-            <div className={styles.row}>
+            <div className={styles. row}>
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Valor mínimo</label>
+                <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Valor mínimo</label>
                 <input
                   type="number"
                   placeholder="0"
@@ -187,12 +189,12 @@ export function FormQuestionEditor({
                     ...question,
                     min: parseInt(e.target.value) || 0
                   } as EditablePatchFormQuestion)}
-                  className={styles.input}
+                  className={`${styles.input} ${isDarkMode ?  '' : styles.inputLight}`}
                   disabled={readOnly}
                 />
               </div>
-              <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Valor máximo</label>
+              <div className={styles. inputGroup}>
+                <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Valor máximo</label>
                 <input
                   type="number"
                   placeholder="100"
@@ -201,37 +203,37 @@ export function FormQuestionEditor({
                     ...question,
                     max: parseInt(e.target.value) || 100
                   } as EditablePatchFormQuestion)}
-                  className={styles.input}
+                  className={`${styles.input} ${isDarkMode ? '' : styles.inputLight}`}
                   disabled={readOnly}
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Incremento</label>
+                <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Incremento</label>
                 <input
                   type="number"
                   placeholder="1"
                   value={slq.step || 1}
                   onChange={(e) => onChange({
-                    ...question,
+                    ... question,
                     step: parseInt(e.target.value) || 1
                   } as EditablePatchFormQuestion)}
-                  className={styles.input}
+                  className={`${styles.input} ${isDarkMode ? '' :  styles.inputLight}`}
                   disabled={readOnly}
                 />
               </div>
             </div>
-            <div className={styles.sliderPreview}>
-              <span className={styles.previewLabel}>Vista previa:</span>
+            <div className={`${styles.sliderPreview} ${isDarkMode ? '' : styles.sliderPreviewLight}`}>
+              <span className={`${styles.previewLabel} ${isDarkMode ?  '' : styles.previewLabelLight}`}>Vista previa: </span>
               <input
                 type="range"
                 min={slq.min}
                 max={slq.max}
-                step={slq.step}
+                step={slq. step}
                 disabled
                 className={styles.sliderDemo}
 
               />
-              <div className={styles.sliderValues}>
+              <div className={`${styles.sliderValues} ${isDarkMode ? '' :  styles.sliderValuesLight}`}>
                 <span>{slq.min}</span>
                 <span>{slq.max}</span>
               </div>
@@ -244,20 +246,20 @@ export function FormQuestionEditor({
         const tq = question as EditablePatchTextLong | EditablePatchTextShort;
         return (
           <>
-            <div className={styles.inputGroup}>
-              <label className={styles.inputLabel}>Placeholder</label>
+            <div className={styles. inputGroup}>
+              <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles. inputLabelLight}`}>Placeholder</label>
               <input
                 type="text"
                 placeholder="Ej: Escribe tu respuesta aquí"
                 value={tq.placeholder || ''}
-                onChange={(e) => onChange({...question, placeholder: e.target.value} as EditablePatchFormQuestion)}
-                className={styles.input}
+                onChange={(e) => onChange({... question, placeholder: e.target. value} as EditablePatchFormQuestion)}
+                className={`${styles.input} ${isDarkMode ? '' : styles.inputLight}`}
                 disabled={readOnly}
               />
             </div>
             <div className={styles.row}>
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Longitud mínima</label>
+                <label className={`${styles.inputLabel} ${isDarkMode ? '' :  styles.inputLabelLight}`}>Longitud mínima</label>
                 <input
                   type="number"
                   placeholder="0"
@@ -266,12 +268,12 @@ export function FormQuestionEditor({
                     ...question,
                     minLength: parseInt(e.target.value) || 0
                   } as EditablePatchFormQuestion)}
-                  className={styles.input}
+                  className={`${styles.input} ${isDarkMode ? '' : styles. inputLight}`}
                   disabled={readOnly}
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Longitud máxima</label>
+                <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Longitud máxima</label>
                 <input
                   type="number"
                   placeholder="0"
@@ -280,7 +282,7 @@ export function FormQuestionEditor({
                     ...question,
                     maxLength: parseInt(e.target.value) || 0
                   } as EditablePatchFormQuestion)}
-                  className={styles.input}
+                  className={`${styles.input} ${isDarkMode ? '' : styles. inputLight}`}
                   disabled={readOnly}
                 />
               </div>
@@ -294,24 +296,24 @@ export function FormQuestionEditor({
   };
 
   return (
-    <div className={`${styles.card} ${isExpanded ? styles.expanded : ''}`}>
+    <div className={`${styles.card} ${isExpanded ? styles.expanded : ''} ${isDarkMode ? '' : styles.cardLight}`}>
       <div
-        className={styles.cardHeader}
+        className={`${styles.cardHeader} ${isDarkMode ? '' : styles.cardHeaderLight}`}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className={styles.headerLeft}>
           <FontAwesomeIcon
             icon={isExpanded ? faChevronUp : faChevronDown}
-            className={styles.chevronIcon}
+            className={`${styles.chevronIcon} ${isDarkMode ? '' : styles.chevronIconLight}`}
           />
           <div className={styles.headerInfo}>
-            <h5>Pregunta {index + 1}</h5>
-            {!isExpanded && (
-              <p className={styles.summary}>{getQuestionSummary()}</p>
+            <h5 className={isDarkMode ? '' : styles.titleLight}>Pregunta {index + 1}</h5>
+            {! isExpanded && (
+              <p className={`${styles.summary} ${isDarkMode ? '' :  styles.summaryLight}`}>{getQuestionSummary()}</p>
             )}
           </div>
         </div>
-        <div className={styles.headerActions}>
+        <div className={styles. headerActions}>
           <div className={styles.actionGroup}>
             {onMoveUp && (
               <button
@@ -320,7 +322,7 @@ export function FormQuestionEditor({
                   e.stopPropagation();
                   onMoveUp();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ? '' : styles.iconButtonLight}`}
                 title="Mover arriba"
                 disabled={readOnly}
               >
@@ -334,7 +336,7 @@ export function FormQuestionEditor({
                   e.stopPropagation();
                   onMoveDown();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ? '' : styles.iconButtonLight}`}
                 title="Mover abajo"
                 disabled={readOnly}
               >
@@ -344,7 +346,7 @@ export function FormQuestionEditor({
           </div>
 
           {(onMoveUp || onMoveDown) && (onCopy || onDuplicate) && (
-            <div className={styles.actionSeparator}/>
+            <div className={`${styles.actionSeparator} ${isDarkMode ? '' : styles.actionSeparatorLight}`}/>
           )}
           <div className={styles.actionGroup}>
             {onCopy && (
@@ -354,7 +356,7 @@ export function FormQuestionEditor({
                   e.stopPropagation();
                   onCopy();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ? '' : styles.iconButtonLight}`}
                 title="Copiar a otro formulario"
                 disabled={readOnly}
               >
@@ -365,10 +367,10 @@ export function FormQuestionEditor({
               <button
                 type="button"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e. stopPropagation();
                   onDuplicate();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ? '' : styles.iconButtonLight}`}
                 title="Duplicar pregunta"
                 disabled={readOnly}
               >
@@ -377,7 +379,7 @@ export function FormQuestionEditor({
             )}
           </div>
           {(onCopy || onDuplicate) && (
-            <div className={styles.actionSeparator}/>
+            <div className={`${styles.actionSeparator} ${isDarkMode ? '' : styles.actionSeparatorLight}`}/>
           )}
           <div className={styles.actionGroup}>
             <button
@@ -386,7 +388,7 @@ export function FormQuestionEditor({
                 e.stopPropagation();
                 onRemove();
               }}
-              className={`${styles.iconButton} ${styles.removeButton}`}
+              className={`${styles.iconButton} ${styles.removeButton} ${isDarkMode ? '' : styles.removeButtonLight}`}
               title="Eliminar pregunta"
               disabled={readOnly}
             >
@@ -400,7 +402,7 @@ export function FormQuestionEditor({
         <div className={styles.cardBody}>
           <ImageEditor
             image={question.image}
-            onChange={(imageState: ImageState) => {
+            onChange={(imageState:  ImageState) => {
               onChange({...question, image: imageState} as EditablePatchFormQuestion);
             }}
             label="Imagen de la pregunta"
@@ -408,33 +410,33 @@ export function FormQuestionEditor({
           />
 
           <div className={styles.inputGroup}>
-            <label className={styles.inputLabel}>Categoría</label>
+            <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles. inputLabelLight}`}>Categoría</label>
             <input
               type="text"
               placeholder="Ej: Información personal"
               value={question.category || ''}
               onChange={(e) => onChange({...question, category: e.target.value} as EditablePatchFormQuestion)}
-              className={styles.input}
+              className={`${styles.input} ${isDarkMode ? '' :  styles.inputLight}`}
               disabled={readOnly}
             />
           </div>
 
           <div className={styles.inputGroup}>
-            <label className={styles.inputLabel}>Texto de la pregunta</label>
+            <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Texto de la pregunta</label>
             <textarea
               placeholder="Escribe tu pregunta aquí..."
               value={question.text || ''}
               onChange={(e) => onChange({...question, text: e.target.value} as EditablePatchFormQuestion)}
-              className={styles.textarea}
+              className={`${styles.textarea} ${isDarkMode ? '' : styles.textareaLight}`}
               rows={2}
               disabled={readOnly}
             />
           </div>
 
-          <div className={styles.inputGroup}>
-            <label className={styles.inputLabel}>Tipo de pregunta</label>
+          <div className={styles. inputGroup}>
+            <label className={`${styles.inputLabel} ${isDarkMode ? '' : styles.inputLabelLight}`}>Tipo de pregunta</label>
             <select
-              value={question.type}
+              value={question. type}
               onChange={(e) => {
                 const baseQuestion = {
                   id: question.id,
@@ -443,7 +445,7 @@ export function FormQuestionEditor({
                   image: question.image
                 };
 
-                let newQuestion: EditablePatchFormQuestion;
+                let newQuestion:  EditablePatchFormQuestion;
                 switch (e.target.value) {
                   case 'select-one':
                     newQuestion = {
@@ -476,8 +478,8 @@ export function FormQuestionEditor({
                     break;
                   case 'text-short':
                     newQuestion = {
-                      ...baseQuestion,
-                      type: 'text-short',
+                      ... baseQuestion,
+                      type:  'text-short',
                       placeholder: '',
                       minLength: 0,
                       maxLength: 100
@@ -499,7 +501,7 @@ export function FormQuestionEditor({
 
               }}
               disabled={readOnly}
-              className={styles.select}
+              className={`${styles.select} ${isDarkMode ? '' : styles.selectLight}`}
             >
               <option value="select-one">Selección única</option>
               <option value="select-multiple">Selección múltiple</option>
@@ -516,14 +518,19 @@ export function FormQuestionEditor({
               <div className={styles.optionsHeader}>
                 <button
                   type="button"
-                  className={styles.toggleButton}
+                  className={`${styles.toggleButton} ${isDarkMode ? '' : styles.toggleButtonLight}`}
                   onClick={() => setShowOptions(!showOptions)}
                   disabled={readOnly}
                 >
                   <span className={`${styles.arrow} ${showOptions ? styles.arrowExpanded : ''}`}>▼</span>
-                  <span>Opciones ({(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?.length || 0})</span>
+                  <span>Opciones ({(question as EditablePatchSelectOne | EditablePatchSelectMultiple).options?. length || 0})</span>
                 </button>
-                <button type="button" onClick={handleAddOption} className={styles.addButton}  disabled={readOnly}>
+                <button
+                  type="button"
+                  onClick={handleAddOption}
+                  className={`${styles.addButton} ${isDarkMode ? '' : styles.addButtonLight}`}
+                  disabled={readOnly}
+                >
                   + Agregar opción
                 </button>
               </div>
@@ -534,13 +541,13 @@ export function FormQuestionEditor({
                     const typedOption = option as EditablePatchFormOption;
 
                     return (
-                      <div key={typedOption.id ?? `new-option-${optionIndex}`} className={styles.optionCard}>
+                      <div key={typedOption.id ??  `new-option-${optionIndex}`} className={`${styles.optionCard} ${isDarkMode ? '' :  styles.optionCardLight}`}>
                         <div className={styles.optionHeader}>
-                          <span className={styles.optionNumber}>Opción {optionIndex + 1}</span>
+                          <span className={`${styles.optionNumber} ${isDarkMode ? '' :  styles.optionNumberLight}`}>Opción {optionIndex + 1}</span>
                           <button
                             type="button"
                             onClick={() => handleRemoveOption(optionIndex)}
-                            className={styles.removeOptionButton}
+                            className={`${styles.removeOptionButton} ${isDarkMode ? '' : styles.removeOptionButtonLight}`}
                             disabled={readOnly}
                           >
                             ✕
@@ -561,7 +568,7 @@ export function FormQuestionEditor({
                           placeholder="Texto de la opción"
                           value={typedOption.text || ''}
                           onChange={(e) => handleOptionChange(optionIndex, 'text', e.target.value)}
-                          className={styles.input}
+                          className={`${styles.input} ${isDarkMode ? '' :  styles.inputLight}`}
                           disabled={readOnly}
                         />
                       </div>
@@ -577,28 +584,33 @@ export function FormQuestionEditor({
               <div className={styles.labelsHeader}>
                 <button
                   type="button"
-                  className={styles.toggleButton}
+                  className={`${styles.toggleButton} ${isDarkMode ? '' : styles.toggleButtonLight}`}
                   onClick={() => setShowLabels(!showLabels)}
                   disabled={readOnly}
                 >
                   <span className={`${styles.arrow} ${showLabels ? styles.arrowExpanded : ''}`}>▼</span>
                   <span>Etiquetas del slider ({(question as EditablePatchSlider).labels?.length || 0})</span>
                 </button>
-                <button type="button" onClick={handleAddLabel} className={styles.addButton} disabled={readOnly}>
+                <button
+                  type="button"
+                  onClick={handleAddLabel}
+                  className={`${styles.addButton} ${isDarkMode ? '' : styles.addButtonLight}`}
+                  disabled={readOnly}
+                >
                   + Agregar etiqueta
                 </button>
               </div>
 
               {showLabels && (
-                <div className={styles.labelsList}>
+                <div className={styles. labelsList}>
                   {(question as EditablePatchSlider).labels?.map((label, labelIndex) => (
-                    <div key={labelIndex} className={styles.labelCard}>
+                    <div key={labelIndex} className={`${styles.labelCard} ${isDarkMode ?  '' : styles.labelCardLight}`}>
                       <input
                         type="number"
                         placeholder="Valor"
-                        value={label.number}
+                        value={label. number}
                         onChange={(e) => handleLabelChange(labelIndex, 'number', parseInt(e.target.value) || 0)}
-                        className={styles.labelNumberInput}
+                        className={`${styles.labelNumberInput} ${isDarkMode ? '' : styles.labelNumberInputLight}`}
                         disabled={readOnly}
                       />
                       <input
@@ -606,13 +618,13 @@ export function FormQuestionEditor({
                         placeholder="Etiqueta"
                         value={label.label}
                         onChange={(e) => handleLabelChange(labelIndex, 'label', e.target.value)}
-                        className={styles.labelTextInput}
+                        className={`${styles.labelTextInput} ${isDarkMode ? '' : styles.labelTextInputLight}`}
                         disabled={readOnly}
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveLabel(labelIndex)}
-                        className={styles.removeLabelButton}
+                        className={`${styles.removeLabelButton} ${isDarkMode ? '' : styles.removeLabelButtonLight}`}
                         disabled={readOnly}
                       >
                         ✕

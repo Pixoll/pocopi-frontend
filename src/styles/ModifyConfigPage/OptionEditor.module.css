@@ -1,15 +1,25 @@
 .optionItem {
     background: var(--card-light);
     padding: 0.875rem;
-    border-radius: 6px;
+    border-radius:  6px;
     margin-bottom: 0.625rem;
     border: 1px solid var(--border-color);
     transition: all 0.2s;
 }
 
+.optionItemLight {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
 .optionItem:hover {
     border-color: var(--accent-teal);
     box-shadow: 0 2px 4px rgba(0, 139, 139, 0.1);
+}
+
+.optionItemLight:hover {
+    border-color: #008b8b;
+    box-shadow: 0 2px 4px rgba(0, 139, 139, 0.15);
 }
 
 .optionHeader {
@@ -20,11 +30,15 @@
 }
 
 .optionTitle {
-    font-weight: 600;
+    font-weight:  600;
     color: var(--text-secondary);
     font-size: 0.85rem;
-    text-transform: uppercase;
+    text-transform:  uppercase;
     letter-spacing: 0.5px;
+}
+
+.optionTitleLight {
+    color: #6b7280;
 }
 
 .headerActions {
@@ -34,8 +48,8 @@
 }
 
 .inlineCheckbox {
-    display: flex;
-    align-items: center;
+    display:  flex;
+    align-items:  center;
     gap: 0.375rem;
     cursor: pointer;
     padding: 0.25rem 0.5rem;
@@ -45,6 +59,10 @@
 
 .inlineCheckbox:hover {
     background: rgba(0, 139, 139, 0.05);
+}
+
+.inlineCheckboxLight:hover {
+    background: rgba(0, 139, 139, 0.08);
 }
 
 .inlineCheckbox input[type="checkbox"] {
@@ -62,6 +80,10 @@
     white-space: nowrap;
 }
 
+.correctLabelLight {
+    color:  #2c3e50;
+}
+
 .smallRemoveButton {
     background: var(--danger);
     color: white;
@@ -70,20 +92,28 @@
     border-radius: 4px;
     font-size: 1.25rem;
     line-height: 1;
-    cursor: pointer;
+    cursor:  pointer;
     transition: all 0.2s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     min-width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height:  28px;
+    display:  flex;
+    align-items:  center;
+    justify-content:  center;
+}
+
+.smallRemoveButtonLight {
+    background: #e74c3c;
 }
 
 .smallRemoveButton:hover {
     background: var(--danger-hover);
     transform: scale(1.05);
     box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+}
+
+.smallRemoveButtonLight:hover {
+    background: #c0392b;
 }
 
 .optionContent {
@@ -104,12 +134,27 @@
     color: var(--text-primary);
 }
 
+.inputLight {
+    background: #ffffff;
+    color: #2c3e50;
+    border-color: #d0d0d0;
+}
+
 .input:focus {
     outline: none;
     border-color: var(--accent-teal);
     box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.1);
 }
 
+.inputLight:focus {
+    border-color: #008b8b;
+    box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.15);
+}
+
 .input::placeholder {
     color: var(--text-muted);
+}
+
+.inputLight::placeholder {
+    color: #9ca3af;
 }

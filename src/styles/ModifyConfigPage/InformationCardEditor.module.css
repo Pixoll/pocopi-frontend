@@ -7,6 +7,12 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.cardLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .cardHeader {
     display: flex;
     justify-content: space-between;
@@ -16,11 +22,20 @@
     border-bottom: 1px solid var(--border-color);
 }
 
+.cardHeaderLight {
+    border-bottom: 1px solid #dee2e6;
+}
+
 .cardHeader h4,
 .cardHeader h5 {
     margin: 0;
     color: var(--text-primary);
     font-weight: 600;
+}
+
+.cardHeaderLight h4,
+.cardHeaderLight h5 {
+    color: #212529;
 }
 
 .removeButton {
@@ -55,6 +70,12 @@
     margin-bottom: 0.75rem;
 }
 
+.inputLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #212529;
+}
+
 .input:focus {
     outline: none;
     border-color: var(--accent-teal);
@@ -63,6 +84,10 @@
 
 .input::placeholder {
     color: var(--text-muted);
+}
+
+.inputLight::placeholder {
+    color: #adb5bd;
 }
 
 .textarea {
@@ -81,6 +106,12 @@
     min-height: 100px;
 }
 
+.textareaLight {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #212529;
+}
+
 .textarea:focus {
     outline: none;
     border-color: var(--accent-teal);
@@ -89,4 +120,8 @@
 
 .textarea::placeholder {
     color: var(--text-muted);
+}
+
+.textareaLight::placeholder {
+    color: #adb5bd;
 }

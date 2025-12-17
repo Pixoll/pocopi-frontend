@@ -7,12 +7,26 @@
     transition: all 0.2s ease;
 }
 
+.cardLight {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
 .card:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
+.cardLight:hover {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
 .card.expanded {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cardLight.expanded {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .cardHeader {
@@ -26,19 +40,31 @@
     border-bottom: 1px solid transparent;
 }
 
+.cardHeaderLight {
+    border-bottom-color: transparent;
+}
+
 .cardHeader:hover {
     background-color: var(--input-bg);
 }
 
-.card.expanded .cardHeader {
+.cardHeaderLight:hover {
+    background-color: #f9fafb;
+}
+
+.card.expanded.cardHeader {
     border-bottom-color: var(--border-color);
+}
+
+.cardLight.expanded.cardHeader {
+    border-bottom-color: #e0e0e0;
 }
 
 .headerLeft {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex: 1;
+    flex:  1;
     min-width: 0;
 }
 
@@ -47,6 +73,10 @@
     font-size: 14px;
     transition: transform 0.2s ease;
     flex-shrink: 0;
+}
+
+.chevronIconLight {
+    color: #008b8b;
 }
 
 .headerInfo {
@@ -61,13 +91,21 @@
     color: var(--text-primary);
 }
 
+.titleLight {
+    color: #2c3e50 !important;
+}
+
 .summary {
-    margin: 4px 0 0 0;
+    margin:  4px 0 0 0;
     font-size: 0.875rem;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.summaryLight {
+    color: #6b7280;
 }
 
 .headerActions {
@@ -83,10 +121,14 @@
 }
 
 .actionSeparator {
-    width: 1px;
-    height: 24px;
+    width:  1px;
+    height:  24px;
     background-color: var(--border-color);
     margin: 0 0.75rem;
+}
+
+.actionSeparatorLight {
+    background-color: #d1d5db;
 }
 
 .iconButton {
@@ -105,9 +147,18 @@
     min-height: 32px;
 }
 
+.iconButtonLight {
+    color: #6b7280;
+}
+
 .iconButton:hover {
     background-color: var(--input-bg);
     color: var(--text-primary);
+}
+
+.iconButtonLight:hover {
+    background-color:  #f3f4f6;
+    color: #2c3e50;
 }
 
 .iconButton:disabled {
@@ -120,13 +171,27 @@
     color: var(--text-secondary);
 }
 
+.iconButtonLight:disabled:hover {
+    background-color:  transparent;
+    color: #6b7280;
+}
+
 .iconButton.removeButton {
     color: var(--danger);
+}
+
+.removeButtonLight {
+    color: #e74c3c;
 }
 
 .iconButton.removeButton:hover {
     background-color: rgba(239, 68, 68, 0.1);
     color: var(--danger-hover);
+}
+
+.removeButtonLight:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #c0392b ! important;
 }
 
 .duplicateIcon {
@@ -146,11 +211,11 @@
 @keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform:  translateY(-10px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform:  translateY(0);
     }
 }
 
@@ -164,6 +229,10 @@
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-primary);
+}
+
+.labelLight {
+    color: #2c3e50;
 }
 
 .textarea {
@@ -181,14 +250,29 @@
     min-height: 80px;
 }
 
+.textareaLight {
+    background: #ffffff;
+    color: #2c3e50;
+    border-color: #d0d0d0;
+}
+
 .textarea:focus {
     outline: none;
     border-color: var(--accent-teal);
     box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.1);
 }
 
+.textareaLight:focus {
+    border-color: #008b8b;
+    box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.15);
+}
+
 .textarea::placeholder {
     color: var(--text-muted);
+}
+
+.textareaLight::placeholder {
+    color: #9ca3af;
 }
 
 .section {
@@ -199,20 +283,29 @@
     border: 1px solid var(--border-color);
 }
 
+.sectionLight {
+    background:  #f9fafb;
+    border-color: #e0e0e0;
+}
+
 .sectionHeader {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+    align-items:  center;
+    margin-bottom:  1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
 .sectionHeader h6 {
-    margin: 0;
+    margin:  0;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-primary);
+}
+
+.sectionTitleLight {
+    color: #2c3e50 !important;
 }
 
 .addButton {
@@ -232,10 +325,18 @@
     gap: 6px;
 }
 
+.addButtonLight {
+    background: #10b981;
+}
+
 .addButton:hover {
-    background: var(--success-hover);
+    background:  var(--success-hover);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.addButtonLight:hover {
+    background:  #059669;
 }
 
 .emptyState {
@@ -246,6 +347,11 @@
     border: 1px dashed var(--border-color);
 }
 
+.emptyStateLight {
+    background: #ffffff;
+    border-color: #d1d5db;
+}
+
 .emptyState p {
     margin: 0 0 0.25rem 0;
     font-size: 0.9rem;
@@ -253,9 +359,17 @@
     font-weight: 500;
 }
 
+.emptyTextLight {
+    color: #2c3e50 !important;
+}
+
 .emptyState small {
     font-size: 0.85rem;
     color: var(--text-muted);
+}
+
+.emptySmallLight {
+    color: #6b7280 !important;
 }
 
 .optionsList {
@@ -275,8 +389,16 @@
     transition: background 0.2s;
 }
 
+.checkboxLabelLight {
+    color: #2c3e50;
+}
+
 .checkboxLabel:hover {
-    background: rgba(0, 139, 139, 0.05);
+    background:  rgba(0, 139, 139, 0.05);
+}
+
+.checkboxLabelLight:hover {
+    background: rgba(0, 139, 139, 0.08);
 }
 
 .checkboxLabel input[type="checkbox"] {
@@ -288,6 +410,10 @@
 
 .checkboxLabel span {
     color: var(--text-secondary);
+}
+
+.checkboxLabelLight span {
+    color: #6b7280;
 }
 
 @media (max-width: 768px) {
@@ -304,7 +430,7 @@
     }
 
     .summary {
-        font-size: 0.8rem;
+        font-size:  0.8rem;
     }
 
     .sectionHeader {

@@ -5,16 +5,17 @@ import { OptionEditor } from "@/components/ModifyConfigPage/OptionEditor.tsx";
 import type {EditablePatchOption, EditablePatchQuestion, ImageState} from "@/utils/imageCollector.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp, faTrash, faPlus, faCopy, faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import {useTheme} from "@/hooks/useTheme.ts";
 
 type QuestionEditorProps = {
   question: EditablePatchQuestion;
   index: number;
   onChange: (question: EditablePatchQuestion) => void;
   onRemove: () => void;
-  onDuplicate?: () => void;
+  onDuplicate?:  () => void;
   onCopy?: () => void;
   onMoveUp?: () => void;
-  onMoveDown?: () => void;
+  onMoveDown?:  () => void;
 }
 
 export function QuestionEditor({
@@ -27,10 +28,11 @@ export function QuestionEditor({
                                  onMoveUp,
                                  onMoveDown
                                }: QuestionEditorProps) {
+  const {isDarkMode} = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const addOption = () => {
-    const newOption: EditablePatchOption = {
+    const newOption:  EditablePatchOption = {
       id: undefined,
       text: '',
       correct: false,
@@ -47,7 +49,7 @@ export function QuestionEditor({
   };
 
   const removeOption = (idx: number) => {
-    const newOptions = question.options.filter((_, i) => i !== idx);
+    const newOptions = question.options. filter((_, i) => i !== idx);
     onChange({ ...question, options: newOptions });
   };
 
@@ -60,20 +62,20 @@ export function QuestionEditor({
   };
 
   return (
-    <div className={`${styles.card} ${isExpanded ? styles.expanded : ''}`}>
+    <div className={`${styles.card} ${isExpanded ? styles.expanded : ''} ${isDarkMode ? '' : styles.cardLight}`}>
       <div
-        className={styles.cardHeader}
+        className={`${styles.cardHeader} ${isDarkMode ? '' : styles.cardHeaderLight}`}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className={styles.headerLeft}>
           <FontAwesomeIcon
             icon={isExpanded ? faChevronUp : faChevronDown}
-            className={styles.chevronIcon}
+            className={`${styles.chevronIcon} ${isDarkMode ? '' : styles.chevronIconLight}`}
           />
           <div className={styles.headerInfo}>
-            <h5>Pregunta {index + 1}</h5>
+            <h5 className={isDarkMode ? '' : styles.titleLight}>Pregunta {index + 1}</h5>
             {!isExpanded && (
-              <p className={styles.summary}>{getQuestionSummary()}</p>
+              <p className={`${styles.summary} ${isDarkMode ? '' : styles.summaryLight}`}>{getQuestionSummary()}</p>
             )}
           </div>
         </div>
@@ -85,7 +87,7 @@ export function QuestionEditor({
                   e.stopPropagation();
                   onMoveUp();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ? '' : styles.iconButtonLight}`}
                 type="button"
                 title="Mover arriba"
               >
@@ -98,7 +100,7 @@ export function QuestionEditor({
                   e.stopPropagation();
                   onMoveDown();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ? '' : styles.iconButtonLight}`}
                 type="button"
                 title="Mover abajo"
               >
@@ -108,17 +110,17 @@ export function QuestionEditor({
           </div>
 
           {(onMoveUp || onMoveDown) && (onCopy || onDuplicate) && (
-            <div className={styles.actionSeparator} />
+            <div className={`${styles.actionSeparator} ${isDarkMode ? '' : styles.actionSeparatorLight}`} />
           )}
 
           <div className={styles.actionGroup}>
             {onCopy && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e. stopPropagation();
                   onCopy();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ?  '' : styles.iconButtonLight}`}
                 type="button"
                 title="Copiar pregunta"
               >
@@ -131,18 +133,18 @@ export function QuestionEditor({
                   e.stopPropagation();
                   onDuplicate();
                 }}
-                className={styles.iconButton}
+                className={`${styles.iconButton} ${isDarkMode ? '' : styles.iconButtonLight}`}
                 type="button"
                 title="Duplicar pregunta"
               >
                 <FontAwesomeIcon icon={faCopy} />
-                <FontAwesomeIcon icon={faCopy} className={styles.duplicateIcon} />
+                <FontAwesomeIcon icon={faCopy} className={styles. duplicateIcon} />
               </button>
             )}
           </div>
 
           {(onCopy || onDuplicate) && (
-            <div className={styles.actionSeparator} />
+            <div className={`${styles.actionSeparator} ${isDarkMode ? '' : styles.actionSeparatorLight}`} />
           )}
 
           <div className={styles.actionGroup}>
@@ -151,7 +153,7 @@ export function QuestionEditor({
                 e.stopPropagation();
                 onRemove();
               }}
-              className={`${styles.iconButton} ${styles.removeButton}`}
+              className={`${styles.iconButton} ${styles.removeButton} ${isDarkMode ? '' : styles.removeButtonLight}`}
               type="button"
               title="Eliminar pregunta"
             >
@@ -164,12 +166,12 @@ export function QuestionEditor({
       {isExpanded && (
         <div className={styles.cardBody}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>Texto de la pregunta</label>
+            <label className={`${styles.label} ${isDarkMode ? '' : styles.labelLight}`}>Texto de la pregunta</label>
             <textarea
               placeholder="Escribe el texto de la pregunta..."
               value={question.text || ''}
               onChange={(e) => onChange({ ...question, text: e.target.value })}
-              className={styles.textarea}
+              className={`${styles.textarea} ${isDarkMode ? '' : styles.textareaLight}`}
               rows={3}
             />
           </div>
@@ -177,13 +179,13 @@ export function QuestionEditor({
           <div className={styles.formGroup}>
             <ImageEditor
               image={question.image}
-              onChange={(imageState: ImageState) => onChange({ ...question, image: imageState })}
+              onChange={(imageState:  ImageState) => onChange({ ...question, image: imageState })}
               label="Imagen de la pregunta"
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.checkboxLabel}>
+            <label className={`${styles.checkboxLabel} ${isDarkMode ?  '' : styles.checkboxLabelLight}`}>
               <input
                 type="checkbox"
                 checked={question.randomizeOptions || false}
@@ -193,29 +195,29 @@ export function QuestionEditor({
             </label>
           </div>
 
-          <div className={styles.section}>
+          <div className={`${styles.section} ${isDarkMode ? '' : styles.sectionLight}`}>
             <div className={styles.sectionHeader}>
-              <h6>Opciones de respuesta</h6>
+              <h6 className={isDarkMode ? '' : styles.sectionTitleLight}>Opciones de respuesta</h6>
               <button
                 type="button"
                 onClick={addOption}
-                className={styles.addButton}
+                className={`${styles.addButton} ${isDarkMode ? '' : styles.addButtonLight}`}
               >
                 <FontAwesomeIcon icon={faPlus} />
                 Añadir opción
               </button>
             </div>
 
-            {(!question.options || question.options.length === 0) ? (
-              <div className={styles.emptyState}>
-                <p>No hay opciones de respuesta</p>
-                <small>Añade al menos una opción</small>
+            {(! question.options || question.options. length === 0) ? (
+              <div className={`${styles.emptyState} ${isDarkMode ? '' : styles. emptyStateLight}`}>
+                <p className={isDarkMode ? '' : styles.emptyTextLight}>No hay opciones de respuesta</p>
+                <small className={isDarkMode ? '' : styles. emptySmallLight}>Añade al menos una opción</small>
               </div>
             ) : (
               <div className={styles.optionsList}>
                 {question.options.map((option, idx) => (
                   <OptionEditor
-                    key={option.id ?? `new-option-${idx}`}
+                    key={option.id ??  `new-option-${idx}`}
                     option={option}
                     index={idx}
                     onChange={(updated) => updateOption(idx, updated)}

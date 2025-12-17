@@ -1,21 +1,23 @@
 import type { ImageState } from "@/utils/imageCollector.ts";
 import React, { useState, useRef } from "react";
 import styles from "@/styles/ModifyConfigPage/ImageEditor.module.css";
+import {useTheme} from "@/hooks/useTheme.ts";
 
 type ImageEditorProps = {
   image?: ImageState | null;
-  onChange: (imageState: ImageState) => void;
+  onChange: (imageState:  ImageState) => void;
   label: string;
-  compact?: boolean;
+  compact?:  boolean;
 }
 
 export function ImageEditor({ image, onChange, label, compact = false }: ImageEditorProps) {
+  const {isDarkMode} = useTheme();
   const hasImage = image && image.type !== 'deleted';
   const [isExpanded, setIsExpanded] = useState(!!hasImage);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const compactFileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e:  React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -53,7 +55,7 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
     if (!image || image.type === 'deleted') return null;
 
     if (image.type === 'unchanged') {
-      return image.value?.url || null;
+      return image.value?. url || null;
     }
 
     if (image.type === 'new') {
@@ -64,39 +66,39 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
   };
 
   const previewUrl = getPreviewUrl();
-  const altText = image?.type === 'unchanged' ? image.value?.alt : '';
+  const altText = image?. type === 'unchanged' ? image.value?.alt : '';
 
   if (compact) {
     return (
-      <div className={styles.imageEditorCompact}>
+      <div className={`${styles.imageEditorCompact} ${isDarkMode ? '' : styles.imageEditorCompactLight}`}>
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className={styles.toggleButton}
+          className={`${styles.toggleButton} ${isDarkMode ? '' : styles.toggleButtonLight}`}
         >
-          <span className={styles.toggleText}>
+          <span className={`${styles.toggleText} ${isDarkMode ? '' : styles.toggleTextLight}`}>
             {previewUrl ? 'Imagen agregada' : 'Agregar imagen (opcional)'}
           </span>
-          <span className={`${styles.arrow} ${isExpanded ? styles.arrowExpanded : ''}`}>▼</span>
+          <span className={`${styles.arrow} ${isExpanded ? styles.arrowExpanded : ''} ${isDarkMode ? '' : styles.arrowLight}`}>▼</span>
         </button>
 
         {isExpanded && (
-          <div className={styles.compactContent}>
-            {previewUrl ? (
-              <div className={styles.imagePreviewWrapper}>
+          <div className={`${styles.compactContent} ${isDarkMode ? '' : styles.compactContentLight}`}>
+            {previewUrl ?  (
+              <div className={`${styles.imagePreviewWrapper} ${isDarkMode ? '' : styles.imagePreviewWrapperLight}`}>
                 <img src={previewUrl} alt={altText || ''} className={styles.previewImage} />
                 <div className={styles.imageOverlay}>
                   <button
                     type="button"
                     onClick={triggerFileInput}
-                    className={styles.changeButton}
+                    className={`${styles.changeButton} ${isDarkMode ? '' : styles.changeButtonLight}`}
                   >
                     Cambiar
                   </button>
                   <button
                     type="button"
                     onClick={handleRemoveImage}
-                    className={styles.removeButton}
+                    className={`${styles.removeButton} ${isDarkMode ? '' : styles.removeButtonLight}`}
                   >
                     Eliminar
                   </button>
@@ -106,7 +108,7 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
               <button
                 type="button"
                 onClick={triggerFileInput}
-                className={styles.uploadButton}
+                className={`${styles.uploadButton} ${isDarkMode ? '' : styles. uploadButtonLight}`}
               >
                 + Subir imagen
               </button>
@@ -125,34 +127,34 @@ export function ImageEditor({ image, onChange, label, compact = false }: ImageEd
   }
 
   return (
-    <div className={styles.imageEditor}>
-      {label && <label className={styles.label}>{label}</label>}
+    <div className={`${styles.imageEditor} ${isDarkMode ? '' : styles.imageEditorLight}`}>
+      {label && <label className={`${styles.label} ${isDarkMode ? '' : styles.labelLight}`}>{label}</label>}
 
       {previewUrl ? (
-        <div className={styles.imagePreviewWrapper}>
+        <div className={`${styles.imagePreviewWrapper} ${isDarkMode ? '' : styles.imagePreviewWrapperLight}`}>
           <img src={previewUrl} alt={altText || ''} className={styles.preview} />
           <div className={styles.imageOverlay}>
             <button
               type="button"
               onClick={triggerFileInput}
-              className={styles.changeButton}
+              className={`${styles.changeButton} ${isDarkMode ?  '' : styles.changeButtonLight}`}
             >
               Cambiar imagen
             </button>
             <button
               type="button"
               onClick={handleRemoveImage}
-              className={styles.removeButton}
+              className={`${styles.removeButton} ${isDarkMode ? '' : styles.removeButtonLight}`}
             >
               Eliminar
             </button>
           </div>
         </div>
       ) : (
-        <div className={styles.uploadArea} onClick={triggerFileInput}>
+        <div className={`${styles.uploadArea} ${isDarkMode ? '' : styles.uploadAreaLight}`} onClick={triggerFileInput}>
           <div className={styles.uploadContent}>
-            <span className={styles.uploadText}>Click para subir imagen</span>
-            <span className={styles.uploadHint}>PNG, JPG, GIF hasta 10MB</span>
+            <span className={`${styles.uploadText} ${isDarkMode ? '' :  styles.uploadTextLight}`}>Click para subir imagen</span>
+            <span className={`${styles.uploadHint} ${isDarkMode ? '' : styles.uploadHintLight}`}>PNG, JPG, GIF hasta 10MB</span>
           </div>
         </div>
       )}

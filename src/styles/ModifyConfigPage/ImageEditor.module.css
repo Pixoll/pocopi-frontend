@@ -7,6 +7,12 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.imageEditorLight {
+    background: #f9fafb;
+    border-color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
 .label {
     display: block;
     margin-bottom: 1rem;
@@ -15,19 +21,28 @@
     font-size: 0.95rem;
 }
 
+.labelLight {
+    color: #2c3e50;
+}
+
 .hiddenInput {
-    display: none;
+    display:  none;
 }
 
 .imagePreviewWrapper {
     position: relative;
     width: 100%;
     max-width: 400px;
-    border-radius: 6px;
-    overflow: hidden;
+    border-radius:  6px;
+    overflow:  hidden;
     background: var(--input-bg);
     border: 2px solid var(--border-color);
     cursor: pointer;
+}
+
+.imagePreviewWrapperLight {
+    background: #ffffff;
+    border-color: #d0d0d0;
 }
 
 .preview,
@@ -40,7 +55,7 @@
 }
 
 .imageOverlay {
-    position: absolute;
+    position:  absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -76,9 +91,18 @@
     color: var(--text-primary);
 }
 
+.changeButtonLight {
+    background: #008b8b;
+    color: #ffffff;
+}
+
 .changeButton:hover {
     background: var(--accent-teal-hover);
     transform: scale(1.05);
+}
+
+.changeButtonLight:hover {
+    background: #006666;
 }
 
 .removeButton {
@@ -86,9 +110,18 @@
     color: var(--text-primary);
 }
 
+.removeButtonLight {
+    background: #e74c3c;
+    color: #ffffff;
+}
+
 .removeButton:hover {
     background: var(--danger-hover);
     transform: scale(1.05);
+}
+
+.removeButtonLight:hover {
+    background: #c0392b;
 }
 
 .uploadArea {
@@ -103,15 +136,26 @@
     transition: all 0.3s ease;
 }
 
+.uploadAreaLight {
+    background: #ffffff;
+    border-color: #d1d5db;
+}
+
 .uploadArea:hover {
     border-color: var(--accent-teal);
     background: var(--card-light);
+}
+
+.uploadAreaLight:hover {
+    border-color: #008b8b;
+    background: #f9fafb;
 }
 
 .uploadContent {
     text-align: center;
     padding: 2rem;
 }
+
 .uploadText {
     display: block;
     color: var(--text-primary);
@@ -120,10 +164,18 @@
     margin-bottom: 0.5rem;
 }
 
+.uploadTextLight {
+    color: #2c3e50;
+}
+
 .uploadHint {
     display: block;
     color: var(--text-muted);
     font-size: 0.85rem;
+}
+
+.uploadHintLight {
+    color:  #6b7280;
 }
 
 .imageEditorCompact {
@@ -135,8 +187,17 @@
     margin-bottom: 12px;
 }
 
+.imageEditorCompactLight {
+    background: #ffffff;
+    border-color: #d0d0d0;
+}
+
 .imageEditorCompact:hover {
     border-color: var(--accent-teal);
+}
+
+.imageEditorCompactLight:hover {
+    border-color: #008b8b;
 }
 
 .toggleButton {
@@ -148,19 +209,31 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition:  background 0.2s;
     color: var(--text-primary);
     font-size: 14px;
+}
+
+.toggleButtonLight {
+    color: #2c3e50;
 }
 
 .toggleButton:hover {
     background: rgba(0, 139, 139, 0.1);
 }
 
+.toggleButtonLight:hover {
+    background: rgba(0, 139, 139, 0.08);
+}
+
 .toggleText {
-    flex: 1;
+    flex:  1;
     text-align: left;
     font-weight: 500;
+}
+
+.toggleTextLight {
+    color: #2c3e50;
 }
 
 .arrow {
@@ -169,6 +242,10 @@
     transition: transform 0.3s ease;
     display: inline-block;
     transform: rotate(-90deg);
+}
+
+.arrowLight {
+    color: #6b7280;
 }
 
 .arrowExpanded {
@@ -182,10 +259,15 @@
     animation: slideDown 0.2s ease;
 }
 
+.compactContentLight {
+    background:  #f9fafb;
+    border-top-color: #e0e0e0;
+}
+
 @keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform:  translateY(-10px);
     }
     to {
         opacity: 1;
@@ -193,12 +275,12 @@
     }
 }
 
-.compactContent .imagePreviewWrapper {
+.compactContent.imagePreviewWrapper {
     max-width: 100%;
     margin-bottom: 0;
 }
 
-.compactContent .previewImage {
+.compactContent.previewImage {
     max-height: 200px;
 }
 
@@ -207,7 +289,7 @@
     background: var(--input-bg);
     border: 2px dashed var(--border-color);
     padding: 40px 20px;
-    border-radius: 6px;
+    border-radius:  6px;
     cursor: pointer;
     color: var(--text-secondary);
     font-weight: 500;
@@ -215,10 +297,22 @@
     transition: all 0.2s;
 }
 
+.uploadButtonLight {
+    background: #ffffff;
+    border-color: #d1d5db;
+    color: #6b7280;
+}
+
 .uploadButton:hover {
     background: var(--secondary-bg);
     border-color: var(--accent-teal);
     color: var(--accent-teal);
+}
+
+.uploadButtonLight:hover {
+    background: #f3f4f6;
+    border-color: #008b8b;
+    color:  #008b8b;
 }
 
 @media (max-width: 768px) {

@@ -8,6 +8,11 @@
     transition: all 0.2s;
 }
 
+.cardLight {
+    background: #ffffff;
+    border-color:  #e0e0e0;
+}
+
 .card:hover {
     border-color: var(--accent-teal);
     box-shadow: 0 4px 8px rgba(0, 139, 139, 0.15);
@@ -22,6 +27,10 @@
     border-bottom: 2px solid var(--border-color);
 }
 
+.cardHeaderLight {
+    border-bottom-color: #e3e5e8;
+}
+
 .headerLeft {
     display: flex;
     align-items: center;
@@ -29,7 +38,7 @@
 }
 
 .faqIcon {
-    font-size: 1.25rem;
+    font-size:  1.25rem;
     line-height: 1;
 }
 
@@ -38,6 +47,10 @@
     color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 600;
+}
+
+.titleLight {
+    color: #2c3e50 !important;
 }
 
 .removeButton {
@@ -58,6 +71,14 @@
     height: 32px;
 }
 
+.removeButtonLight {
+    background: #e74c3c;
+}
+
+.removeButtonLight:hover {
+    background: #c0392b;
+}
+
 .removeIcon {
     font-size: 1.5rem;
     line-height: 1;
@@ -68,6 +89,7 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
+
 .faqContent {
     display: flex;
     flex-direction: column;
@@ -90,6 +112,10 @@
     margin-bottom: 0.25rem;
 }
 
+.labelLight {
+    color: #2c3e50;
+}
+
 .labelIcon {
     font-size: 1rem;
     line-height: 1;
@@ -108,10 +134,16 @@
     border-radius: 4px;
     font-size: 0.95rem;
     transition: all 0.2s;
-    box-sizing: border-box;
+    box-sizing:  border-box;
     background: var(--input-bg);
     color: var(--text-primary);
     font-family: inherit;
+}
+
+.inputLight {
+    background: #ffffff;
+    color: #2c3e50;
+    border-color: #d0d0d0;
 }
 
 .input:focus {
@@ -121,9 +153,17 @@
     background: white;
 }
 
+.inputLight:focus {
+    background: #ffffff;
+}
+
 .input::placeholder {
     color: var(--text-muted);
     font-style: italic;
+}
+
+.inputLight::placeholder {
+    color: #95a5a6;
 }
 
 .textarea {
@@ -133,13 +173,19 @@
     border-radius: 4px;
     font-size: 0.95rem;
     transition: all 0.2s;
-    box-sizing: border-box;
+    box-sizing:  border-box;
     background: var(--input-bg);
     color: var(--text-primary);
     resize: vertical;
     min-height: 100px;
     font-family: inherit;
     line-height: 1.5;
+}
+
+.textareaLight {
+    background: #ffffff;
+    color: #2c3e50;
+    border-color: #d0d0d0;
 }
 
 .textarea:focus {
@@ -149,17 +195,29 @@
     background: white;
 }
 
+.textareaLight:focus {
+    background: #ffffff;
+}
+
 .textarea::placeholder {
     color: var(--text-muted);
     font-style: italic;
 }
 
+.textareaLight::placeholder {
+    color: #95a5a6;
+}
+
 .charCount {
-    font-size: 0.75rem;
+    font-size:  0.75rem;
     color: var(--text-muted);
     text-align: right;
     margin-top: -0.25rem;
     font-style: italic;
+}
+
+.charCountLight {
+    color: #7f8c8d;
 }
 
 @keyframes fadeIn {
@@ -187,6 +245,11 @@
     background: var(--border-color);
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+.inputLight:disabled,
+.textareaLight:disabled {
+    background: #f5f5f5;
 }
 
 @media (max-width: 768px) {
