@@ -5,6 +5,7 @@ import {useTheme} from "@/hooks/useTheme.ts";
 type FaqEditorProps = {
   faq: FrequentlyAskedQuestionUpdate;
   index: number;
+  onChange:  (faq: FrequentlyAskedQuestionUpdate) => void;
   onRemove: () => void;
   readOnly:  boolean;
 }
