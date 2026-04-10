@@ -7,7 +7,7 @@ export default defineConfig({
   input: process.env.API_DOCS_URL ?? "",
   output: {
     path: "./src/api",
-    indexFile: false,
+    entryFile: false,
     clean: false,
   },
   plugins: ["@hey-api/client-fetch"],
