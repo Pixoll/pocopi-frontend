@@ -40,7 +40,7 @@ environment.
 Run the project while watching for live changes (ideal for development environments):
 
 ```bash
-npm dev
+npm run dev
 ```
 
 Build the app for production:
@@ -53,13 +53,13 @@ Other commands:
 
 ```bash
 # run the linter on all files
-npm lint
+npm run lint
 
 # run the linter automatic fixes where possible
-npm lint:fix
+npm run lint:fix
 
 # clean the build directories, useful when experiencing cache problems
-npm clean
+npm run clean
 ```
 
 ## Contribute
