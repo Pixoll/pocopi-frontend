@@ -10,5 +10,4 @@ export default defineConfig({
     entryFile: false,
     clean: false,
   },
-  plugins: ["@hey-api/client-fetch"],
 });
