@@ -9,6 +9,7 @@ import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
 import { useEffect } from "react";
+import Markdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 
 type TestPageProps = {
@@ -177,7 +178,9 @@ function TestPageContent({
             >
               {question.text && (
                 <div className={question.image ? styles.questionText : ""}>
-                  {question.text}
+                  <Markdown>
+                    {question.text}
+                  </Markdown>
                 </div>
               )}
               {question.image && (

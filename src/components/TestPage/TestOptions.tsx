@@ -1,6 +1,7 @@
 import { useTheme } from "@/hooks/useTheme";
 import {type AssignedTestOption } from "@/api";
 import styles from "@/styles/TestPage/TestOptions.module.css";
+import Markdown from "react-markdown";
 // import type { TestOption } from "@pocopi/config";
 
 type TestOptionsProps = {
@@ -38,7 +39,11 @@ export function TestOptions({
         >
           {option.text && (
             option.image ? (
-              <div className={styles.optionTextWithImage}>{option.text}</div>
+              <div className={styles.optionTextWithImage}>
+                <Markdown>
+                  {option.text}
+                </Markdown>
+              </div>
             ) : (
               <div
                 className={[
@@ -46,7 +51,9 @@ export function TestOptions({
                   isDarkMode ? styles.optionTextDark : styles.optionTextLight,
                 ].join(" ")}
               >
-                {option.text}
+                <Markdown>
+                  {option.text}
+                </Markdown>
               </div>
             )
           )}
