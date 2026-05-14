@@ -3,8 +3,9 @@ import api from "@/api";
 import { LoginModal } from "@/components/HomePage/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoginLogic } from "@/hooks/useLoginLogic";
+import styles from "@/styles/HomePage/UserFormModal.module.css";
 import { t } from "@/utils/translations";
-import { faArrowRight, faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faSignInAlt, faUserPlus, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type ChangeEvent, useState } from "react";
 import { Accordion, Button, Card, Col, Form, Row } from "react-bootstrap";
@@ -15,7 +16,7 @@ type HomeInfoCardProps = {
   isDarkMode: boolean;
   consentAccepted: boolean;
   onConsentChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  goToNextPage: (attempt: UserTestAttempt) => void;
+  onStartTest: (attempt: UserTestAttempt) => void;
   onAttemptInProgress: () => void;
 };
 
@@ -24,16 +25,13 @@ export function HomeInfoCard({
   isDarkMode,
   consentAccepted,
   onConsentChange,
-  goToNextPage,
+  onStartTest,
   onAttemptInProgress,
 }: HomeInfoCardProps) {
   const { isLoggedIn, token } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [checkingExistingAttempt, setCheckingExistingAttempt] = useState(false);
-  const { createAnonymousUser, saving } = useLoginLogic({
-    config,
-    onSuccess: goToNextPage,
-  });
+  const { createAnonymousUser, saving, error } = useLoginLogic();
 
   const infoCardsAmount = config.informationCards.length;
   const iconOpacity = isDarkMode ? 0.25 : 0.10;
@@ -42,33 +40,42 @@ export function HomeInfoCard({
   const faqAmount = config.frequentlyAskedQuestion.length;
   const lastFaqRowIndex = Math.floor((faqAmount - 1) / 2);
 
-  const handleStartTest = async () => {
-    if (!isLoggedIn) {
-      if (isAnonymous) {
-        await createAnonymousUser();
-      } else {
-        setShowLoginModal(true);
-      }
-      return;
-    }
-
-    if (!token) return;
-
+  const startTest = async () => {
     setCheckingExistingAttempt(true);
     try {
       const response = await api.beginTest();
 
       if (response.data) {
-        goToNextPage(response.data);
-      } else if (response.error && response.error.code === 409) {
+        onStartTest(response.data);
+      } else if (response.error.code === 409) {
         onAttemptInProgress();
       } else if (response.error) {
         console.error("Error starting test:", response.error.message);
+      }
+      if (showLoginModal) {
+        setShowLoginModal(false);
       }
     } catch (error) {
       console.error("Error starting test:", error);
     } finally {
       setCheckingExistingAttempt(false);
+    }
+  };
+
+  const onClickStartTest = async () => {
+    if (!isLoggedIn) {
+      if (!isAnonymous) {
+        setShowLoginModal(true);
+        return;
+      }
+      if (await createAnonymousUser()) {
+        await startTest();
+      }
+      return;
+    }
+
+    if (token) {
+      await startTest();
     }
   };
 
@@ -128,7 +135,10 @@ export function HomeInfoCard({
                       style={{
                         height: "40px",
                         width: "40px",
-                        backgroundColor: `#${color ?? "ffffff"}${Math.round(iconOpacity * 255).toString(16).padStart(2, "0")}`
+                        backgroundColor: `#${color?.toString(16) ?? "ffffff"}${Math.round(iconOpacity * 255).toString(16).padStart(
+                          2,
+                          "0"
+                        )}`
                       }}
                     >
                       {icon && <img src={icon.url} alt={icon.alt} style={{ height: "1em" }}/>}
@@ -160,13 +170,18 @@ export function HomeInfoCard({
               variant={buttonProps.variant}
               size="lg"
               className="px-5 py-3 rounded-pill shadow-sm"
-              onClick={handleStartTest}
+              onClick={onClickStartTest}
               disabled={buttonProps.disabled}
             >
               <span className="me-2">{buttonProps.text}</span>
               <FontAwesomeIcon icon={buttonProps.icon}/>
             </Button>
           </div>
+          {error && (
+            <div className={styles.alertError}>
+              <FontAwesomeIcon icon={faWarning}/> {error}
+            </div>
+          )}
         </Card.Body>
         {faqAmount > 0 && (
           <Accordion className="border-top" flush>
@@ -181,7 +196,9 @@ export function HomeInfoCard({
                           {faq.question}
                         </h5>
                         <p className={`small text-secondary ${i < lastFaqRowIndex ? "mb-3" : "mb-0"}`}>
-                          {faq.answer}
+                          <Markdown>
+                            {faq.answer}
+                          </Markdown>
                         </p>
                       </Col>
                     ))}
@@ -197,9 +214,8 @@ export function HomeInfoCard({
         <LoginModal
           config={config}
           show={showLoginModal}
-          onHide={() => setShowLoginModal(false)}
-          goToNextPage={goToNextPage}
-          showAnonymousOption={false}
+          onSuccess={startTest}
+          onCancel={() => setShowLoginModal(false)}
         />
       )}
     </>

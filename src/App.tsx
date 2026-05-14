@@ -109,7 +109,7 @@ export function App() {
         element={
           <HomePage
             config={config}
-            goToNextPage={goToPreTest}
+            onStartTest={goToPreTest}
             onDashboard={goToDashboard}
             onAdmin={goToAdminPage}
           />

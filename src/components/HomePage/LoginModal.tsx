@@ -1,84 +1,40 @@
-import type { Credentials, TrimmedConfig, UserTestAttempt } from "@/api";
+import { type Credentials, type TrimmedConfig } from "@/api";
 import { useLoginLogic } from "@/hooks/useLoginLogic";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
-import { faUser, faUserSecret, faWarning } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import LoginSection from "./LoginSection";
 
 type LoginModalProps = {
   config: TrimmedConfig;
   show: boolean;
-  onHide: () => void;
-  onCancel?: () => void;
-  goToNextPage?: (attempt: UserTestAttempt) => void;
-  showAnonymousOption?: boolean;
-  onLoginSuccess?: () => void;
-  stayOnPage?: boolean;
-  showCancelButton?: boolean;
+  onSuccess: () => void;
+  onCancel: () => void;
 };
 
 export function LoginModal({
   config,
   show,
-  onHide,
+  onSuccess,
   onCancel,
-  goToNextPage,
-  showAnonymousOption = false,
-  onLoginSuccess,
-  stayOnPage = false,
-  showCancelButton = true
 }: LoginModalProps) {
   const { isDarkMode } = useTheme();
-  const { saving, error, login, createAnonymousUser } = useLoginLogic({
-    config,
-    onSuccess: (attempt) => {
-      onHide();
-      if (stayOnPage) {
-        onLoginSuccess?.();
-      } else {
-        goToNextPage?.(attempt);
-      }
-    },
-    stayOnPage
-  });
+  const { saving, error, login } = useLoginLogic();
 
   const [loginData, setLoginData] = useState<Credentials>({ username: "", password: "" });
-  const [isCreatingAnonymous, setIsCreatingAnonymous] = useState(false);
-
-  const handleAnonymousLogin = async () => {
-    setIsCreatingAnonymous(true);
-    await createAnonymousUser();
-    setIsCreatingAnonymous(false);
-  };
 
   const handleManualLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(loginData);
-  };
-
-  const handleCancelClick = () => {
-    if (onCancel) {
-      onCancel();
-    } else {
-      onHide();
+    if (await login(loginData)) {
+      onSuccess();
     }
   };
 
-  if (isCreatingAnonymous) {
-    return (
-      <Modal show={show} centered backdrop="static">
-        <div className={styles.header}>
-          <h5><FontAwesomeIcon icon={faUserSecret}/> Creando usuario anónimo...</h5>
-        </div>
-      </Modal>
-    );
-  }
-
   return (
-    <Modal show={show} onHide={handleCancelClick} centered backdrop="static">
+    <Modal show={show} onHide={onCancel} centered backdrop="static">
       <div className={styles.header}>
         <h5><FontAwesomeIcon icon={faUser}/> Iniciar sesión</h5>
       </div>
@@ -98,27 +54,9 @@ export function LoginModal({
           handleSubmit={handleManualLogin}
           isDarkMode={isDarkMode}
           saving={saving}
-          onHide={handleCancelClick}
-          showCancelButton={showCancelButton}
+          onCancel={onCancel}
           validated
         />
-
-        {showAnonymousOption && config.anonymous && (
-          <>
-            <div className="text-center my-3">
-              <span className="text-muted">o</span>
-            </div>
-
-            <Button
-              variant="outline-secondary"
-              className="w-100"
-              onClick={handleAnonymousLogin}
-              disabled={saving}
-            >
-              <FontAwesomeIcon icon={faUserSecret}/> Continuar como usuario anónimo
-            </Button>
-          </>
-        )}
       </div>
     </Modal>
   );

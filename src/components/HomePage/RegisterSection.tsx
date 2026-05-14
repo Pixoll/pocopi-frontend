@@ -1,11 +1,19 @@
-import type {NewUser, TrimmedConfig} from "@/api";
-import {InputWithIcon} from "@/components/HomePage/InputWithIcon.tsx";
-import {faCakeCandles, faCircleNotch, faEnvelope, faIdCard, faKey, faSave, faUser} from "@fortawesome/free-solid-svg-icons";
-import {t} from "@/utils/translations.ts";
+import type { NewUser, TrimmedConfig } from "@/api";
+import { InputWithIcon } from "@/components/HomePage/InputWithIcon.tsx";
+import {
+  faCakeCandles,
+  faCircleNotch,
+  faEnvelope,
+  faIdCard,
+  faKey,
+  faSave,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { t } from "@/utils/translations.ts";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Form} from "react-bootstrap";
-import type {ChangeEvent, FormEvent} from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Form } from "react-bootstrap";
+import type { ChangeEvent, FormEvent } from "react";
 
 type RegisterSectionProps = {
   config: TrimmedConfig;
@@ -21,17 +29,17 @@ type RegisterSectionProps = {
 }
 
 export default function RegisterSection({
-                                          config,
-                                          userData,
-                                          handleChange,
-                                          handleSubmit,
-                                          onHide,
-                                          isDarkMode,
-                                          saving,
-                                          validated,
-                                          emailError,
-                                          isAnonymous
-                                        }: RegisterSectionProps) {
+  config,
+  userData,
+  handleChange,
+  handleSubmit,
+  onHide,
+  isDarkMode,
+  saving,
+  validated,
+  emailError,
+  isAnonymous
+}: RegisterSectionProps) {
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
       <InputWithIcon
@@ -101,7 +109,7 @@ export default function RegisterSection({
             error={!!emailError}
           />
           {emailError && (
-            <div className="text-danger mb-3" style={{fontSize: "0.95em"}}>
+            <div className="text-danger mb-3" style={{ fontSize: "0.95em" }}>
               {emailError}
             </div>
           )}

@@ -12,14 +12,14 @@ import UserLogout from "@/components/UserLogout.tsx";
 
 type HomePageProps = {
   config: TrimmedConfig;
-  goToNextPage: (attempt: UserTestAttempt) => void;
+  onStartTest: (attempt: UserTestAttempt) => void;
   onDashboard: () => void;
   onAdmin: () => void;
 };
 
 export function HomePage({
   config,
-  goToNextPage,
+  onStartTest,
   onDashboard,
   onAdmin,
 }: HomePageProps) {
@@ -34,7 +34,7 @@ export function HomePage({
 
   const handleContinueAttempt = (attempt: UserTestAttempt) => {
     setShowContinueModal(false);
-    goToNextPage(attempt);
+    onStartTest(attempt);
   };
 
   const handleDiscardAttempt = () => {
@@ -51,20 +51,10 @@ export function HomePage({
     setShowContinueModal(true);
   };
 
-  const handleLoginSuccess = () => {
-    setConsentAccepted(false);
-    setModalError(null);
-  };
-
   return (
     <div className={styles.container}>
       <UserLogout/>
-      <HomeHeader
-        config={config}
-        isDarkMode={isDarkMode}
-        goToNextPage={goToNextPage}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      <HomeHeader config={config} isDarkMode={isDarkMode}/>
 
       {modalError && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
@@ -83,7 +73,7 @@ export function HomePage({
         isDarkMode={isDarkMode}
         consentAccepted={consentAccepted}
         onConsentChange={handleConsentChange}
-        goToNextPage={goToNextPage}
+        onStartTest={onStartTest}
         onAttemptInProgress={handleAttemptInProgress}
       />
 

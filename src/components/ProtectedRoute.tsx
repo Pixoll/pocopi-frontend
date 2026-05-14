@@ -126,9 +126,8 @@ export function ProtectedRoute({ children, config, requireAdmin = false }: Prote
       <LoginModal
         config={config}
         show={true}
-        onHide={handleLoginSuccess}
+        onSuccess={handleLoginSuccess}
         onCancel={handleCancel}
-        goToNextPage={handleLoginSuccess}
       />
     );
   }
