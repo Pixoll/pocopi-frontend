@@ -1,14 +1,9 @@
-import api, {
-  type ApiHttpError,
-  type NewFormAnswer,
-  type SelectOne,
-  type Slider,
-  type TrimmedConfig,
-  type User, type UserTestAttempt
-} from "@/api";
+import api, { type ApiHttpError, type NewFormAnswer, type TrimmedConfig, type User, type UserTestAttempt } from "@/api";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
+import { SelectMultipleQuestion } from "@/components/FormPage/SelectMultipleQuestion";
 import { SelectOneQuestion } from "@/components/FormPage/SelectOneQuestion";
 import { SliderQuestion } from "@/components/FormPage/SliderQuestion";
+import { TextQuestion } from "@/components/FormPage/TextQuestion";
 import { Spinner } from "@/components/Spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "@/styles/FormPage/FormPage.module.css";
@@ -16,7 +11,7 @@ import { t } from "@/utils/translations";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type FormEvent, useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type FormPageProps = {
   config: TrimmedConfig;
@@ -26,21 +21,32 @@ type FormPageProps = {
 };
 
 export function FormPage({
-                           config,
-                           type,
-                           attempt,
-                           goToNextPage,
-                         }: FormPageProps) {
+  config,
+  type,
+  attempt,
+  goToNextPage,
+}: FormPageProps) {
   const { token, isLoggedIn } = useAuth();
   const [user, setUser] = useState<User | null>(null);
 
   const form = type === "pre" ? config.preTestForm : config.postTestForm;
   const questions = form?.questions ?? [];
 
-  const [answers, setAnswers] = useState<NewFormAnswer[]>(
-    Array.from({ length: questions.length }, (_, i) => ({
-      questionId: questions[i].id,
-    }))
+  const [answers, setAnswers] = useState<Record<number, NewFormAnswer>>(
+    questions.filter(q => q.type !== "select-multiple")
+      .reduce<Record<number, NewFormAnswer>>((acc, q) => {
+        acc[q.id] = {
+          questionId: q.id,
+        };
+        return acc;
+      }, {})
+  );
+  const [multiAnswers, setMultiAnswers] = useState(
+    questions.filter(q => q.type === "select-multiple")
+      .reduce<Record<number, NewFormAnswer[]>>((acc, q) => {
+        acc[q.id] = [];
+        return acc;
+      }, {})
   );
 
   const [sending, setSending] = useState<boolean>(false);
@@ -85,19 +91,9 @@ export function FormPage({
   }, [token, isLoggedIn]);
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !attempt) {
       const timer = setTimeout(() => {
-        navigate('/');
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [isLoggedIn, navigate]);
-
-  useEffect(() => {
-    if (isLoggedIn && !attempt) {
-      const timer = setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -109,7 +105,7 @@ export function FormPage({
       <div className={styles.page}>
         <div className={styles.content}>
           <div className={styles.loadingContainer}>
-            <Spinner />
+            <Spinner/>
             <p className={styles.info}>No has iniciado sesión...</p>
             <p className={styles.redirectText}>Redirigiendo al inicio...</p>
           </div>
@@ -123,7 +119,7 @@ export function FormPage({
       <div className={styles.page}>
         <div className={styles.content}>
           <div className={styles.loadingContainer}>
-            <Spinner />
+            <Spinner/>
             <p>No hay un intento de test activo...</p>
             <p className={styles.redirectText}>Redirigiendo al inicio...</p>
           </div>
@@ -154,121 +150,107 @@ export function FormPage({
     ? t(config, "preTest.title")
     : t(config, "postTest.title");
 
-  const handleOptionChange = (questionIndex: number, optionId: number, optionText: string) => {
+  const handleOptionOrAnswerChange = (questionId: number, optionIdOrOther: number | string) => {
     setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[questionIndex] = {
-        ...newAnswers[questionIndex],
-        optionId: optionId,
-        answer: optionText,
+      const newAnswers = { ...prev };
+      newAnswers[questionId] = {
+        questionId,
+        ...typeof optionIdOrOther === "number" ? {
+          optionId: optionIdOrOther,
+        } : {
+          answer: optionIdOrOther,
+        },
       };
       return newAnswers;
     });
     setValidationError("");
   };
 
-  const handleOtherChange = (questionIndex: number, otherText: string) => {
-    setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[questionIndex] = {
-        ...newAnswers[questionIndex],
-        answer: otherText,
-      };
-      return newAnswers;
-    });
-    setValidationError("");
-  };
-
-  const handleSliderChange = (questionIndex: number, value: number) => {
-    setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[questionIndex] = {
-        ...newAnswers[questionIndex],
-        value: value,
-      };
-      return newAnswers;
-    });
-    setValidationError("");
-  };
-
-  const submitEndPostForm = async () => {
-    if (token && form && type === "post") {
-      try {
-        const response = await api.endTest();
-        if (response.error) {
-          setError(response.error);
-          return false;
-        }
-        return true;
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
+  const handleMultiOptionChange = (questionId: number, optionIdOrOther: number | string) => {
+    setMultiAnswers(prev => {
+      const newAnswers = { ...prev };
+      if (typeof optionIdOrOther === "number") {
+        const without = newAnswers[questionId].filter(a => a.optionId !== optionIdOrOther);
+        if (newAnswers[questionId].length === without.length) {
+          newAnswers[questionId].push({
+            questionId,
+            optionId: optionIdOrOther,
+          });
         } else {
-          setError(String(error));
+          newAnswers[questionId] = without;
         }
+      } else {
+        const without = newAnswers[questionId].filter(a => a.answer === undefined);
+        without.push({
+          questionId,
+          answer: optionIdOrOther,
+        });
+        newAnswers[questionId] = without;
+      }
+      return newAnswers;
+    });
+    setValidationError("");
+  };
+
+  const handleSliderChange = (questionId: number, value: number) => {
+    setAnswers(prev => {
+      const newAnswers = { ...prev };
+      newAnswers[questionId] = {
+        questionId: newAnswers[questionId].questionId,
+        value,
+      };
+      return newAnswers;
+    });
+    setValidationError("");
+  };
+
+  const endTest = async () => {
+    try {
+      const response = await api.endTest();
+      if (response.error) {
+        setError(response.error);
         return false;
       }
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError(String(error));
+      }
+      return false;
     }
-    return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSending(true);
-    setError(null);
     setValidationError("");
 
-    const allAnswered = answers.every((answer, idx) => {
-      const question = questions[idx];
-      if (question.type === "slider") {
-        return answer.value !== undefined;
-      }
-      return answer.answer !== undefined && answer.answer.length > 0;
-    });
+    const multiAnswersList = Object.values(multiAnswers);
+    const allAnswers = multiAnswersList.flat().concat(Object.values(answers));
+    const someUnanswered = multiAnswersList.some(l => l.length === 0) || allAnswers.some(answer =>
+      answer.questionId === undefined
+      && answer.value === undefined
+      && (answer.answer === undefined || answer.answer.length === 0)
+    );
 
-    if (!allAnswered) {
+    if (someUnanswered) {
       setValidationError("Por favor responde todas las preguntas requeridas");
-      setSending(false);
       return;
     }
 
-    if (!token || !isLoggedIn) {
-      setSending(false);
+    if (!token || !isLoggedIn || !user?.username) {
       return;
     }
 
-    if (!user?.username) {
-      setSending(false);
-      return;
-    }
-
-    const cleanedAnswers = answers.map((answer, idx) => {
-      const question = questions[idx];
-
-      const cleaned: NewFormAnswer = {
-        questionId: answer.questionId,
-      };
-
-      if (question.type === "select-one" || question.type === "select-multiple") {
-        if (answer.optionId !== undefined) {
-          cleaned.optionId = answer.optionId;
-        } else if (answer.answer !== undefined) {
-          cleaned.answer = answer.answer;
-        }
-      } else if (question.type === "slider") {
-        cleaned.value = answer.value;
-      } else {
-        cleaned.answer = answer.answer;
-      }
-
-      return cleaned;
-    });
+    setSending(true);
+    setError(null);
 
     try {
       const result = await api.submitFormAnswers({
         path: { formType: type },
         body: {
-          answers: cleanedAnswers,
+          answers: allAnswers,
         }
       });
 
@@ -279,7 +261,7 @@ export function FormPage({
       }
 
       if (type === "post") {
-        const endTestSuccess = await submitEndPostForm();
+        const endTestSuccess = await endTest();
         if (!endTestSuccess) {
           setSending(false);
           return;
@@ -303,19 +285,29 @@ export function FormPage({
         <h1 className={styles.title}>{title}</h1>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {questions.map((question, idx) => {
+          {questions.map(question => {
             switch (question.type) {
-              case "select-multiple":
               case "select-one":
                 return (
                   <SelectOneQuestion
                     key={question.id}
                     config={config}
-                    question={question as SelectOne}
-                    answer={answers[idx].answer ?? ""}
-                    optionId={answers[idx].optionId ?? 0}
-                    onOptionChange={(optionId, optionText) => handleOptionChange(idx, optionId, optionText)}
-                    onOtherChange={(otherText) => handleOtherChange(idx, otherText)}
+                    question={question}
+                    optionId={answers[question.id].optionId ?? -1}
+                    onOptionChange={(optionId) => handleOptionOrAnswerChange(question.id, optionId)}
+                    onOtherChange={(otherText) => handleOptionOrAnswerChange(question.id, otherText)}
+                  />
+                );
+
+              case "select-multiple":
+                return (
+                  <SelectMultipleQuestion
+                    key={question.id}
+                    config={config}
+                    question={question}
+                    answers={multiAnswers[question.id]}
+                    onOptionChange={(optionId) => handleMultiOptionChange(question.id, optionId)}
+                    onOtherChange={(otherText) => handleMultiOptionChange(question.id, otherText)}
                   />
                 );
 
@@ -323,16 +315,22 @@ export function FormPage({
                 return (
                   <SliderQuestion
                     key={question.id}
-                    question={question as Slider}
-                    answer={answers[idx].value ?? (question as Slider).min}
-                    setAnswer={(value) => handleSliderChange(idx, value)}
+                    question={question}
+                    answer={answers[question.id].value ?? question.min}
+                    setAnswer={(value) => handleSliderChange(question.id, value)}
                   />
                 );
 
               case "text-short":
               case "text-long":
               default:
-                return null;
+                return (
+                  <TextQuestion
+                    question={question}
+                    answer={answers[question.id].answer ?? ""}
+                    onTextChange={(value) => handleOptionOrAnswerChange(question.id, value)}
+                  />
+                );
             }
           })}
 

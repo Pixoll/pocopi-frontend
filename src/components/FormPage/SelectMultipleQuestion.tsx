@@ -1,36 +1,28 @@
+import type { NewFormAnswer, SelectMultiple, TrimmedConfig } from "@/api";
 import styles from "@/styles/FormPage/SelectOneQuestion.module.css";
-import { useState } from "react";
-import type { TrimmedConfig, SelectOne } from "@/api";
 import { t } from "@/utils/translations.ts";
+import { useState } from "react";
 
-type SelectOneQuestionProps = {
+type SelectMultipleQuestionProps = {
   config: TrimmedConfig;
-  question: SelectOne;
-  optionId: number;
+  question: SelectMultiple;
+  answers: NewFormAnswer[];
   onOptionChange: (optionId: number) => void;
   onOtherChange: (otherText: string) => void;
 };
 
-export function SelectOneQuestion({
+export function SelectMultipleQuestion({
   config,
   question,
-  optionId,
+  answers,
   onOptionChange,
   onOtherChange,
-}: SelectOneQuestionProps) {
+}: SelectMultipleQuestionProps) {
   const [otherText, setOtherText] = useState("");
   const [isOtherSelected, setIsOtherSelected] = useState(false);
 
   const handleOptionSelect = (selectedOptionId: number) => {
-    setIsOtherSelected(false);
     onOptionChange(selectedOptionId);
-  };
-
-  const handleOtherSelect = () => {
-    setIsOtherSelected(true);
-    if (otherText) {
-      onOtherChange(otherText);
-    }
   };
 
   const handleOtherTextChange = (text: string) => {
@@ -47,10 +39,10 @@ export function SelectOneQuestion({
         {question.options?.map(opt => (
           <label key={opt.id} className={styles.optionText}>
             <input
-              type="radio"
+              type="checkbox"
               name={`question-${question.id}`}
               value={opt.id}
-              checked={optionId === opt.id && !isOtherSelected}
+              checked={answers.some(a => a.optionId === opt.id)}
               onChange={() => handleOptionSelect(opt.id)}
             />
             <span>{opt.text}</span>
@@ -59,11 +51,11 @@ export function SelectOneQuestion({
         {question.other && (
           <label className={styles.optionText}>
             <input
-              type="radio"
+              type="checkbox"
               name={`question-${question.id}`}
               value="other"
               checked={isOtherSelected}
-              onChange={handleOtherSelect}
+              onChange={() => setIsOtherSelected(true)}
             />
             <span>Otro:</span>
             <input
@@ -72,7 +64,6 @@ export function SelectOneQuestion({
               placeholder={t(config, "form.otherPlaceholder")}
               value={otherText}
               onChange={(e) => handleOtherTextChange(e.target.value)}
-              onFocus={handleOtherSelect}
               className={styles.otherField}
             />
           </label>

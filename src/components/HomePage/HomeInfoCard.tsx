@@ -32,6 +32,7 @@ export function HomeInfoCard({
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [checkingExistingAttempt, setCheckingExistingAttempt] = useState(false);
   const { createAnonymousUser, saving, error } = useLoginLogic();
+  const [startError, setStartError] = useState("");
 
   const infoCardsAmount = config.informationCards.length;
   const iconOpacity = isDarkMode ? 0.25 : 0.10;
@@ -41,7 +42,9 @@ export function HomeInfoCard({
   const lastFaqRowIndex = Math.floor((faqAmount - 1) / 2);
 
   const startTest = async () => {
+    setStartError("");
     setCheckingExistingAttempt(true);
+
     try {
       const response = await api.beginTest();
 
@@ -50,13 +53,13 @@ export function HomeInfoCard({
       } else if (response.error.code === 409) {
         onAttemptInProgress();
       } else if (response.error) {
-        console.error("Error starting test:", response.error.message);
+        setStartError(`Error starting test: ${response.error.message}`);
       }
       if (showLoginModal) {
         setShowLoginModal(false);
       }
     } catch (error) {
-      console.error("Error starting test:", error);
+      setStartError(`Error starting test: ${error}`);
     } finally {
       setCheckingExistingAttempt(false);
     }
@@ -135,7 +138,8 @@ export function HomeInfoCard({
                       style={{
                         height: "40px",
                         width: "40px",
-                        backgroundColor: `#${color?.toString(16) ?? "ffffff"}${Math.round(iconOpacity * 255).toString(16).padStart(
+                        backgroundColor: `#${color?.toString(16) ?? "ffffff"}${Math.round(iconOpacity
+                          * 255).toString(16).padStart(
                           2,
                           "0"
                         )}`
@@ -177,9 +181,9 @@ export function HomeInfoCard({
               <FontAwesomeIcon icon={buttonProps.icon}/>
             </Button>
           </div>
-          {error && (
+          {(error || startError) && (
             <div className={styles.alertError}>
-              <FontAwesomeIcon icon={faWarning}/> {error}
+              <FontAwesomeIcon icon={faWarning}/> {error || startError}
             </div>
           )}
         </Card.Body>
