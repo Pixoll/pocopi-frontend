@@ -1,14 +1,14 @@
+import { type AssignedTestOption } from "@/api";
 import { useTheme } from "@/hooks/useTheme";
-import {type AssignedTestOption } from "@/api";
 import styles from "@/styles/TestPage/TestOptions.module.css";
+import type { MouseEvent } from "react";
 import Markdown from "react-markdown";
-// import type { TestOption } from "@pocopi/config";
 
 type TestOptionsProps = {
   options: readonly AssignedTestOption[];
   selected: number | null;
-  onOptionClick: (id: number) => void;
-  onOptionHover: (id: number) => void;
+  onOptionClick: (id: number, x: number, y: number) => void;
+  onOptionHover: (id: number, x: number, y: number) => void;
 };
 
 export function TestOptions({
@@ -31,8 +31,8 @@ export function TestOptions({
             styles.option,
             selected === option.id ? styles.selectedOption : "",
           ].join(" ")}
-          onClick={() => onOptionClick(option.id)}
-          onMouseEnter={() => onOptionHover(option.id)}
+          onClick={(e) => onOptionClick(option.id, ...getNormalizedPos(e))}
+          onMouseEnter={(e) => onOptionHover(option.id, ...getNormalizedPos(e))}
           tabIndex={0}
           role="button"
           aria-pressed={selected === option.id}
@@ -69,4 +69,11 @@ export function TestOptions({
       ))}
     </div>
   );
+}
+
+function getNormalizedPos(e: MouseEvent<HTMLDivElement>): [number, number] {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = Math.min(Math.ceil((e.clientX - rect.left) / rect.width * 100), 100);
+  const y = Math.min(Math.ceil((e.clientY - rect.top) / rect.height * 100), 100);
+  return [x, y];
 }

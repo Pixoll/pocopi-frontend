@@ -13,8 +13,8 @@ type Test = {
   goToSummary: () => void;
   goToPreviousQuestion: () => void;
   goToNextQuestion: () => void;
-  onOptionClick: (optionId: number) => void;
-  onOptionHover: (optionId: number) => void;
+  onOptionClick: (optionId: number, x: number, y: number) => void;
+  onOptionHover: (optionId: number, x: number, y: number) => void;
   quitSummary: (onFinish: () => void) => void;
   jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
@@ -174,19 +174,19 @@ export function useTest(attempt: UserTestAttempt): Test {
     }, false);
   };
 
-  const onOptionClick = async (optionId: number) => {
+  const onOptionClick = async (optionId: number, x: number, y: number) => {
     if (selectedOptionId === optionId) {
       setAnswer(phaseIndex, questionId, null);
-      sendOptionEvent(optionId, "deselect");
+      sendOptionEvent("deselect", optionId, x, y);
     } else {
       setAnswer(phaseIndex, questionId, optionId);
-      sendOptionEvent(optionId, "select");
+      sendOptionEvent("select", optionId, x, y);
     }
     setSelectedOptionId((v) => (v === optionId ? null : optionId));
   };
 
-  const onOptionHover = async (optionId: number) => {
-    sendOptionEvent(optionId, "hover");
+  const onOptionHover = async (optionId: number, x: number, y: number) => {
+    sendOptionEvent("hover", optionId, x, y);
   };
 
   return {
@@ -221,13 +221,15 @@ function sendQuestionEvent(questionId: number, timestamp: number): void {
   }
 }
 
-function sendOptionEvent(optionId: number, type: NewOptionEventLog["type"]): void {
+function sendOptionEvent(type: NewOptionEventLog["type"], optionId: number, x: number, y: number): void {
   try {
     // noinspection JSIgnoredPromiseFromCall
     api.saveOptionEventLog({
       body: {
-        optionId,
         type,
+        optionId,
+        x,
+        y,
         timestamp: Date.now(),
       },
     });

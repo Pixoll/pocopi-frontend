@@ -69,6 +69,8 @@ export type NewOptionEventLog = {
     optionId: number;
     type: 'deselect' | 'select' | 'hover';
     timestamp: number;
+    x: number;
+    y: number;
 };
 
 export type NewUser = {
