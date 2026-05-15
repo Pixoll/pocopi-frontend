@@ -1,4 +1,4 @@
-import type { TrimmedConfig, UserTestAttempt } from "@/api";
+import api, { type TrimmedConfig, type UserTestAttempt } from "@/api";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
@@ -20,7 +20,7 @@ type TestPageProps = {
 
 export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
   const { isDarkMode } = useTheme();
-  const { token, isLoggedIn } = useAuth();
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,20 +37,9 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
       window.removeEventListener("popstate", popState);
     };
   }, []);
-  // sino esta logeado
-  useEffect(() => {
-    if (!isLoggedIn) {
-      const timer = setTimeout(() => {
-        navigate("/");
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [isLoggedIn, navigate]);
 
-  // sino existe un intento
   useEffect(() => {
-    if (isLoggedIn && !attempt) {
+    if (!isLoggedIn || !attempt) {
       const timer = setTimeout(() => {
         navigate("/");
       }, 2000);
@@ -103,7 +92,6 @@ export function TestPage({ config, attempt, goToNextPage }: TestPageProps) {
   return (
     <ProtectedRoute config={config}>
       <TestPageContent
-        token={token!}
         config={config}
         attempt={attempt}
         goToNextPage={goToNextPage}
@@ -119,7 +107,6 @@ function TestPageContent({
   goToNextPage,
   isDarkMode,
 }: {
-  token: string;
   config: TrimmedConfig;
   attempt: UserTestAttempt;
   goToNextPage: () => void;
@@ -146,6 +133,24 @@ function TestPageContent({
   const phase = phases[phaseIndex];
   const question = phase.questions[questionIndex];
 
+  const goToNextPageAndMaybeEndTest = async () => {
+    if (config.postTestForm) {
+      goToNextPage();
+      return;
+    }
+
+    try {
+      const response = await api.endTest();
+      if (response.error) {
+        console.error(response.error);
+      } else {
+        goToNextPage();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className={styles.page}>
       <TestPageHeader
@@ -164,7 +169,7 @@ function TestPageContent({
             answers={answers}
             phaseIndex={phaseIndex}
             jumpToQuestion={jumpToQuestion}
-            onContinue={() => quitSummary(goToNextPage)}
+            onContinue={() => quitSummary(goToNextPageAndMaybeEndTest)}
           />
         </div>
       ) : (
