@@ -1,8 +1,8 @@
 import { type AssignedTestOption } from "@/api";
+import { Markdown } from "@/components/Markdown";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestOptions.module.css";
 import type { MouseEvent } from "react";
-import Markdown from "react-markdown";
 
 type TestOptionsProps = {
   options: readonly AssignedTestOption[];

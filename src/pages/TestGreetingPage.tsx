@@ -1,11 +1,10 @@
 import type { TrimmedConfig, UserTestAttempt } from "@/api";
+import { Markdown } from "@/components/Markdown";
 import styles from "@/styles/TestGreetingPage/TestGreetingPage.module.css";
 import { t } from "@/utils/translations.ts";
-
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect } from "react";
-import Markdown from "react-markdown";
 
 type TestInformationPageProps = {
   config: TrimmedConfig;

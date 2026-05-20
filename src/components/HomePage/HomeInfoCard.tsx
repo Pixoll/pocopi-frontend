@@ -1,6 +1,7 @@
 import type { TrimmedConfig, UserTestAttempt } from "@/api";
 import api from "@/api";
 import { LoginModal } from "@/components/HomePage/LoginModal";
+import { Markdown } from "@/components/Markdown";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoginLogic } from "@/hooks/useLoginLogic";
 import styles from "@/styles/HomePage/UserFormModal.module.css";
@@ -9,7 +10,6 @@ import { faArrowRight, faSignInAlt, faUserPlus, faWarning } from "@fortawesome/f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type ChangeEvent, useState } from "react";
 import { Accordion, Button, Card, Col, Form, Row } from "react-bootstrap";
-import Markdown from "react-markdown";
 
 type HomeInfoCardProps = {
   config: TrimmedConfig;
@@ -199,11 +199,11 @@ export function HomeInfoCard({
                         <h5 className="h6 fw-bold">
                           {faq.question}
                         </h5>
-                        <p className={`small text-secondary ${i < lastFaqRowIndex ? "mb-3" : "mb-0"}`}>
+                        <div className={`small text-secondary ${i < lastFaqRowIndex ? "mb-3" : "mb-0"}`}>
                           <Markdown>
                             {faq.answer}
                           </Markdown>
-                        </p>
+                        </div>
                       </Col>
                     ))}
                   </Row>
