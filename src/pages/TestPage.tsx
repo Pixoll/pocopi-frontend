@@ -1,4 +1,5 @@
 import api, { type TrimmedConfig, type UserTestAttempt } from "@/api";
+import { Markdown } from "@/components/Markdown";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
@@ -9,7 +10,6 @@ import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
 import { useEffect } from "react";
-import Markdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 
 type TestPageProps = {
