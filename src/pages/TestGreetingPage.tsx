@@ -28,7 +28,7 @@ export function TestGreetingPage({ config, attempt, goToNextPage }: TestInformat
     };
   }, []);
 
-  if (!attempt || !attempt.assignedGroup.greeting) {
+  if (!attempt || (!attempt.assignedGroup.greeting && !attempt.assignedGroup.greetingImage)) {
     goToNextPage();
     return (
       <div>
@@ -54,7 +54,17 @@ export function TestGreetingPage({ config, attempt, goToNextPage }: TestInformat
         <h1 className={styles.title}>
           {t(config, "greeting.title")}
         </h1>
-        <Markdown>{attempt.assignedGroup.greeting}</Markdown>
+        {attempt.assignedGroup.greeting && (
+          <Markdown>{attempt.assignedGroup.greeting}</Markdown>
+        )}
+        {attempt.assignedGroup.greetingImage && (
+          <img
+            src={attempt.assignedGroup.greetingImage.url}
+            alt={attempt.assignedGroup.greetingImage.alt}
+            className={styles.image}
+            draggable={false}
+          />
+        )}
         <button className={styles.button} onClick={goToNextPage}>
           {t(config, "greeting.startTest")}
           <FontAwesomeIcon icon={faArrowRight}/>

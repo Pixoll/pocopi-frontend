@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {produce} from 'immer'
+import React, { useEffect, useState, useRef } from "react";
+import { produce } from "immer";
 import {
   toEditablePatchConfig,
   type EditablePatchConfig,
@@ -7,48 +7,50 @@ import {
   type EditablePatchGroup,
   buildPatchRequest,
   preloadImages,
-  clearImageCache
+  clearImageCache, type ImageState
 } from "@/utils/imageCollector.ts";
-import {ImageEditor} from "@/components/ModifyConfigPage/ImageEditor.tsx";
-import {InformationCardEditor} from "@/components/ModifyConfigPage/InformationCardEditor.tsx";
-import {FaqEditor} from "@/components/ModifyConfigPage/FaqEditor.tsx";
+import { ImageEditor } from "@/components/ModifyConfigPage/ImageEditor.tsx";
+import { InformationCardEditor } from "@/components/ModifyConfigPage/InformationCardEditor.tsx";
+import { FaqEditor } from "@/components/ModifyConfigPage/FaqEditor.tsx";
 import api, {
   type FrequentlyAskedQuestionUpdate,
   type FullConfig,
   type ApiHttpError, type Pattern
 } from "@/api";
-import {ProtocolEditor} from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
-import {LoadingPage} from "@/pages/LoadingPage.tsx";
-import {SavePopup} from "@/components/SavePopup.tsx";
-import {ConfirmModal} from "@/components/ConfirmModal.tsx";
-import {FormQuestionsCoordinator} from "@/components/ModifyConfigPage/FormQuestionsCoordinator.tsx";
-import {ErrorDisplay} from "@/components/ErrorDisplay.tsx";
-import {PatternEditor} from "@/components/ModifyConfigPage/PatternEditor.tsx";
-import {useAuth} from "@/contexts/AuthContext.tsx";
-import {ThemeSwitcher} from "@/components/ThemeSwitcher.tsx";
-import {useTheme} from "@/hooks/useTheme.ts";
+import { ProtocolEditor } from "@/components/ModifyConfigPage/ProtocolEditor.tsx";
+import { LoadingPage } from "@/pages/LoadingPage.tsx";
+import { SavePopup } from "@/components/SavePopup.tsx";
+import { ConfirmModal } from "@/components/ConfirmModal.tsx";
+import { FormQuestionsCoordinator } from "@/components/ModifyConfigPage/FormQuestionsCoordinator.tsx";
+import { ErrorDisplay } from "@/components/ErrorDisplay.tsx";
+import { PatternEditor } from "@/components/ModifyConfigPage/PatternEditor.tsx";
+import { useAuth } from "@/contexts/AuthContext.tsx";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher.tsx";
+import { useTheme } from "@/hooks/useTheme.ts";
 import styles from "@/styles/ModifyConfigPage/ModifyConfigPage.module.css";
 
 type ModifyConfigPageProps = {
   onSave?: (config: FullConfig) => void;
   configVersion: number;
-  readOnly:boolean;
+  readOnly: boolean;
 }
-async function getPatterns(token: string, set: (data: Pattern[]) => void){
+
+async function getPatterns(token: string, set: (data: Pattern[]) => void) {
   try {
-    const response = await api.getAllPatterns({auth: token})
-    if (response.data){
+    const response = await api.getAllPatterns({ auth: token });
+    if (response.data) {
       set(response.data);
-    }else{
-      set([])
+    } else {
+      set([]);
     }
-  }catch(err){
-    console.error(err)
+  } catch (err) {
+    console.error(err);
   }
 }
-export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVersion, readOnly}) => {
+
+export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVersion, readOnly }) => {
   const [config, setConfig] = useState<EditablePatchConfig | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('general');
+  const [activeTab, setActiveTab] = useState<string>("general");
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number | null>(null);
@@ -61,13 +63,13 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const {token} = useAuth();
-  const {isDarkMode} = useTheme()
+  const { token } = useAuth();
+  const { isDarkMode } = useTheme();
 
   async function getConfig(): Promise<void> {
     setIsLoading(true);
     try {
-      const response = await api.getConfigByVersion({path: {version: configVersion}});
+      const response = await api.getConfigByVersion({ path: { version: configVersion } });
       if (response.data) {
         await preloadImages(response.data);
         setConfig(toEditablePatchConfig(response.data));
@@ -93,7 +95,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   }, [token]);
 
   if (isLoading || !config) {
-    return <LoadingPage message="Cargando configuración..." />;
+    return <LoadingPage message="Cargando configuración..."/>;
   }
 
   const handleSave = async () => {
@@ -119,7 +121,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
     } catch (err) {
       setSaveError({
         code: 500,
-        message: 'Ocurrió un error inesperado al guardar'
+        message: "Ocurrió un error inesperado al guardar"
       });
     }
   };
@@ -127,11 +129,11 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   const handleExport = () => {
     try {
       const dataStr = JSON.stringify(config, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const dataBlob = new Blob([dataStr], { type: "application/json" });
       const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `config-${config.title || 'export'}-${new Date().toISOString()}.json`;
+      link.download = `config-${config.title || "export"}-${new Date().toISOString()}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -140,7 +142,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
     } catch (err) {
       setSaveError({
         code: 500,
-        message: 'Error al exportar la configuración'
+        message: "Error al exportar la configuración"
       });
     }
   };
@@ -160,13 +162,13 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
         setConfig(importedConfig);
         setShowSaveSuccess(true);
         if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+          fileInputRef.current.value = "";
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         setSaveError({
           code: 400,
-          message: 'Error al importar: el archivo no es un JSON válido'
+          message: "Error al importar: el archivo no es un JSON válido"
         });
       }
     };
@@ -175,9 +177,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'general':
+      case "general":
         return (
-          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ''}`}>
+          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ""}`}>
             <h3>Información General</h3>
 
             <ImageEditor
@@ -191,35 +193,35 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
             />
 
             <div className={styles.formGroup}>
-              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Título</label>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Título</label>
               <input
                 type="text"
-                value={config.title || ''}
-                onChange={(e) => setConfig({...config, title: e.target.value})}
-                className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
+                value={config.title || ""}
+                onChange={(e) => setConfig({ ...config, title: e.target.value })}
+                className={`${styles.input} ${!isDarkMode ? styles.inputLight : ""}`}
                 placeholder="Título de la configuración"
                 disabled={readOnly}
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Subtítulo</label>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Subtítulo</label>
               <input
                 type="text"
-                value={config.subtitle || ''}
-                onChange={(e) => setConfig({...config, subtitle: e.target.value})}
-                className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
+                value={config.subtitle || ""}
+                onChange={(e) => setConfig({ ...config, subtitle: e.target.value })}
+                className={`${styles.input} ${!isDarkMode ? styles.inputLight : ""}`}
                 placeholder="Subtítulo"
                 disabled={readOnly}
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Descripción</label>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Descripción</label>
               <textarea
-                value={config.description || ''}
-                onChange={(e) => setConfig({...config, description: e.target.value})}
-                className={`${styles.textarea} ${!isDarkMode ? styles.textareaLight : ''}`}
+                value={config.description || ""}
+                onChange={(e) => setConfig({ ...config, description: e.target.value })}
+                className={`${styles.textarea} ${!isDarkMode ? styles.textareaLight : ""}`}
                 placeholder="Descripción"
                 disabled={readOnly}
                 rows={4}
@@ -227,19 +229,19 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
             </div>
 
             <div className={styles.formGroup}>
-              <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ''}`}>
+              <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ""}`}>
                 <input
                   type="checkbox"
                   checked={config.anonymous}
-                  onChange={(e) => setConfig({...config, anonymous: e.target.checked})}
+                  onChange={(e) => setConfig({ ...config, anonymous: e.target.checked })}
                   disabled={readOnly}
                 />
                 Anónimo
               </label>
             </div>
             {!config.anonymous && (
-              <div className={`${styles.patternSection} ${!isDarkMode ? styles.patternSectionLight : ''}`}>
-                <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ''}`}>
+              <div className={`${styles.patternSection} ${!isDarkMode ? styles.patternSectionLight : ""}`}>
+                <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ""}`}>
                   <h4>Patrón de Nombre de Usuario</h4>
                   {!config.usernamePattern && !readOnly && (
                     <button
@@ -247,8 +249,8 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                         setConfig({
                           ...config,
                           usernamePattern: {
-                            name: '',
-                            regex: ''
+                            name: "",
+                            regex: ""
                           }
                         });
                       }}
@@ -278,19 +280,20 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                     }}
                   />
                 ) : (
-                  <p className={`${styles.emptyMessage} ${!isDarkMode ? styles.emptyMessageLight : ''}`}>
+                  <p className={`${styles.emptyMessage} ${!isDarkMode ? styles.emptyMessageLight : ""}`}>
                     No hay patrón de nombre de usuario configurado.
-                    {!readOnly && ' Haz clic en "Configurar Patrón" para agregar uno.'}
+                    {!readOnly && " Haz clic en \"Configurar Patrón\" para agregar uno."}
                   </p>
                 )}
               </div>
             )}
             <div className={styles.formGroup}>
-              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Consentimiento Informado</label>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Consentimiento Informado
+              </label>
               <textarea
-                value={config.informedConsent || ''}
-                onChange={(e) => setConfig({...config, informedConsent: e.target.value})}
-                className={`${styles.textarea} ${!isDarkMode ? styles.textareaLight : ''}`}
+                value={config.informedConsent || ""}
+                onChange={(e) => setConfig({ ...config, informedConsent: e.target.value })}
+                className={`${styles.textarea} ${!isDarkMode ? styles.textareaLight : ""}`}
                 placeholder="Texto del consentimiento informado"
                 disabled={readOnly}
                 rows={6}
@@ -299,17 +302,17 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
           </div>
         );
 
-      case 'cards':
+      case "cards":
         return (
-          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ''}`}>
-            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ''}`}>
+          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ""}`}>
+            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ""}`}>
               <h3>Tarjetas de Información</h3>
               <button
                 onClick={() => {
                   const newCard: EditablePatchInformationCard = {
                     id: undefined,
-                    title: '',
-                    description: '',
+                    title: "",
+                    description: "",
                     color: 0,
                     icon: undefined
                   };
@@ -343,16 +346,16 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
           </div>
         );
 
-      case 'faq':
+      case "faq":
         return (
-          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ''}`}>
-            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ''}`}>
+          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ""}`}>
+            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ""}`}>
               <h3>Preguntas Frecuentes</h3>
               <button
                 onClick={() => {
                   const newFaq: FrequentlyAskedQuestionUpdate = {
-                    question: '',
-                    answer: ''
+                    question: "",
+                    answer: ""
                   };
                   setConfig({
                     ...config,
@@ -373,20 +376,20 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 onChange={(updated) => {
                   const newFaqs = [...config.faq];
                   newFaqs[index] = updated;
-                  setConfig({...config, faq: newFaqs});
+                  setConfig({ ...config, faq: newFaqs });
                 }}
                 onRemove={() => {
                   const newFaqs = config.faq.filter((_, i) => i !== index);
-                  setConfig({...config, faq: newFaqs});
+                  setConfig({ ...config, faq: newFaqs });
                 }}
               />
             ))}
           </div>
         );
 
-      case 'preTestForm':
+      case "preTestForm":
         return (
-          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ''}`}>
+          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ""}`}>
             <FormQuestionsCoordinator
               config={config}
               setConfig={setConfig}
@@ -396,9 +399,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
           </div>
         );
 
-      case 'postTestForm':
+      case "postTestForm":
         return (
-          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ''}`}>
+          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ""}`}>
             <FormQuestionsCoordinator
               config={config}
               setConfig={setConfig}
@@ -408,18 +411,18 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
           </div>
         );
 
-      case 'groups':
+      case "groups":
         return (
-          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ''}`}>
-            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ''}`}>
+          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ""}`}>
+            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ""}`}>
               <h3>Grupos y Protocolos</h3>
               <button
                 onClick={() => {
                   const newGroup: EditablePatchGroup = {
                     id: undefined,
                     probability: 0,
-                    label: 'Nuevo Grupo',
-                    greeting: '',
+                    label: "Nuevo Grupo",
+                    greeting: "",
                     allowPreviousPhase: false,
                     allowPreviousQuestion: false,
                     allowSkipQuestion: false,
@@ -439,11 +442,11 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
             </div>
 
             <div className={styles.groupSelector}>
-              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Seleccionar Grupo:</label>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Seleccionar Grupo:</label>
               <select
-                value={selectedGroupIndex !== null ? selectedGroupIndex : ''}
+                value={selectedGroupIndex !== null ? selectedGroupIndex : ""}
                 onChange={(e) => setSelectedGroupIndex(e.target.value ? parseInt(e.target.value) : null)}
-                className={`${styles.select} ${!isDarkMode ? styles.selectLight : ''}`}
+                className={`${styles.select} ${!isDarkMode ? styles.selectLight : ""}`}
               >
                 <option value="">-- Selecciona un grupo --</option>
                 {config.groups?.map((group, index) => (
@@ -456,26 +459,26 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
             {selectedGroupIndex !== null && config.groups[selectedGroupIndex] && (
               <div className={styles.groupDetail}>
-                <div className={`${styles.groupCard} ${!isDarkMode ? styles.groupCardLight : ''}`}>
+                <div className={`${styles.groupCard} ${!isDarkMode ? styles.groupCardLight : ""}`}>
                   <h4>Configuración del Grupo: {config.groups[selectedGroupIndex].label}</h4>
 
                   <div className={styles.formGroup}>
-                    <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Label</label>
+                    <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Label</label>
                     <input
                       type="text"
                       placeholder="Label del grupo"
-                      value={config.groups[selectedGroupIndex].label || ''}
+                      value={config.groups[selectedGroupIndex].label || ""}
                       onChange={(e) => {
                         setConfig(produce(config, (draft) => {
                           draft.groups[selectedGroupIndex].label = e.target.value;
                         }));
                       }}
-                      className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
+                      className={`${styles.input} ${!isDarkMode ? styles.inputLight : ""}`}
                     />
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Probabilidad</label>
+                    <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Probabilidad</label>
                     <input
                       type="number"
                       step="0.01"
@@ -486,26 +489,38 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                           draft.groups[selectedGroupIndex].probability = parseFloat(e.target.value) || 0;
                         }));
                       }}
-                      className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
+                      className={`${styles.input} ${!isDarkMode ? styles.inputLight : ""}`}
                     />
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>Saludo</label>
+                    <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Saludo</label>
                     <textarea
                       placeholder="Saludo"
-                      value={config.groups[selectedGroupIndex].greeting || ''}
+                      value={config.groups[selectedGroupIndex].greeting || ""}
                       onChange={(e) => {
                         setConfig(produce(config, (draft) => {
                           draft.groups[selectedGroupIndex].greeting = e.target.value;
                         }));
                       }}
-                      className={`${styles.textarea} ${!isDarkMode ? styles.textareaLight : ''}`}
+                      className={`${styles.textarea} ${!isDarkMode ? styles.textareaLight : ""}`}
                     />
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ''}`}>
+                    <ImageEditor
+                      image={config.groups[selectedGroupIndex].greetingImage}
+                      onChange={(imageState: ImageState) => {
+                        setConfig(produce(config, (draft) => {
+                          draft.groups[selectedGroupIndex].greetingImage = imageState;
+                        }));
+                      }}
+                      label="Imagen del saludo"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ""}`}>
                       <input
                         type="checkbox"
                         checked={config.groups[selectedGroupIndex].allowPreviousPhase}
@@ -520,7 +535,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ''}`}>
+                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ""}`}>
                       <input
                         type="checkbox"
                         checked={config.groups[selectedGroupIndex].allowPreviousQuestion}
@@ -535,7 +550,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ''}`}>
+                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ""}`}>
                       <input
                         type="checkbox"
                         checked={config.groups[selectedGroupIndex].allowSkipQuestion}
@@ -550,7 +565,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ''}`}>
+                    <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ""}`}>
                       <input
                         type="checkbox"
                         checked={config.groups[selectedGroupIndex].randomizePhases}
@@ -586,9 +601,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                   allGroups={config.groups}
                   onCrossGroupPaste={(item, targetGroupIndex, targetPhaseIndex) => {
                     setConfig(produce(config, (draft) => {
-                      if (item?.type === 'phase') {
+                      if (item?.type === "phase") {
                         draft.groups[targetGroupIndex].phases.push(item.data);
-                      } else if (item?.type === 'question' && targetPhaseIndex !== undefined) {
+                      } else if (item?.type === "question" && targetPhaseIndex !== undefined) {
                         draft.groups[targetGroupIndex].phases[targetPhaseIndex].questions.push(item.data);
                       }
                     }));
@@ -614,25 +629,26 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                 }
               }}
               title="Confirmar Eliminación de Grupo"
-              message={`¿Estás seguro de eliminar el grupo "${config.groups[deleteGroupIndex ?? 0]?.label}"? Esta acción eliminará todas sus fases y preguntas y no se puede deshacer.`}
+              message={`¿Estás seguro de eliminar el grupo "${config.groups[deleteGroupIndex
+              ?? 0]?.label}"? Esta acción eliminará todas sus fases y preguntas y no se puede deshacer.`}
             />
           </div>
         );
 
-      case 'translations':
+      case "translations":
         return (
-          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ''}`}>
-            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ''}`}>
+          <div className={`${styles.tabContent} ${!isDarkMode ? styles.tabContentLight : ""}`}>
+            <div className={`${styles.sectionHeader} ${!isDarkMode ? styles.sectionHeaderLight : ""}`}>
               <h3>Traducciones</h3>
               <button
                 onClick={() => {
-                  const key = prompt('Clave de traducción:');
+                  const key = prompt("Clave de traducción:");
                   if (key) {
                     setConfig({
                       ...config,
                       translations: {
                         ...config.translations,
-                        [key]: ''
+                        [key]: ""
                       }
                     });
                   }
@@ -644,21 +660,32 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
             </div>
             <div className={styles.translationsGrid}>
               {(config.translations || []).map((translation, index) => (
-                <div key={translation.key} className={`${styles.translationItem} ${!isDarkMode ? styles.translationItemLight : ''}`}>
+                <div
+                  key={translation.key}
+                  className={`${styles.translationItem} ${!isDarkMode ? styles.translationItemLight : ""}`}
+                >
                   <div className={styles.translationHeader}>
-                    <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ''}`}>{translation.key}</label>
+                    <label
+                      className={`${styles.label} ${!isDarkMode
+                        ? styles.labelLight
+                        : ""}`}
+                    >{translation.key}</label>
                     {translation.description && (
-                      <span className={`${styles.description} ${!isDarkMode ? styles.descriptionLight : ''}`}>{translation.description}</span>
+                      <span
+                        className={`${styles.description} ${!isDarkMode
+                          ? styles.descriptionLight
+                          : ""}`}
+                      >{translation.description}</span>
                     )}
                     {translation.arguments.length > 0 && (
                       <span className={styles.arguments}>
-                        Argumentos: {translation.arguments.join(', ')}
+                        Argumentos: {translation.arguments.join(", ")}
                       </span>
                     )}
                   </div>
                   <input
                     type="text"
-                    value={translation.value || ''}
+                    value={translation.value || ""}
                     onChange={(e) => {
                       const newTranslations = [...config.translations];
                       newTranslations[index] = {
@@ -670,13 +697,13 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
                         translations: newTranslations
                       });
                     }}
-                    className={`${styles.input} ${!isDarkMode ? styles.inputLight : ''}`}
+                    className={`${styles.input} ${!isDarkMode ? styles.inputLight : ""}`}
                     placeholder={`Traducción para ${translation.key}`}
                   />
                   <button
                     onClick={() => {
                       const newTranslations = config.translations.filter((_, i) => i !== index);
-                      setConfig({...config, translations: newTranslations});
+                      setConfig({ ...config, translations: newTranslations });
                     }}
                     className={styles.removeButton}
                   >
@@ -694,13 +721,13 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   };
 
   return (
-    <div className={`${styles.container} ${!isDarkMode ? styles.containerLight : ''}`}>
+    <div className={`${styles.container} ${!isDarkMode ? styles.containerLight : ""}`}>
       <input
         ref={fileInputRef}
         type="file"
         accept="application/json"
         onChange={handleFileChange}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
 
       {showSaveSuccess && (
@@ -718,13 +745,13 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
         />
       )}
 
-      <header className={`${styles.header} ${!isDarkMode ? styles.headerLight : ''}`}>
+      <header className={`${styles.header} ${!isDarkMode ? styles.headerLight : ""}`}>
         <h1>Editor de Configuración</h1>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: "flex", gap: "10px" }}>
           <button
             onClick={handleImport}
             className={styles.saveButton}
-            style={{ backgroundColor: '#6366f1' }}
+            style={{ backgroundColor: "#6366f1" }}
             disabled={readOnly}
           >
             Importar
@@ -732,7 +759,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
           <button
             onClick={handleExport}
             className={styles.saveButton}
-            style={{ backgroundColor: '#8b5cf6' }}
+            style={{ backgroundColor: "#8b5cf6" }}
           >
             Exportar
           </button>
@@ -746,46 +773,60 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
         </div>
       </header>
 
-      <div className={`${styles.tabs} ${!isDarkMode ? styles.tabsLight : ''}`}>
+      <div className={`${styles.tabs} ${!isDarkMode ? styles.tabsLight : ""}`}>
         <button
-          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'general' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('general')}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ""} ${activeTab === "general"
+            ? styles.activeTab
+            : ""}`}
+          onClick={() => setActiveTab("general")}
         >
           General
         </button>
         <button
-          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'cards' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('cards')}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ""} ${activeTab === "cards"
+            ? styles.activeTab
+            : ""}`}
+          onClick={() => setActiveTab("cards")}
         >
           Tarjetas
         </button>
         <button
-          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'faq' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('faq')}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ""} ${activeTab === "faq"
+            ? styles.activeTab
+            : ""}`}
+          onClick={() => setActiveTab("faq")}
         >
           FAQ
         </button>
         <button
-          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'preTestForm' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('preTestForm')}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ""} ${activeTab === "preTestForm"
+            ? styles.activeTab
+            : ""}`}
+          onClick={() => setActiveTab("preTestForm")}
         >
           Pre-Test
         </button>
         <button
-          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'postTestForm' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('postTestForm')}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ""} ${activeTab === "postTestForm"
+            ? styles.activeTab
+            : ""}`}
+          onClick={() => setActiveTab("postTestForm")}
         >
           Post-Test
         </button>
         <button
-          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'groups' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('groups')}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ""} ${activeTab === "groups"
+            ? styles.activeTab
+            : ""}`}
+          onClick={() => setActiveTab("groups")}
         >
           Grupos
         </button>
         <button
-          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ''} ${activeTab === 'translations' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('translations')}
+          className={`${styles.tab} ${!isDarkMode ? styles.tabLight : ""} ${activeTab === "translations"
+            ? styles.activeTab
+            : ""}`}
+          onClick={() => setActiveTab("translations")}
         >
           Traducciones
         </button>
@@ -794,7 +835,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
       <main className={styles.content}>
         {renderContent()}
       </main>
-      <ThemeSwitcher />
+      <ThemeSwitcher/>
     </div>
   );
 };

@@ -87,6 +87,7 @@ export type EditablePatchPhase = Omit<TestPhaseUpdate, 'questions'> & {
 };
 
 export type EditablePatchGroup = Omit<TestGroupUpdate, 'phases'> & {
+  greetingImage?: ImageState;
   phases: EditablePatchPhase[];
 };
 
@@ -377,6 +378,7 @@ export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchCo
       probability: group.probability,
       label: group.label,
       greeting: group.greeting ?? "",
+      greetingImage: toImageState(group.greetingImage),
       allowPreviousPhase: group.allowPreviousPhase,
       allowPreviousQuestion: group.allowPreviousQuestion,
       allowSkipQuestion: group.allowSkipQuestion,
@@ -441,6 +443,8 @@ async function extractGroupImages(groups: EditablePatchGroup[]): Promise<File[]>
   const images: File[] = [];
 
   for (const group of groups) {
+    images.push(await resolveImageToFile(group.greetingImage));
+
     if (!group.phases) continue;
 
     for (const phase of group.phases) {

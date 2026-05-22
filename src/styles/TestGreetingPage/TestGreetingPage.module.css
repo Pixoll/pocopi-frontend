@@ -25,6 +25,14 @@
   text-align: center;
 }
 
+.image {
+  margin: 2rem 0;
+  pointer-events: none;
+  width: fit-content;
+  height: fit-content;
+  align-self: center;
+}
+
 .button {
   align-items: center;
   align-self: center;

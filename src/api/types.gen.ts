@@ -7,6 +7,7 @@ export type ClientOptions = {
 export type AssignedTestGroup = {
     label: string;
     greeting?: string | null;
+    greetingImage?: Image | null;
     allowPreviousPhase: boolean;
     allowPreviousQuestion: boolean;
     allowSkipQuestion: boolean;
@@ -460,6 +461,7 @@ export type TestGroup = {
     probability: number;
     label: string;
     greeting?: string | null;
+    greetingImage?: Image | null;
     allowPreviousPhase: boolean;
     allowPreviousQuestion: boolean;
     allowSkipQuestion: boolean;
