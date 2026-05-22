@@ -118,18 +118,18 @@ function toImageState(image: Image | undefined | null): ImageState | undefined {
   return { type: 'unchanged', value: image };
 }
 
-function extractAllImageUrls(serverConfig: FullConfig): string[] {
+function extractAllImageUrlsFromFullConfig(config: FullConfig): string[] {
   const urls: string[] = [];
 
-  if (serverConfig.icon?.url) {
-    urls.push(serverConfig.icon.url);
+  if (config.icon?.url) {
+    urls.push(config.icon.url);
   }
 
-  serverConfig.informationCards.forEach(card => {
+  config.informationCards.forEach(card => {
     if (card.icon?.url) urls.push(card.icon.url);
   });
 
-  [serverConfig.preTestForm, serverConfig.postTestForm].forEach(form => {
+  [config.preTestForm, config.postTestForm].forEach(form => {
     if (!form) return;
     form.questions.forEach(q => {
       if (q.image?.url) urls.push(q.image.url);
@@ -141,7 +141,7 @@ function extractAllImageUrls(serverConfig: FullConfig): string[] {
     });
   });
 
-  serverConfig.groups.forEach(group => {
+  config.groups.forEach(group => {
     if (group.greetingImage?.url) urls.push(group.greetingImage.url);
     group.phases.forEach(phase => {
       phase.questions.forEach(question => {
@@ -156,8 +156,60 @@ function extractAllImageUrls(serverConfig: FullConfig): string[] {
   return urls;
 }
 
-export async function preloadImages(serverConfig: FullConfig): Promise<void> {
-  const urls = extractAllImageUrls(serverConfig);
+function extractAllImageUrlsFromEditableConfig(config: EditablePatchConfig): string[] {
+  const urls: string[] = [];
+
+  if (config.icon?.type === "unchanged" && config.icon.value) {
+    urls.push(config.icon.value.url);
+  }
+
+  config.informationCards.forEach(card => {
+    if (card.icon?.type === "unchanged" && card.icon.value) {
+      urls.push(card.icon.value.url);
+    }
+  });
+
+  [config.preTestForm, config.postTestForm].forEach(form => {
+    if (!form) return;
+    form.questions.forEach(q => {
+      if (q.image?.type === "unchanged" && q.image.value) {
+        urls.push(q.image.value.url);
+      }
+      if ('options' in q && q.options) {
+        (q.options as EditablePatchFormOption[]).forEach(opt => {
+          if (opt.image?.type === "unchanged" && opt.image.value) {
+            urls.push(opt.image.value.url);
+          }
+        });
+      }
+    });
+  });
+
+  config.groups.forEach(group => {
+    if (group.greetingImage?.type === "unchanged" && group.greetingImage.value) {
+      urls.push(group.greetingImage.value.url);
+    }
+    group.phases.forEach(phase => {
+      phase.questions.forEach(question => {
+        if (question.image?.type === "unchanged" && question.image.value) {
+          urls.push(question.image.value.url);
+        }
+        (question.options as EditablePatchOption[]).forEach(option => {
+          if (option.image?.type === "unchanged" && option.image.value) {
+            urls.push(option.image.value.url);
+          }
+        });
+      });
+    });
+  });
+
+  return urls;
+}
+
+export async function preloadImages(config: FullConfig | EditablePatchConfig): Promise<void> {
+  const urls = "version" in config
+    ? extractAllImageUrlsFromFullConfig(config)
+    : extractAllImageUrlsFromEditableConfig(config);
   const uniqueUrls = [...new Set(urls)];
 
   await Promise.all(uniqueUrls.map(async (url) => {
@@ -175,8 +227,6 @@ export async function preloadImages(serverConfig: FullConfig): Promise<void> {
       console.error(error);
     }
   }));
-
-  console.log(imageCache);
 }
 
 export function getImageFile(imageState: ImageState | undefined): File | undefined {

@@ -156,9 +156,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
-        const importedConfig = JSON.parse(e.target?.result as string);
+        const importedConfig = await parseImportedConfig(e.target?.result as string);
         setConfig(importedConfig);
         setShowSaveSuccess(true);
         if (fileInputRef.current) {
@@ -839,3 +839,80 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
     </div>
   );
 };
+
+async function parseImportedConfig(json: string): Promise<EditablePatchConfig> {
+  const config = JSON.parse(json) as EditablePatchConfig;
+  await preloadImages(config);
+
+  config.icon = await overrideImageState(config.icon);
+  delete config.usernamePattern?.id;
+
+  for (const card of config.informationCards) {
+    delete card.id;
+    card.icon = await overrideImageState(card.icon);
+  }
+
+  for (const faq of config.faq) {
+    delete faq.id;
+  }
+
+  delete config.preTestForm?.id;
+  delete config.postTestForm?.id;
+
+  for (const question of (config.preTestForm?.questions ?? []).concat(config.postTestForm?.questions ?? [])) {
+    delete question.id;
+    question.image = await overrideImageState(question.image);
+    switch (question.type) {
+      case "select-one":
+      case "select-multiple": {
+        for (const option of question.options) {
+          delete option.id;
+          option.image = await overrideImageState(option.image);
+        }
+        break;
+      }
+      case "slider": {
+        for (const label of question.labels) {
+          delete label.id;
+        }
+        break;
+      }
+    }
+  }
+
+  for (const group of config.groups) {
+    delete group.id;
+    group.greetingImage = await overrideImageState(group.greetingImage);
+    for (const phase of group.phases) {
+      delete phase.id;
+      for (const question of phase.questions) {
+        delete question.id;
+        question.image = await overrideImageState(question.image);
+        for (const option of question.options) {
+          delete option.id;
+          option.image = await overrideImageState(option.image);
+        }
+      }
+    }
+  }
+
+  return config;
+}
+
+async function overrideImageState(state?: ImageState | null): Promise<ImageState | undefined> {
+  if (!state || state.type !== "unchanged" || !state.value) return undefined;
+
+  const response = await fetch(state.value.url);
+  if (!response.ok) {
+    return undefined;
+  }
+
+  const urlParts = state.value.url.split("/");
+  const blob = await response.blob();
+  const file = new File([blob], urlParts[urlParts.length - 1] ?? "file", { type: blob.type });
+
+  return {
+    type: "new",
+    value: file,
+  };
+}
