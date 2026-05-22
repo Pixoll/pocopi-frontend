@@ -2,6 +2,7 @@ import type { ConfigPreview } from "@/api";
 import { Markdown } from "@/components/Markdown";
 import { useTheme } from "@/hooks/useTheme.ts";
 import styles from "@/styles/AdminPage/AdminPage.module.css";
+import { Fragment } from "react";
 
 type ConfigSectionProps = {
   configData: ConfigPreview;
@@ -22,7 +23,11 @@ export function ConfigSection({
   const { isDarkMode } = useTheme();
 
   return (
-    <div className={`${isActive ? styles.lastConfigSection : styles.configSection} ${!isDarkMode ? (isActive ? styles.lastConfigSectionLight : styles.configSectionLight) : ""}`}>
+    <div
+      className={`${isActive ? styles.lastConfigSection : styles.configSection} ${!isDarkMode ? (isActive
+        ? styles.lastConfigSectionLight
+        : styles.configSectionLight) : ""}`}
+    >
       <div className={styles.infoContainer}>
         <div className={styles.versionHeader}>
           {configData.icon?.url && (
@@ -54,7 +59,7 @@ export function ConfigSection({
       </div>
 
       <div className={styles.buttonsContainer}>
-        {isActive ? (
+        {isActive ? <Fragment>
           <div className={styles.buttonWrapper}>
             <button
               onClick={() => onModify(configData.version, false)}
@@ -66,51 +71,60 @@ export function ConfigSection({
               Edit current configuration
             </span>
           </div>
-        ) : (
-          <>
-            <div className={styles.buttonWrapper}>
-              <button
-                className={styles.setVersionButton}
-                onClick={() => onSetActive(configData.version)}
-              >
-                Set as active version
-              </button>
-              <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ""}`}>
-                Make this the active config
-              </span>
+          <div className={styles.buttonWrapper}>
+            <button
+              className={styles.cloneButton}
+              onClick={() => onClone(configData.version)}
+            >
+              Duplicate
+            </button>
+            <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ""}`}>
+              Create a copy of this version
+            </span>
+          </div>
+        </Fragment> : <Fragment>
+          <div className={styles.buttonWrapper}>
+            <button
+              className={styles.setVersionButton}
+              onClick={() => onSetActive(configData.version)}
+            >
+              Set as active version
+            </button>
+            <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ""}`}>
+              Make this the active config
+            </span>
 
-              <button
-                className={styles.setVersionButton}
-                onClick={() => onModify(configData.version, true)}
-              >
-                View version
-              </button>
-            </div>
-            <div className={styles.buttonWrapper}>
-              <button
-                className={styles.cloneButton}
-                onClick={() => onClone(configData.version)}
-              >
-                Duplicate
-              </button>
-              <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ""}`}>
-                Create a copy of this version
-              </span>
-            </div>
-            <div className={styles.buttonWrapper}>
-              <button
-                className={styles.deleteButton}
-                onClick={() => onDelete(configData.version)}
-                disabled={!configData.canDelete}
-              >
-                Delete
-              </button>
-              <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ""}`}>
-                {configData.canDelete ? "Remove this version" : "Cannot delete this version"}
-              </span>
-            </div>
-          </>
-        )}
+            <button
+              className={styles.setVersionButton}
+              onClick={() => onModify(configData.version, true)}
+            >
+              View version
+            </button>
+          </div>
+          <div className={styles.buttonWrapper}>
+            <button
+              className={styles.cloneButton}
+              onClick={() => onClone(configData.version)}
+            >
+              Duplicate
+            </button>
+            <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ""}`}>
+              Create a copy of this version
+            </span>
+          </div>
+          <div className={styles.buttonWrapper}>
+            <button
+              className={styles.deleteButton}
+              onClick={() => onDelete(configData.version)}
+              disabled={!configData.canDelete}
+            >
+              Delete
+            </button>
+            <span className={`${styles.buttonHint} ${!isDarkMode ? styles.buttonHintLight : ""}`}>
+              {configData.canDelete ? "Remove this version" : "Cannot delete this version"}
+            </span>
+          </div>
+        </Fragment>}
       </div>
     </div>
   );
