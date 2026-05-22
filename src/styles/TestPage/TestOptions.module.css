@@ -20,7 +20,19 @@
 
 .optionText {
   border-radius: 0.5rem;
-  padding: 1.5rem 3rem;
+  width: 250px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.optionText p {
+  margin: 0;
+  padding: 0;
 }
 
 .optionTextDark {
@@ -46,7 +58,8 @@
   border: 2px solid #ffc107;
 }
 
-.selectedOption img, .selectedOption .optionText {
+.selectedOption img,
+.selectedOption .optionText {
   border-color: #ffc107 !important;
   box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
 }

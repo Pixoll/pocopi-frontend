@@ -80,6 +80,18 @@
   user-select: none;
 }
 
+.question pre {
+  font-size: 0.95rem;
+  margin: 1.5rem 0;
+  border: 1px solid #2d2d2d;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5), 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.question :not(pre) > code {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.85em;
+}
+
 .dark {
   background-color: #212529;
 }
