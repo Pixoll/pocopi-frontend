@@ -103,7 +103,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
     setShowSaveSuccess(false);
 
     try {
-      const patchRequest = await buildPatchRequest(config);
+      const patchRequest = buildPatchRequest(config);
       const { data, error } = await api.updateActiveConfig({
         body: patchRequest
       });

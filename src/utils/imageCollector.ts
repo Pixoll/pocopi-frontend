@@ -142,6 +142,7 @@ function extractAllImageUrls(serverConfig: FullConfig): string[] {
   });
 
   serverConfig.groups.forEach(group => {
+    if (group.greetingImage?.url) urls.push(group.greetingImage.url);
     group.phases.forEach(phase => {
       phase.questions.forEach(question => {
         if (question.image?.url) urls.push(question.image.url);
@@ -174,6 +175,8 @@ export async function preloadImages(serverConfig: FullConfig): Promise<void> {
       console.error(error);
     }
   }));
+
+  console.log(imageCache);
 }
 
 export function getImageFile(imageState: ImageState | undefined): File | undefined {
@@ -405,7 +408,7 @@ export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchCo
   };
 }
 
-async function resolveImageToFile(imageState: ImageState | undefined | null): Promise<File> {
+function resolveImageToFile(imageState: ImageState | undefined | null): File {
   if (!imageState) return new File([], ".png");
 
   switch (imageState.type) {
@@ -423,15 +426,15 @@ async function resolveImageToFile(imageState: ImageState | undefined | null): Pr
   }
 }
 
-async function extractFormImages(questions: EditablePatchFormQuestion[]): Promise<File[]> {
+function extractFormImages(questions: EditablePatchFormQuestion[]): File[] {
   const images: File[] = [];
 
   for (const question of questions) {
-    images.push(await resolveImageToFile(question.image));
+    images.push(resolveImageToFile(question.image));
 
     if ('options' in question && question.options) {
       for (const option of question.options) {
-        images.push(await resolveImageToFile(option.image));
+        images.push(resolveImageToFile(option.image));
       }
     }
   }
@@ -439,11 +442,12 @@ async function extractFormImages(questions: EditablePatchFormQuestion[]): Promis
   return images;
 }
 
-async function extractGroupImages(groups: EditablePatchGroup[]): Promise<File[]> {
+function extractGroupImages(groups: EditablePatchGroup[]): File[] {
   const images: File[] = [];
 
   for (const group of groups) {
-    images.push(await resolveImageToFile(group.greetingImage));
+    images.push(resolveImageToFile(group.greetingImage));
+    console.log(resolveImageToFile(group.greetingImage));
 
     if (!group.phases) continue;
 
@@ -451,10 +455,10 @@ async function extractGroupImages(groups: EditablePatchGroup[]): Promise<File[]>
       if (!phase.questions) continue;
 
       for (const question of phase.questions) {
-        images.push(await resolveImageToFile(question.image));
+        images.push(resolveImageToFile(question.image));
 
         for (const option of question.options) {
-          images.push(await resolveImageToFile(option.image));
+          images.push(resolveImageToFile(option.image));
         }
       }
     }
@@ -463,10 +467,10 @@ async function extractGroupImages(groups: EditablePatchGroup[]): Promise<File[]>
   return images;
 }
 
-async function extractInformationCardImages(cards: EditablePatchInformationCard[]): Promise<File[]> {
+function extractInformationCardImages(cards: EditablePatchInformationCard[]): File[] {
   const images: File[] = [];
   for (const card of cards) {
-    images.push(await resolveImageToFile(card.icon));
+    images.push(resolveImageToFile(card.icon));
   }
   return images;
 }
@@ -656,27 +660,13 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
   };
 }
 
-export async function buildPatchRequest(config: EditablePatchConfig): Promise<ConfigUpdateWithFiles> {
-  const [
-    appIcon,
-    preTestFormImages,
-    postTestFormImages,
-    groupImages,
-    informationCardImages
-  ] = await Promise.all([
-    resolveImageToFile(config.icon),
-    extractFormImages(config.preTestForm?.questions ?? []),
-    extractFormImages(config.postTestForm?.questions ?? []),
-    extractGroupImages(config.groups),
-    extractInformationCardImages(config.informationCards)
-  ]);
-
+export function buildPatchRequest(config: EditablePatchConfig): ConfigUpdateWithFiles {
   return {
-    icon: appIcon,
-    preTestFormImages,
-    postTestFormImages,
-    groupImages,
-    informationCardImages,
-    payload: toPatchConfig(config)
+    icon: resolveImageToFile(config.icon),
+    preTestFormImages: extractFormImages(config.preTestForm?.questions ?? []),
+    postTestFormImages: extractFormImages(config.postTestForm?.questions ?? []),
+    groupImages: extractGroupImages(config.groups),
+    informationCardImages: extractInformationCardImages(config.informationCards),
+    payload: toPatchConfig(config),
   };
 }
