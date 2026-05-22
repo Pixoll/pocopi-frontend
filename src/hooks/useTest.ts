@@ -103,7 +103,7 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const goToNextPhase = () => {
-    if (allowPreviousPhase && phaseIndex < phases.length - 1) {
+    if (phaseIndex < phases.length - 1) {
       const newPhaseIndex = phaseIndex + 1;
       const targetPhase = phases[newPhaseIndex];
       const targetQuestion = targetPhase.questions[0];
