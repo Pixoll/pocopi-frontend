@@ -5,11 +5,13 @@ import { PhaseSummaryModal } from "@/components/TestPage/PhaseSummaryModal";
 import { TestOptions } from "@/components/TestPage/TestOptions";
 import { TestPageHeader } from "@/components/TestPage/TestPageHeader";
 import { TestPageNavigation } from "@/components/TestPage/TestPageNavigation";
+import { Timer } from "@/components/TestPage/Timer";
+import { TimesUp } from "@/components/TestPage/TimesUp";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTest } from "@/hooks/useTest";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "@/styles/TestPage/TestPage.module.css";
-import { useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type TestPageProps = {
@@ -119,6 +121,7 @@ function TestPageContent({
     answers,
     showSummary,
     showedSummary,
+    timeLimit,
     quitSummary,
     goToSummary,
     goToPreviousQuestion,
@@ -126,8 +129,9 @@ function TestPageContent({
     onOptionClick,
     onOptionHover,
     jumpToQuestion,
-  } = useTest(attempt);
+  } = useTest(config, attempt);
 
+  const [showTimesUp, setShowTimesUp] = useState(false);
   const group = attempt.assignedGroup;
   const { phases } = group;
   const phase = phases[phaseIndex];
@@ -161,8 +165,14 @@ function TestPageContent({
         showSummary={showSummary}
       />
 
+      {showTimesUp && <TimesUp goToNextPage={goToNextPageAndMaybeEndTest}/>}
+
       {showSummary ? (
         <div className={styles.content}>
+          {timeLimit && (
+            <Timer className={styles.timer} timeLimit={timeLimit} onEnd={() => setShowTimesUp(true)}/>
+          )}
+
           <PhaseSummaryModal
             config={config}
             protocol={group}
@@ -173,8 +183,12 @@ function TestPageContent({
           />
         </div>
       ) : (
-        <>
+        <Fragment>
           <div className={styles.content}>
+            {timeLimit && (
+              <Timer className={styles.timer} timeLimit={timeLimit} onEnd={() => setShowTimesUp(true)}/>
+            )}
+
             <div
               className={[
                 styles.question,
@@ -217,7 +231,7 @@ function TestPageContent({
             onPreviousQuestion={goToPreviousQuestion}
             onNextQuestion={goToNextQuestion}
           />
-        </>
+        </Fragment>
       )}
     </div>
   );

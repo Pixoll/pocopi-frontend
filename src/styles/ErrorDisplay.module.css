@@ -22,7 +22,7 @@
     }
 }
 
-.modal {
+.container {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -327,7 +327,7 @@
 }
 
 @media (max-width: 768px) {
-    .modal {
+    .container {
         max-width: 100%;
         margin: 0.5rem;
         max-height: 95vh;

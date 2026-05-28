@@ -229,6 +229,29 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
             </div>
 
             <div className={styles.formGroup}>
+              <label className={`${styles.label} ${!isDarkMode ? styles.labelLight : ""}`}>Temporizador</label>
+              <input
+                type="text"
+                value={config.timer || ""}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  const isValid = !value || (
+                    /^\d{1,2}:\d{2}(:\d{2})?$/.test(value)
+                    && value.split(":").reduce((acc, n) => +n + acc, 0) > 0
+                  );
+                  e.currentTarget.setCustomValidity(
+                    !isValid ? "Temporizador debe tener formato mm:ss o hh:mm:ss y debe ser mayor a 00:00" : ""
+                  );
+                  e.currentTarget.reportValidity();
+                  setConfig({ ...config, timer: value });
+                }}
+                className={`${styles.input} ${!isDarkMode ? styles.inputLight : ""}`}
+                placeholder="Temporizador"
+                disabled={readOnly}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
               <label className={`${styles.checkboxLabel} ${!isDarkMode ? styles.checkboxLabelLight : ""}`}>
                 <input
                   type="checkbox"
@@ -840,6 +863,7 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   );
 };
 
+// TODO maybe export images in base64...
 async function parseImportedConfig(json: string): Promise<EditablePatchConfig> {
   const config = JSON.parse(json) as EditablePatchConfig;
   await preloadImages(config);

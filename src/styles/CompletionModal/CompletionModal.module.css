@@ -7,7 +7,7 @@
   width: 100%;
 }
 
-.modal {
+.container {
   border-radius: 1rem;
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
   flex: 0 0 auto;
@@ -80,21 +80,21 @@
     padding: 3rem;
   }
 
-  .modal {
+  .container {
     flex: 0 0 auto;
     width: 66.67%;
   }
 }
 
 @media (min-width: 992px) {
-  .modal {
+  .container {
     flex: 0 0 auto;
     width: 50%;
   }
 }
 
 @media (min-width: 1200px) {
-  .modal {
+  .container {
     flex: 0 0 auto;
     width: 41.67%;
   }

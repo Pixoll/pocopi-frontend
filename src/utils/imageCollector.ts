@@ -102,6 +102,7 @@ export type EditablePatchConfig = {
   description: string;
   anonymous: boolean;
   usernamePattern?: PatternUpdate | null;
+  timer?: string | null;
   informationCards: EditablePatchInformationCard[];
   informedConsent: string;
   faq: FrequentlyAskedQuestionUpdate[];
@@ -252,6 +253,7 @@ export function toEditablePatchConfig(serverConfig: FullConfig): EditablePatchCo
     title: serverConfig.title,
     subtitle: serverConfig.subtitle ?? "",
     description: serverConfig.description,
+    timer: serverConfig.timer,
     anonymous: serverConfig.anonymous,
     usernamePattern: serverConfig.usernamePattern ? {
       id: serverConfig.usernamePattern.id,
@@ -532,6 +534,7 @@ export function toPatchConfig(config: EditablePatchConfig): ConfigUpdate {
     description: config.description,
     anonymous: config.anonymous,
     usernamePattern: config.usernamePattern ?? undefined,
+    timer: config.timer ?? undefined,
     informedConsent: config.informedConsent,
 
     informationCards: config.informationCards.map((card): InformationCardUpdate => ({

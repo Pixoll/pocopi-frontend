@@ -102,6 +102,7 @@ export type ConfigUpdate = {
     description: string;
     anonymous: boolean;
     usernamePattern?: PatternUpdate;
+    timer?: string;
     informedConsent: string;
     informationCards?: Array<InformationCardUpdate>;
     faq?: Array<FrequentlyAskedQuestionUpdate>;
@@ -289,11 +290,15 @@ export type OptionEventLog = {
     optionId: number;
     type: 'deselect' | 'select' | 'hover';
     timestamp: number;
+    x: number;
+    y: number;
 };
 
 export type OptionSelectionEvent = {
     optionId: number;
     timestamp: number;
+    x: number;
+    y: number;
 };
 
 export type QuestionEventLog = {
@@ -399,6 +404,7 @@ export type FullConfig = {
     description: string;
     anonymous: boolean;
     usernamePattern?: Pattern;
+    timer?: string | null;
     informationCards: Array<InformationCard>;
     informedConsent: string;
     frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;
@@ -526,6 +532,7 @@ export type TrimmedConfig = {
     description: string;
     anonymous: boolean;
     usernamePattern?: Pattern;
+    timer?: string | null;
     informationCards: Array<InformationCard>;
     informedConsent: string;
     frequentlyAskedQuestion: Array<FrequentlyAskedQuestion>;

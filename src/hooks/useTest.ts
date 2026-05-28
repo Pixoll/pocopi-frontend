@@ -1,4 +1,4 @@
-import api, { type NewOptionEventLog, type UserTestAttempt } from "@/api";
+import api, { type NewOptionEventLog, type TrimmedConfig, type UserTestAttempt } from "@/api";
 import { useMemo, useState } from "react";
 
 export type Answers = Record<number, Record<number, number | null>>;
@@ -10,6 +10,7 @@ type Test = {
   answers: Answers;
   showSummary: boolean;
   showedSummary: boolean;
+  timeLimit: number | null;
   goToSummary: () => void;
   goToPreviousQuestion: () => void;
   goToNextQuestion: () => void;
@@ -19,7 +20,8 @@ type Test = {
   jumpToQuestion: (phaseIndex: number, questionIndex: number) => void;
 };
 
-export function useTest(attempt: UserTestAttempt): Test {
+export function useTest(config: TrimmedConfig, attempt: UserTestAttempt): Test {
+  const timeLimit = useMemo(() => configTimerToTimeLimit(config.timer), [config.timer]);
   const answersFromAttempt = useMemo(() => Object.fromEntries(attempt.testAnswers.map(answer =>
     [answer.questionId, answer.optionId]
   )) as Record<number, number>, [attempt]);
@@ -53,7 +55,7 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const goToPreviousPhase = () => {
-    if (!allowPreviousPhase || phaseIndex <= 0) {
+    if ((timeLimit && Date.now() > timeLimit) || !allowPreviousPhase || phaseIndex <= 0) {
       return;
     }
 
@@ -79,7 +81,7 @@ export function useTest(attempt: UserTestAttempt): Test {
 
     setShowedSummary(false);
 
-    if (phaseIndex < phases.length - 1) {
+    if ((!timeLimit || Date.now() <= timeLimit) && phaseIndex < phases.length - 1) {
       const newPhaseIndex = phaseIndex + 1;
       const targetPhase = phases[newPhaseIndex];
       const targetQuestion = targetPhase.questions[0];
@@ -103,7 +105,7 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const goToNextPhase = () => {
-    if (phaseIndex < phases.length - 1) {
+    if ((!timeLimit || Date.now() <= timeLimit) && phaseIndex < phases.length - 1) {
       const newPhaseIndex = phaseIndex + 1;
       const targetPhase = phases[newPhaseIndex];
       const targetQuestion = targetPhase.questions[0];
@@ -122,7 +124,7 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const goToPreviousQuestion = () => {
-    if (!allowPreviousQuestion) {
+    if ((timeLimit && Date.now() > timeLimit) || !allowPreviousQuestion) {
       return;
     }
 
@@ -141,7 +143,7 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const goToNextQuestion = () => {
-    if (selectedOptionId === null && !allowSkipQuestion) {
+    if ((timeLimit && Date.now() > timeLimit) || (selectedOptionId === null && !allowSkipQuestion)) {
       return;
     }
 
@@ -161,6 +163,10 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const jumpToQuestion = (newPhaseIndex: number, newQuestionIndex: number) => {
+    if (timeLimit && Date.now() > timeLimit) {
+      return;
+    }
+
     const targetPhase = phases[newPhaseIndex];
     const targetQuestion = targetPhase.questions[newQuestionIndex];
 
@@ -175,6 +181,10 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const onOptionClick = async (optionId: number, x: number, y: number) => {
+    if (timeLimit && Date.now() > timeLimit) {
+      return;
+    }
+
     if (selectedOptionId === optionId) {
       setAnswer(phaseIndex, questionId, null);
       sendOptionEvent("deselect", optionId, x, y);
@@ -186,6 +196,10 @@ export function useTest(attempt: UserTestAttempt): Test {
   };
 
   const onOptionHover = async (optionId: number, x: number, y: number) => {
+    if (timeLimit && Date.now() > timeLimit) {
+      return;
+    }
+
     sendOptionEvent("hover", optionId, x, y);
   };
 
@@ -196,6 +210,7 @@ export function useTest(attempt: UserTestAttempt): Test {
     answers,
     showSummary,
     showedSummary,
+    timeLimit,
     quitSummary,
     goToSummary,
     goToPreviousQuestion,
@@ -236,4 +251,18 @@ function sendOptionEvent(type: NewOptionEventLog["type"], optionId: number, x: n
   } catch (error) {
     console.error("Error al enviar evento de opción:", error);
   }
+}
+
+function configTimerToTimeLimit(timer?: string | null): number | null {
+  if (!timer) {
+    return null;
+  }
+
+  const timeLimit = new Date();
+  const [hours, minutes, seconds] = timer.split(":");
+  timeLimit.setUTCHours(timeLimit.getUTCHours() + +hours);
+  timeLimit.setUTCMinutes(timeLimit.getUTCMinutes() + +minutes);
+  timeLimit.setUTCSeconds(timeLimit.getUTCSeconds() + +seconds);
+
+  return timeLimit.getTime();
 }

@@ -1,10 +1,12 @@
 .page {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
 .content {
+  position: relative;
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -14,63 +16,76 @@
   gap: 1.5rem;
 }
 
+.timer {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-weight: 500;
+  width: 5.5rem;
+  background-color: rgb(13, 110, 253);
+  border-radius: 4rem;
+  text-align: center;
+}
+
 .loadingContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-    gap: 20px;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 20px;
+  text-align: center;
 }
 
 .loadingContainer p {
-    font-size: 18px;
-    color: #696969;
-    margin: 0;
+  font-size: 18px;
+  color: #696969;
+  margin: 0;
 }
 
 .redirectText {
-    font-size: 14px !important;
-    color: #c5c4c4 !important;
-    font-style: italic;
+  font-size: 14px !important;
+  color: #c5c4c4 !important;
+  font-style: italic;
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
+
 .info {
-    font-size: 24px !important;
-    color: #e0dfdf !important;
-    font-style: italic;
+  font-size: 24px !important;
+  color: #e0dfdf !important;
+  font-style: italic;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 :global(.dark) .loadingContainer p {
-    color: #e0e0e0;
+  color: #e0e0e0;
 }
 
 :global(.dark) .redirectText {
-    color: #999 !important;
+  color: #999999 !important;
 }
 
 :global(.dark) .spinner {
-    border-color: #444;
-    border-top-color: #667eea;
+  border-color: #444444;
+  border-top-color: #667eea;
 }
+
 .question {
   border-radius: 1rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -84,7 +99,7 @@
   font-size: 0.95rem;
   margin: 1.5rem 0;
   border: 1px solid #2d2d2d;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5), 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .question :not(pre) > code {

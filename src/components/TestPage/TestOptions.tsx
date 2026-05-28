@@ -73,7 +73,7 @@ export function TestOptions({
 
 function getNormalizedPos(e: MouseEvent<HTMLDivElement>): [number, number] {
   const rect = e.currentTarget.getBoundingClientRect();
-  const x = Math.min(Math.ceil((e.clientX - rect.left) / rect.width * 100), 100);
-  const y = Math.min(Math.ceil((e.clientY - rect.top) / rect.height * 100), 100);
+  const x = Math.max(Math.min(Math.ceil((e.clientX - rect.left) / rect.width * 100), 100), 0);
+  const y = Math.max(Math.min(Math.ceil((e.clientY - rect.top) / rect.height * 100), 100), 0);
   return [x, y];
 }
