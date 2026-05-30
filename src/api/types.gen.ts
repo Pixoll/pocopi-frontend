@@ -563,7 +563,7 @@ export type EndTestData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/test/end';
+    url: '/test/end';
 };
 
 export type EndTestErrors = {
@@ -590,7 +590,7 @@ export type DiscardTestData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/test/discard';
+    url: '/test/discard';
 };
 
 export type DiscardTestErrors = {
@@ -617,7 +617,7 @@ export type ContinueTestData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/test/continue';
+    url: '/test/continue';
 };
 
 export type ContinueTestErrors = {
@@ -646,7 +646,7 @@ export type HasActiveTestData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/test/check-active';
+    url: '/test/check-active';
 };
 
 export type HasActiveTestErrors = {
@@ -673,7 +673,7 @@ export type BeginTestData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/test/begin';
+    url: '/test/begin';
 };
 
 export type BeginTestErrors = {
@@ -704,7 +704,7 @@ export type SubmitFormAnswersData = {
         formType: 'pre' | 'post';
     };
     query?: never;
-    url: '/api/forms/{formType}/answers';
+    url: '/forms/{formType}/answers';
 };
 
 export type SubmitFormAnswersErrors = {
@@ -735,7 +735,7 @@ export type SaveQuestionEventLogData = {
     body: NewQuestionEventLog;
     path?: never;
     query?: never;
-    url: '/api/event-logs/question';
+    url: '/event-logs/question';
 };
 
 export type SaveQuestionEventLogErrors = {
@@ -766,7 +766,7 @@ export type SaveOptionEventLogData = {
     body: NewOptionEventLog;
     path?: never;
     query?: never;
-    url: '/api/event-logs/option';
+    url: '/event-logs/option';
 };
 
 export type SaveOptionEventLogErrors = {
@@ -799,7 +799,7 @@ export type CloneConfigByVersionData = {
         version: number;
     };
     query?: never;
-    url: '/api/configs/{version}/clone';
+    url: '/configs/{version}/clone';
 };
 
 export type CloneConfigByVersionErrors = {
@@ -828,7 +828,7 @@ export type SetConfigAsActiveData = {
         version: number;
     };
     query?: never;
-    url: '/api/configs/{version}/activate';
+    url: '/configs/{version}/activate';
 };
 
 export type SetConfigAsActiveErrors = {
@@ -855,7 +855,7 @@ export type RegisterData = {
     body: NewUser;
     path?: never;
     query?: never;
-    url: '/api/auth/register';
+    url: '/auth/register';
 };
 
 export type RegisterErrors = {
@@ -880,7 +880,7 @@ export type LoginData = {
     body: Credentials;
     path?: never;
     query?: never;
-    url: '/api/auth/login';
+    url: '/auth/login';
 };
 
 export type LoginErrors = {
@@ -905,7 +905,7 @@ export type GetAllAdminsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/admin';
+    url: '/admin';
 };
 
 export type GetAllAdminsErrors = {
@@ -934,7 +934,7 @@ export type CreateAdminData = {
     body: NewAdmin;
     path?: never;
     query?: never;
-    url: '/api/admin';
+    url: '/admin';
 };
 
 export type CreateAdminErrors = {
@@ -961,23 +961,67 @@ export type CreateAdminResponses = {
     200: unknown;
 };
 
-export type GetActiveConfigAsUserData = {
+export type DeleteConfigData = {
     body?: never;
-    path?: never;
+    path: {
+        version: number;
+    };
     query?: never;
-    url: '/api/configs/active';
+    url: '/configs/{version}';
 };
 
-export type GetActiveConfigAsUserResponses = {
+export type DeleteConfigErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type DeleteConfigError = DeleteConfigErrors[keyof DeleteConfigErrors];
+
+export type DeleteConfigResponses = {
     /**
      * OK
      */
-    200: TrimmedConfig;
+    200: unknown;
 };
 
-export type GetActiveConfigAsUserResponse = GetActiveConfigAsUserResponses[keyof GetActiveConfigAsUserResponses];
+export type GetConfigByVersionData = {
+    body?: never;
+    path: {
+        version: number;
+    };
+    query?: never;
+    url: '/configs/{version}';
+};
 
-export type UpdateActiveConfigData = {
+export type GetConfigByVersionErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
+};
+
+export type GetConfigByVersionError = GetConfigByVersionErrors[keyof GetConfigByVersionErrors];
+
+export type GetConfigByVersionResponses = {
+    /**
+     * OK
+     */
+    200: FullConfig;
+};
+
+export type GetConfigByVersionResponse = GetConfigByVersionResponses[keyof GetConfigByVersionResponses];
+
+export type UpdateConfigData = {
     body: {
         /**
          * New application icon
@@ -1004,21 +1048,31 @@ export type UpdateActiveConfigData = {
          */
         payload: ConfigUpdate;
     };
-    path?: never;
+    path: {
+        version: number;
+    };
     query?: never;
-    url: '/api/configs/active';
+    url: '/configs/{version}';
 };
 
-export type UpdateActiveConfigErrors = {
+export type UpdateConfigErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ApiHttpError;
+    /**
+     * Forbidden
+     */
+    403: ApiHttpError;
     /**
      * Validation error
      */
     422: ApiHttpError;
 };
 
-export type UpdateActiveConfigError = UpdateActiveConfigErrors[keyof UpdateActiveConfigErrors];
+export type UpdateConfigError = UpdateConfigErrors[keyof UpdateConfigErrors];
 
-export type UpdateActiveConfigResponses = {
+export type UpdateConfigResponses = {
     /**
      * OK
      */
@@ -1029,7 +1083,7 @@ export type UpdateCredentialsData = {
     body: CredentialsUpdate;
     path?: never;
     query?: never;
-    url: '/api/auth/credentials';
+    url: '/auth/credentials';
 };
 
 export type UpdateCredentialsErrors = {
@@ -1060,7 +1114,7 @@ export type GetAllUsersData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/users';
+    url: '/users';
 };
 
 export type GetAllUsersErrors = {
@@ -1091,7 +1145,7 @@ export type GetUserData = {
         username: string;
     };
     query?: never;
-    url: '/api/users/{username}';
+    url: '/users/{username}';
 };
 
 export type GetUserErrors = {
@@ -1120,7 +1174,7 @@ export type GetCurrentUserData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/users/me';
+    url: '/users/me';
 };
 
 export type GetCurrentUserErrors = {
@@ -1149,7 +1203,7 @@ export type GetAllTestAttemptsSummaryData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/summaries';
+    url: '/summaries';
 };
 
 export type GetAllTestAttemptsSummaryErrors = {
@@ -1178,7 +1232,7 @@ export type GetCurrentUserLatestTestAttemptSummaryData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/summaries/me';
+    url: '/summaries/me';
 };
 
 export type GetCurrentUserLatestTestAttemptSummaryErrors = {
@@ -1209,7 +1263,7 @@ export type GetAllResultsData = {
     query?: {
         csv?: boolean;
     };
-    url: '/api/results';
+    url: '/results';
 };
 
 export type GetAllResultsErrors = {
@@ -1240,7 +1294,7 @@ export type GetAllTestResultsData = {
     query?: {
         csv?: boolean;
     };
-    url: '/api/results/tests';
+    url: '/results/tests';
 };
 
 export type GetAllTestResultsErrors = {
@@ -1271,7 +1325,7 @@ export type GetAllFormResultsData = {
     query?: {
         csv?: boolean;
     };
-    url: '/api/results/forms';
+    url: '/results/forms';
 };
 
 export type GetAllFormResultsErrors = {
@@ -1302,7 +1356,7 @@ export type GetAttemptResultsData = {
         attemptId: number;
     };
     query?: never;
-    url: '/api/results/attempts/{attemptId}';
+    url: '/results/attempts/{attemptId}';
 };
 
 export type GetAttemptResultsErrors = {
@@ -1333,7 +1387,7 @@ export type GetAttemptTestResultsData = {
         attemptId: number;
     };
     query?: never;
-    url: '/api/results/attempts/{attemptId}/tests';
+    url: '/results/attempts/{attemptId}/tests';
 };
 
 export type GetAttemptTestResultsErrors = {
@@ -1364,7 +1418,7 @@ export type GetAttemptTestResultsCsvData = {
         attemptId: number;
     };
     query?: never;
-    url: '/api/results/attempts/{attemptId}/tests/csv';
+    url: '/results/attempts/{attemptId}/tests/csv';
 };
 
 export type GetAttemptTestResultsCsvErrors = {
@@ -1395,7 +1449,7 @@ export type GetAttemptFormResultsData = {
         attemptId: number;
     };
     query?: never;
-    url: '/api/results/attempts/{attemptId}/forms';
+    url: '/results/attempts/{attemptId}/forms';
 };
 
 export type GetAttemptFormResultsErrors = {
@@ -1426,7 +1480,7 @@ export type GetAttemptFormResultsCsvData = {
         attemptId: number;
     };
     query?: never;
-    url: '/api/results/attempts/{attemptId}/forms/csv';
+    url: '/results/attempts/{attemptId}/forms/csv';
 };
 
 export type GetAttemptFormResultsCsvErrors = {
@@ -1457,7 +1511,7 @@ export type GetAttemptResultsCsvData = {
         attemptId: number;
     };
     query?: never;
-    url: '/api/results/attempts/{attemptId}/csv';
+    url: '/results/attempts/{attemptId}/csv';
 };
 
 export type GetAttemptResultsCsvErrors = {
@@ -1486,7 +1540,7 @@ export type GetAllPatternsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/patterns';
+    url: '/patterns';
 };
 
 export type GetAllPatternsErrors = {
@@ -1515,7 +1569,7 @@ export type GetAllConfigsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/configs';
+    url: '/configs';
 };
 
 export type GetAllConfigsErrors = {
@@ -1540,100 +1594,27 @@ export type GetAllConfigsResponses = {
 
 export type GetAllConfigsResponse = GetAllConfigsResponses[keyof GetAllConfigsResponses];
 
-export type DeleteConfigData = {
-    body?: never;
-    path: {
-        version: number;
-    };
-    query?: never;
-    url: '/api/configs/{version}';
-};
-
-export type DeleteConfigErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type DeleteConfigError = DeleteConfigErrors[keyof DeleteConfigErrors];
-
-export type DeleteConfigResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type GetConfigByVersionData = {
-    body?: never;
-    path: {
-        version: number;
-    };
-    query?: never;
-    url: '/api/configs/{version}';
-};
-
-export type GetConfigByVersionErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetConfigByVersionError = GetConfigByVersionErrors[keyof GetConfigByVersionErrors];
-
-export type GetConfigByVersionResponses = {
-    /**
-     * OK
-     */
-    200: FullConfig;
-};
-
-export type GetConfigByVersionResponse = GetConfigByVersionResponses[keyof GetConfigByVersionResponses];
-
-export type GetActiveConfigAsAdminData = {
+export type GetActiveConfigData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/configs/active/full';
+    url: '/configs/active';
 };
 
-export type GetActiveConfigAsAdminErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ApiHttpError;
-    /**
-     * Forbidden
-     */
-    403: ApiHttpError;
-};
-
-export type GetActiveConfigAsAdminError = GetActiveConfigAsAdminErrors[keyof GetActiveConfigAsAdminErrors];
-
-export type GetActiveConfigAsAdminResponses = {
+export type GetActiveConfigResponses = {
     /**
      * OK
      */
-    200: FullConfig;
+    200: TrimmedConfig;
 };
 
-export type GetActiveConfigAsAdminResponse = GetActiveConfigAsAdminResponses[keyof GetActiveConfigAsAdminResponses];
+export type GetActiveConfigResponse = GetActiveConfigResponses[keyof GetActiveConfigResponses];
 
 export type GetCurrentAdminData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/admin/me';
+    url: '/admin/me';
 };
 
 export type GetCurrentAdminErrors = {

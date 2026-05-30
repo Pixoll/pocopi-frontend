@@ -85,9 +85,9 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
   }
 
   useEffect(() => {
-    getConfig();
+    void getConfig();
     if (token) {
-      getPatterns(token, setPatterns);
+      void getPatterns(token, setPatterns);
     }
     return () => {
       clearImageCache();
@@ -104,7 +104,10 @@ export const ModifyLatestConfig: React.FC<ModifyConfigPageProps> = ({ configVers
 
     try {
       const patchRequest = buildPatchRequest(config);
-      const { data, error } = await api.updateActiveConfig({
+      const { data, error } = await api.updateConfig({
+        path: {
+          version: configVersion,
+        },
         body: patchRequest
       });
 
